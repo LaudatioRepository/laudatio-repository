@@ -14,6 +14,8 @@
     * auth
     * https://github.com/GrahamCampbell/Laravel-Flysystem
         * php artisan vendor:publish
+    * https://github.com/vinkla/laravel-gitlab
+        * 
 * pdo_pgsql
 * How to run tests
 * Deployment instructions
