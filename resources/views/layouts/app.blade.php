@@ -48,6 +48,8 @@
                         @else
                             <li class="li-docs no-basic"><a href="{{ route('gitRepo.route.schema') }}">Schema</a></li>
                             <li class="li-docs no-basic"><a href="{{ route('gitRepo.route') }}">Projects</a></li>
+                            <li class="li-docs no-basic"><a href="{{ route('search') }}">Search</a></li>
+
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     {{ Auth::user()->name }} <span class="caret"></span>
