@@ -9,7 +9,6 @@
 namespace App\Laudatio\GitLaB;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-use Vinkla\GitLab\Facades\GitLab;
 
 class GitFunction
 {
@@ -258,17 +257,10 @@ class GitFunction
         print "<br><br />trackstatus: ".$trackstatus;
         $process = null;
         $folder = str_replace(" ","\\ ",$folder);
-        print "<br>THE FOLDER: ".$folder;
-        if($this->isUntracked($trackstatus)){
-            $process = new Process("rm -rf $folder",$cwdPath);
-            $process->run();
+        print "<br>THE FOLDER: ".$folder." cwdPath: $cwdPath";
 
-        }
-        else{
-            $process = new Process("rm -rf $folder",$cwdPath);
-            $process->run();
-
-        }
+        $process = new Process("rm -rf $folder",$cwdPath);
+        $process->run();
 
         // executes after the command finishes
         if (!$process->isSuccessful()) {

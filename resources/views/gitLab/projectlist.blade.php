@@ -7,11 +7,11 @@
         @foreach($projects as $project)
             @if($project["type"] == "dir")
                     <li><a href="{{ route('gitRepo.route', array('path' => $project['path'])) }}"> {{$project['basename']}}</a>
-                        @if($pathcount == 2 && in_array("KM",$user['roles']) || $pathcount == 1 && in_array("Admin",$user['groups']))
+                        @if($pathcount == 2 || $pathcount == 1)
                             | <a href="{{route('gitRepo.deleteFile.route', array('path' => $project['path'], 'isdir' => 1)) }}">Delete</a>
                         @endif
 
-                        @if($project["tracked"] == "false" && $project["foldercount"] > 0 && $pathcount == 3  && (in_array("Admin",$user['groups'])))
+                        @if($project["tracked"] == "false" && $project["foldercount"] > 0 && $pathcount == 3)
                             | <a href="{{route('gitRepo.addFile.route', array('path' => $project['path'])) }}">Add to GIT</a>
                         @endif
                     </li>
@@ -25,9 +25,9 @@
                         @endforeach
                     @endif
 
-                    @if( in_array("KM",$user['roles']) || in_array("Admin",$user['groups']))
+
                         | <a href="{{route('gitRepo.deleteFile.route', array('path' => $project['path'], 'isdir' => 0)) }}">Delete</a>
-                    @endif
+
                 </li>
             @endif
 
@@ -35,14 +35,14 @@
     </ul>
 
 
-    @if($pathcount == 1 && $path == "" && in_array("GKA",$user['roles']))
+    @if($pathcount == 1 && $path == "")
         <a href="{{route('gitRepo.createproject.get',array('dirname' => $project['dirname'])) }}" >Create project</a>
     @endif
 
 
     @else
 
-        @if($pathcount == 1 && in_array("Admin",$user['groups']))
+        @if($pathcount == 1)
             <a href="{{route('gitRepo.createcorpus.get',array('dirname' => $path)) }}" >Initiate corpus</a>
         @endif
    @endif

@@ -71,9 +71,11 @@ class GitRepoController extends Controller
             $previouspath .= $pathtarray[$i]."/";
         }
 
+        $user = \Auth::user();
+
         return view("gitLab.projectlist",["projects" => $projects, "pathcount" => $count,"path" => $path,"previouspath" => $previouspath])
             ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',\Auth::user()->getUserInfo());
+            ->with('user',$user);
     }
 
 
@@ -132,7 +134,6 @@ class GitRepoController extends Controller
     }
 
     public function deleteFile($path,$isdir = 1){
-        $isLoggedIn = \Auth::check();
         $directoryPath = substr($path,0,strrpos($path,"/"));
 
         if($this->flysystem->has($path)){
