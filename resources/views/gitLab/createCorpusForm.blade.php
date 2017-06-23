@@ -1,0 +1,20 @@
+@extends('layouts.app', ['isLoggedIn' => $isLoggedIn])
+
+@section('content')
+    @if (count($errors) > 0)
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    @endif
+
+    <form action="/createcorpus" method="post" enctype="multipart/form-data">
+        {{ csrf_field() }}
+        Corpus name:
+        <br />
+        <input type="text" name="corpusname" />
+        <input type="submit" value="Create" />
+        <input type ="hidden" name="directorypath" value="{{$dirname}}" />
+    </form>
+@stop

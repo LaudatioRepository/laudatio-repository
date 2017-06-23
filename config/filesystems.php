@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('FILESYSTEM_DRIVER', 'local'),
+    'default' => 'local',
 
     /*
     |--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ return [
     |
     */
 
-    'cloud' => env('FILESYSTEM_CLOUD', 's3'),
+    'cloud' => 's3',
 
     /*
     |--------------------------------------------------------------------------
@@ -48,6 +48,11 @@ return [
             'root' => storage_path('app'),
         ],
 
+        'gitlocal' => [
+            'driver' => 'local',
+            'root' => storage_path('/Users/rolfguescini/source/laudatiofiles/projects'),
+            //'path' => '/Users/rolfguescini/source/laudatiofiles/projects',
+        ],
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
