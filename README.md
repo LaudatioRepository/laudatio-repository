@@ -8,7 +8,7 @@
 
 ### How do I get set up? ###
 
-* Summary of set up
+* laravel (v5.4.23), 
 * Configuration
 * Dependencies
 * Database configuration
