@@ -10,8 +10,11 @@
 
 * laravel (v5.4.23), 
 * Configuration
-* Dependencies
-* Database configuration
+* php 7
+    * auth
+    * https://github.com/GrahamCampbell/Laravel-Flysystem
+        * php artisan vendor:publish
+* pdo_pgsql
 * How to run tests
 * Deployment instructions
 
