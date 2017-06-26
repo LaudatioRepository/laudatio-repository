@@ -14,11 +14,9 @@ use App\Events\ElasticEvent;
 use App\Laudatio\Search\ElasticSearchTerm;
 
 Route::get('/', ['as' => 'home', 'uses' => 'IndexController@index'])->middleware('auth');
-Route::get('/login', ['as' => 'login', 'uses' => 'IndexController@login']);
+Route::get('/login', ['as' => 'login', 'uses' => 'IndexController@login'])->middleware('auth');
 Route::get('/logout', ['as' => 'logout', 'uses' => 'IndexController@logout'])->middleware('auth');
 Route::get('/dump', ['as' => 'dump', 'uses' => 'IndexController@dump', 'middleware' => 'auth'])->middleware('auth');
-
-Route::get('/callback', ['as' => 'logincallback', 'uses' => '\Auth0\Login\Auth0Controller@callback']);
 
 Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
 Route::post('/search/{searchTerm}', function($searchTerm = null) {
