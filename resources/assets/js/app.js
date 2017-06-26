@@ -15,8 +15,21 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example', require('./components/Example.vue'));
+Vue.component('searchwrapper', require('./components/SearchWrapper.vue'));
+Vue.component('searchpanel_general', require('./components/SearchPanelGeneral.vue'));
 
 const app = new Vue({
-    el: '#app'
+    el: '#searchapp',
+    data: {
+        corpusresults: [],
+        documentresults: [],
+        annotationresults: [],
+        searches: []
+    },
+    methods: {
+        askElastic: function(search) {
+            this.searches.push(search.generalSearchTerm);
+            //this.$http.get('/search/'.concat(this.newSearch))
+        }
+    }
 });

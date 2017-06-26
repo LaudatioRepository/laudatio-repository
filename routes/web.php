@@ -14,16 +14,17 @@ use App\Events\ElasticEvent;
 use App\Laudatio\Search\ElasticSearchTerm;
 
 Route::get('/', ['as' => 'home', 'uses' => 'IndexController@index'])->middleware('auth');
-Route::get('/login', ['as' => 'login', 'uses' => 'IndexController@login'])->middleware('auth');
-Route::get('/logout', ['as' => 'logout', 'uses' => 'IndexController@logout'])->middleware('auth');
-Route::get('/dump', ['as' => 'dump', 'uses' => 'IndexController@dump', 'middleware' => 'auth'])->middleware('auth');
+//Route::get('/login', ['as' => 'login', 'uses' => 'IndexController@login'])->middleware('auth');
+//Route::get('/logout', ['as' => 'logout', 'uses' => 'IndexController@logout'])->middleware('auth');
+
+
+Auth::routes();
 
 Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
 Route::post('/search/{searchTerm}', function($searchTerm = null) {
     event(new ElasticEvent(new ElasticSearchTerm($searchTerm)));
     $isLoggedIn = \Auth::check();
-    return view('elastic.search')
-        ->with('isLoggedIn', $isLoggedIn);
+    return view('elastic.search');
 });
 
 

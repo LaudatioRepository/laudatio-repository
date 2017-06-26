@@ -1,7 +1,9 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: rolfguescini
- * Date: 23.06.17
- * Time: 15:59
- */
+@extends('layouts.search')
+
+@section('content')
+    <div id="searchapp">
+        <h1>Search</h1>
+        <searchpanel_general v-on:searchedgeneral="askElastic"></searchpanel_general>
+
+    </div>
+@stop
