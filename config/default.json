@@ -1,0 +1,6 @@
+{
+    "hosts" : [
+    "http://depot1-6.cms.hu-berlin.de:8080/"
+],
+    "index" : "corpus"
+}
