@@ -2,7 +2,9 @@
  * Created by rolfguescini on 23.06.17.
  */
 var express = require('express');
+var cors = require('cors')
 var app = express();
+app.use(cors())
 var path = require('path');
 var server = require('http').createServer(app);
 var axios = require('axios');
@@ -12,8 +14,10 @@ port = process.env.PORT || 4000;
 
 require('dotenv').config();
 
+
 var bodyParser = require('body-parser');
 app.use( bodyParser.json() );
+
 
 var routes = require('./routes');
 routes(app);
