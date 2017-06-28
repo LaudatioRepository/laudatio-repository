@@ -17,6 +17,8 @@ Route::get('/', ['uses' => 'IndexController@index'])->middleware('auth');
 
 Auth::routes();
 
+Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
+
 
 Route::get('/repository',[ 'as' => 'gitLab', 'uses' => 'GitLabController@listProjects'])->middleware('auth');
 
