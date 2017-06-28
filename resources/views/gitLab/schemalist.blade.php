@@ -11,7 +11,7 @@
                             | <a href="{{route('gitRepo.deleteFile.route', array('path' => $schemafile['path'], 'isdir' => 1)) }}">Delete</a>
                         @endif
 
-                        @if($schemafile["tracked"] == "false" && $schemafile["foldercount"] > 0 && $pathcount == 3)
+                        @if($schemafile["tracked"] == "false" && $schemafile["foldercount"] > 0 && $pathcount == 3 )
                             | <a href="{{route('gitRepo.addFile.route', array('path' => $schemafile['path'])) }}">Add to GIT</a>
                         @endif
                     </li>
