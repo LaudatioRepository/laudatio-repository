@@ -16,7 +16,6 @@
         props: ['result'],
         mounted() {
             console.log('ResultComponent mounted.')
-            console.log('Result: '+this.result);
         }
     }
 </script>

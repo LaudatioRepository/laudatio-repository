@@ -38,11 +38,9 @@ const app = new Vue({
                 field: "corpus_author_forename",
                 queryString: search.generalSearchTerm
             };
-            console.log(postData);
+            //console.log(postData);
             window.axios.post('http://localhost:4000/search',JSON.stringify(postData)).then(res => {
                 this.results.push({search: search, results: res.data.hits.hits, total: res.data.hits.total})
-                console.log("SEARCHES: "+util.inspect(this.searches));
-                console.log("RESULTS: "+JSON.stringify(this.results));
             });
 
 

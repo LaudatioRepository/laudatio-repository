@@ -13,7 +13,7 @@
 use App\Events\ElasticEvent;
 use App\Laudatio\Search\ElasticSearchTerm;
 
-Route::get('/', ['as' => 'home', 'uses' => 'IndexController@index'])->middleware('auth');
+Route::get('/', ['uses' => 'IndexController@index'])->middleware('auth');
 //Route::get('/login', ['as' => 'login', 'uses' => 'IndexController@login'])->middleware('auth');
 //Route::get('/logout', ['as' => 'logout', 'uses' => 'IndexController@logout'])->middleware('auth');
 

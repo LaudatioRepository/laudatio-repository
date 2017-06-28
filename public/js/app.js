@@ -1412,11 +1412,9 @@ var app = new Vue({
                 field: "corpus_author_forename",
                 queryString: search.generalSearchTerm
             };
-            console.log(postData);
+            //console.log(postData);
             window.axios.post('http://localhost:4000/search', JSON.stringify(postData)).then(function (res) {
                 _this.results.push({ search: search, results: res.data.hits.hits, total: res.data.hits.total });
-                console.log("SEARCHES: " + util.inspect(_this.searches));
-                console.log("RESULTS: " + JSON.stringify(_this.results));
             });
         }
     }
@@ -42844,7 +42842,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: ['result'],
     mounted: function mounted() {
         console.log('ResultComponent mounted.');
-        console.log('Result: ' + this.result);
     }
 });
 
