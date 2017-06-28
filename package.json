@@ -23,6 +23,7 @@
     "dotenv": "^4.0.0",
     "elastic-builder": "^0.4.4",
     "elasticsearch": "^13.2.0",
+    "elasticsearch-browser": "^13.2.0",
     "express": "^4.15.3",
     "jquery": "^3.2.1",
     "laravel-mix": "^1.0.6",

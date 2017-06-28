@@ -7,6 +7,8 @@
 
 require('./bootstrap');
 require('./filters');
+var searchClient = require('./elasticsearch.js');
+
 window.Vue = require('vue');
 const util = require('util')
 /**
@@ -24,25 +26,24 @@ const app = new Vue({
     el: '#searchapp',
     data: {
         results: [],
-        corpusresults: [],
-        documentresults: [],
-        annotationresults: [],
         searches: []
     },
     methods: {
-        askElastic: function(search) {
-            this.searches.push(search.generalSearchTerm);
-            window.axios.defaults.headers.post['Content-Type'] = 'application/json';
-            let postData = {
-                index_name: "corpus",
-                field: "corpus_author_forename",
-                queryString: search.generalSearchTerm
-            };
-            //console.log(postData);
-            window.axios.post('http://localhost:4000/search',JSON.stringify(postData)).then(res => {
-                this.results.push({search: search, results: res.data.hits.hits, total: res.data.hits.total})
+        askElastic(search) {
+            var that = this;
+            //console.log("THIS: "+util.inspect(this, false, null));
+            that.searches.push(search.generalSearchTerm);
+            searchClient.searchIndex('corpus','corpus_author_forename',search.generalSearchTerm).then(function(res){
+                //console.log("HITS: "+util.inspect(res, false, null));
+                //that.results.push({search: search, results: res.hits.hits, total: res.hits.total})
+                that.results.push({search: search, results: res.hits.hits, total: res.hits.total})
             });
 
+
+
+
+
+            //console.log(postData);
 
         }
     }
