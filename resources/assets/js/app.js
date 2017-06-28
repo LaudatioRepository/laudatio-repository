@@ -6,6 +6,7 @@
  */
 
 require('./bootstrap');
+require('./filters');
 window.Vue = require('vue');
 const util = require('util')
 /**
@@ -17,6 +18,7 @@ const util = require('util')
 Vue.component('searchwrapper', require('./components/SearchWrapper.vue'));
 Vue.component('searchpanel_general', require('./components/SearchPanelGeneral.vue'));
 Vue.component('searchresultpanel_corpus', require('./components/SearchResultPanelCorpus.vue'));
+
 
 const app = new Vue({
     el: '#searchapp',
@@ -31,10 +33,14 @@ const app = new Vue({
         askElastic: function(search) {
             this.searches.push(search.generalSearchTerm);
             window.axios.defaults.headers.post['Content-Type'] = 'application/json';
-            var postData = '{"index_name": "corpus","field": "corpus_author_forename", "queryString": "Astrid"}';
-            window.axios.post('http://localhost:4000/search',postData).then(res => {
-                console.log(res.data.hits)
-                this.results.push({search: search, result: res.data.hits.hits, total: res.data.hits.total})
+            let postData = {
+                index_name: "corpus",
+                field: "corpus_author_forename",
+                queryString: search.generalSearchTerm
+            };
+            console.log(postData);
+            window.axios.post('http://localhost:4000/search',JSON.stringify(postData)).then(res => {
+                this.results.push({search: search, results: res.data.hits.hits, total: res.data.hits.total})
                 console.log("SEARCHES: "+util.inspect(this.searches));
                 console.log("RESULTS: "+JSON.stringify(this.results));
             });

@@ -69,7 +69,10 @@ exports.searchIndex = function (req,res){
         .query(builder.matchQuery(
             req.body.field,
             req.body.queryString
-        ));
+        )).
+        source({
+            'excludes': [ 'message' ]
+        });
     console.log(builder.prettyPrint(query)  + "FOR: "+req.body.index_name);
     client.search({
         index: req.body.index_name,
