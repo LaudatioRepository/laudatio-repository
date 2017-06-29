@@ -4,8 +4,53 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "dbd6b9b1dbff9b68c44ab7f85672b3cd",
+    "content-hash": "18acebc9a27f2d386d272b6bfec76e5c",
     "packages": [
+        {
+            "name": "cviebrock/laravel-elasticsearch",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cviebrock/laravel-elasticsearch.git",
+                "reference": "8e1d93f36a14ea2666496c5d65f1895c74924bcc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cviebrock/laravel-elasticsearch/zipball/8e1d93f36a14ea2666496c5d65f1895c74924bcc",
+                "reference": "8e1d93f36a14ea2666496c5d65f1895c74924bcc",
+                "shasum": ""
+            },
+            "require": {
+                "elasticsearch/elasticsearch": "^5.0",
+                "illuminate/support": "~5",
+                "monolog/monolog": "~1",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Cviebrock\\LaravelElasticsearch\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Colin Viebrock",
+                    "email": "colin@viebrock.ca"
+                }
+            ],
+            "description": "An easy way to use the official PHP ElasticSearch client in your Laravel applications.",
+            "keywords": [
+                "client",
+                "elasticsearch",
+                "laravel",
+                "search"
+            ],
+            "time": "2017-05-04T19:22:39+00:00"
+        },
         {
             "name": "dnoegel/php-xdg-base-dir",
             "version": "0.1",
@@ -105,6 +150,61 @@
                 "string"
             ],
             "time": "2015-11-06T14:35:42+00:00"
+        },
+        {
+            "name": "elasticsearch/elasticsearch",
+            "version": "v5.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/elastic/elasticsearch-php.git",
+                "reference": "dc57bbcd4be2c9061ebe5be59058ea8bdebc904e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/elastic/elasticsearch-php/zipball/dc57bbcd4be2c9061ebe5be59058ea8bdebc904e",
+                "reference": "dc57bbcd4be2c9061ebe5be59058ea8bdebc904e",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/ringphp": "~1.0",
+                "php": "^5.6|^7.0",
+                "psr/log": "~1.0"
+            },
+            "require-dev": {
+                "cpliakas/git-wrapper": "~1.0",
+                "doctrine/inflector": "^1.1",
+                "mockery/mockery": "0.9.4",
+                "phpunit/phpunit": "^4.7|^5.4",
+                "sami/sami": "~3.2",
+                "symfony/finder": "^2.8",
+                "symfony/yaml": "^2.8"
+            },
+            "suggest": {
+                "ext-curl": "*",
+                "monolog/monolog": "Allows for client-level logging and tracing"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Elasticsearch\\": "src/Elasticsearch/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Zachary Tong"
+                }
+            ],
+            "description": "PHP Client for Elasticsearch",
+            "keywords": [
+                "client",
+                "elasticsearch",
+                "search"
+            ],
+            "time": "2017-04-12T20:40:50+00:00"
         },
         {
             "name": "erusev/parsedown",
@@ -293,6 +393,107 @@
                 "manager"
             ],
             "time": "2017-01-01T13:08:54+00:00"
+        },
+        {
+            "name": "guzzlehttp/ringphp",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/RingPHP.git",
+                "reference": "dbbb91d7f6c191e5e405e900e3102ac7f261bc0b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/RingPHP/zipball/dbbb91d7f6c191e5e405e900e3102ac7f261bc0b",
+                "reference": "dbbb91d7f6c191e5e405e900e3102ac7f261bc0b",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/streams": "~3.0",
+                "php": ">=5.4.0",
+                "react/promise": "~2.0"
+            },
+            "require-dev": {
+                "ext-curl": "*",
+                "phpunit/phpunit": "~4.0"
+            },
+            "suggest": {
+                "ext-curl": "Guzzle will use specific adapters if cURL is present"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Ring\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Provides a simple API and specification that abstracts away the details of HTTP into a single PHP function.",
+            "time": "2015-05-20T03:37:09+00:00"
+        },
+        {
+            "name": "guzzlehttp/streams",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/guzzle/streams.git",
+                "reference": "47aaa48e27dae43d39fc1cea0ccf0d84ac1a2ba5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/guzzle/streams/zipball/47aaa48e27dae43d39fc1cea0ccf0d84ac1a2ba5",
+                "reference": "47aaa48e27dae43d39fc1cea0ccf0d84ac1a2ba5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "GuzzleHttp\\Stream\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Provides a simple abstraction over streams of data",
+            "homepage": "http://guzzlephp.org/",
+            "keywords": [
+                "Guzzle",
+                "stream"
+            ],
+            "time": "2014-10-12T19:18:40+00:00"
         },
         {
             "name": "jakub-onderka/php-console-color",
@@ -937,16 +1138,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "2b9e2f71b722f7c53918ab0c25f7646c2013f17d"
+                "reference": "0808939f81c1347a3c8a82a5925385a08074b0f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/2b9e2f71b722f7c53918ab0c25f7646c2013f17d",
-                "reference": "2b9e2f71b722f7c53918ab0c25f7646c2013f17d",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/0808939f81c1347a3c8a82a5925385a08074b0f1",
+                "reference": "0808939f81c1347a3c8a82a5925385a08074b0f1",
                 "shasum": ""
             },
             "require": {
@@ -984,7 +1185,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2017-03-05T18:23:57+00:00"
+            "time": "2017-06-28T20:53:48+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -1083,16 +1284,16 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.8.7",
+            "version": "v0.8.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "be969b9dc89dcaefdb9a3117fa91fa38bca19f50"
+                "reference": "fe65c30cbc55c71e61ba3a38b5a581149be31b8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/be969b9dc89dcaefdb9a3117fa91fa38bca19f50",
-                "reference": "be969b9dc89dcaefdb9a3117fa91fa38bca19f50",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/fe65c30cbc55c71e61ba3a38b5a581149be31b8e",
+                "reference": "fe65c30cbc55c71e61ba3a38b5a581149be31b8e",
                 "shasum": ""
             },
             "require": {
@@ -1152,7 +1353,7 @@
                 "interactive",
                 "shell"
             ],
-            "time": "2017-06-20T12:51:31+00:00"
+            "time": "2017-06-24T06:16:19+00:00"
         },
         {
             "name": "ramsey/uuid",
@@ -1235,6 +1436,52 @@
                 "uuid"
             ],
             "time": "2017-03-26T20:37:53+00:00"
+        },
+        {
+            "name": "react/promise",
+            "version": "v2.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/reactphp/promise.git",
+                "reference": "62785ae604c8d69725d693eb370e1d67e94c4053"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/62785ae604c8d69725d693eb370e1d67e94c4053",
+                "reference": "62785ae604c8d69725d693eb370e1d67e94c4053",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "React\\Promise\\": "src/"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Sorgalla",
+                    "email": "jsorgalla@gmail.com"
+                }
+            ],
+            "description": "A lightweight implementation of CommonJS Promises/A for PHP",
+            "keywords": [
+                "promise",
+                "promises"
+            ],
+            "time": "2017-03-25T12:08:31+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",

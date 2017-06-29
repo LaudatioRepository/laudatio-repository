@@ -178,7 +178,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         GrahamCampbell\Flysystem\FlysystemServiceProvider::class,
-        Vinkla\GitLab\GitLabServiceProvider::class
+        Vinkla\GitLab\GitLabServiceProvider::class,
+        Cviebrock\LaravelElasticsearch\ServiceProvider::class
 
     ],
 
@@ -229,7 +230,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Flysystem' => GrahamCampbell\Flysystem\Facades\Flysystem::class,
-        'GitLab' => Vinkla\GitLab\Facades\GitLab::class
+        'GitLab' => Vinkla\GitLab\Facades\GitLab::class,
+        'Elasticsearch' => Cviebrock\LaravelElasticsearch\Facade::class,
 
     ],
 
