@@ -31,10 +31,10 @@ set('writable_dirs', [
 // Hosts
 host('depot1-5.cms.hu-berlin.de')
     ->user('root')
-    ->identityFile('/Users/rolfguescini/.ssh/id_rsa.pub', '/Users/rolfguescini/.ssh/id_rsa', '')
+    ->identityFile('/Users/rolfguescini/.ssh/deploy', '/Users/rolfguescini/.ssh/deploy', '')
     ->set('deploy_path', '/var/www/html/laravelaudatio')
     ->set('branch', 'phpelastic')
-    ->user('root');
+    ->user('rolfguescini');
 
 
 // Tasks
@@ -43,6 +43,7 @@ task('environment', function () {
     run('cp /var/www/html/laravelaudatio/filesystems.php {{release_path}}/config/filesystems.php');
     run('cp /var/www/html/laravelaudatio/gitlab.php {{release_path}}/config/gitlab.php');
     run('cp /var/www/html/laravelaudatio/laudatio.php {{release_path}}/config/laudatio.php');
+    run('cp /var/www/html/laravelaudatio/deployenv {{release_path}}/.env');
 })->desc('Environment setup');
 
 
