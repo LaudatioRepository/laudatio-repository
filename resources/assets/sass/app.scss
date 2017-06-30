@@ -180,7 +180,7 @@
   border-radius: 5px;
   margin-bottom: 20px;
   flex: 1;
-  height: 270px;
+  min-height: 270px;
   border: hsla(31,15%,50%,.1) 1px solid;
   width: 40em;
 }
@@ -191,7 +191,7 @@
   border-radius: 5px;
   margin-bottom: 20px;
   border: hsla(31,15%,50%,.1) 1px solid;
-  height: 270px;
+  min-height: 270px;
   width: 40em;
 }
 
@@ -201,7 +201,7 @@
   border: hsla(31,15%,50%,.1) 1px solid;
   border-radius: 5px;
   margin-bottom: 20px;
-  height: 270px;
+  min-height: 270px;
   width: 40em;
 }
 
@@ -211,7 +211,7 @@
   border-radius: 5px;
   margin-bottom: 20px;
   flex: 1;
-  height: 270px;
+  min-height: 270px;
 }
 
 .HolyGrail-nav .Document-box {
@@ -220,7 +220,7 @@
   border: hsla(31,15%,50%,.1) 1px solid;
   border-radius: 5px;
   margin-bottom: 20px;
-  height: 270px;
+  min-height: 270px;
 }
 
 .HolyGrail-nav .Annotation-box {
@@ -229,7 +229,7 @@
   border: hsla(31,15%,50%,.1) 1px solid;
   border-radius: 5px;
   margin-bottom: 20px;
-  height: 270px;
+  min-height: 270px;
 }
 
 .Corpus-box .Corpus-header, .HolyGrail-content .result-box .Corpus-header  {
@@ -258,7 +258,7 @@
 
 
 .Corpus-box .Corpus-body, .HolyGrail-content .result-box .Corpus-results .Corpus-body {
-  padding: 0 1em;
+  padding: 1em 1em;
 }
 
 .Document-box .Document-body, .HolyGrail-content .result-box .Corpus-results .Document-body  {
@@ -294,4 +294,15 @@
     -ms-flex: 0 0 12em;
     flex: 0 0 30em
   }
+}
+
+/* FORMS */
+
+.btn.btn-primary.corpus-search-submit-button {
+  border-radius: 0;
+  padding: 0.2em;
+}
+
+.Corpus-box .Corpus-body input{
+  flex: 1 auto;
 }

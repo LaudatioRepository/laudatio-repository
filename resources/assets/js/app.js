@@ -17,6 +17,7 @@ const util = require('util')
 
 Vue.component('searchwrapper', require('./components/SearchWrapper.vue'));
 Vue.component('searchpanel_general', require('./components/SearchPanelGeneral.vue'));
+Vue.component('searchpanel_corpus', require('./components/SearchBoxPanelCorpus.vue'));
 Vue.component('searchresultpanel_corpus', require('./components/SearchResultPanelCorpus.vue'));
 
 
@@ -42,8 +43,30 @@ const app = new Vue({
             window.axios.post('api/searchapi/searchGeneral',JSON.stringify(postData)).then(res => {
                 this.results.push({search: search, results: res.data.results, total: 5})
             });
+        },
 
+        submitCorpusSearch: function(corpusSearchObject) {
+            /*
+             corpus_title: '',
+             corpus_publication_publisher: '',
+             corpus_publication_publication_date: '',
+             corpusYearTo: '',
+             corpus_size_value: '',
+             corpusSizeTo: '',
+             corpus_languages_language: '',
+             corpus_encoding_format: ''
+             */
 
+            window.axios.defaults.headers.post['Content-Type'] = 'application/json';
+            let postData = {
+                index_name: "corpus",
+                field: "corpus_title",
+                queryString: corpusSearchObject.corpus_title
+            };
+            console.log("corpusSearchObject: "+corpusSearchObject.corpus_title);
+            window.axios.post('api/searchapi/searchGeneral',JSON.stringify(postData)).then(res => {
+                this.results.push({search: corpusSearchObject.corpus_title, results: res.data.results, total: 5})
+            });
         }
     }
 });

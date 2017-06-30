@@ -11088,6 +11088,7 @@ var util = __webpack_require__(40);
 
 Vue.component('searchwrapper', __webpack_require__(43));
 Vue.component('searchpanel_general', __webpack_require__(49));
+Vue.component('searchpanel_corpus', __webpack_require__(66));
 Vue.component('searchresultpanel_corpus', __webpack_require__(54));
 
 var app = new Vue({
@@ -11113,6 +11114,32 @@ var app = new Vue({
 
             window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
                 _this.results.push({ search: search, results: res.data.results, total: 5 });
+            });
+        },
+
+        submitCorpusSearch: function submitCorpusSearch(corpusSearchObject) {
+            var _this2 = this;
+
+            /*
+             corpus_title: '',
+             corpus_publication_publisher: '',
+             corpus_publication_publication_date: '',
+             corpusYearTo: '',
+             corpus_size_value: '',
+             corpusSizeTo: '',
+             corpus_languages_language: '',
+             corpus_encoding_format: ''
+             */
+
+            window.axios.defaults.headers.post['Content-Type'] = 'application/json';
+            var postData = {
+                index_name: "corpus",
+                field: "corpus_title",
+                queryString: corpusSearchObject.corpus_title
+            };
+            console.log("corpusSearchObject: " + corpusSearchObject.corpus_title);
+            window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
+                _this2.results.push({ search: corpusSearchObject.corpus_title, results: res.data.results, total: 5 });
             });
         }
     }
@@ -42895,6 +42922,302 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */,
+/* 65 */,
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(67),
+  /* template */
+  __webpack_require__(68),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/rolfguescini/source/phpelasticsearchlaudatio/resources/assets/js/components/SearchBoxPanelCorpus.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] SearchBoxPanelCorpus.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-7725aa5f", Component.options)
+  } else {
+    hotAPI.reload("data-v-7725aa5f", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 67 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            corpusSearchData: {
+                corpus_title: '',
+                corpus_publication_publisher: '',
+                corpus_publication_publication_date: '',
+                corpusYearTo: '',
+                corpus_size_value: '',
+                corpusSizeTo: '',
+                corpus_languages_language: '',
+                corpus_encoding_format: ''
+            },
+            scope: 'corpus'
+        };
+    },
+    methods: {
+        emitData: function emitData() {
+            this.$emit('corpus-search', this.corpusSearchData);
+        }
+    },
+    mounted: function mounted() {
+        console.log('CorpusSearchBlock mounted.');
+    }
+});
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "Corpus-box"
+  }, [_c('div', {
+    staticClass: "Corpus-header"
+  }, [_vm._v("\n      Corpus\n\n    ")]), _vm._v(" "), _c('div', {
+    staticClass: "Corpus-body"
+  }, [_c('label', [_vm._v("Name "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.corpusSearchData.corpus_title),
+      expression: "corpusSearchData.corpus_title"
+    }],
+    attrs: {
+      "placeholder": "Corpus name",
+      "type": "text",
+      "name": "corpus-name"
+    },
+    domProps: {
+      "value": (_vm.corpusSearchData.corpus_title)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.corpusSearchData.corpus_title = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Publisher "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.corpusSearchData.corpus_publication_publisher),
+      expression: "corpusSearchData.corpus_publication_publisher"
+    }],
+    attrs: {
+      "placeholder": "Corpus publisher",
+      "type": "text",
+      "name": "corpus-publisher"
+    },
+    domProps: {
+      "value": (_vm.corpusSearchData.corpus_publication_publisher)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.corpusSearchData.corpus_publication_publisher = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Year "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.corpusSearchData.corpus_publication_publication_date),
+      expression: "corpusSearchData.corpus_publication_publication_date"
+    }],
+    attrs: {
+      "placeholder": "From",
+      "type": "text",
+      "name": "corpus-year-from"
+    },
+    domProps: {
+      "value": (_vm.corpusSearchData.corpus_publication_publication_date)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.corpusSearchData.corpus_publication_publication_date = $event.target.value
+      }
+    }
+  }), _vm._v(" to "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.corpusSearchData.corpusYearTo),
+      expression: "corpusSearchData.corpusYearTo"
+    }],
+    attrs: {
+      "placeholder": "To",
+      "type": "text",
+      "name": "corpus-year-to"
+    },
+    domProps: {
+      "value": (_vm.corpusSearchData.corpusYearTo)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.corpusSearchData.corpusYearTo = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Size "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.corpusSearchData.corpus_size_value),
+      expression: "corpusSearchData.corpus_size_value"
+    }],
+    attrs: {
+      "placeholder": "From",
+      "type": "text",
+      "name": "corpus-size-from"
+    },
+    domProps: {
+      "value": (_vm.corpusSearchData.corpus_size_value)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.corpusSearchData.corpus_size_value = $event.target.value
+      }
+    }
+  }), _vm._v(" to "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.corpusSearchData.corpusSizeTo),
+      expression: "corpusSearchData.corpusSizeTo"
+    }],
+    attrs: {
+      "placeholder": "To",
+      "type": "text",
+      "name": "corpus-size-to"
+    },
+    domProps: {
+      "value": (_vm.corpusSearchData.corpusSizeTo)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.corpusSearchData.corpusSizeTo = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Language "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.corpusSearchData.corpus_languages_language),
+      expression: "corpusSearchData.corpus_languages_language"
+    }],
+    attrs: {
+      "placeholder": "Corpus language",
+      "type": "text",
+      "name": "corpus-language"
+    },
+    domProps: {
+      "value": (_vm.corpusSearchData.corpus_languages_language)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.corpusSearchData.corpus_languages_language = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Format "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.corpusSearchData.corpus_encoding_format),
+      expression: "corpusSearchData.corpus_encoding_format"
+    }],
+    attrs: {
+      "placeholder": "Corpus format",
+      "type": "text",
+      "name": "corpus-format"
+    },
+    domProps: {
+      "value": (_vm.corpusSearchData.corpus_encoding_format)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.corpusSearchData.corpus_encoding_format = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('button', {
+    staticClass: "btn btn-primary corpus-search-submit-button",
+    on: {
+      "click": _vm.emitData
+    }
+  }, [_vm._v("Search corpora")])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-7725aa5f", module.exports)
+  }
+}
 
 /***/ })
 /******/ ]);

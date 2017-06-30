@@ -34,19 +34,7 @@
                 </div>
             </article>
             <nav class="HolyGrail-nav u-textCenter">
-                <div class="Corpus-box">
-                    <div class="Corpus-header">
-                      Corpus
-                    </div>
-                    <div class="Corpus-body">
-                        <label>Name <input type="text" name="corpus-name" /></label>
-                        <label>Publisher <input type="text" name="corpus-publisher" /></label>
-                        <label>Year <input type="text" name="corpus-year-from" /> to <input type="text" name="corpus-year-to" /></label>
-                        <label>Size <input type="text" name="corpus-size-from" /> to <input type="text" name="corpus-size-to" /></label>
-                        <label>Language <input type="text" name="corpus-language" /></label>
-                        <label>Format <input type="text" name="corpus-format" /></label>
-                    </div>
-                </div>
+                <searchpanel_corpus v-on:corpus-search="submitCorpusSearch"></searchpanel_corpus>
                 <div class="Document-box">
                     <div class="Document-header">
                         Document
