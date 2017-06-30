@@ -46,6 +46,13 @@ task('environment', function () {
     run('cp /var/www/html/laravelaudatio/deployenv {{release_path}}/.env');
 })->desc('Environment setup');
 
+task('makespace', function () {
+    run('cd /var/www/html/laravelaudatio/releases');
+    run('rm -rf *');
+})->desc('Create disk space');
+
+before('deploy','makespace');
+
 
 desc('Execute artisan config:clear');
 task('clearconfig', function () {
