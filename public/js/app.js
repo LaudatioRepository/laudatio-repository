@@ -11089,6 +11089,7 @@ var util = __webpack_require__(40);
 Vue.component('searchwrapper', __webpack_require__(43));
 Vue.component('searchpanel_general', __webpack_require__(49));
 Vue.component('searchpanel_corpus', __webpack_require__(66));
+Vue.component('searchpanel_document', __webpack_require__(69));
 Vue.component('searchresultpanel_corpus', __webpack_require__(54));
 
 var app = new Vue({
@@ -11133,7 +11134,6 @@ var app = new Vue({
 
             window.axios.defaults.headers.post['Content-Type'] = 'application/json';
             var postData = {
-                index_name: "corpus",
                 field: "corpus_title",
                 queryString: corpusSearchObject.corpus_title
             };
@@ -11141,6 +11141,26 @@ var app = new Vue({
             window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
                 _this2.results.push({ search: corpusSearchObject.corpus_title, results: res.data.results, total: 5 });
             });
+        },
+
+        submitDocumentSearch: function submitDocumentSearch(documentSearchObject) {
+            /*
+             document_title: '',
+             document_author: '',
+             document_publication_place: '',
+             document_publication_publishing_date_from: '',
+             document_publication_publishing_date_to: '',
+             document_size_extent_from: '',
+             document_size_extent_to: '',
+             document_languages_language: '',
+                */
+
+            window.axios.defaults.headers.post['Content-Type'] = 'application/json';
+            var postData = {
+                field: "corpus_title",
+                queryString: documentSearchObject.corpus_title
+            };
+            console.log("corpusSearchObject: " + documentSearchObject.corpus_title);
         }
     }
 });
@@ -43216,6 +43236,251 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
      require("vue-hot-reload-api").rerender("data-v-7725aa5f", module.exports)
+  }
+}
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(3)(
+  /* script */
+  __webpack_require__(70),
+  /* template */
+  __webpack_require__(71),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/rolfguescini/source/phpelasticsearchlaudatio/resources/assets/js/components/SearchBoxPanelDocument.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] SearchBoxPanelDocument.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2a781a72", Component.options)
+  } else {
+    hotAPI.reload("data-v-2a781a72", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports) {
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    staticClass: "Document-box"
+  }, [_c('div', {
+    staticClass: "Document-header"
+  }, [_vm._v("\n        Document\n    ")]), _vm._v(" "), _c('div', {
+    staticClass: "Document-body"
+  }, [_c('label', [_vm._v("Title "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.document_title),
+      expression: "documentSearchData.document_title"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "document-title"
+    },
+    domProps: {
+      "value": (_vm.documentSearchData.document_title)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.documentSearchData.document_title = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Author "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.document_author),
+      expression: "documentSearchData.document_author"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "document-author"
+    },
+    domProps: {
+      "value": (_vm.documentSearchData.document_author)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.documentSearchData.document_author = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Place "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.document_publication_place),
+      expression: "documentSearchData.document_publication_place"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "document-publication-place"
+    },
+    domProps: {
+      "value": (_vm.documentSearchData.document_publication_place)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.documentSearchData.document_publication_place = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Year "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.document_publication_publishing_date_from),
+      expression: "documentSearchData.document_publication_publishing_date_from"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "document-publication-publishing-date-from"
+    },
+    domProps: {
+      "value": (_vm.documentSearchData.document_publication_publishing_date_from)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.documentSearchData.document_publication_publishing_date_from = $event.target.value
+      }
+    }
+  }), _vm._v(" to "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.document_publication_publishing_date_to),
+      expression: "documentSearchData.document_publication_publishing_date_to"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "document-publication-publishing-date-to"
+    },
+    domProps: {
+      "value": (_vm.documentSearchData.document_publication_publishing_date_to)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.documentSearchData.document_publication_publishing_date_to = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Size "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.document_size_extent_from),
+      expression: "documentSearchData.document_size_extent_from"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "document-size-extent-from"
+    },
+    domProps: {
+      "value": (_vm.documentSearchData.document_size_extent_from)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.documentSearchData.document_size_extent_from = $event.target.value
+      }
+    }
+  }), _vm._v(" to "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.document_size_extent_to),
+      expression: "documentSearchData.document_size_extent_to"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "document-size-extent-to"
+    },
+    domProps: {
+      "value": (_vm.documentSearchData.document_size_extent_to)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.documentSearchData.document_size_extent_to = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Language "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.document_languages_language),
+      expression: "documentSearchData.document_languages_language"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "document-languages-language"
+    },
+    domProps: {
+      "value": (_vm.documentSearchData.document_languages_language)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.documentSearchData.document_languages_language = $event.target.value
+      }
+    }
+  })])])])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-2a781a72", module.exports)
   }
 }
 

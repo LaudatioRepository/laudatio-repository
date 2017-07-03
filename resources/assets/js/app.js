@@ -18,7 +18,9 @@ const util = require('util')
 Vue.component('searchwrapper', require('./components/SearchWrapper.vue'));
 Vue.component('searchpanel_general', require('./components/SearchPanelGeneral.vue'));
 Vue.component('searchpanel_corpus', require('./components/SearchBoxPanelCorpus.vue'));
+Vue.component('searchpanel_document', require('./components/SearchBoxPanelDocument.vue'));
 Vue.component('searchresultpanel_corpus', require('./components/SearchResultPanelCorpus.vue'));
+
 
 
 const app = new Vue({
@@ -59,7 +61,6 @@ const app = new Vue({
 
             window.axios.defaults.headers.post['Content-Type'] = 'application/json';
             let postData = {
-                index_name: "corpus",
                 field: "corpus_title",
                 queryString: corpusSearchObject.corpus_title
             };
@@ -67,6 +68,26 @@ const app = new Vue({
             window.axios.post('api/searchapi/searchGeneral',JSON.stringify(postData)).then(res => {
                 this.results.push({search: corpusSearchObject.corpus_title, results: res.data.results, total: 5})
             });
+        },
+
+        submitDocumentSearch: function(documentSearchObject) {
+            /*
+             document_title: '',
+             document_author: '',
+             document_publication_place: '',
+             document_publication_publishing_date_from: '',
+             document_publication_publishing_date_to: '',
+             document_size_extent_from: '',
+             document_size_extent_to: '',
+             document_languages_language: '',
+                */
+
+            window.axios.defaults.headers.post['Content-Type'] = 'application/json';
+            let postData = {
+                field: "corpus_title",
+                queryString: documentSearchObject.corpus_title
+            };
+            console.log("corpusSearchObject: "+documentSearchObject.corpus_title);
         }
     }
 });

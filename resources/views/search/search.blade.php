@@ -35,19 +35,7 @@
             </article>
             <nav class="HolyGrail-nav u-textCenter">
                 <searchpanel_corpus v-on:corpus-search="submitCorpusSearch"></searchpanel_corpus>
-                <div class="Document-box">
-                    <div class="Document-header">
-                        Document
-                    </div>
-                    <div class="Document-body">
-                        <label>Name <input type="text" name="document-name" /></label>
-                        <label>Author <input type="text" name="document-author" /></label>
-                        <label>Place <input type="text" name="document-place" /></label>
-                        <label>Year <input type="text" name="document-year-from" /> to <input type="text" name="corpus-year-to" /></label>
-                        <label>Size <input type="text" name="document-size-from" /> to <input type="text" name="corpus-size-to" /></label>
-                        <label>Language <input type="text" name="document-language" /></label>
-                    </div>
-                </div>
+                <!--searchpanel_document v-on:document-search="submitDocumentSearch"></searchpanel_document-->
                 <div class="Annotation-box">
                     <div class="Annotation-header">
                         Annotation

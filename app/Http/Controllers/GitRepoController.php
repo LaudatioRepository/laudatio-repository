@@ -118,7 +118,7 @@ class GitRepoController extends Controller
 
         return view("gitLab.schemalist",["schema" => $schema, "pathcount" => $count,"path" => $path,"previouspath" => $previouspath])
             ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',\Auth::user()->getUserInfo());
+            ->with('user',\Auth::user());
     }
 
 
@@ -130,7 +130,7 @@ class GitRepoController extends Controller
         }
         return view("gitLab.viewFile",["file" => $contents])
             ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',\Auth::user()->getUserInfo());
+            ->with('user',\Auth::user());
     }
 
     public function deleteFile($path,$isdir = 1){
@@ -189,7 +189,7 @@ class GitRepoController extends Controller
         $isLoggedIn = \Auth::check();
         return view('gitLab.createProjectForm',["dirname" => $dirname])
             ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',\Auth::user()->getUserInfo());
+            ->with('user',\Auth::user());
     }
 
     public function createProjectSubmit(CreateProjectRequest $request){
@@ -209,7 +209,7 @@ class GitRepoController extends Controller
         $isLoggedIn = \Auth::check();
         return view('gitLab.createCorpusForm',["dirname" => $dirname])
             ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',\Auth::user()->getUserInfo());
+            ->with('user',\Auth::user());
     }
 
     public function createCorpusSubmit(CreateCorpusRequest $request){
