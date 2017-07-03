@@ -48,7 +48,7 @@ class GitRepoController extends Controller
 
             $hasDiff = $gitFunction->hasDiff($this->basePath."/".$projects[$i]['path']);
             $projects[$i]['diffFiles'] = array();
-            print print_r($hasDiff,1);
+            //print print_r($hasDiff,1);
             if($hasDiff){
                 $projects[$i]['hasDiff'] = "true";
             }

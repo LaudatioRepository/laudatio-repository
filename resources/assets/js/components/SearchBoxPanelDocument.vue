@@ -13,6 +13,7 @@
             <label>Year <input type="text" name="document-publication-publishing-date-from" v-model="documentSearchData.document_publication_publishing_date_from" /> to <input type="text" name="document-publication-publishing-date-to" v-model="documentSearchData.document_publication_publishing_date_to"  /></label>
             <label>Size <input type="text" name="document-size-extent-from" v-model="documentSearchData.document_size_extent_from"  /> to <input type="text" name="document-size-extent-to" v-model="documentSearchData.document_size_extent_to" /></label>
             <label>Language <input type="text" name="document-languages-language" v-model="documentSearchData.document_languages_language"  /></label>
+            <button class="btn btn-primary document-search-submit-button" @click="emitDocumentData">Search documents</button>
         </div>
     </div>
 </template>
@@ -35,7 +36,7 @@
             }
         },
         methods: {
-            emitData(){
+            emitDocumentData(){
                 this.$emit('document-search',this.documentSearchData);
             }
         },
@@ -43,3 +44,4 @@
             console.log('DocumentSearchBlock mounted.')
         }
     }
+</script>

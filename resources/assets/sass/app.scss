@@ -257,17 +257,7 @@
 }
 
 
-.Corpus-box .Corpus-body, .HolyGrail-content .result-box .Corpus-results .Corpus-body {
-  padding: 1em 1em;
-}
 
-.Document-box .Document-body, .HolyGrail-content .result-box .Corpus-results .Document-body  {
-  padding: 0 1em;
-}
-
-.Annotation-box .Annotation-body, .HolyGrail-content .result-box .Corpus-results .Annotation-body  {
-  padding: 0 1em;
-}
 
 
 @media (min-width: 768px) {
@@ -298,11 +288,13 @@
 
 /* FORMS */
 
-.btn.btn-primary.corpus-search-submit-button {
+.btn.btn-primary.corpus-search-submit-button, .btn.btn-primary.document-search-submit-button, .btn.btn-primary.annotation-search-submit-button  {
   border-radius: 0;
   padding: 0.2em;
+  font-size: 0.8em;
+  float: right;
 }
 
-.Corpus-box .Corpus-body input{
+.Corpus-box .Corpus-body input, .Document-box .Document-body input{
   flex: 1 auto;
 }

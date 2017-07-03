@@ -117,10 +117,12 @@ class ElasticController extends Controller
     }
 
 
-    public function searchDocumentIndex(Request $request)
+
+
+    public function searchAnnotationIndex(Request $request)
     {
         $params = [
-            'index' => 'document',
+            'index' => 'annotation',
             'type' => '',
             'body' => [
                 'query' => [

@@ -8619,21 +8619,6 @@ button.close {
   background: rgba(255, 255, 153, 0.1);
 }
 
-.Corpus-box .Corpus-body,
-.HolyGrail-content .result-box .Corpus-results .Corpus-body {
-  padding: 1em 1em;
-}
-
-.Document-box .Document-body,
-.HolyGrail-content .result-box .Corpus-results .Document-body {
-  padding: 0 1em;
-}
-
-.Annotation-box .Annotation-body,
-.HolyGrail-content .result-box .Corpus-results .Annotation-body {
-  padding: 0 1em;
-}
-
 @media (min-width: 768px) {
   .HolyGrail-body {
     -webkit-box-orient: horizontal;
@@ -8664,12 +8649,17 @@ button.close {
 
 /* FORMS */
 
-.btn.btn-primary.corpus-search-submit-button {
+.btn.btn-primary.corpus-search-submit-button,
+.btn.btn-primary.document-search-submit-button,
+.btn.btn-primary.annotation-search-submit-button {
   border-radius: 0;
   padding: 0.2em;
+  font-size: 0.8em;
+  float: right;
 }
 
-.Corpus-box .Corpus-body input {
+.Corpus-box .Corpus-body input,
+.Document-box .Document-body input {
   -webkit-box-flex: 1;
       -ms-flex: 1 auto;
           flex: 1 auto;

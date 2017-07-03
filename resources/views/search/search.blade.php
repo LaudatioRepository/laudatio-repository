@@ -35,17 +35,8 @@
             </article>
             <nav class="HolyGrail-nav u-textCenter">
                 <searchpanel_corpus v-on:corpus-search="submitCorpusSearch"></searchpanel_corpus>
-                <!--searchpanel_document v-on:document-search="submitDocumentSearch"></searchpanel_document-->
-                <div class="Annotation-box">
-                    <div class="Annotation-header">
-                        Annotation
-                    </div>
-                    <div class="Annotation-body">
-                        <label>Name <input type="text" name="annotation-name" /></label>
-                        <label>Category <input type="text" name="annotation-category" /></label>
-                        <label>Format <input type="text" name="annotation-format" /></label>
-                    </div>
-                </div>
+                <searchpanel_document v-on:document-search="submitDocumentSearch"></searchpanel_document>
+                <searchpanel_annotation v-on:annotation-search="submitAnnotationSearch"></searchpanel_annotation>
             </nav>
             <aside class="HolyGrail-filters u-textCenter">
                 <strong>Filters</strong>

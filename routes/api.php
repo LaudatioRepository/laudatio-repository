@@ -30,6 +30,9 @@ Route::get('sample-restful-apis', function()
 Route::group(array('prefix' => 'searchapi'), function() {
     Route::get('search/{index}/{field}/{searchterm}','ElasticController@search');
     Route::post('searchGeneral','ElasticController@searchGeneral');
+    Route::post('searchCorpus','ElasticController@searchCorpusIndex');
+    Route::post('searchDocument','ElasticController@searchDocumentIndex');
+    Route::post('searchAnnotation','ElasticController@searchAnnotationIndex');
 });
 
 
