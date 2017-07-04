@@ -8,6 +8,16 @@
 <script>
     export default {
         props: ['annotationresults'],
+        computed: {
+            getTotal: function() {
+                if(this.annotationresults.length){
+                    return this.annotationresults[0].total
+                }
+                else{
+                    return 0;
+                }
+            }
+        },
         mounted() {
             console.log('AnnotationResultHeaderComponent mounted.')
         }

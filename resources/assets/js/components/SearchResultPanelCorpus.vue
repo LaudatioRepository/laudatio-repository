@@ -9,7 +9,6 @@
                 {{ corpusresultdata._source.corpus_title | arrayToString }}
             </a>
         </div>
-
     </div>
 </template>
 

@@ -45,10 +45,14 @@ const app = new Vue({
         corpusresults: [],
         documentresults: [],
         annotationresults: [],
-        searches: []
+        searches: [],
+        corpussearched: false,
+        documentsearched: false,
+        annotationsearched: false
     },
     methods: {
         askElastic: function(search) {
+            this.corpusresults = [];
             this.searches.push(search.generalSearchTerm);
             window.axios.defaults.headers.post['Content-Type'] = 'application/json';
             let postData = {
@@ -57,65 +61,88 @@ const app = new Vue({
                 queryString: search.generalSearchTerm
             };
 
-            window.axios.post('api/searchapi/searchGeneral',JSON.stringify(postData)).then(res => {
-                this.results.push({search: search, results: res.data.results, total: 5})
+            window.axios.post('api/searchapi/searchCorpus',JSON.stringify(postData)).then(res => {
+                if(res.data.results.length > 0) {
+                    this.corpusresults.push({search: search, results: res.data.results, total: 5})
+                }
             });
         },
 
         submitCorpusSearch: function(corpusSearchObject) {
             this.corpusresults = [];
-            /*
-             corpus_title: '',
-             corpus_publication_publisher: '',
-             corpus_publication_publication_date: '',
-             corpusYearTo: '',
-             corpus_size_value: '',
-             corpusSizeTo: '',
-             corpus_languages_language: '',
-             corpus_encoding_format: ''
-             */
+            this.corpussearched =  false;
+            let postDataCollection = [];
+            for(var p in corpusSearchObject){
+                if(corpusSearchObject[p].length > 0){
+                    postDataCollection.push(
+                        {
+                            [p]: corpusSearchObject[p]
+                        }
+                    );
+                }
 
-            let postData = {
-                field: "corpus_title",
-                queryString: corpusSearchObject.corpus_title
-            };
-            console.log("corpusSearchObject: "+corpusSearchObject.corpus_title);
-            window.axios.post('api/searchapi/searchCorpus',JSON.stringify(postData)).then(res => {
-                this.corpusresults.push({search: corpusSearchObject.corpus_title, results: res.data.results, total: res.data.results.length})
-            });
+            }
+
+            if(postDataCollection.length > 0){
+                let postData = {
+                    searchData: postDataCollection,
+                    scope: 'corpus'
+                };
+
+
+                window.axios.post('api/searchapi/searchCorpus',JSON.stringify(postData)).then(res => {
+                    this.corpussearched = true;
+                    if(res.data.results.length > 0) {
+                        this.corpusresults.push({
+                            search: postDataCollection,
+                            results: res.data.results,
+                            total: res.data.total
+                        })
+                    }
+                });
+            }
+
         },
 
         submitDocumentSearch: function(documentSearchObject) {
             this.documentresults = [];
-            /*
-             document_title: '',
-             document_author: '',
-             document_publication_place: '',
-             document_publication_publishing_date_from: '',
-             document_publication_publishing_date_to: '',
-             document_size_extent_from: '',
-             document_size_extent_to: '',
-             document_languages_language: '',
-                */
+            this.documentsearched = false;
 
-            let postData = {
-                field: "document_title",
-                queryString: documentSearchObject.document_title
-            };
-            console.log("documentSearchObject: "+documentSearchObject.document_title);
-            window.axios.post('api/searchapi/searchDocument',JSON.stringify(postData)).then(res => {
-                console.log(res)
-                this.documentresults.push({search: documentSearchObject.document_title, results: res.data.results, total: res.data.results.length})
-            });
+            let postDataCollection = [];
+            for(var p in documentSearchObject){
+                if(documentSearchObject[p].length > 0){
+                    postDataCollection.push(
+                        {
+                            [p]: documentSearchObject[p]
+                        }
+                    );
+                }
+
+            }
+
+            if(postDataCollection.length > 0){
+                let postData = {
+                    searchData: postDataCollection,
+                    scope: 'document'
+                };
+
+                window.axios.post('api/searchapi/searchDocument',JSON.stringify(postData)).then(res => {
+                    this.documentsearched = true;
+                    if(res.data.results.length > 0) {
+                        this.documentresults.push({
+                            search: documentSearchObject.document_title,
+                            results: res.data.results,
+                            total: res.data.total
+                        })
+                    }
+                });
+            }
+
         },
 
-        submitAnnotationSearch: function(annotationSearchObject, scope) {
+        submitAnnotationSearch: function(annotationSearchObject) {
             this.annotationresults = [];
-            /*
-             preparation_title: '',
-             preparation_encoding_full_name: '',
-             preparation_encoding_file_extension: ''
-             */
+            this.annotationsearched = false;
 
             let postDataCollection = [];
             for(var p in annotationSearchObject){
@@ -129,19 +156,26 @@ const app = new Vue({
 
             }
 
-            let postData = {
-                searchData: postDataCollection,
-                scope: scope
-            };
+            if(postDataCollection.length > 0){
+                let postData = {
+                    searchData: postDataCollection,
+                    scope: 'annotation'
+                };
 
-            console.log("postDataCollectionPoop: "+util.inspect(postData))
 
-            window.axios.post('api/searchapi/searchAnnotation',postData).then(res => {
-                console.log(res)
-                if(res.data.results.length > 0) {
-                    this.annotationresults.push({search: annotationSearchObject.preparation_title, results: res.data.results, total: res.data.results.length, scope: scope})
-                }
-            });
+                window.axios.post('api/searchapi/searchAnnotation',postData).then(res => {
+                    this.annotationsearched = true;
+                    if(res.data.results.length > 0) {
+                        this.annotationresults.push({
+                            search: annotationSearchObject.preparation_title,
+                            results: res.data.results,
+                            total: res.data.total,
+                            scope: 'annotation'
+                        })
+                    }
+                });
+            }
+
         }
     }
 });

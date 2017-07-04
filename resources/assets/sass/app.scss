@@ -196,7 +196,7 @@
   flex: 1;
   min-height: 270px;
   border: hsla(31,15%,50%,.1) 1px solid;
-  max-width: 40em;
+  min-width: 40em;
 }
 
 
@@ -218,7 +218,7 @@
   margin-bottom: 20px;
   border: hsla(31,15%,50%,.1) 1px solid;
   min-height: 270px;
-  max-width: 40em;
+  min-width: 40em;
 }
 
 
@@ -242,7 +242,7 @@
   border-radius: 5px;
   margin-bottom: 20px;
   min-height: 270px;
-  max-width: 40em;
+  min-width: 40em;
 }
 
 
@@ -280,7 +280,7 @@
 .searchTotal{
   background-color: #44c7f4;
   color: #ffffff;
-  border-radius: 5px;
+  border-radius: 3px 5px;
   padding: 0.1em;
   font-size: 0.8em;
   float: right;

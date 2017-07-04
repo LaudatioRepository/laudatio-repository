@@ -89,16 +89,25 @@ class ElasticController extends Controller
 
     public function searchCorpusIndex(Request $request)
     {
+
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        Log::info("SENDING: ".print_r($request->searchData,1));
+
+        if(count($request->searchData) > 1){
+            $queryBody = $queryBuilder->buildMustQuery($request->searchData);
+        }
+        else{
+            $queryBody = $queryBuilder->buildSingleMatchQuery($request->searchData);
+        }
+
+
+        Log::info("GETTING: ".print_r(json_encode($queryBody),1));
+
         $params = [
             'index' => 'corpus',
             'type' => '',
-            'body' => [
-                'query' => [
-                    'match' => [
-                        ''.$request->field.'' => $request->queryString
-                    ]
-                ]
-            ],
+            'body' => $queryBody,
             '_source_exclude' => ['message']
         ];
 
@@ -106,13 +115,15 @@ class ElasticController extends Controller
         $results = Elasticsearch::search($params);
         $milliseconds = $results['took'];
         $maxScore     = $results['hits']['max_score'];
+        $total = $results['hits']['total'];
 
         return response(
             array(
                 'error' => false,
                 'milliseconds' => $milliseconds,
                 'maxscore' => $maxScore,
-                'results' => $results['hits']['hits']
+                'results' => $results['hits']['hits'],
+                'total' => $total
             ),
             200
         );
@@ -120,16 +131,21 @@ class ElasticController extends Controller
 
     public function searchDocumentIndex(Request $request)
     {
+
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        //Log::info("SENDING: ".print_r($request->searchData,1));
+        if(count($request->searchData) > 1){
+            $queryBody = $queryBuilder->buildMustQuery($request->searchData);
+        }
+        else{
+            $queryBody = $queryBuilder->buildSingleMatchQuery($request->searchData);
+        }
+
         $params = [
             'index' => 'document',
             'type' => '',
-            'body' => [
-                'query' => [
-                    'match' => [
-                        ''.$request->field.'' => $request->queryString
-                    ]
-                ]
-            ],
+            'body' => $queryBody,
             '_source_exclude' => ['message']
         ];
 
@@ -137,13 +153,15 @@ class ElasticController extends Controller
         $results = Elasticsearch::search($params);
         $milliseconds = $results['took'];
         $maxScore     = $results['hits']['max_score'];
+        $total = $results['hits']['total'];
 
         return response(
             array(
                 'error' => false,
                 'milliseconds' => $milliseconds,
                 'maxscore' => $maxScore,
-                'results' => $results['hits']['hits']
+                'results' => $results['hits']['hits'],
+                'total' => $total
             ),
             200
         );
@@ -177,13 +195,15 @@ class ElasticController extends Controller
         $results = Elasticsearch::search($params);
         $milliseconds = $results['took'];
         $maxScore     = $results['hits']['max_score'];
+        $total = $results['hits']['total'];
 
         return response(
             array(
                 'error' => false,
                 'milliseconds' => $milliseconds,
                 'maxscore' => $maxScore,
-                'results' => $results['hits']['hits']
+                'results' => $results['hits']['hits'],
+                'total' => $total
             ),
             200
         );

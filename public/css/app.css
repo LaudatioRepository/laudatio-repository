@@ -8532,7 +8532,7 @@ button.close {
           flex: 1;
   min-height: 270px;
   border: rgba(147, 128, 108, 0.1) 1px solid;
-  max-width: 40em;
+  min-width: 40em;
 }
 
 .HolyGrail-nav .Document-box {
@@ -8563,7 +8563,7 @@ button.close {
   margin-bottom: 20px;
   border: rgba(147, 128, 108, 0.1) 1px solid;
   min-height: 270px;
-  max-width: 40em;
+  min-width: 40em;
 }
 
 .HolyGrail-nav .Annotation-box {
@@ -8594,7 +8594,7 @@ button.close {
   border-radius: 5px;
   margin-bottom: 20px;
   min-height: 270px;
-  max-width: 40em;
+  min-width: 40em;
 }
 
 .Corpus-box .Corpus-header,
@@ -8639,7 +8639,7 @@ button.close {
 .searchTotal {
   background-color: #44c7f4;
   color: #ffffff;
-  border-radius: 5px;
+  border-radius: 3px 5px;
   padding: 0.1em;
   font-size: 0.8em;
   float: right;

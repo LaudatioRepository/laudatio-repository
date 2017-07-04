@@ -28,7 +28,7 @@
         },
         methods: {
             emitAnnotationData(){
-                this.$emit('annotation-search',this.annotationSearchData, this.scope);
+                this.$emit('annotation-search',this.annotationSearchData);
             }
         },
         mounted() {

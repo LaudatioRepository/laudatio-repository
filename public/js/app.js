@@ -11114,12 +11114,16 @@ var app = new Vue({
         corpusresults: [],
         documentresults: [],
         annotationresults: [],
-        searches: []
+        searches: [],
+        corpussearched: false,
+        documentsearched: false,
+        annotationsearched: false
     },
     methods: {
         askElastic: function askElastic(search) {
             var _this = this;
 
+            this.corpusresults = [];
             this.searches.push(search.generalSearchTerm);
             window.axios.defaults.headers.post['Content-Type'] = 'application/json';
             var postData = {
@@ -11128,8 +11132,10 @@ var app = new Vue({
                 queryString: search.generalSearchTerm
             };
 
-            window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
-                _this.results.push({ search: search, results: res.data.results, total: 5 });
+            window.axios.post('api/searchapi/searchCorpus', JSON.stringify(postData)).then(function (res) {
+                if (res.data.results.length > 0) {
+                    _this.corpusresults.push({ search: search, results: res.data.results, total: 5 });
+                }
             });
         },
 
@@ -11137,62 +11143,70 @@ var app = new Vue({
             var _this2 = this;
 
             this.corpusresults = [];
-            /*
-             corpus_title: '',
-             corpus_publication_publisher: '',
-             corpus_publication_publication_date: '',
-             corpusYearTo: '',
-             corpus_size_value: '',
-             corpusSizeTo: '',
-             corpus_languages_language: '',
-             corpus_encoding_format: ''
-             */
+            this.corpussearched = false;
+            var postDataCollection = [];
+            for (var p in corpusSearchObject) {
+                if (corpusSearchObject[p].length > 0) {
+                    postDataCollection.push(_defineProperty({}, p, corpusSearchObject[p]));
+                }
+            }
 
-            var postData = {
-                field: "corpus_title",
-                queryString: corpusSearchObject.corpus_title
-            };
-            console.log("corpusSearchObject: " + corpusSearchObject.corpus_title);
-            window.axios.post('api/searchapi/searchCorpus', JSON.stringify(postData)).then(function (res) {
-                _this2.corpusresults.push({ search: corpusSearchObject.corpus_title, results: res.data.results, total: res.data.results.length });
-            });
+            if (postDataCollection.length > 0) {
+                var postData = {
+                    searchData: postDataCollection,
+                    scope: 'corpus'
+                };
+
+                window.axios.post('api/searchapi/searchCorpus', JSON.stringify(postData)).then(function (res) {
+                    _this2.corpussearched = true;
+                    if (res.data.results.length > 0) {
+                        _this2.corpusresults.push({
+                            search: postDataCollection,
+                            results: res.data.results,
+                            total: res.data.total
+                        });
+                    }
+                });
+            }
         },
 
         submitDocumentSearch: function submitDocumentSearch(documentSearchObject) {
             var _this3 = this;
 
             this.documentresults = [];
-            /*
-             document_title: '',
-             document_author: '',
-             document_publication_place: '',
-             document_publication_publishing_date_from: '',
-             document_publication_publishing_date_to: '',
-             document_size_extent_from: '',
-             document_size_extent_to: '',
-             document_languages_language: '',
-                */
+            this.documentsearched = false;
 
-            var postData = {
-                field: "document_title",
-                queryString: documentSearchObject.document_title
-            };
-            console.log("documentSearchObject: " + documentSearchObject.document_title);
-            window.axios.post('api/searchapi/searchDocument', JSON.stringify(postData)).then(function (res) {
-                console.log(res);
-                _this3.documentresults.push({ search: documentSearchObject.document_title, results: res.data.results, total: res.data.results.length });
-            });
+            var postDataCollection = [];
+            for (var p in documentSearchObject) {
+                if (documentSearchObject[p].length > 0) {
+                    postDataCollection.push(_defineProperty({}, p, documentSearchObject[p]));
+                }
+            }
+
+            if (postDataCollection.length > 0) {
+                var postData = {
+                    searchData: postDataCollection,
+                    scope: 'document'
+                };
+
+                window.axios.post('api/searchapi/searchDocument', JSON.stringify(postData)).then(function (res) {
+                    _this3.documentsearched = true;
+                    if (res.data.results.length > 0) {
+                        _this3.documentresults.push({
+                            search: documentSearchObject.document_title,
+                            results: res.data.results,
+                            total: res.data.total
+                        });
+                    }
+                });
+            }
         },
 
-        submitAnnotationSearch: function submitAnnotationSearch(annotationSearchObject, scope) {
+        submitAnnotationSearch: function submitAnnotationSearch(annotationSearchObject) {
             var _this4 = this;
 
             this.annotationresults = [];
-            /*
-             preparation_title: '',
-             preparation_encoding_full_name: '',
-             preparation_encoding_file_extension: ''
-             */
+            this.annotationsearched = false;
 
             var postDataCollection = [];
             for (var p in annotationSearchObject) {
@@ -11201,19 +11215,24 @@ var app = new Vue({
                 }
             }
 
-            var postData = {
-                searchData: postDataCollection,
-                scope: scope
-            };
+            if (postDataCollection.length > 0) {
+                var postData = {
+                    searchData: postDataCollection,
+                    scope: 'annotation'
+                };
 
-            console.log("postDataCollectionPoop: " + util.inspect(postData));
-
-            window.axios.post('api/searchapi/searchAnnotation', postData).then(function (res) {
-                console.log(res);
-                if (res.data.results.length > 0) {
-                    _this4.annotationresults.push({ search: annotationSearchObject.preparation_title, results: res.data.results, total: res.data.results.length, scope: scope });
-                }
-            });
+                window.axios.post('api/searchapi/searchAnnotation', postData).then(function (res) {
+                    _this4.annotationsearched = true;
+                    if (res.data.results.length > 0) {
+                        _this4.annotationresults.push({
+                            search: annotationSearchObject.preparation_title,
+                            results: res.data.results,
+                            total: res.data.total,
+                            scope: 'annotation'
+                        });
+                    }
+                });
+            }
         }
     }
 });
@@ -42644,7 +42663,7 @@ exports = module.exports = __webpack_require__(2)(undefined);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42694,9 +42713,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults'],
+    props: ['corpusresults', 'corpussearched'],
     mounted: function mounted() {
         console.log('CorpusResultComponent mounted.');
     }
@@ -42711,14 +42737,30 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchwrapper"
     }
-  }, _vm._l((_vm.corpusresults), function(corpusresult) {
+  }, [(_vm.corpusresults.length >= 1) ? _c('div', _vm._l((_vm.corpusresults), function(corpusresult) {
     return _c('searchresultpanel_corpus', {
       key: corpusresult,
       attrs: {
         "corpusresult": corpusresult
       }
     })
-  }))
+  })) : (_vm.corpusresults.length == 0 && _vm.corpussearched) ? _c('div', {
+    staticClass: "alert alert-info alert-dismissible",
+    attrs: {
+      "role": "alert"
+    }
+  }, [_c('button', {
+    staticClass: "close",
+    attrs: {
+      "type": "button",
+      "data-dismiss": "alert",
+      "aria-label": "Close"
+    }
+  }, [_c('span', {
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_vm._v("×")])]), _vm._v(" "), _c('strong', [_vm._v("Your search returned no results!")])]) : _vm._e()])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -42807,7 +42849,7 @@ exports = module.exports = __webpack_require__(2)(undefined);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42824,9 +42866,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['documentresults'],
+    props: ['documentresults', 'documentsearched'],
     mounted: function mounted() {
         console.log('DocumentResultComponent mounted.');
     }
@@ -42841,14 +42891,30 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchwrapper"
     }
-  }, _vm._l((_vm.documentresults), function(documentresult) {
+  }, [(_vm.documentresults.length >= 1) ? _c('div', _vm._l((_vm.documentresults), function(documentresult) {
     return _c('searchresultpanel_document', {
       key: documentresult,
       attrs: {
         "documentresult": documentresult
       }
     })
-  }))
+  })) : (_vm.documentresults.length == 0 && _vm.documentsearched) ? _c('div', {
+    staticClass: "alert alert-info alert-dismissible",
+    attrs: {
+      "role": "alert"
+    }
+  }, [_c('button', {
+    staticClass: "close",
+    attrs: {
+      "type": "button",
+      "data-dismiss": "alert",
+      "aria-label": "Close"
+    }
+  }, [_c('span', {
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_vm._v("×")])]), _vm._v(" "), _c('strong', [_vm._v("Your search returned no results!")])]) : _vm._e()])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -42937,7 +43003,7 @@ exports = module.exports = __webpack_require__(2)(undefined);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42955,9 +43021,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['annotationresults'],
+    props: ['annotationresults', 'annotationsearched'],
     mounted: function mounted() {
         console.log('AnnotationResultComponent mounted.');
     }
@@ -42972,14 +43045,30 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchwrapper"
     }
-  }, _vm._l((_vm.annotationresults), function(annotationresult) {
+  }, [(_vm.annotationresults.length >= 1) ? _c('div', _vm._l((_vm.annotationresults), function(annotationresult) {
     return _c('searchresultpanel_annotation', {
       key: annotationresult,
       attrs: {
         "annotationresult": annotationresult
       }
     })
-  }))
+  })) : (_vm.annotationresults.length == 0 && _vm.annotationsearched) ? _c('div', {
+    staticClass: "alert alert-info alert-dismissible",
+    attrs: {
+      "role": "alert"
+    }
+  }, [_c('button', {
+    staticClass: "close",
+    attrs: {
+      "type": "button",
+      "data-dismiss": "alert",
+      "aria-label": "Close"
+    }
+  }, [_c('span', {
+    attrs: {
+      "aria-hidden": "true"
+    }
+  }, [_vm._v("×")])]), _vm._v(" "), _c('strong', [_vm._v("Your search returned no results!")])]) : _vm._e()])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -43800,7 +43889,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     methods: {
         emitAnnotationData: function emitAnnotationData() {
-            this.$emit('annotation-search', this.annotationSearchData, this.scope);
+            this.$emit('annotation-search', this.annotationSearchData);
         }
     },
     mounted: function mounted() {
@@ -43954,7 +44043,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['corpusresult'],
@@ -44048,6 +44136,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['corpusresults'],
+    computed: {
+        getTotal: function getTotal() {
+            if (this.corpusresults.length) {
+                return this.corpusresults[0].total;
+            } else {
+                return 0;
+            }
+        }
+    },
     mounted: function mounted() {
         console.log('CorpusResultHeaderComponent mounted.');
     }
@@ -44064,7 +44161,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("\n    Corpus Results\n    "), (_vm.corpusresults[0] != null) ? _c('span', {
     staticClass: "searchTotal"
-  }, [_vm._v(_vm._s(_vm.corpusresults.length))]) : _vm._e()])
+  }, [_vm._v(_vm._s(_vm.getTotal))]) : _vm._e()])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -44228,6 +44325,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['documentresults'],
+    computed: {
+        getTotal: function getTotal() {
+            if (this.documentresults.length) {
+                return this.documentresults[0].total;
+            } else {
+                return 0;
+            }
+        }
+    },
     mounted: function mounted() {
         console.log('DocumentResultHeaderComponent mounted.');
     }
@@ -44242,9 +44348,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchresultheaderdocument"
     }
-  }, [_vm._v("\n    Annotation Results\n    "), (_vm.documentresults[0] != null) ? _c('span', {
+  }, [_vm._v("\n    Document Results\n    "), (_vm.documentresults[0] != null) ? _c('span', {
     staticClass: "searchTotal"
-  }, [_vm._v(_vm._s(_vm.annotationresults.length))]) : _vm._e()])
+  }, [_vm._v(_vm._s(_vm.getTotal))]) : _vm._e()])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -44408,6 +44514,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['annotationresults'],
+    computed: {
+        getTotal: function getTotal() {
+            if (this.annotationresults.length) {
+                return this.annotationresults[0].total;
+            } else {
+                return 0;
+            }
+        }
+    },
     mounted: function mounted() {
         console.log('AnnotationResultHeaderComponent mounted.');
     }
