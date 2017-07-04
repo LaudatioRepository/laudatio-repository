@@ -8514,6 +8514,12 @@ button.close {
   max-width: 40em;
 }
 
+.Corpus-body,
+.Document-body,
+.Annotation-body {
+  padding: 10px;
+}
+
 .HolyGrail-content .result-box .Corpus-results {
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
@@ -8542,6 +8548,7 @@ button.close {
   margin-bottom: 20px;
   min-height: 270px;
   max-width: 40em;
+  padding: 2px;
 }
 
 .HolyGrail-content .result-box .Document-results {
@@ -8572,6 +8579,7 @@ button.close {
   margin-bottom: 20px;
   min-height: 270px;
   max-width: 40em;
+  padding: 2px;
 }
 
 .HolyGrail-content .result-box .Annotation-results {

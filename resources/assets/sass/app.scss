@@ -185,6 +185,10 @@
   max-width: 40em;
 }
 
+.Corpus-body, .Document-body, .Annotation-body {
+  padding: 10px;
+}
+
 .HolyGrail-content .result-box .Corpus-results {
   flex-direction: row;
   border-radius: 5px;
@@ -204,6 +208,7 @@
   margin-bottom: 20px;
   min-height: 270px;
   max-width: 40em;
+  padding: 2px;
 }
 
 .HolyGrail-content .result-box .Document-results {
@@ -226,6 +231,7 @@
   margin-bottom: 20px;
   min-height: 270px;
   max-width: 40em;
+  padding: 2px;
 }
 
 

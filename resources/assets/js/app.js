@@ -125,7 +125,9 @@ const app = new Vue({
             console.log("annotationSearchObject: "+annotationSearchObject.preparation_title);
             window.axios.post('api/searchapi/searchAnnotation',JSON.stringify(postData)).then(res => {
                 console.log(res)
-                this.annotationresults.push({search: annotationSearchObject.preparation_title, results: res.data.results, total: res.data.results.length, scope: scope})
+                if(res.data.results.length > 0) {
+                    this.annotationresults.push({search: annotationSearchObject.preparation_title, results: res.data.results, total: res.data.results.length, scope: scope})
+                }
             });
         }
     }

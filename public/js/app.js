@@ -11200,7 +11200,9 @@ var app = new Vue({
             console.log("annotationSearchObject: " + annotationSearchObject.preparation_title);
             window.axios.post('api/searchapi/searchAnnotation', JSON.stringify(postData)).then(function (res) {
                 console.log(res);
-                _this4.annotationresults.push({ search: annotationSearchObject.preparation_title, results: res.data.results, total: res.data.results.length, scope: scope });
+                if (res.data.results.length > 0) {
+                    _this4.annotationresults.push({ search: annotationSearchObject.preparation_title, results: res.data.results, total: res.data.results.length, scope: scope });
+                }
             });
         }
     }
