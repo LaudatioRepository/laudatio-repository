@@ -15,8 +15,9 @@ const util = require('util')
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('searchwrappercorpus', require('./components/SearchWrapperCorpus.vue'));
-Vue.component('searchwrapperdocument', require('./components/SearchWrapperDocument.vue'));
+Vue.component('searchwrapper_corpus', require('./components/SearchWrapperCorpus.vue'));
+Vue.component('searchwrapper_document', require('./components/SearchWrapperDocument.vue'));
+Vue.component('searchwrapper_annotation', require('./components/SearchWrapperAnnotation.vue'));
 
 Vue.component('searchpanel_general', require('./components/SearchPanelGeneral.vue'));
 Vue.component('searchpanel_corpus', require('./components/SearchBoxPanelCorpus.vue'));
@@ -25,8 +26,16 @@ Vue.component('searchpanel_annotation', require('./components/SearchBoxPanelAnno
 
 
 Vue.component('searchresultpanel_corpus', require('./components/SearchResultPanelCorpus.vue'));
-Vue.component('searchresultpanel_document', require('./components/SearchResultPanelDocument.vue'));
+Vue.component('searchresultheader_corpus', require('./components/SearchResultHeaderCorpus.vue'));
 
+Vue.component('searchresultpanel_document', require('./components/SearchResultPanelDocument.vue'));
+Vue.component('searchresultheader_document', require('./components/SearchResultHeaderDocument.vue'));
+
+Vue.component('searchresultpanel_annotation', require('./components/SearchResultPanelAnnotation.vue'));
+Vue.component('searchresultheader_annotation', require('./components/SearchResultHeaderAnnotation.vue'));
+
+
+window.axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 
 const app = new Vue({
@@ -54,6 +63,7 @@ const app = new Vue({
         },
 
         submitCorpusSearch: function(corpusSearchObject) {
+            this.corpusresults = [];
             /*
              corpus_title: '',
              corpus_publication_publisher: '',
@@ -65,18 +75,18 @@ const app = new Vue({
              corpus_encoding_format: ''
              */
 
-            window.axios.defaults.headers.post['Content-Type'] = 'application/json';
             let postData = {
                 field: "corpus_title",
                 queryString: corpusSearchObject.corpus_title
             };
             console.log("corpusSearchObject: "+corpusSearchObject.corpus_title);
             window.axios.post('api/searchapi/searchCorpus',JSON.stringify(postData)).then(res => {
-                this.corpusresults.push({search: corpusSearchObject.corpus_title, results: res.data.results, total: 5})
+                this.corpusresults.push({search: corpusSearchObject.corpus_title, results: res.data.results, total: res.data.results.length})
             });
         },
 
         submitDocumentSearch: function(documentSearchObject) {
+            this.documentresults = [];
             /*
              document_title: '',
              document_author: '',
@@ -88,7 +98,6 @@ const app = new Vue({
              document_languages_language: '',
                 */
 
-            window.axios.defaults.headers.post['Content-Type'] = 'application/json';
             let postData = {
                 field: "document_title",
                 queryString: documentSearchObject.document_title
@@ -96,23 +105,28 @@ const app = new Vue({
             console.log("documentSearchObject: "+documentSearchObject.document_title);
             window.axios.post('api/searchapi/searchDocument',JSON.stringify(postData)).then(res => {
                 console.log(res)
-                this.documentresults.push({search: documentSearchObject.document_title, results: res.data.results, total: 5})
+                this.documentresults.push({search: documentSearchObject.document_title, results: res.data.results, total: res.data.results.length})
             });
         },
 
-        submitAnnotationSearch: function(annotationSearchObject) {
+        submitAnnotationSearch: function(annotationSearchObject, scope) {
+            this.annotationresults = [];
             /*
-             document_title: '',
-             document_author: '',
-             document_publication_place: '',
-             document_publication_publishing_date_from: '',
-             document_publication_publishing_date_to: '',
-             document_size_extent_from: '',
-             document_size_extent_to: '',
-             document_languages_language: '',
+             preparation_title: '',
+             preparation_encoding_full_name: '',
+             preparation_encoding_file_extension: ''
              */
 
 
+            let postData = {
+                field: "preparation_title",
+                queryString: annotationSearchObject.preparation_title
+            };
+            console.log("annotationSearchObject: "+annotationSearchObject.preparation_title);
+            window.axios.post('api/searchapi/searchAnnotation',JSON.stringify(postData)).then(res => {
+                console.log(res)
+                this.annotationresults.push({search: annotationSearchObject.preparation_title, results: res.data.results, total: res.data.results.length, scope: scope})
+            });
         }
     }
 });

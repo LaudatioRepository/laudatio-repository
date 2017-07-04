@@ -1,7 +1,7 @@
 <template lang="html">
 <div id="searchresultpanelcorpus">
-        <p class="searchTerm"> Search term: {{corpusresult.search.generalSearchTerm}}</p>
-        <p class="searchScope">Scope: {{corpusresult.search.scope}}</p>
+        <p class="searchTerm"> Search term: {{corpusresult.search}}</p>
+        <p class="searchScope">Scope: {{corpusresult.scope}}</p>
         <ul>
             <li v-for="corpusresultdata in corpusresult.results" v-bind:key="corpusresultdata._id">
                 {{ corpusresultdata._source.corpus_title | arrayToString }}

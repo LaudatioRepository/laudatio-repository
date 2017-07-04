@@ -13,26 +13,28 @@
                 <div class="result-box">
                     <div class="Corpus-results">
                         <div class="Corpus-header">
-                            Corpus results
+                            <searchresultheader_corpus :corpusresults="corpusresults"></searchresultheader_corpus>
                         </div>
                         <div class="Corpus-body">
                             <!--searchwrapper :results="results"></searchwrapper-->
-                            <searchwrappercorpus :corpusresults="corpusresults"></searchwrappercorpus>
+                            <searchwrapper_corpus :corpusresults="corpusresults"></searchwrapper_corpus>
                         </div>
                     </div>
                     <div class="Document-results">
                         <div class="Document-header">
-                            Document results
+                            <searchresultheader_document :documentresults="documentresults"></searchresultheader_document>
                         </div>
                         <div class="Document-body">
-                            <searchwrapperdocument :documentresults="documentresults"></searchwrapperdocument>
+                            <searchwrapper_document :documentresults="documentresults"></searchwrapper_document>
                         </div>
                     </div>
                     <div class="Annotation-results">
                         <div class="Annotation-header">
-                            Annotation results
+                            <searchresultheader_annotation :annotationresults="annotationresults"></searchresultheader_annotation>
                         </div>
-                        <div class="Annotation-body"></div>
+                        <div class="Annotation-body">
+                            <searchwrapper_annotation :annotationresults="annotationresults"></searchwrapper_annotation>
+                        </div>
                     </div>
                 </div>
             </article>

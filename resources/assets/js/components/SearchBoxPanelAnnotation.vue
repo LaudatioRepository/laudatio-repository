@@ -7,9 +7,9 @@
         Annotation
     </div>
     <div class="Annotation-body">
-        <label>Name <input type="text" name="preparation_title" /></label>
-        <label>Category <input type="text" name="preparation_encoding_full_name" /></label>
-        <label>Format <input type="text" name="preparation_encoding_file_extension" /></label>
+        <label>Name <input type="text" name="preparation_title" v-model="annotationSearchData.preparation_title" /></label>
+        <label>Category <input type="text" name="preparation_encoding_full_name" v-model="annotationSearchData.preparation_encoding_full_name" /></label>
+        <label>Format <input type="text" name="preparation_encoding_file_extension" v-model="annotationSearchData.preparation_encoding_file_extension"  /></label>
         <button class="btn btn-primary annotation-search-submit-button" @click="emitAnnotationData">Search annotations</button>
     </div>
 </div>
@@ -28,7 +28,7 @@
         },
         methods: {
             emitAnnotationData(){
-                this.$emit('annotation-search',this.annotationSearchData);
+                this.$emit('annotation-search',this.annotationSearchData, this.scope);
             }
         },
         mounted() {

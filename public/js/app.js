@@ -11086,8 +11086,9 @@ var util = __webpack_require__(40);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('searchwrappercorpus', __webpack_require__(75));
-Vue.component('searchwrapperdocument', __webpack_require__(80));
+Vue.component('searchwrapper_corpus', __webpack_require__(75));
+Vue.component('searchwrapper_document', __webpack_require__(80));
+Vue.component('searchwrapper_annotation', __webpack_require__(88));
 
 Vue.component('searchpanel_general', __webpack_require__(49));
 Vue.component('searchpanel_corpus', __webpack_require__(54));
@@ -11095,7 +11096,15 @@ Vue.component('searchpanel_document', __webpack_require__(57));
 Vue.component('searchpanel_annotation', __webpack_require__(60));
 
 Vue.component('searchresultpanel_corpus', __webpack_require__(63));
+Vue.component('searchresultheader_corpus', __webpack_require__(102));
+
 Vue.component('searchresultpanel_document', __webpack_require__(85));
+Vue.component('searchresultheader_document', __webpack_require__(99));
+
+Vue.component('searchresultpanel_annotation', __webpack_require__(93));
+Vue.component('searchresultheader_annotation', __webpack_require__(96));
+
+window.axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 var app = new Vue({
     el: '#searchapp',
@@ -11126,6 +11135,7 @@ var app = new Vue({
         submitCorpusSearch: function submitCorpusSearch(corpusSearchObject) {
             var _this2 = this;
 
+            this.corpusresults = [];
             /*
              corpus_title: '',
              corpus_publication_publisher: '',
@@ -11137,20 +11147,20 @@ var app = new Vue({
              corpus_encoding_format: ''
              */
 
-            window.axios.defaults.headers.post['Content-Type'] = 'application/json';
             var postData = {
                 field: "corpus_title",
                 queryString: corpusSearchObject.corpus_title
             };
             console.log("corpusSearchObject: " + corpusSearchObject.corpus_title);
             window.axios.post('api/searchapi/searchCorpus', JSON.stringify(postData)).then(function (res) {
-                _this2.corpusresults.push({ search: corpusSearchObject.corpus_title, results: res.data.results, total: 5 });
+                _this2.corpusresults.push({ search: corpusSearchObject.corpus_title, results: res.data.results, total: res.data.results.length });
             });
         },
 
         submitDocumentSearch: function submitDocumentSearch(documentSearchObject) {
             var _this3 = this;
 
+            this.documentresults = [];
             /*
              document_title: '',
              document_author: '',
@@ -11162,7 +11172,6 @@ var app = new Vue({
              document_languages_language: '',
                 */
 
-            window.axios.defaults.headers.post['Content-Type'] = 'application/json';
             var postData = {
                 field: "document_title",
                 queryString: documentSearchObject.document_title
@@ -11170,22 +11179,29 @@ var app = new Vue({
             console.log("documentSearchObject: " + documentSearchObject.document_title);
             window.axios.post('api/searchapi/searchDocument', JSON.stringify(postData)).then(function (res) {
                 console.log(res);
-                _this3.documentresults.push({ search: documentSearchObject.document_title, results: res.data.results, total: 5 });
+                _this3.documentresults.push({ search: documentSearchObject.document_title, results: res.data.results, total: res.data.results.length });
             });
         },
 
-        submitAnnotationSearch: function submitAnnotationSearch(annotationSearchObject) {
+        submitAnnotationSearch: function submitAnnotationSearch(annotationSearchObject, scope) {
+            var _this4 = this;
+
+            this.annotationresults = [];
             /*
-             document_title: '',
-             document_author: '',
-             document_publication_place: '',
-             document_publication_publishing_date_from: '',
-             document_publication_publishing_date_to: '',
-             document_size_extent_from: '',
-             document_size_extent_to: '',
-             document_languages_language: '',
+             preparation_title: '',
+             preparation_encoding_full_name: '',
+             preparation_encoding_file_extension: ''
              */
 
+            var postData = {
+                field: "preparation_title",
+                queryString: annotationSearchObject.preparation_title
+            };
+            console.log("annotationSearchObject: " + annotationSearchObject.preparation_title);
+            window.axios.post('api/searchapi/searchAnnotation', JSON.stringify(postData)).then(function (res) {
+                console.log(res);
+                _this4.annotationresults.push({ search: annotationSearchObject.preparation_title, results: res.data.results, total: res.data.results.length, scope: scope });
+            });
         }
     }
 });
@@ -43386,7 +43402,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     methods: {
         emitAnnotationData: function emitAnnotationData() {
-            this.$emit('annotation-search', this.annotationSearchData);
+            this.$emit('annotation-search', this.annotationSearchData, this.scope);
         }
     },
     mounted: function mounted() {
@@ -43405,34 +43421,73 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "Annotation-header"
   }, [_vm._v("\n        Annotation\n    ")]), _vm._v(" "), _c('div', {
     staticClass: "Annotation-body"
-  }, [_vm._m(0), _vm._v(" "), _vm._m(1), _vm._v(" "), _vm._m(2), _vm._v(" "), _c('button', {
+  }, [_c('label', [_vm._v("Name "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.annotationSearchData.preparation_title),
+      expression: "annotationSearchData.preparation_title"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "preparation_title"
+    },
+    domProps: {
+      "value": (_vm.annotationSearchData.preparation_title)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.annotationSearchData.preparation_title = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Category "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.annotationSearchData.preparation_encoding_full_name),
+      expression: "annotationSearchData.preparation_encoding_full_name"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "preparation_encoding_full_name"
+    },
+    domProps: {
+      "value": (_vm.annotationSearchData.preparation_encoding_full_name)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.annotationSearchData.preparation_encoding_full_name = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Format "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.annotationSearchData.preparation_encoding_file_extension),
+      expression: "annotationSearchData.preparation_encoding_file_extension"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "preparation_encoding_file_extension"
+    },
+    domProps: {
+      "value": (_vm.annotationSearchData.preparation_encoding_file_extension)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.annotationSearchData.preparation_encoding_file_extension = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('button', {
     staticClass: "btn btn-primary annotation-search-submit-button",
     on: {
       "click": _vm.emitAnnotationData
     }
   }, [_vm._v("Search annotations")])])])
-},staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('label', [_vm._v("Name "), _c('input', {
-    attrs: {
-      "type": "text",
-      "name": "preparation_title"
-    }
-  })])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('label', [_vm._v("Category "), _c('input', {
-    attrs: {
-      "type": "text",
-      "name": "preparation_encoding_full_name"
-    }
-  })])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('label', [_vm._v("Format "), _c('input', {
-    attrs: {
-      "type": "text",
-      "name": "preparation_encoding_file_extension"
-    }
-  })])
-}]}
+},staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
@@ -43519,9 +43574,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('p', {
     staticClass: "searchTerm"
-  }, [_vm._v(" Search term: " + _vm._s(_vm.corpusresult.search.generalSearchTerm))]), _vm._v(" "), _c('p', {
+  }, [_vm._v(" Search term: " + _vm._s(_vm.corpusresult.search))]), _vm._v(" "), _c('p', {
     staticClass: "searchScope"
-  }, [_vm._v("Scope: " + _vm._s(_vm.corpusresult.search.scope))]), _vm._v(" "), _c('ul', _vm._l((_vm.corpusresult.results), function(corpusresultdata) {
+  }, [_vm._v("Scope: " + _vm._s(_vm.corpusresult.scope))]), _vm._v(" "), _c('ul', _vm._l((_vm.corpusresult.results), function(corpusresultdata) {
     return _c('li', {
       key: corpusresultdata._id
     }, [_vm._v("\n                " + _vm._s(_vm._f("arrayToString")(corpusresultdata._source.corpus_title)) + "\n            ")])
@@ -43887,9 +43942,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('p', {
     staticClass: "searchTerm"
-  }, [_vm._v(" Search term: " + _vm._s(_vm.documentresult.search.generalSearchTerm))]), _vm._v(" "), _c('p', {
+  }, [_vm._v(" Search term: " + _vm._s(_vm.documentresult.search))]), _vm._v(" "), _c('p', {
     staticClass: "searchScope"
-  }, [_vm._v("Scope: " + _vm._s(_vm.documentresult.search.scope))]), _vm._v(" "), _c('ul', _vm._l((_vm.documentresult.results), function(documentresultdata) {
+  }, [_vm._v("Scope: " + _vm._s(_vm.documentresult.scope))]), _vm._v(" "), _c('ul', _vm._l((_vm.documentresult.results), function(documentresultdata) {
     return _c('li', {
       key: documentresultdata._id
     }, [_vm._v("\n                " + _vm._s(_vm._f("arrayToString")(documentresultdata._source.document_title)) + "\n            ")])
@@ -43900,6 +43955,477 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
      require("vue-hot-reload-api").rerender("data-v-ea326158", module.exports)
+  }
+}
+
+/***/ }),
+/* 88 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(89)
+}
+var Component = __webpack_require__(1)(
+  /* script */
+  __webpack_require__(91),
+  /* template */
+  __webpack_require__(92),
+  /* styles */
+  injectStyle,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/rolfguescini/source/phpelasticsearchlaudatio/resources/assets/js/components/SearchWrapperAnnotation.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] SearchWrapperAnnotation.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-c590b858", Component.options)
+  } else {
+    hotAPI.reload("data-v-c590b858", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 89 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(90);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(12)("05759588", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c590b858\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./SearchWrapperAnnotation.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-c590b858\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./SearchWrapperAnnotation.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 90 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(11)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 91 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['annotationresults'],
+    mounted: function mounted() {
+        console.log('AnnotationResultComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 92 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    attrs: {
+      "id": "searchwrapper"
+    }
+  }, _vm._l((_vm.annotationresults), function(annotationresult) {
+    return _c('searchresultpanel_annotation', {
+      key: annotationresult,
+      attrs: {
+        "annotationresult": annotationresult
+      }
+    })
+  }))
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-c590b858", module.exports)
+  }
+}
+
+/***/ }),
+/* 93 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(1)(
+  /* script */
+  __webpack_require__(94),
+  /* template */
+  __webpack_require__(95),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/rolfguescini/source/phpelasticsearchlaudatio/resources/assets/js/components/SearchResultPanelAnnotation.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] SearchResultPanelAnnotation.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-b77209b0", Component.options)
+  } else {
+    hotAPI.reload("data-v-b77209b0", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 94 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['annotationresult'],
+    mounted: function mounted() {
+        console.log('AnnotationResultComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 95 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    attrs: {
+      "id": "searchresultpanelannotation"
+    }
+  }, [_c('p', {
+    staticClass: "searchTerm"
+  }, [_vm._v(" Search term: " + _vm._s(_vm.annotationresult.search))]), _vm._v(" "), _c('p', {
+    staticClass: "searchScope"
+  }, [_vm._v("Scope: " + _vm._s(_vm.annotationresult.scope))]), _vm._v(" "), _c('ul', _vm._l((_vm.annotationresult.results), function(annotationresultdata) {
+    return _c('li', {
+      key: annotationresultdata._id
+    }, [_vm._v("\n                " + _vm._s(_vm._f("arrayToString")(annotationresultdata._source.preparation_title)) + "\n            ")])
+  }))])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-b77209b0", module.exports)
+  }
+}
+
+/***/ }),
+/* 96 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(1)(
+  /* script */
+  __webpack_require__(97),
+  /* template */
+  __webpack_require__(98),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/rolfguescini/source/phpelasticsearchlaudatio/resources/assets/js/components/SearchResultHeaderAnnotation.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] SearchResultHeaderAnnotation.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-54be4c17", Component.options)
+  } else {
+    hotAPI.reload("data-v-54be4c17", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 97 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['annotationresults'],
+    mounted: function mounted() {
+        console.log('AnnotationResultHeaderComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 98 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    attrs: {
+      "id": "searchresultheaderannotation"
+    }
+  }, [_vm._v("\n    Annotation Results\n    "), (_vm.annotationresults[0] != null) ? _c('span', {
+    staticClass: "searchTotal"
+  }, [_vm._v(_vm._s(_vm.annotationresults.length))]) : _vm._e()])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-54be4c17", module.exports)
+  }
+}
+
+/***/ }),
+/* 99 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(1)(
+  /* script */
+  __webpack_require__(100),
+  /* template */
+  __webpack_require__(101),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/rolfguescini/source/phpelasticsearchlaudatio/resources/assets/js/components/SearchResultHeaderDocument.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] SearchResultHeaderDocument.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-518b9003", Component.options)
+  } else {
+    hotAPI.reload("data-v-518b9003", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 100 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['documentresults'],
+    mounted: function mounted() {
+        console.log('DocumentResultHeaderComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 101 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    attrs: {
+      "id": "searchresultheaderdocument"
+    }
+  }, [_vm._v("\n    Document Results\n    "), (_vm.documentresults[0] != null) ? _c('span', {
+    staticClass: "searchTotal"
+  }, [_vm._v(_vm._s(_vm.documentresults.length))]) : _vm._e()])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-518b9003", module.exports)
+  }
+}
+
+/***/ }),
+/* 102 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__(1)(
+  /* script */
+  __webpack_require__(103),
+  /* template */
+  __webpack_require__(104),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "/Users/rolfguescini/source/phpelasticsearchlaudatio/resources/assets/js/components/SearchResultHeaderCorpus.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] SearchResultHeaderCorpus.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-fde95fa0", Component.options)
+  } else {
+    hotAPI.reload("data-v-fde95fa0", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 103 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults'],
+    mounted: function mounted() {
+        console.log('CorpusResultHeaderComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 104 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', {
+    attrs: {
+      "id": "searchresultheadercorpus"
+    }
+  }, [_vm._v("\n    Corpus Results\n    "), (_vm.corpusresults[0] != null) ? _c('span', {
+    staticClass: "searchTotal"
+  }, [_vm._v(_vm._s(_vm.corpusresults.length))]) : _vm._e()])
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-fde95fa0", module.exports)
   }
 }
 
