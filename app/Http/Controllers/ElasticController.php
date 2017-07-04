@@ -116,6 +116,37 @@ class ElasticController extends Controller
         );
     }
 
+    public function searchDocumentIndex(Request $request)
+    {
+        $params = [
+            'index' => 'document',
+            'type' => '',
+            'body' => [
+                'query' => [
+                    'match' => [
+                        ''.$request->field.'' => $request->queryString
+                    ]
+                ]
+            ],
+            '_source_exclude' => ['message']
+        ];
+
+
+        $results = Elasticsearch::search($params);
+        $milliseconds = $results['took'];
+        $maxScore     = $results['hits']['max_score'];
+
+        return response(
+            array(
+                'error' => false,
+                'milliseconds' => $milliseconds,
+                'maxscore' => $maxScore,
+                'results' => $results['hits']['hits']
+            ),
+            200
+        );
+    }
+
 
 
 

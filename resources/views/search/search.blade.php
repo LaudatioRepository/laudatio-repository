@@ -16,14 +16,17 @@
                             Corpus results
                         </div>
                         <div class="Corpus-body">
-                            <searchwrapper :results="results"></searchwrapper>
+                            <!--searchwrapper :results="results"></searchwrapper-->
+                            <searchwrappercorpus :corpusresults="corpusresults"></searchwrappercorpus>
                         </div>
                     </div>
                     <div class="Document-results">
                         <div class="Document-header">
                             Document results
                         </div>
-                        <div class="Document-body"></div>
+                        <div class="Document-body">
+                            <searchwrapperdocument :documentresults="documentresults"></searchwrapperdocument>
+                        </div>
                     </div>
                     <div class="Annotation-results">
                         <div class="Annotation-header">

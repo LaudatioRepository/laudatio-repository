@@ -15,12 +15,17 @@ const util = require('util')
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('searchwrapper', require('./components/SearchWrapper.vue'));
+Vue.component('searchwrappercorpus', require('./components/SearchWrapperCorpus.vue'));
+Vue.component('searchwrapperdocument', require('./components/SearchWrapperDocument.vue'));
+
 Vue.component('searchpanel_general', require('./components/SearchPanelGeneral.vue'));
 Vue.component('searchpanel_corpus', require('./components/SearchBoxPanelCorpus.vue'));
 Vue.component('searchpanel_document', require('./components/SearchBoxPanelDocument.vue'));
 Vue.component('searchpanel_annotation', require('./components/SearchBoxPanelAnnotation.vue'));
+
+
 Vue.component('searchresultpanel_corpus', require('./components/SearchResultPanelCorpus.vue'));
+Vue.component('searchresultpanel_document', require('./components/SearchResultPanelDocument.vue'));
 
 
 
@@ -67,7 +72,7 @@ const app = new Vue({
             };
             console.log("corpusSearchObject: "+corpusSearchObject.corpus_title);
             window.axios.post('api/searchapi/searchCorpus',JSON.stringify(postData)).then(res => {
-                this.results.push({search: corpusSearchObject.corpus_title, results: res.data.results, total: 5})
+                this.corpusresults.push({search: corpusSearchObject.corpus_title, results: res.data.results, total: 5})
             });
         },
 
@@ -88,9 +93,10 @@ const app = new Vue({
                 field: "document_title",
                 queryString: documentSearchObject.document_title
             };
-            console.log("documentSearchObject: "+documentSearchObject.corpus_title);
+            console.log("documentSearchObject: "+documentSearchObject.document_title);
             window.axios.post('api/searchapi/searchDocument',JSON.stringify(postData)).then(res => {
-                this.results.push({search: documentSearchObject.document_title, results: res.data.results, total: 5})
+                console.log(res)
+                this.documentresults.push({search: documentSearchObject.document_title, results: res.data.results, total: 5})
             });
         },
 

@@ -1,10 +1,10 @@
 <template lang="html">
 <div id="searchresultpanelcorpus">
-        <p class="searchTerm"> Search term: {{result.search.generalSearchTerm}}</p>
-        <p class="searchScope">Scope: {{result.search.scope}}</p>
+        <p class="searchTerm"> Search term: {{corpusresult.search.generalSearchTerm}}</p>
+        <p class="searchScope">Scope: {{corpusresult.search.scope}}</p>
         <ul>
-            <li v-for="corpusresult in result.results" v-bind:key="corpusresult._id">
-                {{ corpusresult._source.corpus_title | arrayToString }}
+            <li v-for="corpusresultdata in corpusresult.results" v-bind:key="corpusresultdata._id">
+                {{ corpusresultdata._source.corpus_title | arrayToString }}
             </li>
         </ul>
 
@@ -13,9 +13,9 @@
 
 <script>
     export default {
-        props: ['result'],
+        props: ['corpusresult'],
         mounted() {
-            console.log('ResultComponent mounted.')
+            console.log('CorpusResultComponent mounted.')
         }
     }
 </script>
