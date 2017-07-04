@@ -43555,6 +43555,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['corpusresult'],
@@ -43572,13 +43574,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchresultpanelcorpus"
     }
-  }, [_c('p', {
-    staticClass: "searchTerm"
-  }, [_vm._v(" Search term: " + _vm._s(_vm.corpusresult.search))]), _vm._v(" "), _c('p', {
-    staticClass: "searchScope"
-  }, [_vm._v("Scope: " + _vm._s(_vm.corpusresult.scope))]), _vm._v(" "), _c('ul', _vm._l((_vm.corpusresult.results), function(corpusresultdata) {
-    return _c('li', {
-      key: corpusresultdata._id
+  }, [_c('div', {
+    staticClass: "list-group"
+  }, _vm._l((_vm.corpusresult.results), function(corpusresultdata) {
+    return _c('a', {
+      key: corpusresultdata._id,
+      staticClass: "list-group-item",
+      attrs: {
+        "href": ""
+      }
     }, [_vm._v("\n                " + _vm._s(_vm._f("arrayToString")(corpusresultdata._source.corpus_title)) + "\n            ")])
   }))])
 },staticRenderFns: []}
@@ -43923,6 +43927,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['documentresult'],
@@ -43940,13 +43946,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchresultpaneldocument"
     }
-  }, [_c('p', {
-    staticClass: "searchTerm"
-  }, [_vm._v(" Search term: " + _vm._s(_vm.documentresult.search))]), _vm._v(" "), _c('p', {
-    staticClass: "searchScope"
-  }, [_vm._v("Scope: " + _vm._s(_vm.documentresult.scope))]), _vm._v(" "), _c('ul', _vm._l((_vm.documentresult.results), function(documentresultdata) {
-    return _c('li', {
-      key: documentresultdata._id
+  }, [_c('div', {
+    staticClass: "list-group"
+  }, _vm._l((_vm.documentresult.results), function(documentresultdata) {
+    return _c('a', {
+      key: documentresultdata._id,
+      staticClass: "list-group-item",
+      attrs: {
+        "href": ""
+      }
     }, [_vm._v("\n                " + _vm._s(_vm._f("arrayToString")(documentresultdata._source.document_title)) + "\n            ")])
   }))])
 },staticRenderFns: []}
@@ -44148,6 +44156,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['annotationresult'],
@@ -44165,13 +44175,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchresultpanelannotation"
     }
-  }, [_c('p', {
-    staticClass: "searchTerm"
-  }, [_vm._v(" Search term: " + _vm._s(_vm.annotationresult.search))]), _vm._v(" "), _c('p', {
-    staticClass: "searchScope"
-  }, [_vm._v("Scope: " + _vm._s(_vm.annotationresult.scope))]), _vm._v(" "), _c('ul', _vm._l((_vm.annotationresult.results), function(annotationresultdata) {
-    return _c('li', {
-      key: annotationresultdata._id
+  }, [_c('div', {
+    staticClass: "list-group"
+  }, _vm._l((_vm.annotationresult.results), function(annotationresultdata) {
+    return _c('a', {
+      key: annotationresultdata._id,
+      staticClass: "list-group-item",
+      attrs: {
+        "href": ""
+      }
     }, [_vm._v("\n                " + _vm._s(_vm._f("arrayToString")(annotationresultdata._source.preparation_title)) + "\n            ")])
   }))])
 },staticRenderFns: []}
@@ -44335,9 +44347,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchresultheaderdocument"
     }
-  }, [_vm._v("\n    Document Results\n    "), (_vm.documentresults[0] != null) ? _c('span', {
+  }, [_vm._v("\n    Annotation Results\n    "), (_vm.documentresults[0] != null) ? _c('span', {
     staticClass: "searchTotal"
-  }, [_vm._v(_vm._s(_vm.documentresults.length))]) : _vm._e()])
+  }, [_vm._v(_vm._s(_vm.annotationresults.length))]) : _vm._e()])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {

@@ -1,7 +1,7 @@
 <template lang="html">
     <div id="searchresultheaderdocument">
-        Document Results
-        <span class="searchTotal" v-if="documentresults[0] != null">{{documentresults.length}}</span>
+        Annotation Results
+        <span class="searchTotal" v-if="documentresults[0] != null">{{annotationresults.length}}</span>
     </div>
 </template>
 

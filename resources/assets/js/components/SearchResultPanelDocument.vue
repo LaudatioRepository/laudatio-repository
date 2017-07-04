@@ -1,12 +1,14 @@
 <template lang="html">
 <div id="searchresultpaneldocument">
+<!--
         <p class="searchTerm"> Search term: {{documentresult.search}}</p>
         <p class="searchScope">Scope: {{documentresult.scope}}</p>
-        <ul>
-            <li v-for="documentresultdata in documentresult.results" v-bind:key="documentresultdata._id">
+        -->
+         <div class="list-group">
+            <a href="" class="list-group-item"  v-for="documentresultdata in documentresult.results" v-bind:key="documentresultdata._id">
                 {{ documentresultdata._source.document_title | arrayToString  }}
-            </li>
-        </ul>
+            </a>
+        </div>
 
     </div>
 </template>
