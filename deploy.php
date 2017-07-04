@@ -48,8 +48,10 @@ task('environment', function () {
 
 task('makespace', function () {
     run('cd /var/www/html/laravelaudatio/releases');
+    run('sudo -su www-data');
     run('rm -rf *');
-})->desc('Create disk space');
+    run('exit');
+})->desc('Environment setup');
 
 before('deploy','makespace');
 

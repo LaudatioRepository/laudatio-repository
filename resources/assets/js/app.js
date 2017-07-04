@@ -117,13 +117,26 @@ const app = new Vue({
              preparation_encoding_file_extension: ''
              */
 
+            let postDataCollection = [];
+            for(var p in annotationSearchObject){
+                if(annotationSearchObject[p].length > 0){
+                    postDataCollection.push(
+                        {
+                            [p]: annotationSearchObject[p]
+                        }
+                    );
+                }
+
+            }
 
             let postData = {
-                field: "preparation_title",
-                queryString: annotationSearchObject.preparation_title
+                searchData: postDataCollection,
+                scope: scope
             };
-            console.log("annotationSearchObject: "+annotationSearchObject.preparation_title);
-            window.axios.post('api/searchapi/searchAnnotation',JSON.stringify(postData)).then(res => {
+
+            console.log("postDataCollectionPoop: "+util.inspect(postData))
+
+            window.axios.post('api/searchapi/searchAnnotation',postData).then(res => {
                 console.log(res)
                 if(res.data.results.length > 0) {
                     this.annotationresults.push({search: annotationSearchObject.preparation_title, results: res.data.results, total: res.data.results.length, scope: scope})

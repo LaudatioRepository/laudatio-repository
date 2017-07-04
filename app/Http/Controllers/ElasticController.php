@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Cviebrock\LaravelElasticsearch\Facade;
 use Elasticsearch;
+use App\Laudatio\Elasticsearch\QueryBuilder;
+use Log;
 
 class ElasticController extends Controller
 {
@@ -152,19 +154,25 @@ class ElasticController extends Controller
 
     public function searchAnnotationIndex(Request $request)
     {
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        //Log::info("SENDING: ".print_r($request->searchData,1));
+        if(count($request->searchData) > 1){
+            $queryBody = $queryBuilder->buildMustQuery($request->searchData);
+        }
+        else{
+            $queryBody = $queryBuilder->buildSingleMatchQuery($request->searchData);
+        }
+
+
+        //Log::info("GETTING: ".print_r(json_encode($queryBody),1));
+
         $params = [
             'index' => 'annotation',
             'type' => '',
-            'body' => [
-                'query' => [
-                    'match' => [
-                        ''.$request->field.'' => $request->queryString
-                    ]
-                ]
-            ],
+            'body' => $queryBody,
             '_source_exclude' => ['message']
         ];
-
 
         $results = Elasticsearch::search($params);
         $milliseconds = $results['took'];
