@@ -41943,12 +41943,20 @@ Vue = __webpack_require__(12);
 
 Vue.filter('arrayToString', function (array) {
     var string = '';
-    if (array.isArray && array.length == 1) {
+    if (array) if (array.isArray && array.length == 1) {
         string = array[0].toString();
     } else {
         string = array.toString();
     }
     return string;
+});
+
+Vue.filter('addHash', function (string) {
+    return "#".concat(string);
+});
+
+Vue.filter('latestDate', function (dates) {
+    return dates[dates.length - 1];
 });
 
 /***/ }),
@@ -44007,6 +44015,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['corpusresult'],
@@ -44025,15 +44048,67 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "id": "searchresultpanelcorpus"
     }
   }, [_c('div', {
-    staticClass: "list-group"
+    staticClass: "panel-group",
+    attrs: {
+      "id": "accordion"
+    }
   }, _vm._l((_vm.corpusresult.results), function(corpusresultdata) {
-    return _c('a', {
+    return _c('div', {
       key: corpusresultdata._id,
-      staticClass: "list-group-item",
+      staticClass: "panel panel-default"
+    }, [_c('div', {
+      staticClass: "panel-heading"
+    }, [_c('div', {
+      staticClass: "panel-title",
       attrs: {
-        "href": ""
+        "data-toggle": "collapse",
+        "data-parent": "#accordion",
+        "data-target": _vm._f("addHash")(corpusresultdata._id)
       }
-    }, [_vm._v("\n                " + _vm._s(_vm._f("arrayToString")(corpusresultdata._source.corpus_title)) + "\n            ")])
+    }, [_vm._v("\n                    " + _vm._s(_vm._f("arrayToString")(corpusresultdata._source.corpus_title)) + "\n                    "), _c('i', {
+      staticClass: "fa fa-expand pull-right",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    })])]), _vm._v(" "), _c('div', {
+      staticClass: "panel-collapse collapse",
+      attrs: {
+        "id": corpusresultdata._id
+      }
+    }, [_c('div', {
+      staticClass: "panel-body"
+    }, [_c('span', {
+      staticClass: "iconwrapper"
+    }, [_c('i', {
+      staticClass: "fa fa-university",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    }), _vm._v(" Published: " + _vm._s(_vm._f("latestDate")(corpusresultdata._source.corpus_publication_publication_date)))]), _vm._v(" "), _c('span', {
+      staticClass: "iconwrapper"
+    }, [_c('i', {
+      staticClass: "fa fa-file-text",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    }), _vm._v(" Documents: " + _vm._s(corpusresultdata._source.corpus_documents.length))]), _vm._v(" "), _c('span', {
+      staticClass: "iconwrapper"
+    }, [_c('i', {
+      staticClass: "fa fa-pencil-square-o",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    }), _vm._v(" Annotations: " + _vm._s(corpusresultdata._source.annotation_name.length))]), _vm._v(" "), _c('br'), _vm._v(" "), _c('span', [_c('i', {
+      staticClass: "fa fa-creative-commons",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    }), _vm._v(": " + _vm._s(_vm._f("arrayToString")(corpusresultdata._source.corpus_publication_license_description)))]), _vm._v(" "), _c('br'), _vm._v(" "), _c('i', {
+      staticClass: "fa fa-external-link pull-right",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    })])])])
   }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
@@ -44196,6 +44271,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['documentresult'],
@@ -44214,15 +44303,55 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "id": "searchresultpaneldocument"
     }
   }, [_c('div', {
-    staticClass: "list-group"
+    staticClass: "panel-group",
+    attrs: {
+      "id": "accordion"
+    }
   }, _vm._l((_vm.documentresult.results), function(documentresultdata) {
-    return _c('a', {
+    return _c('div', {
       key: documentresultdata._id,
-      staticClass: "list-group-item",
+      staticClass: "panel panel-default"
+    }, [_c('div', {
+      staticClass: "panel-heading"
+    }, [_c('div', {
+      staticClass: "panel-title",
       attrs: {
-        "href": ""
+        "data-toggle": "collapse",
+        "data-parent": "#accordion",
+        "data-target": _vm._f("addHash")(documentresultdata._id)
       }
-    }, [_vm._v("\n                " + _vm._s(_vm._f("arrayToString")(documentresultdata._source.document_title)) + "\n            ")])
+    }, [_vm._v("\n                        " + _vm._s(_vm._f("arrayToString")(documentresultdata._source.document_title)) + "\n                    "), _c('i', {
+      staticClass: "fa fa-expand pull-right",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    })])]), _vm._v(" "), _c('div', {
+      staticClass: "panel-collapse collapse",
+      attrs: {
+        "id": documentresultdata._id
+      }
+    }, [_c('div', {
+      staticClass: "panel-body"
+    }, [_c('span', {
+      staticClass: "iconwrapper"
+    }, [_c('i', {
+      staticClass: "fa fa-university",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    }), _vm._v(" Published: " + _vm._s(_vm._f("latestDate")(documentresultdata._source.document_publication_publishing_date)))]), _vm._v(" "), _c('span', {
+      staticClass: "iconwrapper"
+    }, [_c('i', {
+      staticClass: "fa fa-pencil-square-o",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    }), _vm._v("Annotations: " + _vm._s(documentresultdata._source.document_list_of_annotations_name.length))]), _vm._v(" "), _c('br'), _vm._v(" "), _c('i', {
+      staticClass: "fa fa-external-link pull-right",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    })])])])
   }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
@@ -44385,6 +44514,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['annotationresult'],
@@ -44403,15 +44543,36 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "id": "searchresultpanelannotation"
     }
   }, [_c('div', {
-    staticClass: "list-group"
+    staticClass: "panel-group",
+    attrs: {
+      "id": "accordion"
+    }
   }, _vm._l((_vm.annotationresult.results), function(annotationresultdata) {
-    return _c('a', {
+    return _c('div', {
       key: annotationresultdata._id,
-      staticClass: "list-group-item",
+      staticClass: "panel panel-default"
+    }, [_c('div', {
+      staticClass: "panel-heading"
+    }, [_c('div', {
+      staticClass: "panel-title",
       attrs: {
-        "href": ""
+        "data-toggle": "collapse",
+        "data-parent": "#accordion",
+        "data-target": _vm._f("addHash")(annotationresultdata._id)
       }
-    }, [_vm._v("\n                " + _vm._s(_vm._f("arrayToString")(annotationresultdata._source.preparation_title)) + "\n            ")])
+    }, [_vm._v("\n                    " + _vm._s(_vm._f("arrayToString")(annotationresultdata._source.preparation_title)) + "\n                    "), _c('i', {
+      staticClass: "fa fa-expand pull-right",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    })])]), _vm._v(" "), _c('div', {
+      staticClass: "panel-collapse collapse",
+      attrs: {
+        "id": annotationresultdata._id
+      }
+    }, [_c('div', {
+      staticClass: "panel-body"
+    }, [_vm._v("\n                        BODHI\n                    ")])])])
   }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
