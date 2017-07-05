@@ -5,8 +5,7 @@
         <searchresultpanel_annotation v-for="annotationresult in annotationresults"  v-bind:annotationresult="annotationresult" :key="annotationresult"></searchresultpanel_annotation>
     </div>
 
-    <div  v-else-if="annotationresults.length == 0 && annotationsearched" class="alert alert-info alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <div  v-else-if="annotationresults.length == 0 && annotationsearched" class="alert alert-info" role="alert">
         <strong>Your search returned no results!</strong>
     </div>
 </div>
