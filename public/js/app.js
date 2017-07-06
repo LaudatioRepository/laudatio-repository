@@ -44128,19 +44128,19 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }), _vm._v(" Published: " + _vm._s(_vm._f("latestDate")(corpusresultdata._source.corpus_publication_publication_date)))]), _vm._v(" "), _c('span', {
       staticClass: "iconwrapper"
-    }, [_c('i', {
+    }, [(typeof corpusresultdata._source.corpus_documents != 'undefined') ? _c('i', {
       staticClass: "fa fa-file-text",
       attrs: {
         "aria-hidden": "true"
       }
-    }), _vm._v(" Documents: " + _vm._s(corpusresultdata._source.corpus_documents.length))]), _vm._v(" "), _c('span', {
+    }) : _vm._e(), _vm._v(" Documents: " + _vm._s(corpusresultdata._source.corpus_documents.length))]), _vm._v(" "), _c('span', {
       staticClass: "iconwrapper"
-    }, [_c('i', {
+    }, [(typeof corpusresultdata._source.annotation_name != 'undefined') ? _c('i', {
       staticClass: "fa fa-pencil-square-o",
       attrs: {
         "aria-hidden": "true"
       }
-    }), _vm._v(" Annotations: " + _vm._s(corpusresultdata._source.annotation_name.length))]), _vm._v(" "), _c('br'), _vm._v(" "), (corpusresultdata._source.corpus_publication_license_description) ? _c('span', [_c('i', {
+    }) : _vm._e(), _vm._v(" Annotations: " + _vm._s(corpusresultdata._source.annotation_name.length))]), _vm._v(" "), _c('br'), _vm._v(" "), (corpusresultdata._source.corpus_publication_license_description) ? _c('span', [_c('i', {
       staticClass: "fa fa-creative-commons",
       attrs: {
         "aria-hidden": "true"
