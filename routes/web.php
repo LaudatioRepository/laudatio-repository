@@ -10,13 +10,14 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-use App\Events\ElasticEvent;
-use App\Laudatio\Search\ElasticSearchTerm;
 
 Route::get('/', ['uses' => 'IndexController@index'])->middleware('auth');
 
 Auth::routes();
 
+Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
+
+Route::get('/elsearch',['uses' => 'ElasticController@search']);
 
 Route::get('/repository',[ 'as' => 'gitLab', 'uses' => 'GitLabController@listProjects'])->middleware('auth');
 

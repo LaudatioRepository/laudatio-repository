@@ -12,6 +12,8 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="https://cdn.auth0.com/styleguide/4.8.10/index.min.css" rel="stylesheet" />
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
     <div id="app">
@@ -48,6 +50,8 @@
                         @else
                             <li class="li-docs no-basic"><a href="{{ route('gitRepo.route.schema') }}">Schema</a></li>
                             <li class="li-docs no-basic"><a href="{{ route('gitRepo.route') }}">Projects</a></li>
+                            <li class="li-docs no-basic"><a href="{{ route('search') }}">Search</a></li>
+
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     {{ Auth::user()->name }} <span class="caret"></span>

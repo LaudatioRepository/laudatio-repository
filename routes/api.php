@@ -16,3 +16,25 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+
+Route::get('sample-restful-apis', function()
+{
+    return array(
+        1 => "expertphp",
+        2 => "demo"
+    );
+});
+
+Route::group(array('prefix' => 'searchapi'), function() {
+    Route::get('search/{index}/{field}/{searchterm}','ElasticController@search');
+    Route::post('searchGeneral','ElasticController@searchGeneral');
+    Route::post('searchCorpus','ElasticController@searchCorpusIndex');
+    Route::post('searchDocument','ElasticController@searchDocumentIndex');
+    Route::post('searchDocumentWithParam','ElasticController@searchDocumentIndexWithParam');
+    Route::post('getSearchTotal','ElasticController@getSearchTotal');
+    Route::post('searchAnnotation','ElasticController@searchAnnotationIndex');
+});
+
+
