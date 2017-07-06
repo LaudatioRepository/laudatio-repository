@@ -43592,13 +43592,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
             documentSearchData: {
                 document_title: '',
-                document_author: '',
+                document_author_forename: '',
+                document_author_surname: '',
                 document_publication_place: '',
                 document_publication_publishing_date_from: '',
                 document_publication_publishing_date_to: '',
@@ -43650,24 +43652,44 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.documentSearchData.document_title = $event.target.value
       }
     }
-  })]), _vm._v(" "), _c('label', [_vm._v("Author "), _c('input', {
+  })]), _vm._v(" "), _c('label', [_vm._v("Author Forename "), _c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.documentSearchData.document_author),
-      expression: "documentSearchData.document_author"
+      value: (_vm.documentSearchData.document_author_forename),
+      expression: "documentSearchData.document_author_forename"
     }],
     attrs: {
       "type": "text",
       "name": "document-author"
     },
     domProps: {
-      "value": (_vm.documentSearchData.document_author)
+      "value": (_vm.documentSearchData.document_author_forename)
     },
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.documentSearchData.document_author = $event.target.value
+        _vm.documentSearchData.document_author_forename = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Author Surname "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.document_author_surname),
+      expression: "documentSearchData.document_author_surname"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "document-author"
+    },
+    domProps: {
+      "value": (_vm.documentSearchData.document_author_surname)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.documentSearchData.document_author_surname = $event.target.value
       }
     }
   })]), _vm._v(" "), _c('label', [_vm._v("Place "), _c('input', {

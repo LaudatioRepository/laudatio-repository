@@ -8546,9 +8546,8 @@ button.close {
   border: rgba(147, 128, 108, 0.1) 1px solid;
   border-radius: 5px;
   margin-bottom: 20px;
-  min-height: 270px;
+  min-height: 330px;
   max-width: 40em;
-  padding: 2px;
 }
 
 .HolyGrail-content .result-box .Document-results {
@@ -8562,7 +8561,7 @@ button.close {
   border-radius: 5px;
   margin-bottom: 20px;
   border: rgba(147, 128, 108, 0.1) 1px solid;
-  min-height: 270px;
+  min-height: 330px;
   min-width: 40em;
 }
 
@@ -8579,7 +8578,6 @@ button.close {
   margin-bottom: 20px;
   min-height: 270px;
   max-width: 40em;
-  padding: 2px;
 }
 
 .HolyGrail-content .result-box .Annotation-results {

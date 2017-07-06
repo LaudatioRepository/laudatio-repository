@@ -138,7 +138,7 @@ class ElasticController extends Controller
         else{
             $queryBody = $queryBuilder->buildSingleMatchQuery($request->searchData);
         }
-
+        //Log::info("QUERY: ".print_r($queryBody,1));
         $params = [
             'index' => 'document',
             'type' => '',

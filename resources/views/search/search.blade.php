@@ -48,7 +48,7 @@
         </main>
         <footer class="HolyGrail-footer">
             <div class="Footer">
-                Footer
+                Institut für deutsche Sprache und Linguistik , Computer- und Medienservice
             </div>
         </footer>
     </div>

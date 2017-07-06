@@ -8,7 +8,8 @@
         </div>
         <div class="Document-body">
             <label>Title <input type="text" name="document-title" v-model="documentSearchData.document_title" /></label>
-            <label>Author <input type="text" name="document-author" v-model="documentSearchData.document_author" /></label>
+            <label>Author Forename <input type="text" name="document-author" v-model="documentSearchData.document_author_forename" /></label>
+            <label>Author Surname <input type="text" name="document-author" v-model="documentSearchData.document_author_surname" /></label>
             <label>Place <input type="text" name="document-publication-place" v-model="documentSearchData.document_publication_place" /></label>
             <label>Year <input type="text" name="document-publication-publishing-date-from" v-model="documentSearchData.document_publication_publishing_date_from" /> to <input type="text" name="document-publication-publishing-date-to" v-model="documentSearchData.document_publication_publishing_date_to"  /></label>
             <label>Size <input type="text" name="document-size-extent-from" v-model="documentSearchData.document_size_extent_from"  /> to <input type="text" name="document-size-extent-to" v-model="documentSearchData.document_size_extent_to" /></label>
@@ -24,7 +25,8 @@
             return {
                 documentSearchData : {
                     document_title: '',
-                    document_author: '',
+                    document_author_forename: '',
+                    document_author_surname: '',
                     document_publication_place: '',
                     document_publication_publishing_date_from: '',
                     document_publication_publishing_date_to: '',
