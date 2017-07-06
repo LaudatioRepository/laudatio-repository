@@ -8561,7 +8561,7 @@ button.close {
   border-radius: 5px;
   margin-bottom: 20px;
   border: rgba(147, 128, 108, 0.1) 1px solid;
-  min-height: 330px;
+  height: 330px;
   min-width: 40em;
 }
 
@@ -8593,6 +8593,13 @@ button.close {
   margin-bottom: 20px;
   min-height: 270px;
   min-width: 40em;
+}
+
+.Annotation-result-body,
+.Corpus-result-body,
+.Document-result-body {
+  overflow: auto;
+  max-height: 400px;
 }
 
 .Corpus-box .Corpus-header,

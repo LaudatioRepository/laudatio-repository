@@ -265,7 +265,8 @@ class ElasticController extends Controller
             'index' => 'annotation',
             'type' => '',
             'body' => $queryBody,
-            '_source_exclude' => ['message']
+            '_source_exclude' => ['message'],
+            'size'=> 100
         ];
 
         $results = Elasticsearch::search($params);
