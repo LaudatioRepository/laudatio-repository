@@ -179,7 +179,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         GrahamCampbell\Flysystem\FlysystemServiceProvider::class,
         Vinkla\GitLab\GitLabServiceProvider::class,
-        Cviebrock\LaravelElasticsearch\ServiceProvider::class
+        Cviebrock\LaravelElasticsearch\ServiceProvider::class,
+        App\Providers\ElasticServiceProvider::class
 
     ],
 

@@ -47,3 +47,5 @@ Route::post('/createcorpus',['as' => 'gitRepo.createcorpus.post', 'uses' => 'Git
 
 
 Route::get('/validatetei/{dirname}',['as' => 'gitRepo.validatetei.get', 'uses' => 'ValidateTEIController@validateFiles'])->where('dirname', '.+')->middleware('auth');
+
+Route::get('/browse/{header}/{id}', ['as' => 'browse.showHeaders.get', 'uses' => 'BrowseController@index']);

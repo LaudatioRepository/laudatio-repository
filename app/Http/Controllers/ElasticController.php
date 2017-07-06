@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Laudatio\Elasticsearch\ElasticService;
 use Illuminate\Http\Request;
 use Cviebrock\LaravelElasticsearch\Facade;
 use Elasticsearch;
 use App\Laudatio\Elasticsearch\QueryBuilder;
+use App\Custom\ElasticsearchInterface;
+
 use Log;
 
 class ElasticController extends Controller
 {
 
+    protected $ElasticService;
+
+    public function __construct(ElasticsearchInterface $Elasticservice)
+    {
+        $this->ElasticService = $Elasticservice;
+    }
 
     /** GET search endpoint
      * @param $index
@@ -57,31 +66,10 @@ class ElasticController extends Controller
      */
     public function searchGeneral(Request $request)
     {
-        $params = [
-            'index' => $request->index_name,
-            'type' => '',
-            'body' => [
-                'query' => [
-                    'match' => [
-                        ''.$request->field.'' => $request->queryString
-                    ]
-                ]
-            ],
-            '_source_exclude' => ['message']
-        ];
-
-
-        $results = Elasticsearch::search($params);
-        $milliseconds = $results['took'];
-        $maxScore     = $results['hits']['max_score'];
+        $result = $this->ElasticService->searchGeneral($request->searchData);
 
         return response(
-            array(
-                'error' => false,
-                'milliseconds' => $milliseconds,
-                'maxscore' => $maxScore,
-                'results' => $results['hits']['hits']
-            ),
+            $result,
             200
         );
     }
@@ -89,39 +77,9 @@ class ElasticController extends Controller
 
     public function searchCorpusIndex(Request $request)
     {
-
-        $queryBuilder = new QueryBuilder();
-        $queryBody = null;
-        //Log::info("SENDING: ".print_r($request->searchData,1));
-
-        if(count($request->searchData) > 1){
-            $queryBody = $queryBuilder->buildMustQuery($request->searchData);
-        }
-        else{
-            $queryBody = $queryBuilder->buildSingleMatchQuery($request->searchData);
-        }
-
-        $params = [
-            'index' => 'corpus',
-            'type' => '',
-            'body' => $queryBody,
-            '_source_exclude' => ['message']
-        ];
-
-
-        $results = Elasticsearch::search($params);
-        $milliseconds = $results['took'];
-        $maxScore     = $results['hits']['max_score'];
-        $total = $results['hits']['total'];
-
+        $result = $this->ElasticService->searchCorpusIndex($request->searchData);
         return response(
-            array(
-                'error' => false,
-                'milliseconds' => $milliseconds,
-                'maxscore' => $maxScore,
-                'results' => $results['hits']['hits'],
-                'total' => $total
-            ),
+            $result,
             200
         );
     }
@@ -129,37 +87,10 @@ class ElasticController extends Controller
     public function searchDocumentIndex(Request $request)
     {
 
-        $queryBuilder = new QueryBuilder();
-        $queryBody = null;
-        //Log::info("SENDING: ".print_r($request->searchData,1));
-        if(count($request->searchData) > 1){
-            $queryBody = $queryBuilder->buildMustQuery($request->searchData);
-        }
-        else{
-            $queryBody = $queryBuilder->buildSingleMatchQuery($request->searchData);
-        }
-        //Log::info("QUERY: ".print_r($queryBody,1));
-        $params = [
-            'index' => 'document',
-            'type' => '',
-            'body' => $queryBody,
-            '_source_exclude' => ['message']
-        ];
-
-
-        $results = Elasticsearch::search($params);
-        $milliseconds = $results['took'];
-        $maxScore     = $results['hits']['max_score'];
-        $total = $results['hits']['total'];
+        $result = $this->ElasticService->searchDocumentIndex($request->searchData);
 
         return response(
-            array(
-                'error' => false,
-                'milliseconds' => $milliseconds,
-                'maxscore' => $maxScore,
-                'results' => $results['hits']['hits'],
-                'total' => $total
-            ),
+            $result,
             200
         );
     }
@@ -217,30 +148,10 @@ class ElasticController extends Controller
 
     public function getSearchTotal(Request $request)
     {
-        $resultData = array();
-
-        $queryBuilder = new QueryBuilder();
-        $queryBody = null;
-
-        foreach($request->searchData as $queryData){
-            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
-            $params = [
-                'index' => 'document',
-                'type' => '',
-                'body' => $queryBody,
-                'filter_path' => ['hits.total']
-            ];
-            $results = Elasticsearch::search($params);
-
-            $termData = array_values($queryData);
-            $resultData[$termData[0]] = $results['hits']['total'];
-        }//end foreach queries
+        $result = $this->ElasticService->getSearchTotal($request->searchData);
 
         return response(
-            array(
-                'error' => false,
-                'results' => $resultData
-            ),
+            $result,
             200
         );
     }
@@ -250,38 +161,10 @@ class ElasticController extends Controller
 
     public function searchAnnotationIndex(Request $request)
     {
-        $queryBuilder = new QueryBuilder();
-        $queryBody = null;
-
-        if(count($request->searchData) > 1){
-            $queryBody = $queryBuilder->buildMustQuery($request->searchData);
-        }
-        else{
-            $queryBody = $queryBuilder->buildSingleMatchQuery($request->searchData);
-        }
-
-
-        $params = [
-            'index' => 'annotation',
-            'type' => '',
-            'body' => $queryBody,
-            '_source_exclude' => ['message'],
-            'size'=> 100
-        ];
-
-        $results = Elasticsearch::search($params);
-        $milliseconds = $results['took'];
-        $maxScore     = $results['hits']['max_score'];
-        $total = $results['hits']['total'];
+        $result = $this->ElasticService->searchAnnotationIndex($request->searchData);
 
         return response(
-            array(
-                'error' => false,
-                'milliseconds' => $milliseconds,
-                'maxscore' => $maxScore,
-                'results' => $results['hits']['hits'],
-                'total' => $total
-            ),
+            $result,
             200
         );
     }
