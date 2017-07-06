@@ -5,21 +5,14 @@
         <p class="searchScope">Scope: {{annotationresult.scope}}</p>
         -->
 
-        <div class="panel-group" id="accordion">
-            <div class="panel panel-default" v-for="annotationresultdata in annotationresult.results" v-bind:key="annotationresultdata._id">
-                <div class="panel-heading">
-                    <div class="panel-title"  data-toggle="collapse" data-parent="#accordion" v-bind:data-target="annotationresultdata._id | addHash">
-                    {{ annotationresultdata._source.preparation_title | arrayToString  }}
-                    <i class="fa fa-expand pull-right" aria-hidden="true"></i>
-                    </div>
-                 </div>
-                 <div :id="annotationresultdata._id" class="panel-collapse collapse">
-                    <div   class="panel-body">
-                        BODHI
-                    </div>
-                 </div>
-            </div>
-        </div>
+        <ul class="list-group">
+        <li class="list-group-item"  v-for="annotationresultdata in annotationresult.results" v-bind:key="annotationresultdata._id">
+            {{ annotationtitle = annotationresultdata._source.preparation_title | arrayToString  }}
+            <span class="badge">{{ inDocuments = annotationresult.documentsByAnnotation[annotationtitle] }}</span> <i class="fa fa-external-link pull-left" aria-hidden="true"></i>
+            </li>
+
+
+        </ul>
 
     </div>
 </template>

@@ -7,6 +7,7 @@
 
 require('./bootstrap');
 require('./filters');
+const myFunctions = require('./functions');
 window.Vue = require('vue');
 const util = require('util')
 /**
@@ -46,6 +47,7 @@ const app = new Vue({
         documentresults: [],
         annotationresults: [],
         searches: [],
+        documentsByAnnotation: [],
         corpussearched: false,
         documentsearched: false,
         annotationsearched: false
@@ -166,12 +168,33 @@ const app = new Vue({
                 window.axios.post('api/searchapi/searchAnnotation',postData).then(res => {
                     this.annotationsearched = true;
                     if(res.data.results.length > 0) {
-                        this.annotationresults.push({
-                            search: annotationSearchObject.preparation_title,
-                            results: res.data.results,
-                            total: res.data.total,
-                            scope: 'annotation'
-                        })
+                        var annotationterms = [];
+
+                        for(var i = 0; i < res.data.results.length;i++) {
+                            annotationterms.push(
+                                {
+                                    'document_list_of_annotations_name': ''+res.data.results[i]._source.preparation_title+''
+                                }
+                            );
+                        }
+
+                        let postAnnotationData = {
+                            searchData: annotationterms,
+                        };
+
+
+                        window.axios.post('api/searchapi/getSearchTotal',postAnnotationData).then(documentsByAnnotationRes => {
+                            this.annotationsearched = true;
+                            if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
+                                this.annotationresults.push({
+                                    search: annotationSearchObject.preparation_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                    documentsByAnnotation: documentsByAnnotationRes.data.results,
+                                    scope: 'annotation'
+                                });
+                            }
+                        });
                     }
                 });
             }

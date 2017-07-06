@@ -1,7 +1,7 @@
 <template lang="html">
     <div id="searchresultheadercorpus">
         Corpus Results
-        <span class="searchTotal" v-if="corpusresults[0] != null">{{getTotal}}</span>
+        <span class="searchTotal" v-if="corpusresults[0] != null">{{getCorpusTotal}}</span>
     </div>
 </template>
 
@@ -9,7 +9,7 @@
     export default {
         props: ['corpusresults'],
         computed: {
-            getTotal: function() {
+            getCorpusTotal: function() {
                 if(this.corpusresults.length){
                     return this.corpusresults[0].total
                 }

@@ -8705,6 +8705,11 @@ i.fa.fa-expand {
   cursor: pointer;
 }
 
+span.badge {
+  font-size: 10px !important;
+  padding: 4px 8px !important;
+}
+
 /* FONT-AWESOME */
 
 .iconwrapper {

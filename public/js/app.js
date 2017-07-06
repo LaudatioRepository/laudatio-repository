@@ -11079,6 +11079,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 __webpack_require__(15);
 __webpack_require__(39);
+var myFunctions = __webpack_require__(100);
 window.Vue = __webpack_require__(12);
 var util = __webpack_require__(40);
 /**
@@ -11115,6 +11116,7 @@ var app = new Vue({
         documentresults: [],
         annotationresults: [],
         searches: [],
+        documentsByAnnotation: [],
         corpussearched: false,
         documentsearched: false,
         annotationsearched: false
@@ -11224,11 +11226,29 @@ var app = new Vue({
                 window.axios.post('api/searchapi/searchAnnotation', postData).then(function (res) {
                     _this4.annotationsearched = true;
                     if (res.data.results.length > 0) {
-                        _this4.annotationresults.push({
-                            search: annotationSearchObject.preparation_title,
-                            results: res.data.results,
-                            total: res.data.total,
-                            scope: 'annotation'
+                        var annotationterms = [];
+
+                        for (var i = 0; i < res.data.results.length; i++) {
+                            annotationterms.push({
+                                'document_list_of_annotations_name': '' + res.data.results[i]._source.preparation_title + ''
+                            });
+                        }
+
+                        var postAnnotationData = {
+                            searchData: annotationterms
+                        };
+
+                        window.axios.post('api/searchapi/getSearchTotal', postAnnotationData).then(function (documentsByAnnotationRes) {
+                            _this4.annotationsearched = true;
+                            if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
+                                _this4.annotationresults.push({
+                                    search: annotationSearchObject.preparation_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                    documentsByAnnotation: documentsByAnnotationRes.data.results,
+                                    scope: 'annotation'
+                                });
+                            }
                         });
                     }
                 });
@@ -44098,12 +44118,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "aria-hidden": "true"
       }
-    }), _vm._v(" Annotations: " + _vm._s(corpusresultdata._source.annotation_name.length))]), _vm._v(" "), _c('br'), _vm._v(" "), _c('span', [_c('i', {
+    }), _vm._v(" Annotations: " + _vm._s(corpusresultdata._source.annotation_name.length))]), _vm._v(" "), _c('br'), _vm._v(" "), (corpusresultdata._source.corpus_publication_license_description) ? _c('span', [_c('i', {
       staticClass: "fa fa-creative-commons",
       attrs: {
         "aria-hidden": "true"
       }
-    }), _vm._v(": " + _vm._s(_vm._f("arrayToString")(corpusresultdata._source.corpus_publication_license_description)))]), _vm._v(" "), _c('br'), _vm._v(" "), _c('i', {
+    }), _vm._v(": " + _vm._s(_vm._f("arrayToString")(corpusresultdata._source.corpus_publication_license_description)))]) : _vm._e(), _vm._v(" "), _c('br'), _vm._v(" "), _c('i', {
       staticClass: "fa fa-external-link pull-right",
       attrs: {
         "aria-hidden": "true"
@@ -44176,7 +44196,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['corpusresults'],
     computed: {
-        getTotal: function getTotal() {
+        getCorpusTotal: function getCorpusTotal() {
             if (this.corpusresults.length) {
                 return this.corpusresults[0].total;
             } else {
@@ -44200,7 +44220,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("\n    Corpus Results\n    "), (_vm.corpusresults[0] != null) ? _c('span', {
     staticClass: "searchTotal"
-  }, [_vm._v(_vm._s(_vm.getTotal))]) : _vm._e()])
+  }, [_vm._v(_vm._s(_vm.getCorpusTotal))]) : _vm._e()])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -44518,13 +44538,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['annotationresult'],
@@ -44542,37 +44555,20 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchresultpanelannotation"
     }
-  }, [_c('div', {
-    staticClass: "panel-group",
-    attrs: {
-      "id": "accordion"
-    }
+  }, [_c('ul', {
+    staticClass: "list-group"
   }, _vm._l((_vm.annotationresult.results), function(annotationresultdata) {
-    return _c('div', {
+    return _c('li', {
       key: annotationresultdata._id,
-      staticClass: "panel panel-default"
-    }, [_c('div', {
-      staticClass: "panel-heading"
-    }, [_c('div', {
-      staticClass: "panel-title",
-      attrs: {
-        "data-toggle": "collapse",
-        "data-parent": "#accordion",
-        "data-target": _vm._f("addHash")(annotationresultdata._id)
-      }
-    }, [_vm._v("\n                    " + _vm._s(_vm._f("arrayToString")(annotationresultdata._source.preparation_title)) + "\n                    "), _c('i', {
-      staticClass: "fa fa-expand pull-right",
+      staticClass: "list-group-item"
+    }, [_vm._v("\n            " + _vm._s(_vm._f("arrayToString")(_vm.annotationtitle = annotationresultdata._source.preparation_title)) + "\n            "), _c('span', {
+      staticClass: "badge"
+    }, [_vm._v(_vm._s(_vm.inDocuments = _vm.annotationresult.documentsByAnnotation[_vm.annotationtitle]))]), _vm._v(" "), _c('i', {
+      staticClass: "fa fa-external-link pull-left",
       attrs: {
         "aria-hidden": "true"
       }
-    })])]), _vm._v(" "), _c('div', {
-      staticClass: "panel-collapse collapse",
-      attrs: {
-        "id": annotationresultdata._id
-      }
-    }, [_c('div', {
-      staticClass: "panel-body"
-    }, [_vm._v("\n                        BODHI\n                    ")])])])
+    })])
   }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
@@ -44640,7 +44636,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['annotationresults'],
     computed: {
-        getTotal: function getTotal() {
+        getAnnotationTotal: function getAnnotationTotal() {
             if (this.annotationresults.length) {
                 return this.annotationresults[0].total;
             } else {
@@ -44664,7 +44660,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("\n    Annotation Results\n    "), (_vm.annotationresults[0] != null) ? _c('span', {
     staticClass: "searchTotal"
-  }, [_vm._v(_vm._s(_vm.annotationresults.length))]) : _vm._e()])
+  }, [_vm._v(_vm._s(_vm.getAnnotationTotal))]) : _vm._e()])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -44679,6 +44675,50 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */
+/***/ (function(module, exports, __webpack_require__) {
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/**
+ * Created by rolfguescini on 05.07.17.
+ */
+axios = __webpack_require__(20);
+var util = __webpack_require__(40);
+
+function getDocumentsByAnnotations(annotations) {
+    var documentCounts = [];
+    //console.log("GOT annotationCollection: "+ util.inspect(annotations)+" AND: "+typeof  annotations+" AND "+annotations.length);
+
+
+    for (var annotation in annotations) {
+        console.log("ANNOTAITON: " + annotation);
+        var postdata = [];
+        postdata['document_list_of_annotations_name'] = annotation;
+        console.log("MADE POSTDATA: " + JSON.stringify(postdata));
+        window.axios.post('api/searchapi/searchDocument', JSON.stringify(postData)).then(function (res) {
+            if (res.data.results.length > 0) {
+                documentCounts.push(_defineProperty({}, annotation, res.data.hits.total));
+            }
+        });
+    }
+    console.log("RETRUNING: " + JSON.stringify(documentCounts));
+    return documentCounts;
+}
+
+module.exports = {
+    getDocumentsByAnnotations: getDocumentsByAnnotations
+};
 
 /***/ })
 /******/ ]);

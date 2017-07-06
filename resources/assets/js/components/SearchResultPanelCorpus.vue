@@ -18,7 +18,7 @@
                         <span class="iconwrapper"><i class="fa fa-file-text" aria-hidden="true"></i> Documents: {{corpusresultdata._source.corpus_documents.length}}</span>
                         <span class="iconwrapper"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Annotations: {{corpusresultdata._source.annotation_name.length}}</span>
                         <br />
-                        <span><i class="fa fa-creative-commons" aria-hidden="true"></i>: {{corpusresultdata._source.corpus_publication_license_description | arrayToString}}</span>
+                        <span v-if="corpusresultdata._source.corpus_publication_license_description"><i class="fa fa-creative-commons" aria-hidden="true"></i>: {{corpusresultdata._source.corpus_publication_license_description | arrayToString}}</span>
                         <br /> <i class="fa fa-external-link pull-right" aria-hidden="true"></i>
                     </div>
                  </div>
