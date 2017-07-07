@@ -20,6 +20,6 @@ Vue.filter('addHash', function (string) {
     return "#".concat(string);
 });
 
-Vue.filter('latestDate', function (dates) {
-    return dates[dates.length-1];
+Vue.filter('lastElement', function (collection) {
+    return collection[collection.length-1];
 });

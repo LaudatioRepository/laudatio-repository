@@ -14,7 +14,7 @@
                  </div>
                  <div :id="corpusresultdata._id" class="panel-collapse collapse">
                     <div   class="panel-body">
-                        <span class="iconwrapper"><i class="fa fa-university" aria-hidden="true"></i> Published: {{corpusresultdata._source.corpus_publication_publication_date | latestDate}}</span>
+                        <span class="iconwrapper"><i class="fa fa-university" aria-hidden="true"></i> Published: {{corpusresultdata._source.corpus_publication_publication_date | lastElement}}</span>
                         <span class="iconwrapper"><i class="fa fa-file-text" aria-hidden="true" v-if="typeof corpusresultdata._source.corpus_documents != 'undefined'"></i> Documents: {{corpusresultdata._source.corpus_documents.length}}</span>
                         <span class="iconwrapper"><i class="fa fa-pencil-square-o" aria-hidden="true" v-if="typeof corpusresultdata._source.annotation_name != 'undefined'"></i> Annotations: {{corpusresultdata._source.annotation_name.length}}</span>
                         <br />

@@ -8,6 +8,7 @@ const util = require('util');
 
 Vue.component('corpusheader', require('./components/CorpusHeader.vue'));
 Vue.component('metadata-block-header-corpus', require('./components/CorpusMetadataBlockHeader.vue'));
+Vue.component('metadata-block-body-corpus', require('./components/CorpusMetadataBlockBody.vue'));
 
 const browseApp = new Vue({
     el: '#browseapp',

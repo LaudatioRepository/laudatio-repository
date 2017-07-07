@@ -16,7 +16,7 @@
                  </div>
                  <div :id="documentresultdata._id" class="panel-collapse collapse">
                     <div   class="panel-body">
-                        <span class="iconwrapper"><i class="fa fa-university" aria-hidden="true"></i> Published: {{documentresultdata._source.document_publication_publishing_date | latestDate}}</span>
+                        <span class="iconwrapper"><i class="fa fa-university" aria-hidden="true"></i> Published: {{documentresultdata._source.document_publication_publishing_date | lastElement}}</span>
                             <span class="iconwrapper"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Annotations: {{documentresultdata._source.document_list_of_annotations_name.length}}</span>
                         <br /> <i class="fa fa-external-link pull-right" aria-hidden="true"></i>
                     </div>

@@ -41775,8 +41775,8 @@ Vue.filter('addHash', function (string) {
     return "#".concat(string);
 });
 
-Vue.filter('latestDate', function (dates) {
-    return dates[dates.length - 1];
+Vue.filter('lastElement', function (collection) {
+    return collection[collection.length - 1];
 });
 
 /***/ }),
@@ -44131,7 +44131,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "aria-hidden": "true"
       }
-    }), _vm._v(" Published: " + _vm._s(_vm._f("latestDate")(corpusresultdata._source.corpus_publication_publication_date)))]), _vm._v(" "), _c('span', {
+    }), _vm._v(" Published: " + _vm._s(_vm._f("lastElement")(corpusresultdata._source.corpus_publication_publication_date)))]), _vm._v(" "), _c('span', {
       staticClass: "iconwrapper"
     }, [(typeof corpusresultdata._source.corpus_documents != 'undefined') ? _c('i', {
       staticClass: "fa fa-file-text",
@@ -44390,7 +44390,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "aria-hidden": "true"
       }
-    }), _vm._v(" Published: " + _vm._s(_vm._f("latestDate")(documentresultdata._source.document_publication_publishing_date)))]), _vm._v(" "), _c('span', {
+    }), _vm._v(" Published: " + _vm._s(_vm._f("lastElement")(documentresultdata._source.document_publication_publishing_date)))]), _vm._v(" "), _c('span', {
       staticClass: "iconwrapper"
     }, [_c('i', {
       staticClass: "fa fa-pencil-square-o",

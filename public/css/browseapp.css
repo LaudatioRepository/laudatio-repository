@@ -8512,8 +8512,8 @@ button.close {
   min-height: 400px;
   border: rgba(147, 128, 108, 0.1) 1px solid;
   -webkit-box-flex: 0;
-      -ms-flex: 0 0 100em;
-          flex: 0 0 100em;
+      -ms-flex: 0 0 40em;
+          flex: 0 0 40em;
 }
 
 .HolyGrail-content .Blockwrapper .Document-MetadataBlock {
@@ -8610,5 +8610,11 @@ button.close {
     -ms-flex: 0 0 12em;
     flex: 0 0 10em;
   }
+}
+
+/* BOOTSTRAP */
+
+.nav.nav-pills {
+  margin-top: 10px !important;
 }
 

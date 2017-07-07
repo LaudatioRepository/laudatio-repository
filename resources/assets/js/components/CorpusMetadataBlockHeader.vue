@@ -1,6 +1,10 @@
 <template lang="html">
     <div>
-        Corpus-MetadataBlock-header
+        <ul class="nav nav-pills">
+          <li role="presentation" class="active"><a href="#">Project</a></li>
+          <li role="presentation"><a href="#">Annotators</a></li>
+          <li role="presentation"><a href="#">Revisions</a></li>
+        </ul>
     </div>
 </template>
 
