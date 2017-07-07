@@ -298,9 +298,21 @@
   color: #d2c2c2 !important;
 }
 
-.navbar-default .navbar-nav>li>a, .navbar-default .navbar-text {
+.navbar-default .navbar-nav>li>a, .navbar-default .navbar-text, .navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:focus, .navbar-default .navbar-nav>.open>a:hover {
+  background-color: #5e5767 !important;
   color: #d2c2c2 !important;
 }
+
+.dropdown-header, .dropdown-menu>li>a, .navbar-nav>li>.dropdown-menu, .dropdown-header{
+  background-color: #44c7f4 !important;
+  color: silver;
+}
+
+.dropdown-menu>li>a:hover {
+  background-color: #44c7f4 !important;
+  color: cyan !important;
+}
+
 
 @media (min-width: 768px) {
   .HolyGrail-body {
