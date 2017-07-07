@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/', ['uses' => 'IndexController@index'])->middleware('auth');
+Route::get('/', ['uses' => 'IndexController@index']);
 
 Auth::routes();
 

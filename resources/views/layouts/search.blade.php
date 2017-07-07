@@ -31,7 +31,7 @@
 
                 <!-- Branding Image -->
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laudatio') }}
+                    {{ config('app.name', 'Laudatio:Home') }}
                 </a>
             </div>
 
@@ -45,12 +45,13 @@
                 <ul class="nav navbar-nav navbar-right">
                     <!-- Authentication Links -->
                     @if (Auth::guest())
+                        <li class="li-docs no-basic"><a href="{{ route('search') }}">Search</a></li>
                         <li><a href="{{ route('login') }}">Login</a></li>
                         <li><a href="{{ route('register') }}">Register</a></li>
                     @else
                         <li class="li-docs no-basic"><a href="{{ route('gitRepo.route.schema') }}">Schema</a></li>
                         <li class="li-docs no-basic"><a href="{{ route('gitRepo.route') }}">Projects</a></li>
-                        <li class="li-docs no-basic"><a href="{{ route('search') }}">Search</a></li>
+
 
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
