@@ -19,7 +19,7 @@
                         <span class="iconwrapper"><i class="fa fa-pencil-square-o" aria-hidden="true" v-if="typeof corpusresultdata._source.annotation_name != 'undefined'"></i> Annotations: {{corpusresultdata._source.annotation_name.length}}</span>
                         <br />
                         <span v-if="corpusresultdata._source.corpus_publication_license_description"><i class="fa fa-creative-commons" aria-hidden="true"></i>: {{corpusresultdata._source.corpus_publication_license_description | arrayToString}}</span>
-                        <br /> <i class="fa fa-external-link pull-right" aria-hidden="true"></i>
+                        <br /> <a v-bind:href="browseUri(corpusresultdata._id)" ><i class="fa fa-external-link pull-right" aria-hidden="true"></i></a>
                     </div>
                  </div>
             </div>
@@ -30,6 +30,11 @@
 <script>
     export default {
         props: ['corpusresult'],
+        methods: {
+            browseUri: function(id) {
+                return '/browse/corpus/'.concat(id);
+            }
+        },
         mounted() {
             console.log('CorpusResultComponent mounted.')
         }

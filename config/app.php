@@ -180,7 +180,8 @@ return [
         GrahamCampbell\Flysystem\FlysystemServiceProvider::class,
         Vinkla\GitLab\GitLabServiceProvider::class,
         Cviebrock\LaravelElasticsearch\ServiceProvider::class,
-        App\Providers\ElasticServiceProvider::class
+        App\Providers\ElasticServiceProvider::class,
+        Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class
 
     ],
 
@@ -233,6 +234,7 @@ return [
         'Flysystem' => GrahamCampbell\Flysystem\Facades\Flysystem::class,
         'GitLab' => Vinkla\GitLab\Facades\GitLab::class,
         'Elasticsearch' => Cviebrock\LaravelElasticsearch\Facade::class,
+        'JavaScript' => Laracasts\Utilities\JavaScript\JavaScriptFacade::class,
 
     ],
 

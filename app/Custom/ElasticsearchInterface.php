@@ -9,6 +9,7 @@ namespace App\Custom;
 use Illuminate\Http\Request;
 
 interface ElasticsearchInterface {
+    public function getDocument($index,$type,$id);
     public function search($index, $field, $term);
     public function searchGeneral($searchData);
     public function searchCorpusIndex($searchData);

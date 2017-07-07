@@ -7,7 +7,6 @@
 
 require('./bootstrap');
 require('./filters');
-const myFunctions = require('./functions');
 window.Vue = require('vue');
 const util = require('util')
 /**

@@ -8476,7 +8476,7 @@ button.close {
   flex: 1 0 auto;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-  -ms-flex-direction: row;
+  -ms-flex-direction: column;
   flex-direction: column;
 }
 

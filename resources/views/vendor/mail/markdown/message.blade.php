@@ -20,7 +20,7 @@
 
     {{-- Footer --}}
     @slot('footer')
-        @component('mail::footer')
+        @component('mail::layouts.footer')
             © {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
         @endcomponent
     @endslot

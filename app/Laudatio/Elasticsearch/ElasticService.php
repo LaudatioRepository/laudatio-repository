@@ -21,6 +21,21 @@ class ElasticService implements ElasticsearchInterface
 
     }
 
+    public function getDocument($index,$type,$id){
+        $params = [
+            'index' => $index,
+            'type' => $type,
+            'id' => $id
+        ];
+
+        $response = Elasticsearch::get($params);
+        return array(
+            'error' => false,
+            'found' => $response['found'],
+            'result' => $response['_source']
+        );
+    }
+
     /** GET search endpoint
      * @param $index
      * @param $field
@@ -93,6 +108,10 @@ class ElasticService implements ElasticsearchInterface
     }
 
 
+    /**
+     * @param $searchData
+     * @return array
+     */
     public function searchCorpusIndex($searchData)
     {
         $queryBuilder = new QueryBuilder();
@@ -128,6 +147,10 @@ class ElasticService implements ElasticsearchInterface
         );
     }
 
+    /**
+     * @param $searchData
+     * @return array
+     */
     public function searchDocumentIndex($searchData)
     {
 
@@ -163,6 +186,10 @@ class ElasticService implements ElasticsearchInterface
         );
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function searchDocumentIndexWithParam(Request $request)
     {
 
@@ -214,6 +241,10 @@ class ElasticService implements ElasticsearchInterface
     }
 
 
+    /**
+     * @param $searchData
+     * @return array
+     */
     public function getSearchTotal($searchData)
     {
         $resultData = array();
@@ -241,9 +272,10 @@ class ElasticService implements ElasticsearchInterface
         );
     }
 
-
-
-
+    /**
+     * @param $searchData
+     * @return array
+     */
     public function searchAnnotationIndex($searchData)
     {
         $queryBuilder = new QueryBuilder();

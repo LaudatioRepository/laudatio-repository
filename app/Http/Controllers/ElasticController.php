@@ -42,7 +42,6 @@ class ElasticController extends Controller
             '_source_exclude' => ['message']
         ];
 
-
         $results = Elasticsearch::search($params);
         $milliseconds = $results['took'];
         $maxScore     = $results['hits']['max_score'];

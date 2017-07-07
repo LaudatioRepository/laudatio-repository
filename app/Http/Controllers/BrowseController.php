@@ -3,32 +3,34 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Custom\ElasticsearchInterface;
+use JavaScript;
+use Log;
 
 class BrowseController extends Controller
 {
 
-    public function __construct()
-    {
+    protected $ElasticService;
 
+    public function __construct(ElasticsearchInterface $Elasticservice)
+    {
+        $this->ElasticService = $Elasticservice;
     }
 
+    /**
+     * @param $header
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index($header,$id){
-        $isLoggedIn = \Auth::check();
+        $data = $this->ElasticService->getDocument($header,$header,$id);
 
-        $data = null;
-
-        switch ($header){
-            case "corpus":
-                break;
-            case "document":
-                break;
-            case "annotation":
-                break;
-
-        }
-
-        return view('browse.showHeaders',["header" => $header, "header_id" => $id, "header_data" => $data])
-                ->with('isLoggedIn', $isLoggedIn);
+        JavaScript::put([
+            "header" => $header,
+            "header_id" => $id,
+            "header_data" => $data
+        ]);
+        return view('browse.showHeaders');
     }
 
 }
