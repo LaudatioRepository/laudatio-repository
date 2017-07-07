@@ -12,6 +12,8 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <link href="https://cdn.auth0.com/styleguide/4.8.10/index.min.css" rel="stylesheet" />
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
@@ -43,9 +45,9 @@
 
                     <!-- Right Side Of Navbar -->
                     <ul class="nav navbar-nav navbar-right">
+                        <li class="li-docs no-basic"><a href="{{ route('search') }}">Search</a></li>
                         <!-- Authentication Links -->
                         @if (Auth::guest())
-                            <li class="li-docs no-basic"><a href="{{ route('search') }}">Search</a></li>
                             <li><a href="{{ route('login') }}">Login</a></li>
                             <li><a href="{{ route('register') }}">Register</a></li>
                         @else
@@ -78,8 +80,10 @@
 
         @yield('content')
     </div>
-
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}"></script>
+    <footer class="HolyGrail-footer">
+        <div class="Footer">
+            Institut für deutsche Sprache und Linguistik , Computer- und Medienservice
+        </div>
+    </footer>
 </body>
 </html>

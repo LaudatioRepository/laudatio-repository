@@ -43,9 +43,9 @@
 
                 <!-- Right Side Of Navbar -->
                 <ul class="nav navbar-nav navbar-right">
+                    <li class="li-docs no-basic"><a href="{{ route('search') }}">Search</a></li>
                     <!-- Authentication Links -->
                     @if (Auth::guest())
-                        <li class="li-docs no-basic"><a href="{{ route('search') }}">Search</a></li>
                         <li><a href="{{ route('login') }}">Login</a></li>
                         <li><a href="{{ route('register') }}">Register</a></li>
                     @else

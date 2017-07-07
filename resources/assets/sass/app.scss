@@ -293,6 +293,15 @@
   text-align: center;
 }
 
+.navbar-default, .Footer {
+  background-color: #5e5767 !important;
+  color: #d2c2c2 !important;
+}
+
+.navbar-default .navbar-nav>li>a, .navbar-default .navbar-text {
+  color: #d2c2c2 !important;
+}
+
 @media (min-width: 768px) {
   .HolyGrail-body {
     -webkit-box-orient: horizontal;
@@ -345,6 +354,10 @@ i.fa.fa-expand {
 span.badge {
   font-size: 10px !important;
   padding: 4px 8px !important;
+}
+
+.jumbotron {
+  background-color: #88889c !important;
 }
 
 
