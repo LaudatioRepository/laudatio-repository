@@ -35,7 +35,6 @@
 
 .Header {
   padding: 1.5em;
-  background-color: hsla(31,15%,50%,.1);
   text-align: center
 }
 @media (min-width:768px) {
@@ -170,7 +169,7 @@
   -webkit-flex-direction: column;
   -ms-flex-direction: column;
   flex-direction: column;
-  max-width: 40em;
+  max-width: 55em;
 }
 
 .HolyGrail-content .Blockwrapper .Corpus-MetadataBlock {
@@ -234,6 +233,17 @@
   color: #d2c2c2 !important;
 }
 
+#browseapp .HolyGrail-header {
+  background: rgba(61, 255, 106, 0.1);
+  border: rgba(147, 128, 108, 0.1) 1px solid;
+  border-radius: 10px;
+}
+
+#annotators, #revisions, #annotations {
+  max-height: 400px;
+  overflow: auto;
+}
+
 
 @media (min-width: 768px) {
   .HolyGrail-body {
@@ -259,9 +269,41 @@
     -ms-flex: 0 0 12em;
     flex: 0 0 10em
   }
+/*
+  .Corpus-MetadataBlock-header ul {
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  .Corpus-MetadataBlock-header ul li{
+    flex-grow: 1;
+  }
+  */
 }
 
 /* BOOTSTRAP */
 .nav.nav-pills{
   margin-top: 10px !important;
+}
+
+#corpusheader {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+
+#corpusheader .table, .text-truncate, label{
+  max-width: 50em !important;
 }

@@ -20,7 +20,7 @@
                             <metadata-block-header-corpus :headerdata="headerdata" :headerid="headerid"></metadata-block-header-corpus>
                         </div>
                         <div class="Corpus-MetadataBlock-body">
-                            <metadata-block-body-corpus :headerdata="headerdata" :bodyid="headerid"></metadata-block-body-corpus>
+                            <metadata-block-body-corpus :headerdata="headerdata" :headerid="headerid"></metadata-block-body-corpus>
                         </div>
                     </div>
                     <div class="Document-MetadataBlock" v-show="header == 'document'">

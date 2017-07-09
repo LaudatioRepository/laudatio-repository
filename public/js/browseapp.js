@@ -42251,6 +42251,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata'],
@@ -42267,33 +42268,51 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _vm._m(0)
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', [_c('ul', {
-    staticClass: "nav nav-pills"
-  }, [_c('li', {
-    staticClass: "active",
+    staticClass: "nav nav-pills nav-fill",
     attrs: {
-      "role": "presentation"
+      "role": "tablist"
+    }
+  }, [_c('li', {
+    staticClass: "nav-link active",
+    attrs: {
+      "role": "tab"
     }
   }, [_c('a', {
     attrs: {
-      "href": "#"
+      "href": "#project",
+      "data-toggle": "pill"
     }
   }, [_vm._v("Project")])]), _vm._v(" "), _c('li', {
+    staticClass: "nav-link",
     attrs: {
-      "role": "presentation"
+      "role": "tab"
     }
   }, [_c('a', {
     attrs: {
-      "href": "#"
+      "href": "#annotators",
+      "data-toggle": "pill"
     }
   }, [_vm._v("Annotators")])]), _vm._v(" "), _c('li', {
+    staticClass: "nav-link",
     attrs: {
-      "role": "presentation"
+      "role": "tab"
     }
   }, [_c('a', {
     attrs: {
-      "href": "#"
+      "href": "#revisions",
+      "data-toggle": "pill"
     }
-  }, [_vm._v("Revisions")])])])])
+  }, [_vm._v("Revisions")])]), _vm._v(" "), _c('li', {
+    staticClass: "nav-link",
+    attrs: {
+      "role": "tab"
+    }
+  }, [_c('a', {
+    attrs: {
+      "href": "#annotations",
+      "data-toggle": "pill"
+    }
+  }, [_vm._v("Annotations")])])])])
 }]}
 module.exports.render._withStripped = true
 if (false) {
@@ -42504,9 +42523,59 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata'],
+    data: function data() {
+        return {
+            annotators: [],
+            revisions: []
+        };
+    },
+    computed: {
+        getAnnotators: function getAnnotators() {
+            if (this.headerdata.corpus_annotator_forename.length > 0 && this.headerdata.corpus_annotator_surname.length > 0 && this.headerdata.corpus_annotator_forename.length == this.headerdata.corpus_annotator_surname.length) {
+                for (var i = 0; i < this.headerdata.corpus_annotator_forename.length; i++) {
+                    this.annotators.push(this.headerdata.corpus_annotator_forename[i].concat(" ").concat(this.headerdata.corpus_annotator_surname[i]));
+                }
+            }
+            return this.annotators;
+        },
+        getRevisions: function getRevisions() {
+            if (this.headerdata.corpus_version.length > 0 && this.headerdata.corpus_version_publishing_date.length > 0 && this.headerdata.corpus_version_description.length > 0 && this.headerdata.corpus_version.length == this.headerdata.corpus_version_description.length && this.headerdata.corpus_version.length == this.headerdata.corpus_version_publishing_date.length) {
+                for (var j = 0; j < this.headerdata.corpus_version.length; j++) {
+                    var revisiondata = {};
+                    revisiondata['date'] = this.headerdata.corpus_version_publishing_date[j];
+                    revisiondata['version'] = this.headerdata.corpus_version[j];
+                    revisiondata['description'] = this.headerdata.corpus_version_description[j];
+                    this.revisions.push(revisiondata);
+                }
+            }
+            return this.revisions;
+        }
+
+    },
     mounted: function mounted() {
         console.log('CorpusMetadataBlockBody mounted.');
     }
@@ -42518,10 +42587,75 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
+    staticClass: "tab-content"
+  }, [_c('div', {
+    staticClass: "tab-pane fade in active panel panel-default",
     attrs: {
-      "id": "corpus-description"
+      "id": "project"
     }
-  }, [_vm._v("\n    " + _vm._s(_vm._f("lastElement")(_vm.headerdata.corpus_encoding_project_description)) + "\n")])
+  }, [_c('div', {
+    staticClass: "panel-body"
+  }, [_vm._v(_vm._s(_vm._f("lastElement")(_vm.headerdata.corpus_encoding_project_description)))])]), _vm._v(" "), _c('div', {
+    staticClass: "tab-pane fade",
+    attrs: {
+      "id": "annotators"
+    }
+  }, [_c('ul', {
+    staticClass: "list-group"
+  }, _vm._l((_vm.getAnnotators), function(annotator) {
+    return _c('li', {
+      key: annotator,
+      staticClass: "list-group-item",
+      attrs: {
+        "annotator": annotator
+      }
+    }, [_c('i', {
+      staticClass: "fa fa-user",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    }), _vm._v(" " + _vm._s(annotator))])
+  }))]), _vm._v(" "), _c('div', {
+    staticClass: "tab-pane fade",
+    attrs: {
+      "id": "revisions"
+    }
+  }, [_c('ul', {
+    staticClass: "list-group"
+  }, _vm._l((_vm.getRevisions), function(revision) {
+    return _c('li', {
+      key: revision,
+      staticClass: "list-group-item",
+      attrs: {
+        "revision": revision
+      }
+    }, [_c('i', {
+      staticClass: "fa fa-code-fork",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    }), _vm._v(" " + _vm._s(revision.date.concat(' ').concat(revision.version).concat(' ').concat(revision.description)) + "\n            ")])
+  }))]), _vm._v(" "), _c('div', {
+    staticClass: "tab-pane fade",
+    attrs: {
+      "id": "annotations"
+    }
+  }, [_c('ul', {
+    staticClass: "list-group"
+  }, _vm._l((_vm.headerdata.annotation_name), function(annotation) {
+    return _c('li', {
+      key: annotation,
+      staticClass: "list-group-item",
+      attrs: {
+        "annotation": annotation
+      }
+    }, [_c('i', {
+      staticClass: "fa fa-pencil-square-o",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    }), _vm._v(" " + _vm._s(annotation) + "\n            ")])
+  }))])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
