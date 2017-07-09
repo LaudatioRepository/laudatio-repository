@@ -8590,6 +8590,7 @@ button.close {
   border-radius: 10px;
 }
 
+#project,
 #annotators,
 #revisions,
 #annotations {
