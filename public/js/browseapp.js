@@ -42550,7 +42550,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     data: function data() {
         return {
             annotators: [],
-            revisions: []
+            revisions: [],
+            documentsByAnnotation: []
         };
     },
     computed: {
@@ -42572,9 +42573,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     this.revisions.push(revisiondata);
                 }
             }
-            return this.revisions;
-        }
+            return this.revisions.reverse();
+        },
+        getDocumentsByAnnotation: function getDocumentsByAnnotation() {
+            var _this = this;
 
+            if (this.headerdata.annotation_name.length > 0) {
+                var annotationterms = [];
+                for (var k = 0; k < this.headerdata.annotation_name.length; k++) {
+                    annotationterms.push({
+                        'document_list_of_annotations_name': '' + this.headerdata.annotation_name[k] + ''
+                    });
+                }
+
+                var postAnnotationData = {
+                    searchData: annotationterms
+                };
+                console.log("postAnnotationData: " + postAnnotationData);
+                window.axios.post('/api/searchapi/getSearchTotal', postAnnotationData).then(function (documentsByAnnotationRes) {
+                    if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
+                        _this.documentsByAnnotation.push(documentsByAnnotationRes.data.results);
+                    }
+                });
+            }
+            //return this.documentsByAnnotation;
+        }
     },
     mounted: function mounted() {
         console.log('CorpusMetadataBlockBody mounted.');
@@ -42642,7 +42665,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('ul', {
     staticClass: "list-group"
-  }, _vm._l((_vm.headerdata.annotation_name), function(annotation) {
+  }, _vm._l((_vm.headerdata.annotation_name), function(annotation, index) {
     return _c('li', {
       key: annotation,
       staticClass: "list-group-item",
@@ -42654,7 +42677,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "aria-hidden": "true"
       }
-    }), _vm._v(" " + _vm._s(annotation) + "\n            ")])
+    }), _vm._v(" " + _vm._s(annotation) + " (" + _vm._s(_vm.headerdata.annotation_type[index]) + ")\n            ")])
   }))])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true

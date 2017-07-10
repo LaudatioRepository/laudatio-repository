@@ -17,8 +17,8 @@
         </div>
         <div id="annotations" class="tab-pane fade">
             <ul class="list-group">
-                <li v-for="annotation in headerdata.annotation_name" v-bind:annotation="annotation" :key="annotation" class="list-group-item">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{annotation}}
+                <li v-for="(annotation, index) in headerdata.annotation_name" v-bind:annotation="annotation" :key="annotation" class="list-group-item">
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{annotation}} ({{headerdata.annotation_type[index]}})
                 </li>
             </ul>
         </div>
@@ -31,7 +31,8 @@
         data: function(){
             return {
                 annotators: [],
-                revisions: []
+                revisions: [],
+                documentsByAnnotation: []
             }
 
         },
@@ -62,9 +63,33 @@
                         this.revisions.push(revisiondata);
                     }
               }
-              return this.revisions
-          }
+              return this.revisions.reverse()
+          },
+            getDocumentsByAnnotation: function() {
+              if(this.headerdata.annotation_name.length > 0) {
+                  var annotationterms = [];
+                  for(var k = 0; k < this.headerdata.annotation_name.length; k++){
+                      annotationterms.push(
+                          {
+                              'document_list_of_annotations_name': ''+this.headerdata.annotation_name[k]+''
+                          }
+                      );
+                  }
 
+                  let postAnnotationData = {
+                      searchData: annotationterms,
+                  };
+                  console.log("postAnnotationData: "+postAnnotationData)
+                  window.axios.post('/api/searchapi/getSearchTotal',postAnnotationData).then(documentsByAnnotationRes => {
+                      if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
+                          this.documentsByAnnotation.push(
+                              documentsByAnnotationRes.data.results
+                        );
+                      }
+                  });
+              }
+                //return this.documentsByAnnotation;
+            }
         },
         mounted() {
             console.log('CorpusMetadataBlockBody mounted.')
