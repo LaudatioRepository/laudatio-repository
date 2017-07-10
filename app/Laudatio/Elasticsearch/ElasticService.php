@@ -82,16 +82,14 @@ class ElasticService implements ElasticsearchInterface
      */
     public function searchGeneral($searchData)
     {
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $queryBody = $queryBuilder->buildMultiMatchQuery($searchData);
+
         $params = [
-            'index' => $searchData->index_name,
+            'index' => '_all',
             'type' => '',
-            'body' => [
-                'query' => [
-                    'match' => [
-                        ''.$searchData->field.'' => $searchData->queryString
-                    ]
-                ]
-            ],
+            'body' => $queryBody,
             '_source_exclude' => ['message']
         ];
 
@@ -99,12 +97,14 @@ class ElasticService implements ElasticsearchInterface
         $results = Elasticsearch::search($params);
         $milliseconds = $results['took'];
         $maxScore     = $results['hits']['max_score'];
+        $total = $results['hits']['total'];
 
         return array(
             'error' => false,
             'milliseconds' => $milliseconds,
             'maxscore' => $maxScore,
-            'results' => $results['hits']['hits']
+            'results' => $results['hits']['hits'],
+            'total' => $total
         );
     }
 

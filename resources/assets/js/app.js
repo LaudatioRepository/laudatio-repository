@@ -55,16 +55,20 @@ const app = new Vue({
         askElastic: function(search) {
             this.corpusresults = [];
             this.searches.push(search.generalSearchTerm);
-            window.axios.defaults.headers.post['Content-Type'] = 'application/json';
             let postData = {
-                index_name: "corpus",
-                field: "corpus_author_forename",
-                queryString: search.generalSearchTerm
+                searchData: {
+                    fields: ["corpus_title","corpus_editor_forename","corpus_editor_surname","corpus_publication_publisher","corpus_documents","corpus_encoding_format","corpus_encoding_tool","corpus_encoding_project_description","annotation_name","annotation_type","corpus_annotator_forename","corpus_annotator_surname"],
+                    query: ''+search.generalSearchTerm+''
+                }
             };
-
-            window.axios.post('api/searchapi/searchCorpus',JSON.stringify(postData)).then(res => {
+            console.log("POSTDATA: "+util.inspect(postData));
+            window.axios.post('api/searchapi/searchGeneral',JSON.stringify(postData)).then(res => {
                 if(res.data.results.length > 0) {
-                    this.corpusresults.push({search: search, results: res.data.results, total: 5})
+                    this.corpusresults.push({
+                        search: search.generalSearchTerm,
+                        results: res.data.results,
+                        total: res.data.total
+                    })
                 }
             });
         },
@@ -145,7 +149,6 @@ const app = new Vue({
                             searchData: documentRefs,
                         };
 
-                        console.log(postDocumentData)
                         window.axios.post('api/searchapi/getCorpusByDocument',postDocumentData).then(corpusByDocumentRes => {
                             if (Object.keys(corpusByDocumentRes.data.results).length > 0) {
 

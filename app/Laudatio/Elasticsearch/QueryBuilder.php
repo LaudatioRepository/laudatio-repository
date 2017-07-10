@@ -10,6 +10,7 @@ namespace App\Laudatio\Elasticsearch;
 
 use ONGR\ElasticsearchDSL\Query\Compound\BoolQuery;
 use ONGR\ElasticsearchDSL\Query\FullText\MatchQuery;
+use ONGR\ElasticsearchDSL\Query\FullText\MultiMatchQuery;
 use ONGR\ElasticsearchDSL\Search;
 
 class QueryBuilder
@@ -45,6 +46,16 @@ class QueryBuilder
         $search = new Search();
         $search->addQuery($matchQuery);
 
+        $queryArray = $search->toArray();
+
+        return $queryArray;
+    }
+
+    public function buildMultiMatchQuery($data){
+        $multiMatchQuery = null;
+        $multiMatchQuery = new MultiMatchQuery($data['fields'],$data['query']);
+        $search = new Search();
+        $search->addQuery($multiMatchQuery);
         $queryArray = $search->toArray();
 
         return $queryArray;
