@@ -42549,10 +42549,37 @@ var app = new Vue({
                 window.axios.post('api/searchapi/searchDocument', JSON.stringify(postData)).then(function (res) {
                     _this3.documentsearched = true;
                     if (res.data.results.length > 0) {
-                        _this3.documentresults.push({
-                            search: documentSearchObject.document_title,
-                            results: res.data.results,
-                            total: res.data.total
+                        console.log(res.data.results);
+                        var documentRefs = [];
+
+                        for (var j = 0; j < res.data.results.length; j++) {
+                            documentRefs.push({
+                                'corpus_documents': '' + res.data.results[j]._source.document_id[0] + ''
+                            });
+                        }
+
+                        var postDocumentData = {
+                            searchData: documentRefs
+                        };
+
+                        console.log(postDocumentData);
+                        window.axios.post('api/searchapi/getCorpusByDocument', postDocumentData).then(function (corpusByDocumentRes) {
+                            if (Object.keys(corpusByDocumentRes.data.results).length > 0) {
+
+                                _this3.documentresults.push({
+                                    search: documentSearchObject.document_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                    corpusByDocument: corpusByDocumentRes.data.results
+                                });
+                            } else {
+                                _this3.documentresults.push({
+                                    search: documentSearchObject.document_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                    corpusByDocument: []
+                                });
+                            }
                         });
                     }
                 });
@@ -44376,11 +44403,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['documentresult'],
@@ -44428,7 +44450,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }, [_c('div', {
       staticClass: "panel-body"
-    }, [_c('span', {
+    }, [(typeof _vm.documentresult.corpusByDocument[documentresultdata._source.document_id[0]].corpus_title != 'undefined') ? _c('div', {
+      staticClass: "iconwrapper"
+    }, [_c('i', {
+      staticClass: "fa fa-book",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    }), _vm._v(" Corpus:  " + _vm._s(_vm._f("arrayToString")(_vm.fromCorpus = _vm.documentresult.corpusByDocument[documentresultdata._source.document_id[0]].corpus_title)))]) : _vm._e(), _vm._v(" "), _c('span', {
       staticClass: "iconwrapper"
     }, [_c('i', {
       staticClass: "fa fa-university",

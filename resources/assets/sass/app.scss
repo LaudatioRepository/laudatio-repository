@@ -36,8 +36,8 @@
 
 .Header {
   padding: 1.5em;
-  background-color: hsla(31,15%,50%,.1);
-  text-align: center
+  background: hsla(31,15%,50%,.1) url("../images/laureltre_log.png") no-repeat fixed 0% 0%;
+  text-align: center;
 }
 @media (min-width:768px) {
   .Header {
@@ -181,7 +181,7 @@
   border-radius: 5px;
   margin-bottom: 20px;
   flex: 1;
-  min-height: 270px;
+  min-height: 370px;
   max-width: 40em;
 }
 
@@ -194,7 +194,7 @@
   border-radius: 5px;
   margin-bottom: 20px;
   flex: 1;
-  min-height: 270px;
+  min-height: 370px;
   border: hsla(31,15%,50%,.1) 1px solid;
   min-width: 40em;
 }
@@ -372,6 +372,9 @@ span.badge {
   background-color: #88889c !important;
 }
 
+.list-group .list-group-item:nth-child(odd) {
+  background-color: hsla(31,15%,50%,.1);
+}
 
 /* FONT-AWESOME */
 .iconwrapper {

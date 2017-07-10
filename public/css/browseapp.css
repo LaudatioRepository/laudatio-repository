@@ -8368,6 +8368,21 @@ button.close {
   flex: none;
 }
 
+#browseapp .HolyGrail-header .overlay {
+  /*background: rgba(61, 255, 106, 0.1) url("../images/laureltre_log.png") no-repeat  fixed 0% 10% !important;*/
+  background-image: url(/images/laureltre_log.png?0e1202a8e9ec2c99c67393932cc1c6c5);
+  background-position-x: 3%;
+  background-position-y: 10%;
+  background-size: 16%;
+  background-repeat-x: no-repeat;
+  background-repeat-y: no-repeat;
+  background-attachment: fixed;
+  background-origin: initial;
+  background-clip: initial;
+  background-color: rgba(61, 255, 106, 0.1);
+  opacity: 0.8;
+}
+
 .Header {
   padding: 1.5em;
   text-align: center;
@@ -8661,6 +8676,10 @@ button.close {
 #corpusheader .table,
 .text-truncate,
 label {
-  max-width: 50em !important;
+  max-width: 60em !important;
+}
+
+.list-group .list-group-item:nth-child(odd) {
+  background-color: rgba(147, 128, 108, 0.1);
 }
 

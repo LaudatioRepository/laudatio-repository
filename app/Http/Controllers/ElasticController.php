@@ -147,7 +147,7 @@ class ElasticController extends Controller
 
     public function getSearchTotal(Request $request)
     {
-        $result = $this->ElasticService->getSearchTotal($request->searchData);
+        $result = $this->ElasticService->getSearchTotal($request->searchData,$request->index);
 
         return response(
             $result,
@@ -155,6 +155,13 @@ class ElasticController extends Controller
         );
     }
 
+    public function getCorpusByDocument(Request $request){
+        $result = $this->ElasticService->getCorpusByDocument($request->searchData);
+        return response(
+            $result,
+            200
+        );
+    }
 
 
 

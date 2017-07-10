@@ -15,7 +15,7 @@ interface ElasticsearchInterface {
     public function searchCorpusIndex($searchData);
     public function searchDocumentIndex($searchData);
     public function searchDocumentIndexWithParam(Request $request);
-    public function getSearchTotal($searchData);
+    public function getSearchTotal($searchData,$index);
     public function searchAnnotationIndex($searchData);
-
+    public function getCorpusByDocument($searchData);
 }

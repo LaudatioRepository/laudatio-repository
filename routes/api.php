@@ -35,6 +35,7 @@ Route::group(array('prefix' => 'searchapi'), function() {
     Route::post('searchDocumentWithParam','ElasticController@searchDocumentIndexWithParam');
     Route::post('getSearchTotal','ElasticController@getSearchTotal');
     Route::post('searchAnnotation','ElasticController@searchAnnotationIndex');
+    Route::post('getCorpusByDocument','ElasticController@getCorpusByDocument');
 });
 
 

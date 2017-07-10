@@ -2,11 +2,14 @@
 
 @section('content')
 
-    <div id="browseapp" class="HolyGrail">
+    <div class="HolyGrail">
         <header class="HolyGrail-header">
-            <div class="Header Header--cozy" role="banner">
-                <corpusheader :headerdata="headerdata"></corpusheader>
+            <div class="overlay">
+                <div class="Header Header--cozy" role="banner">
+                    <corpusheader :headerdata="headerdata"></corpusheader>
+                </div>
             </div>
+
 
         </header>
         <main class="HolyGrail-body">

@@ -18,7 +18,7 @@
         <div id="annotations" class="tab-pane fade">
             <ul class="list-group">
                 <li v-for="(annotation, index) in headerdata.annotation_name" v-bind:annotation="annotation" :key="annotation" class="list-group-item">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{annotation}} ({{headerdata.annotation_type[index]}})
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{annotation}} ({{headerdata.annotation_type[index]}}) {{getDocumentsByAnnotation}} <span class="badge" v-if="typeof documentsByAnnotation[0] != 'undefined'">{{documentsByAnnotation[0][annotation]}}</span>
                 </li>
             </ul>
         </div>
@@ -75,9 +75,14 @@
                           }
                       );
                   }
+                  var pathArray = window.location.pathname.split( '/' );
+                  var corpus_id = pathArray[pathArray.length-1];
+
 
                   let postAnnotationData = {
                       searchData: annotationterms,
+                      index: 'document',
+                      corpus_id: corpus_id
                   };
                   console.log("postAnnotationData: "+postAnnotationData)
                   window.axios.post('/api/searchapi/getSearchTotal',postAnnotationData).then(documentsByAnnotationRes => {

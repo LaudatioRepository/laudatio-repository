@@ -130,11 +130,43 @@ const app = new Vue({
                 window.axios.post('api/searchapi/searchDocument',JSON.stringify(postData)).then(res => {
                     this.documentsearched = true;
                     if(res.data.results.length > 0) {
-                        this.documentresults.push({
-                            search: documentSearchObject.document_title,
-                            results: res.data.results,
-                            total: res.data.total
-                        })
+                        console.log(res.data.results)
+                        var documentRefs = [];
+
+                        for(var j = 0; j< res.data.results.length; j++) {
+                            documentRefs.push(
+                                {
+                                    'corpus_documents': ''+res.data.results[j]._source.document_id[0]+''
+                                }
+                            );
+                        }
+
+                        let postDocumentData = {
+                            searchData: documentRefs,
+                        };
+
+                        console.log(postDocumentData)
+                        window.axios.post('api/searchapi/getCorpusByDocument',postDocumentData).then(corpusByDocumentRes => {
+                            if (Object.keys(corpusByDocumentRes.data.results).length > 0) {
+
+                                this.documentresults.push({
+                                    search: documentSearchObject.document_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                    corpusByDocument: corpusByDocumentRes.data.results
+                                })
+
+                            }
+                            else{
+                                this.documentresults.push({
+                                    search: documentSearchObject.document_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                    corpusByDocument: []
+                                })
+                            }
+                        });
+
                     }
                 });
             }

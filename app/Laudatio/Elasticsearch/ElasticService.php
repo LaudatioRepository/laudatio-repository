@@ -25,7 +25,8 @@ class ElasticService implements ElasticsearchInterface
         $params = [
             'index' => $index,
             'type' => $type,
-            'id' => $id
+            'id' => $id,
+            '_source_exclude' => ['message']
         ];
 
         $response = Elasticsearch::get($params);
@@ -245,7 +246,7 @@ class ElasticService implements ElasticsearchInterface
      * @param $searchData
      * @return array
      */
-    public function getSearchTotal($searchData)
+    public function getSearchTotal($searchData,$index)
     {
         $resultData = array();
 
@@ -254,8 +255,9 @@ class ElasticService implements ElasticsearchInterface
 
         foreach($searchData as $queryData){
             $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+            //Log::info("queryBody: ".print_r($queryBody,1));
             $params = [
-                'index' => 'document',
+                'index' => $index,
                 'type' => '',
                 'body' => $queryBody,
                 'filter_path' => ['hits.total']
@@ -266,6 +268,38 @@ class ElasticService implements ElasticsearchInterface
             $resultData[$termData[0]] = $results['hits']['total'];
         }//end foreach queries
 
+        return array(
+            'error' => false,
+            'results' => $resultData
+        );
+    }
+
+
+    public function getCorpusByDocument($searchData) {
+        $resultData = array();
+
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        foreach($searchData as $queryData){
+            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+            $params = [
+                'index' => 'corpus',
+                'type' => 'corpus',
+                'body' => $queryBody,
+                '_source' => ["corpus_title"],
+                'filter_path' => ['hits.hits']
+            ];
+            $results = Elasticsearch::search($params);
+
+            $termData = array_values($queryData);
+            if(count($results['hits']['hits']) > 0){
+                $resultData[$termData[0]] = $results['hits']['hits'][0]['_source'];
+            }
+            else{
+                $resultData[$termData[0]] = array();
+            }
+
+        }//end foreach queries
         return array(
             'error' => false,
             'results' => $resultData

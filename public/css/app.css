@@ -8370,7 +8370,7 @@ button.close {
 
 .Header {
   padding: 1.5em;
-  background-color: rgba(147, 128, 108, 0.1);
+  background: rgba(147, 128, 108, 0.1) url(/images/laureltre_log.png?0e1202a8e9ec2c99c67393932cc1c6c5) no-repeat fixed 0% 0%;
   text-align: center;
 }
 
@@ -8510,7 +8510,7 @@ button.close {
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
-  min-height: 270px;
+  min-height: 370px;
   max-width: 40em;
 }
 
@@ -8530,7 +8530,7 @@ button.close {
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
-  min-height: 270px;
+  min-height: 370px;
   border: rgba(147, 128, 108, 0.1) 1px solid;
   min-width: 40em;
 }
@@ -8745,6 +8745,10 @@ span.badge {
 
 .jumbotron {
   background-color: #88889c !important;
+}
+
+.list-group .list-group-item:nth-child(odd) {
+  background-color: rgba(147, 128, 108, 0.1);
 }
 
 /* FONT-AWESOME */

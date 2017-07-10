@@ -5631,7 +5631,7 @@ var isHTMLTag = makeMap(
 // contain child elements.
 var isSVG = makeMap(
   'svg,animate,circle,clippath,cursor,defs,desc,ellipse,filter,font-face,' +
-  'foreignObject,g,glyph,image,line,marker,mask,missing-glyph,path,pattern,' +
+  'foreignObject,g,glyph,images,line,marker,mask,missing-glyph,path,pattern,' +
   'polygon,polyline,rect,switch,symbol,text,textpath,tspan,use,view',
   true
 );
@@ -33258,7 +33258,7 @@ jQuery.event = {
 	special: {
 		load: {
 
-			// Prevent triggered image.load events from bubbling to window.load
+			// Prevent triggered images.load events from bubbling to window.load
 			noBubble: true
 		},
 		focus: {
@@ -42433,35 +42433,35 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "aria-hidden": "true"
     }
-  }) : _vm._e(), _vm._v(" " + _vm._s(_vm._f("lastElement")(_vm.headerdata.corpus_publication_publication_date)))])]), _vm._v(" "), _c('td', [_c('span', {
+  }) : _vm._e(), _vm._v(" "), _c('strong', [_vm._v("Published: " + _vm._s(_vm._f("lastElement")(_vm.headerdata.corpus_publication_publication_date)))])])]), _vm._v(" "), _c('td', [_c('span', {
     staticClass: "iconwrapper"
   }, [(typeof _vm.headerdata.corpus_documents != 'undefined') ? _c('i', {
     staticClass: "fa fa-file-text fa-2x",
     attrs: {
       "aria-hidden": "true"
     }
-  }) : _vm._e(), _vm._v(" " + _vm._s(_vm.headerdata.corpus_documents.length))])]), _vm._v(" "), _c('td', [_c('span', {
+  }) : _vm._e(), _vm._v(" "), _c('strong', [_vm._v(_vm._s(_vm.headerdata.corpus_documents.length) + " Documents")])])]), _vm._v(" "), _c('td', [_c('span', {
     staticClass: "iconwrapper"
   }, [(typeof _vm.headerdata.annotation_name != 'undefined') ? _c('i', {
     staticClass: "fa fa-pencil-square-o fa-2x",
     attrs: {
       "aria-hidden": "true"
     }
-  }) : _vm._e(), _vm._v(" " + _vm._s(_vm.headerdata.annotation_name.length))])])]), _vm._v(" "), _c('tr', [_c('td', [_c('span', {
+  }) : _vm._e(), _vm._v(" "), _c('strong', [_vm._v(_vm._s(_vm.headerdata.annotation_name.length) + " Annotations")])])])]), _vm._v(" "), _c('tr', [_c('td', [_c('span', {
     staticClass: "iconwrapper"
   }, [(typeof _vm.headerdata.corpus_size_value != 'undefined') ? _c('i', {
     staticClass: "fa fa-cubes fa-2x",
     attrs: {
       "aria-hidden": "true"
     }
-  }) : _vm._e(), _vm._v(" " + _vm._s(_vm._f("arrayToString")(_vm.headerdata.corpus_size_value)))])]), _vm._v(" "), _c('td', [_c('span', {
+  }) : _vm._e(), _vm._v(" "), _c('strong', [_vm._v(_vm._s(_vm._f("arrayToString")(_vm.headerdata.corpus_size_value)) + " Tokens")])])]), _vm._v(" "), _c('td', [_c('span', {
     staticClass: "iconwrapper"
   }, [(typeof _vm.headerdata.corpus_size_value != 'undefined') ? _c('i', {
     staticClass: "fa fa-language fa-2x",
     attrs: {
       "aria-hidden": "true"
     }
-  }) : _vm._e(), _vm._v(" " + _vm._s(_vm.headerdata.corpus_languages_language[0]))])]), _vm._v(" "), _c('td', [_vm._v(" ")])])])])
+  }) : _vm._e(), _vm._v(" "), _c('strong', [_vm._v(_vm._s(_vm.headerdata.corpus_languages_language[0]))])])]), _vm._v(" "), _c('td', [_vm._v(" ")])])])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -42585,9 +42585,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         'document_list_of_annotations_name': '' + this.headerdata.annotation_name[k] + ''
                     });
                 }
+                var pathArray = window.location.pathname.split('/');
+                var corpus_id = pathArray[pathArray.length - 1];
 
                 var postAnnotationData = {
-                    searchData: annotationterms
+                    searchData: annotationterms,
+                    index: 'document',
+                    corpus_id: corpus_id
                 };
                 console.log("postAnnotationData: " + postAnnotationData);
                 window.axios.post('/api/searchapi/getSearchTotal', postAnnotationData).then(function (documentsByAnnotationRes) {
@@ -42677,7 +42681,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "aria-hidden": "true"
       }
-    }), _vm._v(" " + _vm._s(annotation) + " (" + _vm._s(_vm.headerdata.annotation_type[index]) + ")\n            ")])
+    }), _vm._v(" " + _vm._s(annotation) + " (" + _vm._s(_vm.headerdata.annotation_type[index]) + ") " + _vm._s(_vm.getDocumentsByAnnotation) + " "), (typeof _vm.documentsByAnnotation[0] != 'undefined') ? _c('span', {
+      staticClass: "badge"
+    }, [_vm._v(_vm._s(_vm.documentsByAnnotation[0][annotation]))]) : _vm._e()])
   }))])])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
