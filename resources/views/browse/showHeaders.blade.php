@@ -5,8 +5,11 @@
     <div class="HolyGrail">
         <header class="HolyGrail-header">
             <div class="overlay">
-                <div class="Header Header--cozy" role="banner">
-                    <corpusheader :headerdata="headerdata"></corpusheader>
+                <div class="Header Header--cozy" role="banner" v-show="header == 'corpus'">
+                    <corpusheader :headerdata="headerdata" :header="header"></corpusheader>
+                </div>
+                <div class="Header Header--cozy" role="banner" v-show="header == 'document'">
+                    <documentheader :headerdata="headerdata" :header="header"></documentheader>
                 </div>
             </div>
 
@@ -14,24 +17,28 @@
         </header>
         <main class="HolyGrail-body">
             <nav class="HolyGrail-nav u-textCenter">
-                Menusdf
+               <div class="list-group">
+                   <a href="#" class="list-group-item">Corpus</a>
+                   <a href="#" class="list-group-item">Document</a>
+                   <a href="#" class="list-group-item">Annotation</a>
+               </div>
             </nav>
             <article class="HolyGrail-content">
                 <div class="Blockwrapper">
                     <div class="Corpus-MetadataBlock" v-show="header == 'corpus'">
                         <div class="Corpus-MetadataBlock-header">
-                            <metadata-block-header-corpus :headerdata="headerdata" :headerid="headerid"></metadata-block-header-corpus>
+                            <metadata-block-header-corpus :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-header-corpus>
                         </div>
                         <div class="Corpus-MetadataBlock-body">
-                            <metadata-block-body-corpus :headerdata="headerdata" :headerid="headerid"></metadata-block-body-corpus>
+                            <metadata-block-body-corpus :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-body-corpus>
                         </div>
                     </div>
                     <div class="Document-MetadataBlock" v-show="header == 'document'">
                         <div class="Document-MetadataBlock-header">
-                            Document-MetadataBlock-header
+                            <metadata-block-header-document :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-header-document>
                         </div>
                         <div class="Document-MetadataBlock-body">
-                            Document-MetadataBlock-body
+                            <metadata-block-body-document :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-body-document>
                         </div>
                     </div>
                     <div class="Annotation-MetadataBlock" v-show="header == 'annotation'">

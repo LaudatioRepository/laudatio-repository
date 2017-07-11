@@ -1,5 +1,5 @@
 <template lang="html">
-    <div class="tab-content">
+    <div class="tab-content" v-if="header == 'corpus'">
         <div id="project" class="tab-pane fade in active panel panel-default">
         <div class="panel-body">{{headerdata.corpus_encoding_project_description | lastElement}}</div>
         </div>
@@ -27,7 +27,7 @@
 
 <script>
     export default {
-        props: ['headerdata'],
+        props: ['headerdata','header'],
         data: function(){
             return {
                 annotators: [],
@@ -38,7 +38,7 @@
         },
         computed: {
           getAnnotators: function(){
-              if(this.headerdata.corpus_annotator_forename.length > 0
+              if(typeof this.headerdata != 'undefined' && this.headerdata.corpus_annotator_forename.length > 0
                   && this.headerdata.corpus_annotator_surname.length > 0 &&
                   this.headerdata.corpus_annotator_forename.length == this.headerdata.corpus_annotator_surname.length){
                   for(var i = 0; i<  this.headerdata.corpus_annotator_forename.length; i++){
@@ -48,7 +48,7 @@
               return this.annotators
           },
           getRevisions: function(){
-              if(this.headerdata.corpus_version.length > 0
+              if(typeof this.headerdata != 'undefined' && this.headerdata.corpus_version.length > 0
                     && this.headerdata.corpus_version_publishing_date.length > 0
                     && this.headerdata.corpus_version_description.length > 0
                     && this.headerdata.corpus_version.length
@@ -66,7 +66,7 @@
               return this.revisions.reverse()
           },
             getDocumentsByAnnotation: function() {
-              if(this.headerdata.annotation_name.length > 0) {
+              if(typeof this.headerdata != 'undefined' && this.headerdata.annotation_name.length > 0) {
                   var annotationterms = [];
                   for(var k = 0; k < this.headerdata.annotation_name.length; k++){
                       annotationterms.push(

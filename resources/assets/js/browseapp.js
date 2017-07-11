@@ -7,8 +7,11 @@ window.Vue = require('vue');
 const util = require('util');
 
 Vue.component('corpusheader', require('./components/CorpusHeader.vue'));
+Vue.component('documentheader', require('./components/DocumentHeader.vue'));
 Vue.component('metadata-block-header-corpus', require('./components/CorpusMetadataBlockHeader.vue'));
 Vue.component('metadata-block-body-corpus', require('./components/CorpusMetadataBlockBody.vue'));
+Vue.component('metadata-block-header-document', require('./components/DocumentMetadataBlockHeader.vue'));
+Vue.component('metadata-block-body-document', require('./components/DocumentMetadataBlockBody.vue'));
 
 const browseApp = new Vue({
     el: '#browseapp',

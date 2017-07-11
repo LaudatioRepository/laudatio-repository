@@ -1,7 +1,7 @@
 <template lang="html">
-    <div id="corpusheader">
+    <div id="corpusheader" v-if="header == 'corpus'">
         <h1>{{ headerdata.corpus_title | arrayToString }}</h1>
-
+        <p class="autorhorheader">{{corpusAuthors()}}</p>
         <table class="table table-condensed table-responsive">
              <tr>
                 <td>
@@ -30,7 +30,20 @@
 
 <script>
     export default {
-        props: ['headerdata'],
+        props: ['headerdata','header'],
+        methods: {
+            corpusAuthors: function(){
+                var authorString = "";
+                for(var i=0; i < this.headerdata.corpus_editor_forename.length;i++) {
+                    authorString += this.headerdata.corpus_editor_forename[i]
+                        .concat(' ')
+                        .concat(this.headerdata.corpus_editor_surname[i])
+                        .concat(',');
+                }
+                authorString = authorString.substring(0,authorString.lastIndexOf(","));
+                return authorString;
+            }
+        },
         mounted() {
             console.log('CorpusMetadataBlockHeader mounted.')
         }

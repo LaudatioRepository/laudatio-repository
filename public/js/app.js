@@ -44409,6 +44409,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['documentresult'],
+    methods: {
+        browseUri: function browseUri(id) {
+            return '/browse/document/'.concat(id);
+        }
+    },
     mounted: function mounted() {
         console.log('DocumentResultComponent mounted.');
     }
@@ -44474,12 +44479,16 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "aria-hidden": "true"
       }
-    }), _vm._v("Annotations: " + _vm._s(documentresultdata._source.document_list_of_annotations_name.length))]), _vm._v(" "), _c('br'), _vm._v(" "), _c('i', {
+    }), _vm._v("Annotations: " + _vm._s(documentresultdata._source.document_list_of_annotations_name.length))]), _vm._v(" "), _c('br'), _vm._v(" "), _c('a', {
+      attrs: {
+        "href": _vm.browseUri(documentresultdata._id)
+      }
+    }, [_c('i', {
       staticClass: "fa fa-external-link pull-right",
       attrs: {
         "aria-hidden": "true"
       }
-    })])])])
+    })]), _vm._v("a\n                    ")])])])
   }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
