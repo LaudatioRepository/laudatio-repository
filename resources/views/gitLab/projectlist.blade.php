@@ -49,5 +49,5 @@
     @if($pathcount == 4)
         <a href="{{route('gitRepo.upload.get',array('dirname' => $path)) }}" >Upload files</a>
     @endif
-    <a href="{{ route('gitRepo.route', array('path' => $previouspath)) }}"> <i class="fa fa-hand-o-up fa-3x"></i></a>
+    <a href="{{ route('gitRepo.route', array('path' => $previouspath)) }}" class="navlink"> <i class="fa fa-arrow-circle-left fa-3x" aria-hidden="true"></i></a>
 @stop
