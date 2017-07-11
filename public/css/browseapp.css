@@ -8368,9 +8368,9 @@ button.close {
   flex: none;
 }
 
+/*
 #browseapp .HolyGrail-header .overlay {
-  /*background: rgba(61, 255, 106, 0.1) url("../images/laureltre_log.png") no-repeat  fixed 0% 10% !important;*/
-  background-image: url(/images/laureltre_log.png?0e1202a8e9ec2c99c67393932cc1c6c5);
+  background-image: url("../images/laureltre_log.png");
   background-position-x: 1%;
   background-position-y: 10%;
   background-size: 16%;
@@ -8382,6 +8382,7 @@ button.close {
   background-color: rgba(61, 255, 106, 0.1);
   opacity: 0.8;
 }
+*/
 
 .Header {
   padding: 1.5em;
