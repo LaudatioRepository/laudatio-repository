@@ -8370,7 +8370,7 @@ button.close {
 
 .Header {
   padding: 1.5em;
-  background: rgba(147, 128, 108, 0.1) url(/images/laureltre_log.png?0e1202a8e9ec2c99c67393932cc1c6c5) no-repeat fixed 0% 0%;
+  /*background: hsla(31,15%,50%,.1) url("../images/laureltre_log.png") no-repeat fixed 0% 0%;*/
   text-align: center;
 }
 
