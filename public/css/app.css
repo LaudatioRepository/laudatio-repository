@@ -8561,7 +8561,7 @@ button.close {
   border-radius: 5px;
   margin-bottom: 20px;
   border: rgba(147, 128, 108, 0.1) 1px solid;
-  height: 330px;
+  min-height: 330px;
   min-width: 40em;
 }
 
