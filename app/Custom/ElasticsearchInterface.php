@@ -18,4 +18,5 @@ interface ElasticsearchInterface {
     public function getSearchTotal($searchData,$index);
     public function searchAnnotationIndex($searchData);
     public function getCorpusByDocument($searchData);
+    public function truncateIndex($index);
 }

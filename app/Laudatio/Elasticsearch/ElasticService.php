@@ -10,6 +10,7 @@ namespace App\Laudatio\Elasticsearch;
 
 use App\Custom\ElasticsearchInterface;
 use Elasticsearch;
+use Elasticsearch\Endpoints\DeleteByQuery;
 use Log;
 use Illuminate\Http\Request;
 
@@ -95,17 +96,7 @@ class ElasticService implements ElasticsearchInterface
 
 
         $results = Elasticsearch::search($params);
-        $milliseconds = $results['took'];
-        $maxScore     = $results['hits']['max_score'];
-        $total = $results['hits']['total'];
-
-        return array(
-            'error' => false,
-            'milliseconds' => $milliseconds,
-            'maxscore' => $maxScore,
-            'results' => $results['hits']['hits'],
-            'total' => $total
-        );
+        return $results;
     }
 
 
@@ -135,17 +126,7 @@ class ElasticService implements ElasticsearchInterface
 
 
         $results = Elasticsearch::search($params);
-        $milliseconds = $results['took'];
-        $maxScore     = $results['hits']['max_score'];
-        $total = $results['hits']['total'];
-
-        return array(
-            'error' => false,
-            'milliseconds' => $milliseconds,
-            'maxscore' => $maxScore,
-            'results' => $results['hits']['hits'],
-            'total' => $total
-        );
+        return $results;
     }
 
     /**
@@ -164,7 +145,7 @@ class ElasticService implements ElasticsearchInterface
         else{
             $queryBody = $queryBuilder->buildSingleMatchQuery($searchData);
         }
-        //Log::info("QUERY: ".print_r($queryBody,1));
+
         $params = [
             'index' => 'document',
             'type' => '',
@@ -174,17 +155,7 @@ class ElasticService implements ElasticsearchInterface
 
 
         $results = Elasticsearch::search($params);
-        $milliseconds = $results['took'];
-        $maxScore     = $results['hits']['max_score'];
-        $total = $results['hits']['total'];
-
-        return array(
-            'error' => false,
-            'milliseconds' => $milliseconds,
-            'maxscore' => $maxScore,
-            'results' => $results['hits']['hits'],
-            'total' => $total
-        );
+        return $results;
     }
 
     /**
@@ -225,20 +196,7 @@ class ElasticService implements ElasticsearchInterface
 
         $results = Elasticsearch::search($params);
 
-        $milliseconds = $results['took'];
-        $maxScore     = $results['hits']['max_score'];
-        $total = $results['hits']['total'];
-
-        return response(
-            array(
-                'error' => false,
-                'milliseconds' => $milliseconds,
-                'maxscore' => $maxScore,
-                'results' => $results['hits']['hits'],
-                'total' => $total
-            ),
-            200
-        );
+        return $results;
     }
 
 
@@ -268,10 +226,7 @@ class ElasticService implements ElasticsearchInterface
             $resultData[$termData[0]] = $results['hits']['total'];
         }//end foreach queries
 
-        return array(
-            'error' => false,
-            'results' => $resultData
-        );
+        return $resultData;
     }
 
 
@@ -300,10 +255,7 @@ class ElasticService implements ElasticsearchInterface
             }
 
         }//end foreach queries
-        return array(
-            'error' => false,
-            'results' => $resultData
-        );
+        return $resultData;
     }
 
     /**
@@ -332,16 +284,26 @@ class ElasticService implements ElasticsearchInterface
         ];
 
         $results = Elasticsearch::search($params);
-        $milliseconds = $results['took'];
-        $maxScore     = $results['hits']['max_score'];
-        $total = $results['hits']['total'];
+        return $results;
+    }
 
-        return array(
-            'error' => false,
-            'milliseconds' => $milliseconds,
-            'maxscore' => $maxScore,
-            'results' => $results['hits']['hits'],
-            'total' => $total
-        );
+    /**
+     * @param $index
+     * @return mixed json
+     */
+    public function truncateIndex($index){
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $searchData = array();
+        $queryBody = $queryBuilder->buildMatchAllQuery($searchData);
+
+        $params = [
+            'index' => $index,
+            'type' => $index,
+            'body' => $queryBody,
+        ];
+
+        $results = Elasticsearch::deleteByQuery($params);
+        return $results;
     }
 }

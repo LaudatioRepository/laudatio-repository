@@ -66,8 +66,16 @@ class ElasticController extends Controller
     public function searchGeneral(Request $request)
     {
         $result = $this->ElasticService->searchGeneral($request->searchData);
+        $resultData = array(
+            'error' => false,
+            'milliseconds' => $result['took'],
+            'maxscore' => $result['hits']['max_score'],
+            'results' => $result['hits']['hits'],
+            'total' => $result['hits']['total']
+        );
+
         return response(
-            $result,
+            $resultData,
             200
         );
     }
@@ -76,8 +84,15 @@ class ElasticController extends Controller
     public function searchCorpusIndex(Request $request)
     {
         $result = $this->ElasticService->searchCorpusIndex($request->searchData);
+        $resultData = array(
+            'error' => false,
+            'milliseconds' => $result['took'],
+            'maxscore' => $result['hits']['max_score'],
+            'results' => $result['hits']['hits'],
+            'total' => $result['hits']['total']
+        );
         return response(
-            $result,
+            $resultData,
             200
         );
     }
@@ -87,8 +102,15 @@ class ElasticController extends Controller
 
         $result = $this->ElasticService->searchDocumentIndex($request->searchData);
 
+        $resultData = array(
+            'error' => false,
+            'milliseconds' => $result['took'],
+            'maxscore' => $result['hits']['max_score'],
+            'results' => $result['hits']['hits'],
+            'total' => $result['hits']['total']
+        );
         return response(
-            $result,
+            $resultData,
             200
         );
     }
@@ -96,49 +118,17 @@ class ElasticController extends Controller
     public function searchDocumentIndexWithParam(Request $request)
     {
 
-        $queryBuilder = new QueryBuilder();
-        $queryBody = null;
-        //Log::info("SENDING: ".print_r($request->searchData,1));
+        $results = $this->ElasticService->searchDocumentIndexWithParam($request);
 
-        if(count($request->searchData) > 1){
-            $queryBody = $queryBuilder->buildMustQuery($request->searchData);
-        }
-        else{
-            $queryBody = $queryBuilder->buildSingleMatchQuery($request->searchData);
-        }
-
-
-        $filters = [];
-        $params = [
-            'index' => 'document',
-            'type' => '',
-            'body' => $queryBody,
-        ];
-
-        if(count($request->params) > 0){
-            foreach ($request->params as $paramkey => $paramvalues) {
-                $filtervalues = [];
-                foreach ($paramvalues as $paramvalue){
-                    array_push($filtervalues,$paramvalue);
-                }
-                $params[$paramkey] = $filtervalues;
-            }
-        }
-
-        $results = Elasticsearch::search($params);
-
-        $milliseconds = $results['took'];
-        $maxScore     = $results['hits']['max_score'];
-        $total = $results['hits']['total'];
-
+        $resultData = array(
+            'error' => false,
+            'milliseconds' => $result['took'],
+            'maxscore' => $result['hits']['max_score'],
+            'results' => $result['hits']['hits'],
+            'total' => $result['hits']['total']
+        );
         return response(
-            array(
-                'error' => false,
-                'milliseconds' => $milliseconds,
-                'maxscore' => $maxScore,
-                'results' => $results['hits']['hits'],
-                'total' => $total
-            ),
+            $resultData,
             200
         );
     }
@@ -148,16 +138,24 @@ class ElasticController extends Controller
     {
         $result = $this->ElasticService->getSearchTotal($request->searchData,$request->index);
 
+        $resultData =  array(
+            'error' => false,
+            'results' => $result
+        );
         return response(
-            $result,
+            $resultData,
             200
         );
     }
 
     public function getCorpusByDocument(Request $request){
         $result = $this->ElasticService->getCorpusByDocument($request->searchData);
+        $resultdata =  array(
+            'error' => false,
+            'results' => $result
+        );
         return response(
-            $result,
+            $resultdata,
             200
         );
     }
@@ -168,8 +166,42 @@ class ElasticController extends Controller
     {
         $result = $this->ElasticService->searchAnnotationIndex($request->searchData);
 
+        $resultData = array(
+            'error' => false,
+            'milliseconds' => $result['took'],
+            'maxscore' => $result['hits']['max_score'],
+            'results' => $result['hits']['hits'],
+            'total' => $result['hits']['total']
+        );
+
         return response(
-            $result,
+            $resultData,
+            200
+        );
+    }
+
+    public function truncateIndex(Request $request)
+    {
+        $result = $this->ElasticService->truncateIndex($request->index);
+        $resultData = array();
+        if(count($result['failures']) == 0){
+            $resultData = array(
+                'error' => false,
+                'milliseconds' => $result['took'],
+                'deleted' => $result['deleted'],
+                'version_conflicts' => $result['version_conflicts'],
+                'failures' => $result['failures']
+            );
+        }
+        else{
+            $resultData = array(
+                'error' => true,
+                'failures' => $result['failures']
+            );
+        }
+
+        return response(
+            $resultData,
             200
         );
     }

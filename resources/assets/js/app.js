@@ -140,7 +140,7 @@ const app = new Vue({
                         for(var j = 0; j< res.data.results.length; j++) {
                             documentRefs.push(
                                 {
-                                    'corpus_documents': ''+res.data.results[j]._source.document_id[0]+''
+                                        'corpus_documents': ''+res.data.results[j]._source.document_id[0]+''
                                 }
                             );
                         }
