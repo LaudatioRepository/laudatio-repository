@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UploadRequest;
 use GrahamCampbell\Flysystem\FlysystemManager;
+use App\Laudatio\GitLaB\GitFunction;
 
 
 class UploadController extends Controller
@@ -29,18 +30,21 @@ class UploadController extends Controller
 
     public function uploadSubmit(UploadRequest $request)
     {
+        $gitFunction = new GitFunction();
         $dirPath = $request->directorypath;
 
         foreach ($request->formats as $format) {
             $fileName = $format->getClientOriginalName();
-            $exists = $this->flysystem->has($dirPath."/".$fileName);
+            $newFilename = $gitFunction->normalizeFileName($fileName);
+
+            $exists = $this->flysystem->has($dirPath."/".$newFilename);
             if(!$exists){
                 $stream = fopen($format->getRealPath(), 'r+');
-                $this->flysystem->writeStream($dirPath."/".$fileName, $stream);
+                $this->flysystem->writeStream($dirPath."/".$newFilename, $stream);
             }
             else{
                 $stream = fopen($format->getRealPath(), 'r+');
-                $this->flysystem->updateStream($dirPath."/".$fileName, $stream);
+                $this->flysystem->updateStream($dirPath."/".$newFilename, $stream);
             }
 
             if (is_resource($stream)) {
