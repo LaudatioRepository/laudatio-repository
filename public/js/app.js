@@ -42553,27 +42553,41 @@ var app = new Vue({
                 window.axios.post('api/searchapi/searchDocument', JSON.stringify(postData)).then(function (res) {
                     _this3.documentsearched = true;
                     if (res.data.results.length > 0) {
-                        console.log(res.data.results);
+
                         var documentRefs = [];
+                        var corpusRefs = [];
 
                         for (var j = 0; j < res.data.results.length; j++) {
-                            documentRefs.push({
-                                'corpus_documents': '' + res.data.results[j]._source.document_id[0] + ''
-                            });
+                            var in_corpora = res.data.results[j]._source.in_corpora;
+
+                            documentRefs.push(res.data.results[j]._id);
+
+                            for (var jid = 0; jid < in_corpora.length; jid++) {
+                                corpusRefs.push({
+                                    '_id': '' + in_corpora[jid] + ''
+                                });
+                            }
                         }
 
                         var postDocumentData = {
-                            searchData: documentRefs
+                            documentRefs: documentRefs,
+                            corpusRefs: corpusRefs
                         };
 
                         window.axios.post('api/searchapi/getCorpusByDocument', postDocumentData).then(function (corpusByDocumentRes) {
                             if (Object.keys(corpusByDocumentRes.data.results).length > 0) {
 
+                                var corpusByDocument = [];
+
+                                Object.keys(corpusByDocumentRes.data.results).forEach(function (key) {
+                                    corpusByDocument[key] = corpusByDocumentRes.data.results[key];
+                                });
+                                console.log(corpusByDocument);
                                 _this3.documentresults.push({
                                     search: documentSearchObject.document_title,
                                     results: res.data.results,
                                     total: res.data.total,
-                                    corpusByDocument: corpusByDocumentRes.data.results
+                                    corpusByDocument: corpusByDocument
                                 });
                             } else {
                                 _this3.documentresults.push({
@@ -42594,7 +42608,7 @@ var app = new Vue({
 
             this.annotationresults = [];
             this.annotationsearched = false;
-
+            var postAnnotationData = {};
             var postDataCollection = [];
             for (var p in annotationSearchObject) {
                 if (annotationSearchObject[p].length > 0) {
@@ -42613,33 +42627,68 @@ var app = new Vue({
                     if (res.data.results.length > 0) {
                         var annotationterms = [];
 
-                        for (var i = 0; i < res.data.results.length; i++) {
-                            annotationterms.push({
-                                'document_list_of_annotations_name': '' + res.data.results[i]._source.preparation_title + ''
-                            });
-                        }
+                        var documentRefs = [];
+                        var corpusRefs = [];
+                        var annotationRefs = [];
 
-                        var postAnnotationData = {
-                            searchData: annotationterms
-                        };
+                        for (var j = 0; j < res.data.results.length; j++) {
 
-                        window.axios.post('api/searchapi/getSearchTotal', postAnnotationData).then(function (documentsByAnnotationRes) {
+                            annotationRefs.push(res.data.results[j]._id);
+                            var id = res.data.results[j]._id;
+                            if (typeof res.data.results[j]._source.in_corpora != 'undefined') {
+                                corpusRefs.push(res.data.results[j]._source.in_corpora);
+                            }
+
+                            if (typeof res.data.results[j]._source.in_documents != 'undefined') {
+                                documentRefs.push(res.data.results[j]._source.in_documents);
+                            }
+
+                            postAnnotationData.corpusRefs = corpusRefs;
+                            postAnnotationData.documentRefs = documentRefs;
+                            postAnnotationData.annotationRefs = annotationRefs;
+                        } //end for annotationResults
+                        window.axios.post('api/searchapi/getDocumentsByAnnotation', postAnnotationData).then(function (documentsByAnnotationRes) {
+                            var corpusByAnnotation = [];
+                            var documentsByAnnotation = [];
+
                             _this4.annotationsearched = true;
-                            if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
+                            if (Object.keys(documentsByAnnotationRes.data).length > 0) {
+                                if (Object.keys(documentsByAnnotationRes.data.corpusResult).length > 0) {
+                                    Object.keys(documentsByAnnotationRes.data.corpusResult).forEach(function (key) {
+                                        corpusByAnnotation[key] = documentsByAnnotationRes.data.corpusResult[key];
+                                    });
+                                }
+
+                                if (Object.keys(documentsByAnnotationRes.data.documentResult).length > 0) {
+                                    Object.keys(documentsByAnnotationRes.data.documentResult).forEach(function (key) {
+                                        documentsByAnnotation[key] = documentsByAnnotationRes.data.documentResult[key];
+                                    });
+                                }
+
                                 _this4.annotationresults.push({
                                     search: annotationSearchObject.preparation_title,
                                     results: res.data.results,
                                     total: res.data.total,
-                                    documentsByAnnotation: documentsByAnnotationRes.data.results,
-                                    scope: 'annotation'
+                                    corpusByAnnotation: corpusByAnnotation,
+                                    documentsByAnnotation: documentsByAnnotation
+                                    //documentsByAnnotation: []
+                                });
+                            } else {
+                                _this4.annotationresults.push({
+                                    search: annotationSearchObject.preparation_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                    corpusByAnnotation: [],
+                                    documentsByAnnotation: []
                                 });
                             }
                         });
                     }
                 });
             }
-        }
+        } //submitAnnotation
     }
+
 });
 
 /***/ }),
@@ -44458,14 +44507,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }, [_c('div', {
       staticClass: "panel-body"
-    }, [(typeof _vm.documentresult.corpusByDocument[documentresultdata._source.document_id[0]].corpus_title != 'undefined') ? _c('div', {
+    }, [(typeof _vm.documentresult.corpusByDocument[documentresultdata._id].corpus_title != 'undefined') ? _c('div', {
       staticClass: "iconwrapper"
     }, [_c('i', {
       staticClass: "fa fa-book",
       attrs: {
         "aria-hidden": "true"
       }
-    }), _vm._v(" Corpus:  " + _vm._s(_vm._f("arrayToString")(_vm.fromCorpus = _vm.documentresult.corpusByDocument[documentresultdata._source.document_id[0]].corpus_title)))]) : _vm._e(), _vm._v(" "), _c('span', {
+    }), _vm._v(" Corpus:  " + _vm._s(_vm._f("arrayToString")(_vm.fromCorpus = _vm.documentresult.corpusByDocument[documentresultdata._id].corpus_title)))]) : _vm._e(), _vm._v(" "), _c('span', {
       staticClass: "iconwrapper"
     }, [_c('i', {
       staticClass: "fa fa-university",
@@ -44655,9 +44704,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['annotationresult'],
+    methods: {
+        browseUri: function browseUri(id) {
+            return '/browse/annotation/'.concat(id);
+        }
+    },
     mounted: function mounted() {
         console.log('AnnotationResultComponent mounted.');
     }
@@ -44672,20 +44749,77 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchresultpanelannotation"
     }
-  }, [_c('ul', {
-    staticClass: "list-group"
+  }, [_c('div', {
+    staticClass: "panel-group",
+    attrs: {
+      "id": "accordion"
+    }
   }, _vm._l((_vm.annotationresult.results), function(annotationresultdata) {
-    return _c('li', {
+    return _c('div', {
       key: annotationresultdata._id,
-      staticClass: "list-group-item"
-    }, [_vm._v("\n            " + _vm._s(_vm._f("arrayToString")(_vm.annotationtitle = annotationresultdata._source.preparation_title)) + "\n            "), _c('span', {
+      staticClass: "panel panel-default"
+    }, [_c('div', {
+      staticClass: "panel-heading"
+    }, [_c('div', {
+      staticClass: "panel-title",
+      attrs: {
+        "data-toggle": "collapse",
+        "data-parent": "#accordion",
+        "data-target": _vm._f("addHash")(annotationresultdata._id)
+      }
+    }, [_vm._v("\n                    " + _vm._s(_vm._f("arrayToString")(_vm.annotationtitle = annotationresultdata._source.preparation_title)) + "\n                    "), _c('span', {
       staticClass: "badge"
     }, [_vm._v(_vm._s(_vm.inDocuments = _vm.annotationresult.documentsByAnnotation[_vm.annotationtitle]))]), _vm._v(" "), _c('i', {
       staticClass: "fa fa-external-link pull-left",
       attrs: {
         "aria-hidden": "true"
       }
-    })])
+    }), _vm._v(" "), _c('i', {
+      staticClass: "fa fa-expand pull-right",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    })])]), _vm._v(" "), _c('div', {
+      staticClass: "panel-collapse collapse",
+      attrs: {
+        "id": annotationresultdata._id
+      }
+    }, [_c('div', {
+      staticClass: "panel-body"
+    }, [(typeof _vm.annotationresult.corpusByAnnotation[annotationresultdata._id] != 'undefined') ? _c('div', {
+      staticClass: "iconwrapper"
+    }, [_vm._v("\n                    In corpora:\n                    "), _c('ul', _vm._l((_vm.annotationresult.corpusByAnnotation[annotationresultdata._id]), function(fromCorpus, cIndex) {
+      return _c('li', {
+        key: cIndex,
+        staticClass: "list-unstyled"
+      }, [_c('i', {
+        staticClass: "fa fa-book",
+        attrs: {
+          "aria-hidden": "true"
+        }
+      }), _vm._v(" " + _vm._s(_vm._f("arrayToString")(fromCorpus.corpus_title)) + "\n                        ")])
+    }))]) : _vm._e(), _vm._v(" "), (typeof _vm.annotationresult.documentsByAnnotation[annotationresultdata._id] != 'undefined') ? _c('div', {
+      staticClass: "iconwrapper"
+    }, [_vm._v("\n                    In documents:\n                        "), _c('ul', _vm._l((_vm.annotationresult.documentsByAnnotation[annotationresultdata._id]), function(fromDocument, dIndex) {
+      return _c('li', {
+        key: dIndex,
+        staticClass: "list-unstyled"
+      }, [_c('i', {
+        staticClass: "fa fa-book",
+        attrs: {
+          "aria-hidden": "true"
+        }
+      }), _vm._v(" " + _vm._s(_vm._f("arrayToString")(fromDocument.document_title)) + "\n                        ")])
+    }))]) : _vm._e(), _vm._v(" "), _c('br'), _vm._v(" "), _c('a', {
+      attrs: {
+        "href": _vm.browseUri(annotationresultdata._id)
+      }
+    }, [_c('i', {
+      staticClass: "fa fa-external-link pull-right",
+      attrs: {
+        "aria-hidden": "true"
+      }
+    })])])])])
   }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true

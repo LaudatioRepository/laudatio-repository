@@ -108,7 +108,7 @@ class ElasticService implements ElasticsearchInterface
     {
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
-        //Log::info("SENDING: ".print_r($request->searchData,1));
+        Log::info("SENDING: ".print_r($searchData,1));
 
         if(count($searchData) > 1){
             $queryBody = $queryBuilder->buildMustQuery($searchData);
@@ -230,11 +230,39 @@ class ElasticService implements ElasticsearchInterface
     }
 
 
-    public function getCorpusByDocument($searchData) {
+    public function getCorpusByDocument($searchData,$documentData) {
         $resultData = array();
 
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
+        $counter = 0;
+        foreach($searchData as $queryData){
+            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+            $params = [
+                'index' => 'corpus',
+                'type' => 'corpus',
+                'body' => $queryBody,
+                '_source' => ["corpus_title"],
+                'filter_path' => ['hits.hits']
+            ];
+            $results = Elasticsearch::search($params);
+            $termData = array_values($documentData);
+
+            if(count($results['hits']['hits']) > 0){
+                $resultData[$termData[$counter++]] = $results['hits']['hits'][0]['_source'];
+            }
+            else{
+                $resultData[$counter++] = array();
+            }
+
+        }//end foreach queries
+        return $resultData;
+    }
+
+    public function getCorpusByAnnotation($searchData) {
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+
         foreach($searchData as $queryData){
             $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
             $params = [
@@ -246,16 +274,27 @@ class ElasticService implements ElasticsearchInterface
             ];
             $results = Elasticsearch::search($params);
 
-            $termData = array_values($queryData);
-            if(count($results['hits']['hits']) > 0){
-                $resultData[$termData[0]] = $results['hits']['hits'][0]['_source'];
-            }
-            else{
-                $resultData[$termData[0]] = array();
-            }
+        }//end foreach queries
+        return $results['hits']['hits'][0]['_source'];
+    }
+
+    public function getDocumentsByAnnotation($searchData){
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        foreach($searchData as $queryData){
+            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+            $params = [
+                'index' => 'document',
+                'type' => 'document',
+                'body' => $queryBody,
+                '_source' => ["document_title"],
+                'filter_path' => ['hits.hits']
+            ];
+
+            $results = Elasticsearch::search($params);
 
         }//end foreach queries
-        return $resultData;
+        return $results['hits']['hits'][0]['_source'];
     }
 
     /**

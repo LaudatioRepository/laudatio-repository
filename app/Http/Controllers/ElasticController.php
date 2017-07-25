@@ -149,7 +149,7 @@ class ElasticController extends Controller
     }
 
     public function getCorpusByDocument(Request $request){
-        $result = $this->ElasticService->getCorpusByDocument($request->searchData);
+        $result = $this->ElasticService->getCorpusByDocument($request->corpusRefs, $request->documentRefs);
         $resultdata =  array(
             'error' => false,
             'results' => $result
@@ -160,6 +160,41 @@ class ElasticController extends Controller
         );
     }
 
+    public function getDocumentsByAnnotation(Request $request){
+        $corpusResult = array();
+        $documentResult = array();
+
+        for($i = 0; $i < count($request->annotationRefs); $i++){
+            $annotationRef = $request->annotationRefs[$i];
+            $corpusRefs = $request->corpusRefs[$i];
+            $corpusResult[$annotationRef] = array();
+            $documentRefs = $request->documentRefs[$i];
+            $documentResult[$annotationRef] = array();
+
+            foreach ($corpusRefs as $corpusRef){
+                array_push($corpusResult[$annotationRef],$this->ElasticService->getCorpusByAnnotation(array(array(
+                    '_id' => $corpusRef
+                ))));
+            }
+
+            foreach ($documentRefs as $documentRef){
+                array_push($documentResult[$annotationRef],$this->ElasticService->getDocumentsByAnnotation(array(array(
+                    '_id' => $documentRef
+                ))));
+            }
+        }//end for annotations
+
+        $resultData = array(
+            "corpusResult" => $corpusResult,
+            "documentResult" => $documentResult
+        );
+
+
+        return response(
+            $resultData,
+            200
+        );
+    }
 
 
     public function searchAnnotationIndex(Request $request)
