@@ -16,7 +16,7 @@
                             <searchresultheader_corpus :corpusresults="corpusresults"></searchresultheader_corpus>
                         </div>
                         <div class="Corpus-result-body">
-                            <searchwrapper_corpus :corpusresults="corpusresults" :corpussearched="corpussearched"></searchwrapper_corpus>
+                            <searchwrapper_corpus :corpusresults="corpusresults" :corpussearched="corpussearched" :corpusloading="corpusloading"></searchwrapper_corpus>
                         </div>
                     </div>
                     <div class="Document-results">
@@ -24,7 +24,7 @@
                             <searchresultheader_document :documentresults="documentresults"></searchresultheader_document>
                         </div>
                         <div class="Document-result-body">
-                            <searchwrapper_document :documentresults="documentresults" :documentSearched="documentsearched"></searchwrapper_document>
+                            <searchwrapper_document :documentresults="documentresults" :documentSearched="documentsearched" :documentloading="documentloading"></searchwrapper_document>
                         </div>
                     </div>
                     <div class="Annotation-results">
@@ -32,7 +32,7 @@
                             <searchresultheader_annotation :annotationresults="annotationresults"></searchresultheader_annotation>
                         </div>
                         <div class="Annotation-result-body">
-                            <searchwrapper_annotation :annotationresults="annotationresults" :annotationsearched="annotationsearched"></searchwrapper_annotation>
+                            <searchwrapper_annotation :annotationresults="annotationresults" :annotationsearched="annotationsearched" :annotationloading="annotationloading"></searchwrapper_annotation>
                         </div>
                     </div>
                 </div>

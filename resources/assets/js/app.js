@@ -48,8 +48,11 @@ const app = new Vue({
         searches: [],
         documentsByAnnotation: [],
         corpussearched: false,
+        corpusloading: false,
         documentsearched: false,
-        annotationsearched: false
+        documentloading: false,
+        annotationsearched: false,
+        annotationloading: false,
     },
     methods: {
         askElastic: function(search) {
@@ -61,7 +64,7 @@ const app = new Vue({
                     query: ''+search.generalSearchTerm+''
                 }
             };
-            console.log("POSTDATA: "+util.inspect(postData));
+
             window.axios.post('api/searchapi/searchGeneral',JSON.stringify(postData)).then(res => {
                 if(res.data.results.length > 0) {
                     this.corpusresults.push({
@@ -74,6 +77,7 @@ const app = new Vue({
         },
 
         submitCorpusSearch: function(corpusSearchObject) {
+            this.corpusloading = true;
             this.corpusresults = [];
             this.corpussearched =  false;
             let postDataCollection = [];
@@ -104,12 +108,14 @@ const app = new Vue({
                             total: res.data.total
                         })
                     }
+                    this.corpusloading = false;
                 });
             }
 
         },
 
         submitDocumentSearch: function(documentSearchObject) {
+            this.documentloading = true;
             this.documentresults = [];
             this.documentsearched = false;
 
@@ -187,6 +193,7 @@ const app = new Vue({
                                     corpusByDocument: []
                                 })
                             }
+                            this.documentloading = false;
                         });
 
                     }
@@ -195,6 +202,7 @@ const app = new Vue({
         },
 
         submitAnnotationSearch: function(annotationSearchObject) {
+            this.annotationloading = true;
             this.annotationresults = [];
             this.annotationsearched = false;
             let postAnnotationData = {}
@@ -234,7 +242,7 @@ const app = new Vue({
                                     res.data.results[j]._source.in_corpora
                                 );
                             }
-                            
+
                             if(typeof res.data.results[j]._source.in_documents != 'undefined'){
                                 documentRefs.push(
                                     res.data.results[j]._source.in_documents
@@ -286,6 +294,7 @@ const app = new Vue({
                                     documentsByAnnotation: []
                                 });
                             }
+                            this.annotationloading = false;
                         });
                     }
                 });

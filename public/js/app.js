@@ -42473,8 +42473,11 @@ var app = new Vue({
         searches: [],
         documentsByAnnotation: [],
         corpussearched: false,
+        corpusloading: false,
         documentsearched: false,
-        annotationsearched: false
+        documentloading: false,
+        annotationsearched: false,
+        annotationloading: false
     },
     methods: {
         askElastic: function askElastic(search) {
@@ -42488,7 +42491,7 @@ var app = new Vue({
                     query: '' + search.generalSearchTerm + ''
                 }
             };
-            console.log("POSTDATA: " + util.inspect(postData));
+
             window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
                 if (res.data.results.length > 0) {
                     _this.corpusresults.push({
@@ -42503,6 +42506,7 @@ var app = new Vue({
         submitCorpusSearch: function submitCorpusSearch(corpusSearchObject) {
             var _this2 = this;
 
+            this.corpusloading = true;
             this.corpusresults = [];
             this.corpussearched = false;
             var postDataCollection = [];
@@ -42527,6 +42531,7 @@ var app = new Vue({
                             total: res.data.total
                         });
                     }
+                    _this2.corpusloading = false;
                 });
             }
         },
@@ -42534,6 +42539,7 @@ var app = new Vue({
         submitDocumentSearch: function submitDocumentSearch(documentSearchObject) {
             var _this3 = this;
 
+            this.documentloading = true;
             this.documentresults = [];
             this.documentsearched = false;
 
@@ -42597,6 +42603,7 @@ var app = new Vue({
                                     corpusByDocument: []
                                 });
                             }
+                            _this3.documentloading = false;
                         });
                     }
                 });
@@ -42606,6 +42613,7 @@ var app = new Vue({
         submitAnnotationSearch: function submitAnnotationSearch(annotationSearchObject) {
             var _this4 = this;
 
+            this.annotationloading = true;
             this.annotationresults = [];
             this.annotationsearched = false;
             var postAnnotationData = {};
@@ -42682,6 +42690,7 @@ var app = new Vue({
                                     documentsByAnnotation: []
                                 });
                             }
+                            _this4.annotationloading = false;
                         });
                     }
                 });
@@ -42770,7 +42779,7 @@ exports = module.exports = __webpack_require__(11)(undefined);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42826,9 +42835,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'corpussearched'],
+    props: ['corpusresults', 'corpussearched', 'corpusloading'],
     mounted: function mounted() {
         console.log('CorpusResultComponent mounted.');
     }
@@ -42843,14 +42854,30 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchwrapper"
     }
-  }, [(_vm.corpusresults.length >= 1) ? _c('div', _vm._l((_vm.corpusresults), function(corpusresult) {
+  }, [_c('i', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.corpusloading),
+      expression: "corpusloading"
+    }],
+    staticClass: "fa fa-circle-o-notch fa-spin fa-3x fa-fw"
+  }), _vm._v(" "), _c('span', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.corpusloading),
+      expression: "corpusloading"
+    }],
+    staticClass: "sr-only"
+  }, [_vm._v("Loading...")]), _vm._v(" "), (_vm.corpusresults.length >= 1) ? _c('div', _vm._l((_vm.corpusresults), function(corpusresult) {
     return _c('searchresultpanel_corpus', {
       key: corpusresult,
       attrs: {
         "corpusresult": corpusresult
       }
     })
-  })) : (_vm.corpusresults.length == 0 && _vm.corpussearched) ? _c('div', {
+  })) : (_vm.corpusresults.length == 0 && _vm.corpussearched && !_vm.corpusloading) ? _c('div', {
     staticClass: "alert alert-info",
     attrs: {
       "role": "alert"
@@ -42944,7 +42971,7 @@ exports = module.exports = __webpack_require__(11)(undefined);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42968,9 +42995,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['documentresults', 'documentsearched'],
+    props: ['documentresults', 'documentsearched', 'documentloading'],
     mounted: function mounted() {
         console.log('DocumentResultComponent mounted.');
     }
@@ -42985,14 +43013,30 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchwrapper"
     }
-  }, [(_vm.documentresults.length >= 1) ? _c('div', _vm._l((_vm.documentresults), function(documentresult) {
+  }, [_c('i', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.documentloading),
+      expression: "documentloading"
+    }],
+    staticClass: "fa fa-circle-o-notch fa-spin fa-3x fa-fw"
+  }), _vm._v(" "), _c('span', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.documentloading),
+      expression: "documentloading"
+    }],
+    staticClass: "sr-only"
+  }, [_vm._v("Loading...")]), _vm._v(" "), (_vm.documentresults.length >= 1) ? _c('div', _vm._l((_vm.documentresults), function(documentresult) {
     return _c('searchresultpanel_document', {
       key: documentresult,
       attrs: {
         "documentresult": documentresult
       }
     })
-  })) : (_vm.documentresults.length == 0 && _vm.documentsearched) ? _c('div', {
+  })) : (_vm.documentresults.length == 0 && _vm.documentsearched && !_vm.documentloading) ? _c('div', {
     staticClass: "alert alert-info",
     attrs: {
       "role": "alert"
@@ -43086,7 +43130,7 @@ exports = module.exports = __webpack_require__(11)(undefined);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -43110,9 +43154,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['annotationresults', 'annotationsearched'],
+    props: ['annotationresults', 'annotationsearched', 'annotationloading'],
     mounted: function mounted() {
         console.log('AnnotationResultComponent mounted.');
     }
@@ -43127,14 +43172,30 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "id": "searchwrapper"
     }
-  }, [(_vm.annotationresults.length >= 1) ? _c('div', _vm._l((_vm.annotationresults), function(annotationresult) {
+  }, [_c('i', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.annotationloading),
+      expression: "annotationloading"
+    }],
+    staticClass: "fa fa-circle-o-notch fa-spin fa-3x fa-fw"
+  }), _vm._v(" "), _c('span', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.annotationloading),
+      expression: "annotationloading"
+    }],
+    staticClass: "sr-only"
+  }, [_vm._v("Loading...")]), _vm._v(" "), (_vm.annotationresults.length >= 1) ? _c('div', _vm._l((_vm.annotationresults), function(annotationresult) {
     return _c('searchresultpanel_annotation', {
       key: annotationresult,
       attrs: {
         "annotationresult": annotationresult
       }
     })
-  })) : (_vm.annotationresults.length == 0 && _vm.annotationsearched) ? _c('div', {
+  })) : (_vm.annotationresults.length == 0 && _vm.annotationsearched && !_vm.annotationloading) ? _c('div', {
     staticClass: "alert alert-info",
     attrs: {
       "role": "alert"
@@ -44731,8 +44792,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['annotationresult'],
     methods: {
-        browseUri: function browseUri(id) {
-            return '/browse/annotation/'.concat(id);
+        browseUri: function browseUri(id, type) {
+            return '/browse/' + type + '/'.concat(id);
         }
     },
     mounted: function mounted() {
@@ -44797,7 +44858,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         attrs: {
           "aria-hidden": "true"
         }
-      }), _vm._v(" " + _vm._s(_vm._f("arrayToString")(fromCorpus.corpus_title)) + "\n                        ")])
+      }), _vm._v(" "), _c('a', {
+        attrs: {
+          "href": _vm.browseUri(fromCorpus._id, 'corpus')
+        }
+      }, [_vm._v(_vm._s(_vm._f("arrayToString")(fromCorpus._source.corpus_title)))])])
     }))]) : _vm._e(), _vm._v(" "), (typeof _vm.annotationresult.documentsByAnnotation[annotationresultdata._id] != 'undefined') ? _c('div', {
       staticClass: "iconwrapper"
     }, [_vm._v("\n                    In documents:\n                        "), _c('ul', _vm._l((_vm.annotationresult.documentsByAnnotation[annotationresultdata._id]), function(fromDocument, dIndex) {
@@ -44809,10 +44874,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         attrs: {
           "aria-hidden": "true"
         }
-      }), _vm._v(" " + _vm._s(_vm._f("arrayToString")(fromDocument.document_title)) + "\n                        ")])
+      }), _vm._v(" "), _c('a', {
+        attrs: {
+          "href": _vm.browseUri(fromDocument._id, 'document')
+        }
+      }, [_vm._v(_vm._s(_vm._f("arrayToString")(fromDocument._source.document_title)))])])
     }))]) : _vm._e(), _vm._v(" "), _c('br'), _vm._v(" "), _c('a', {
       attrs: {
-        "href": _vm.browseUri(annotationresultdata._id)
+        "href": _vm.browseUri(annotationresultdata._id, 'annotation')
       }
     }, [_c('i', {
       staticClass: "fa fa-external-link pull-right",

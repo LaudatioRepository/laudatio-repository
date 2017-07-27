@@ -18,7 +18,7 @@
                         In corpora:
                         <ul>
                             <li v-for="(fromCorpus, cIndex) in annotationresult.corpusByAnnotation[annotationresultdata._id]" v-bind:key="cIndex" class="list-unstyled">
-                                <i class="fa fa-book" aria-hidden="true"></i> {{ fromCorpus.corpus_title | arrayToString }}
+                                <i class="fa fa-book" aria-hidden="true"></i> <a v-bind:href="browseUri(fromCorpus._id,'corpus')" >{{ fromCorpus._source.corpus_title | arrayToString }}</a>
                             </li>
                         </ul>
 
@@ -27,11 +27,11 @@
                         In documents:
                             <ul>
                             <li v-for="(fromDocument,dIndex) in annotationresult.documentsByAnnotation[annotationresultdata._id]" v-bind:key="dIndex" class="list-unstyled">
-                                <i class="fa fa-book" aria-hidden="true"></i> {{ fromDocument.document_title | arrayToString }}
+                                <i class="fa fa-book" aria-hidden="true"></i> <a v-bind:href="browseUri(fromDocument._id,'document')" >{{ fromDocument._source.document_title | arrayToString }}</a>
                             </li>
                             </ul>
                         </div>
-                        <br /> <a v-bind:href="browseUri(annotationresultdata._id)" ><i class="fa fa-external-link pull-right" aria-hidden="true"></i></a>
+                        <br /> <a v-bind:href="browseUri(annotationresultdata._id,'annotation')" ><i class="fa fa-external-link pull-right" aria-hidden="true"></i></a>
                     </div>
                  </div>
             </div>
@@ -44,8 +44,8 @@
     export default {
         props: ['annotationresult'],
         methods: {
-            browseUri: function(id) {
-                return '/browse/annotation/'.concat(id);
+            browseUri: function(id,type) {
+                return '/browse/'+type+'/'.concat(id);
             }
         },
         mounted() {

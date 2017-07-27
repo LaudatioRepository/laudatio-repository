@@ -108,7 +108,6 @@ class ElasticService implements ElasticsearchInterface
     {
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
-        Log::info("SENDING: ".print_r($searchData,1));
 
         if(count($searchData) > 1){
             $queryBody = $queryBuilder->buildMustQuery($searchData);
@@ -269,13 +268,14 @@ class ElasticService implements ElasticsearchInterface
                 'index' => 'corpus',
                 'type' => 'corpus',
                 'body' => $queryBody,
-                '_source' => ["corpus_title"],
+                '_source' => ["corpus_title","_id"],
                 'filter_path' => ['hits.hits']
             ];
+
             $results = Elasticsearch::search($params);
 
         }//end foreach queries
-        return $results['hits']['hits'][0]['_source'];
+        return $results['hits']['hits'][0];
     }
 
     public function getDocumentsByAnnotation($searchData){
@@ -287,14 +287,14 @@ class ElasticService implements ElasticsearchInterface
                 'index' => 'document',
                 'type' => 'document',
                 'body' => $queryBody,
-                '_source' => ["document_title"],
+                '_source' => ["document_title","_id"],
                 'filter_path' => ['hits.hits']
             ];
 
             $results = Elasticsearch::search($params);
 
         }//end foreach queries
-        return $results['hits']['hits'][0]['_source'];
+        return $results['hits']['hits'][0];
     }
 
     /**
