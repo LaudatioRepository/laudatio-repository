@@ -26,4 +26,16 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function roles() {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function corpus_projects() {
+        return $this->belongsToMany(CorpusProject::class);
+    }
+
+    public function corpora() {
+        return $this->belongsToMany(Corpus::class);
+    }
 }
