@@ -24,7 +24,7 @@ Route::get('/repository',[ 'as' => 'gitLab', 'uses' => 'GitLabController@listPro
 
 Route::get('/schema/{path?}',[ 'as' => 'gitRepo.route.schema', 'uses' => 'GitRepoController@listSchema'])->where('path', '.+')->middleware('auth');
 
-Route::get('/projects/{path?}',[ 'as' => 'gitRepo.route', 'uses' => 'GitRepoController@listProjects'])->where('path', '.+')->middleware('auth');
+
 Route::get('/viewFile/{path}',[ 'as' => 'gitRepo.readFile.route', 'uses' => 'GitRepoController@readFile'])->where('path', '.+')->middleware('auth');
 Route::get('/deleteFile/{path}',[ 'as' => 'gitRepo.deleteFile.route', 'uses' => 'GitRepoController@deleteFile'])->where('path', '.+')->middleware('auth');
 Route::get('/updateFile/{path}',[ 'as' => 'gitRepo.updateFile.route', 'uses' => 'GitRepoController@updateFileVersion'])->where('path', '.+')->middleware('auth');
@@ -39,8 +39,21 @@ Route::post('/commit',['as' => 'gitRepo.commit.post', 'uses' => 'CommitControlle
 Route::get('/upload/{dirname?}',['as' => 'gitRepo.upload.get', 'uses' => 'UploadController@uploadForm'])->where('dirname', '.+')->middleware('auth');
 Route::post('/upload',['as' => 'gitRepo.upload.post', 'uses' => 'UploadController@uploadSubmit'])->middleware('auth');
 
+Route::get('/corpusprojects',[ 'as' => 'corpusProject.index', 'uses' => 'CorpusProjectController@index']);
+Route::get('/corpusprojects/{corpusproject}',[ 'as' => 'corpusProject.show.', 'uses' => 'CorpusProjectController@show']);
+Route::get('/corpusprojects/create',[ 'as' => 'corpusProject.show.', 'uses' => 'CorpusProjectController@create']);
+Route::post('/corpusprojects/create',[ 'as' => 'corpusProject.show.', 'uses' => 'CorpusProjectController@store']);
+
+
+
+
+
+
+/**OLD**/
 Route::get('/createproject/{dirname?}',['as' => 'gitRepo.createproject.get', 'uses' => 'GitRepoController@createProjectForm'])->where('dirname', '.+')->middleware('auth');
 Route::post('/createproject',['as' => 'gitRepo.createproject.post', 'uses' => 'GitRepoController@createProjectSubmit'])->middleware('auth');
+Route::get('/projects/{path?}',[ 'as' => 'gitRepo.route', 'uses' => 'GitRepoController@listProjects'])->where('path', '.+')->middleware('auth');
+/** END OLD **/
 
 Route::get('/createcorpus/{dirname?}',['as' => 'gitRepo.createcorpus.get', 'uses' => 'GitRepoController@createCorpusForm'])->where('dirname', '.+')->middleware('auth');
 Route::post('/createcorpus',['as' => 'gitRepo.createcorpus.post', 'uses' => 'GitRepoController@createCorpusSubmit'])->middleware('auth');
