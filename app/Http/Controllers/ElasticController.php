@@ -166,9 +166,20 @@ class ElasticController extends Controller
 
         for($i = 0; $i < count($request->annotationRefs); $i++){
             $annotationRef = $request->annotationRefs[$i];
-            $corpusRefs = $request->corpusRefs[$i];
+            if(!empty($request->corpusRefs[$i])){
+                $corpusRefs = $request->corpusRefs[$i];
+            }
+            else{
+                $corpusRefs = array();
+            }
+
             $corpusResult[$annotationRef] = array();
-            $documentRefs = $request->documentRefs[$i];
+            if(!empty($request->documentRefs[$i])) {
+                $documentRefs = $request->documentRefs[$i];
+            }
+            else{
+                $documentRefs = array();
+            }
             $documentResult[$annotationRef] = array();
 
             foreach ($corpusRefs as $corpusRef){

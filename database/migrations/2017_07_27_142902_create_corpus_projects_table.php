@@ -16,6 +16,7 @@ class CreateCorpusProjectsTable extends Migration
         Schema::create('corpus_projects', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+            $table->text('description');
             $table->timestamps();
         });
     }

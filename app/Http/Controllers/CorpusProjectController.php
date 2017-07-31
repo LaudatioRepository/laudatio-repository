@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\CorpusProject;
 
 class CorpusProjectController extends Controller
 {
@@ -17,7 +18,7 @@ class CorpusProjectController extends Controller
         $user = \Auth::user();
         $CorpusProjects = CorpusProject::all();
 
-        return view('admin.corpusproject.index', compact('CorpusProjects'))
+        return view('admin.corpusprojectadmin.index', compact('CorpusProjects'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -31,7 +32,11 @@ class CorpusProjectController extends Controller
      */
     public function create()
     {
-        return view('admin.corpusproject.create', compact('CorpusProject'));
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        return view('admin.corpusprojectadmin.create')
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 
     /**
@@ -42,7 +47,16 @@ class CorpusProjectController extends Controller
      */
     public function store(Request $request)
     {
-        return view('admin.corpusproject.store', compact('CorpusProject'));
+        $this->validate(request(), [
+            'corpusproject_name' => 'required',
+            'corpusproject_description' => 'required'
+        ]);
+
+        CorpusProject::create([
+            "name" => request('corpusproject_name'),
+            "description" => request('corpusproject_description')
+        ]);
+        return redirect('/corpusprojects');
     }
 
     /**
@@ -50,7 +64,7 @@ class CorpusProjectController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(CorpusProject $corpusProject){
-        return view('admin.corpusproject.show', compact('CorpusProject'));
+        return view('admin.corpusprojectadmin.show', compact('CorpusProject'));
     }
 
     /**
@@ -61,7 +75,7 @@ class CorpusProjectController extends Controller
      */
     public function edit($id)
     {
-        return view('admin.corpusproject.edit', compact('CorpusProject'));
+        return view('admin.corpusprojectadmin.edit', compact('CorpusProject'));
     }
 
     /**
@@ -84,6 +98,6 @@ class CorpusProjectController extends Controller
      */
     public function destroy($id)
     {
-        return view('admin.corpusproject.destroy', compact('CorpusProject'));
+        return view('admin.corpusprojectadmin.destroy', compact('CorpusProject'));
     }
 }

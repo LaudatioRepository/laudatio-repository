@@ -273,7 +273,6 @@ class ElasticService implements ElasticsearchInterface
             ];
 
             $results = Elasticsearch::search($params);
-
         }//end foreach queries
         return $results['hits']['hits'][0];
     }

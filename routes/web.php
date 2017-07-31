@@ -15,9 +15,13 @@ Route::get('/', ['uses' => 'IndexController@index']);
 
 Auth::routes();
 
-Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
+Route::get('/admin', ['uses' => 'IndexController@admin'])->middleware('auth');
 
-Route::get('/elsearch',['uses' => 'ElasticController@search']);
+Route::get('/admin/corpusprojects',[ 'as' => 'admin.corpusProject.index', 'uses' => 'CorpusProjectController@index'])->middleware('auth');
+Route::get('/admin/corpusprojects/create',[ 'as' => 'admin.corpusProject.create.', 'uses' => 'CorpusProjectController@create'])->middleware('auth');
+Route::post('/admin/corpusprojects',[ 'as' => 'admin.corpusProject.store.', 'uses' => 'CorpusProjectController@store'])->middleware('auth');
+
+Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
 
 Route::get('/repository',[ 'as' => 'gitLab', 'uses' => 'GitLabController@listProjects'])->middleware('auth');
 
@@ -38,11 +42,6 @@ Route::post('/commit',['as' => 'gitRepo.commit.post', 'uses' => 'CommitControlle
 
 Route::get('/upload/{dirname?}',['as' => 'gitRepo.upload.get', 'uses' => 'UploadController@uploadForm'])->where('dirname', '.+')->middleware('auth');
 Route::post('/upload',['as' => 'gitRepo.upload.post', 'uses' => 'UploadController@uploadSubmit'])->middleware('auth');
-
-Route::get('/corpusprojects',[ 'as' => 'corpusProject.index', 'uses' => 'CorpusProjectController@index']);
-Route::get('/corpusprojects/{corpusproject}',[ 'as' => 'corpusProject.show.', 'uses' => 'CorpusProjectController@show']);
-Route::get('/corpusprojects/create',[ 'as' => 'corpusProject.show.', 'uses' => 'CorpusProjectController@create']);
-Route::post('/corpusprojects/create',[ 'as' => 'corpusProject.show.', 'uses' => 'CorpusProjectController@store']);
 
 
 

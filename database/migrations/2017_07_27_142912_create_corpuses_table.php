@@ -17,6 +17,7 @@ class CreateCorpusesTable extends Migration
             $table->increments('id');
             $table->integer('corpus_project_id')->nullable();
             $table->string('name');
+            $table->text('description');
             $table->timestamps();
         });
     }

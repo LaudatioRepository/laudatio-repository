@@ -6,6 +6,7 @@
  */
 
 require('./bootstrap');
+
 require('./filters');
 window.Vue = require('vue');
 const util = require('util')
