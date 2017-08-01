@@ -6,28 +6,28 @@
             <div class="col-lg-12">
                 <div class="panel panel-default panel-green">
                     <div class="panel-heading">
-                        <h1><i class="fa fa-group fa-fw"></i> Corpus projects</h1>
+                        <h1><i class="fa fa-group fa-fw"></i> Corpora</h1>
                     </div>
                     <!-- .panel-heading -->
                     <div class="panel-body">
                         <div class="panel-group" id="accordion">
-                            @foreach($CorpusProjects as $CorpusProject)
+                            @foreach($corpora as $corpus)
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <span class="panel-title">
-                                            <a data-toggle="collapse" data-parent="#accordion" href="#{{$CorpusProject->id}}" aria-expanded="false" class="collapsed">
-                                                {{ $CorpusProject->name }}
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#{{$corpus->id}}" aria-expanded="false" class="collapsed">
+                                                {{ $corpus->name }}
                                             </a>
                                         </span>
-                                        <span class="pull-right">Created at: {{$CorpusProject->created_at->toFormattedDateString()}}
+                                        <span class="pull-right">Created at: {{$corpus->created_at->toFormattedDateString()}}
                                             <button type="button" class="btn btn-success btn-circle">
-                                                <a href="/admin/corpusprojects/{{$CorpusProject->id}}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+                                                <a href="/admin/corpora/{{$corpus->id}}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
                                             </button>
                                         </span>
                                     </div>
-                                    <div id="{{$CorpusProject->id}}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                    <div id="{{$corpus->id}}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
                                         <div class="panel-body">
-                                            {{$CorpusProject->description}}
+                                            {{$corpus->description}}
                                         </div>
                                     </div>
                                 </div>

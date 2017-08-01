@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCorpusesTable extends Migration
+class CreateCorpusCorpusProjectTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateCorpusesTable extends Migration
      */
     public function up()
     {
-        Schema::create('corpuses', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name');
-            $table->text('description');
-            $table->timestamps();
+        Schema::create('corpus_corpus_project', function (Blueprint $table) {
+            $table->integer('corpus_id');
+            $table->integer('corpus_project_id');
+            $table->primary(['corpus_id','corpus_project_id']);
         });
     }
 
@@ -28,6 +27,6 @@ class CreateCorpusesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('corpuses');
+        Schema::dropIfExists('corpus_corpus_project');
     }
 }

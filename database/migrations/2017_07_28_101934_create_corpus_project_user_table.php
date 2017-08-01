@@ -14,10 +14,9 @@ class CreateCorpusProjectUserTable extends Migration
     public function up()
     {
         Schema::create('corpus_project_user', function (Blueprint $table) {
-            $table->increments('id');
             $table->integer('corpus_project_id');
             $table->integer('user_id');
-            $table->timestamps();
+            $table->primary(['corpus_project_id','user_id']);
         });
     }
 

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\CorpusProject;
+use App\Corpus;
 
 class CorpusProjectController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +18,7 @@ class CorpusProjectController extends Controller
 
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-        $CorpusProjects = CorpusProject::all();
+        $CorpusProjects = CorpusProject::latest()->get();
 
         return view('admin.corpusprojectadmin.index', compact('CorpusProjects'))
             ->with('isLoggedIn', $isLoggedIn)
@@ -56,15 +58,54 @@ class CorpusProjectController extends Controller
             "name" => request('corpusproject_name'),
             "description" => request('corpusproject_description')
         ]);
-        return redirect('/corpusprojects');
+        return redirect()->route('admin.corpusProject.index');
     }
 
     /**
-     * @param CorpusProject $corpusProject
+     * @param CorpusProject $corpusproject
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(CorpusProject $corpusProject){
-        return view('admin.corpusprojectadmin.show', compact('CorpusProject'));
+    public function show(CorpusProject $corpusproject){
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        return view('admin.corpusprojectadmin.show', compact('corpusproject'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
+    }
+
+    public function assign(CorpusProject $corpusproject) {
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        $corpora = Corpus::latest()->get();
+        $filteredList = array();
+
+        foreach ($corpora as $corpus){
+            if(!$corpusproject->corpora->contains($corpus)){
+                array_push($filteredList,$corpus);
+            }
+        }
+
+        return view('admin.corpusprojectadmin.assign_corpora')
+            ->with('corpusproject', $corpusproject)
+            ->with('corpora', $filteredList)
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
+    }
+
+    public function storeRelations($id)
+    {
+
+        $this->validate(request(), [
+            'corpora' => 'required',
+        ]);
+
+        $corpusproject = CorpusProject::find($id);
+        foreach (request('corpora') as $corpusid){
+            $corpus = Corpus::find($corpusid);
+            $corpusproject->corpora()->attach($corpus);
+        }
+
+        return redirect()->route('admin.corpusProject.index');
     }
 
     /**

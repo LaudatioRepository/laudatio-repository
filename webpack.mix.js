@@ -20,4 +20,5 @@ mix.js('resources/assets/js/browseapp.js', 'public/js')
 mix.js('resources/assets/js/sb-admin.js', 'public/js')
     .sass('resources/assets/sass/sb-admin.scss', 'public/css');
 
-mix.js('resources/assets/js/metisMenu.js', 'public/js');
+mix.js('resources/assets/js/metisMenu.js', 'public/js')
+    .sass('resources/assets/sass/admin.scss', 'public/css');

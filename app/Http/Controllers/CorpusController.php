@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Corpus;
 
 class CorpusController extends Controller
 {
@@ -13,7 +14,13 @@ class CorpusController extends Controller
      */
     public function index()
     {
-        //
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        $corpora = Corpus::latest()->get();
+
+        return view('admin.corpusadmin.index', compact('corpora'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 
     /**
@@ -23,7 +30,11 @@ class CorpusController extends Controller
      */
     public function create()
     {
-        //
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        return view('admin.corpusadmin.create')
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 
     /**
@@ -34,7 +45,16 @@ class CorpusController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate(request(), [
+            'corpus_name' => 'required',
+            'corpus_description' => 'required'
+        ]);
+
+        Corpus::create([
+            "name" => request('corpus_name'),
+            "description" => request('corpus_description')
+        ]);
+        return redirect()->route('admin.corpora.index');
     }
 
     /**
@@ -43,9 +63,13 @@ class CorpusController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Corpus $corpus)
     {
-        //
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        return view('admin.corpusadmin.show', compact('corpus'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 
     /**

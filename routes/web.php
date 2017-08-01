@@ -19,7 +19,21 @@ Route::get('/admin', ['uses' => 'IndexController@admin'])->middleware('auth');
 
 Route::get('/admin/corpusprojects',[ 'as' => 'admin.corpusProject.index', 'uses' => 'CorpusProjectController@index'])->middleware('auth');
 Route::get('/admin/corpusprojects/create',[ 'as' => 'admin.corpusProject.create.', 'uses' => 'CorpusProjectController@create'])->middleware('auth');
+Route::get('/admin/corpusprojects/{corpusproject}',[ 'as' => 'admin.corpusProject.show.', 'uses' => 'CorpusProjectController@show'])->middleware('auth');
 Route::post('/admin/corpusprojects',[ 'as' => 'admin.corpusProject.store.', 'uses' => 'CorpusProjectController@store'])->middleware('auth');
+Route::get('/admin/corpusprojects/assign/{corpusproject}',[ 'as' => 'admin.corpora.assign.', 'uses' => 'CorpusProjectController@assign'])->middleware('auth');
+Route::post('/admin/corpusprojects/{corpusproject}/corpora',[ 'as' => 'admin.corpora.assign.store.', 'uses' => 'CorpusProjectController@storeRelations'])->middleware('auth');
+
+Route::get('/admin/corpora',[ 'as' => 'admin.corpora.index', 'uses' => 'CorpusController@index'])->middleware('auth');
+Route::get('/admin/corpora/create',[ 'as' => 'admin.corpora.create.', 'uses' => 'CorpusController@create'])->middleware('auth');
+Route::get('/admin/corpora/{corpus}',[ 'as' => 'admin.corpora.show.', 'uses' => 'CorpusController@show'])->middleware('auth');
+Route::post('/admin/corpora',[ 'as' => 'admin.corpora.store.', 'uses' => 'CorpusController@store'])->middleware('auth');
+
+
+
+
+
+
 
 Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
 

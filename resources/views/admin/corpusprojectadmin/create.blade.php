@@ -3,7 +3,7 @@
 @section('content')
     <div class="content">
         <h1>Create a new Corpus project</h1>
-        <form action="/corpusprojects" method="post">
+        <form action="/admin/corpusprojects" method="post">
             {{ csrf_field() }}
             <div class="form-group>">
                 <label for="corpusproject_name">Corpus Project Name</label>

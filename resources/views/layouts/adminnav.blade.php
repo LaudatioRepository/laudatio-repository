@@ -245,7 +245,7 @@
                     <a href="/admin"><i class="fa fa-dashboard fa-fw"></i> Admin</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Corpus Projects<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-group fa-fw"></i> Corpus Projects<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
                             <a href="/admin/corpusprojects">List all Corpus Projects</a>
@@ -259,78 +259,28 @@
                         <li>
                             <a href="/admin/corpusprojects/delete">Delete a Corpus Project</a>
                         </li>
-                    </ul>
-                    <!-- /.nav-second-level -->
-                </li>
-                <li>
-                    <a href="tables.html"><i class="fa fa-table fa-fw"></i> Tables</a>
-                </li>
-                <li>
-                    <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
                         <li>
-                            <a href="panels-wells.html">Panels and Wells</a>
-                        </li>
-                        <li>
-                            <a href="buttons.html">Buttons</a>
-                        </li>
-                        <li>
-                            <a href="notifications.html">Notifications</a>
-                        </li>
-                        <li>
-                            <a href="typography.html">Typography</a>
-                        </li>
-                        <li>
-                            <a href="icons.html"> Icons</a>
-                        </li>
-                        <li>
-                            <a href="grid.html">Grid</a>
-                        </li>
-                    </ul>
-                    <!-- /.nav-second-level -->
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-sitemap fa-fw"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                        <li>
-                            <a href="#">Second Level Item</a>
-                        </li>
-                        <li>
-                            <a href="#">Second Level Item</a>
-                        </li>
-                        <li>
-                            <a href="#">Third Level <span class="fa arrow"></span></a>
+                            <a href="#"><i class="fa fa-sitemap fa-fw"></i>Corpora<span class="fa arrow"></span></a>
                             <ul class="nav nav-third-level">
                                 <li>
-                                    <a href="#">Third Level Item</a>
+                                    <a href="/admin/corpora">List all Corpora</a>
                                 </li>
                                 <li>
-                                    <a href="#">Third Level Item</a>
+                                    <a href="/admin/corpora/create">Create a new Corpus</a>
                                 </li>
                                 <li>
-                                    <a href="#">Third Level Item</a>
+                                    <a href="/admin/corpora/update">Update a Corpus </a>
                                 </li>
                                 <li>
-                                    <a href="#">Third Level Item</a>
+                                    <a href="/admin/corpora/delete">Delete a Corpus</a>
                                 </li>
+                                <li>
+                                    <a href="/admin/corpora/assign">Assign corpora to a Corpus projects</a>
+                                </li>
+                                <li>
                             </ul>
-                            <!-- /.nav-third-level -->
                         </li>
-                    </ul>
-                    <!-- /.nav-second-level -->
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                        <li>
-                            <a href="blank.html">Blank Page</a>
-                        </li>
-                        <li>
-                            <a href="login.html">Login Page</a>
-                        </li>
+
                     </ul>
                     <!-- /.nav-second-level -->
                 </li>

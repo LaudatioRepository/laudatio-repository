@@ -1,0 +1,13 @@
+/** BOOTSTRAP**/
+
+span.pull-right a,
+div.tab-pane button.btn-circle a {
+  color: inherit;
+  text-decoration: none;
+}
+
+div.tab-content button.btn-circle a {
+  color: inherit;
+  text-decoration: none;
+}
+

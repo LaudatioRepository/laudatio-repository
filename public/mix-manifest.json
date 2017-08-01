@@ -2,8 +2,9 @@
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
     "/css/browseapp.css": "/css/browseapp.css",
+    "/css/sb-admin.css": "/css/sb-admin.css",
+    "/css/admin.css": "/css/admin.css",
     "/js/browseapp.js": "/js/browseapp.js",
     "/js/sb-admin.js": "/js/sb-admin.js",
-    "/js/metisMenu.js": "/js/metisMenu.js",
-    "/css/sb-admin.css": "/css/sb-admin.css"
+    "/js/metisMenu.js": "/js/metisMenu.js"
 }
