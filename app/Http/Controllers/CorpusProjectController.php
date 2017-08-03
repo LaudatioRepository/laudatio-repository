@@ -73,6 +73,10 @@ class CorpusProjectController extends Controller
             ->with('user',$user);
     }
 
+    /**
+     * @param CorpusProject $corpusproject
+     * @return $this
+     */
     public function assign(CorpusProject $corpusproject) {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
@@ -92,6 +96,10 @@ class CorpusProjectController extends Controller
             ->with('user',$user);
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function storeRelations($id)
     {
 
@@ -109,36 +117,74 @@ class CorpusProjectController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param CorpusProject $corpusproject
+     * @return $this
      */
-    public function edit($id)
+    public function edit(CorpusProject $corpusproject)
     {
-        return view('admin.corpusprojectadmin.edit', compact('CorpusProject'));
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        return view('admin.corpusprojectadmin.edit', compact('corpusproject'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param CorpusProject $corpusproject
+     * @return $this
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, CorpusProject $corpusproject)
     {
-        //
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+
+        $corpusproject->update([
+            "name" => request('corpusproject_name'),
+            "description" => request('corpusproject_description')
+        ]);
+
+        return view('admin.corpusprojectadmin.show', compact('corpusproject'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param CorpusProject $corpusproject
+     * @return $this
      */
-    public function destroy($id)
+    public function delete(CorpusProject $corpusproject)
     {
-        return view('admin.corpusprojectadmin.destroy', compact('CorpusProject'));
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        return view('admin.corpusprojectadmin.delete', compact('corpusproject'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
+    }
+
+    /**
+     * @param Request $request
+     * @param CorpusProject $corpusproject
+     * @return $this
+     */
+    public function destroy(Request $request, CorpusProject $corpusproject)
+    {
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+
+        if(count($corpusproject->corpora()) > 0) {
+            $corpusproject->corpora()->detach();
+        }
+
+        if(count($corpusproject->users()) > 0) {
+            $corpusproject->users()->detach();
+        }
+
+        $corpusproject->delete();
+        $CorpusProjects = CorpusProject::latest()->get();
+
+        return view('admin.corpusprojectadmin.index', compact('CorpusProjects'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 }

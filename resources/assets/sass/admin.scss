@@ -5,6 +5,14 @@ span.pull-right a, div.tab-pane button.btn-circle a{
   color: inherit;
   text-decoration: none;
 }
+button.btn.btn-primary.btn-circle.btn-xl.pull-right a,button.btn.btn-danger.btn-circle.btn-xl.pull-right{
+  margin-right: 4px;
+  margin-left: 4px;
+}
+button.btn.btn-primary.btn-circle.btn-xl.pull-right a,button.btn.btn-danger.btn-circle.btn-xl.pull-right a {
+  color: inherit;
+  text-decoration: none;
+}
 
 div.tab-content button.btn-circle a {
   color: inherit;

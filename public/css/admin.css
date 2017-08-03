@@ -6,6 +6,18 @@ div.tab-pane button.btn-circle a {
   text-decoration: none;
 }
 
+button.btn.btn-primary.btn-circle.btn-xl.pull-right a,
+button.btn.btn-danger.btn-circle.btn-xl.pull-right {
+  margin-right: 4px;
+  margin-left: 4px;
+}
+
+button.btn.btn-primary.btn-circle.btn-xl.pull-right a,
+button.btn.btn-danger.btn-circle.btn-xl.pull-right a {
+  color: inherit;
+  text-decoration: none;
+}
+
 div.tab-content button.btn-circle a {
   color: inherit;
   text-decoration: none;
@@ -108,7 +120,6 @@ div.bhoechie-tab-menu div.list-group > a:last-child {
 }
 
 div.bhoechie-tab-menu div.list-group > a.active,
-div.bhoechie-tab-menu div.list-group > a.active .glyphicon,
 div.bhoechie-tab-menu div.list-group > a.active .fa {
   background-color: #5A55A3;
   background-image: #5A55A3;

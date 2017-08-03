@@ -58,10 +58,8 @@ class CorpusController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Corpus $corpus
+     * @return $this
      */
     public function show(Corpus $corpus)
     {
@@ -73,36 +71,74 @@ class CorpusController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Corpus $corpus
+     * @return $this
      */
-    public function edit($id)
+    public function edit(Corpus $corpus)
     {
-        //
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        return view('admin.corpusadmin.edit', compact('corpus'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Corpus $corpus
+     * @return $this
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Corpus $corpus)
     {
-        //
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+
+        $corpus->update([
+            "name" => request('corpus_name'),
+            "description" => request('corpus_description')
+        ]);
+
+        return view('admin.corpusadmin.show', compact('corpus'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Corpus $corpus
+     * @return $this
      */
-    public function destroy($id)
+    public function delete(Corpus $corpus)
     {
-        //
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        return view('admin.corpusadmin.delete', compact('corpus'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
+    }
+
+    /**
+     * @param Request $request
+     * @param Corpus $corpus
+     * @return $this
+     */
+    public function destroy(Request $request, Corpus $corpus)
+    {
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+
+        if(count($corpus->corpusprojects()) > 0) {
+            $corpus->corpusprojects()->detach();
+        }
+
+        if(count($corpus->users()) > 0) {
+            $corpus->users()->detach();
+        }
+
+        $corpus->delete();
+        $corpora = Corpus::latest()->get();
+
+        return view('admin.corpusadmin.index', compact('corpora'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 }
