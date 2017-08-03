@@ -25,7 +25,7 @@
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-
+    <script src="{{ asset('js/jQuery.js') }}"></script>
 </head>
 
 <body>
@@ -33,9 +33,17 @@
 <div id="wrapper">
     @include('layouts.adminnav')
 
+
+
     <div id="page-wrapper">
+        @if($flash = session('message'))
+            <div id="flash-message" class="alert alert-success">
+                {{ $flash }}
+            </div>
+        @endif
+
             @yield('content')
-        </div>
+    </div>
         <!-- /.container-fluid -->
 
     </div>
@@ -47,7 +55,6 @@
 <!-- jQuery -->
 
 <!-- Bootstrap Core JavaScript -->
-<script src="{{ asset('js/jQuery.js') }}"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <script src="{{ asset('js/metisMenu.js') }}"></script>
 <script src="{{ asset('js/sb-admin.js') }}"></script>

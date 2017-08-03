@@ -29,10 +29,12 @@ Route::get('/admin/corpora/create',[ 'as' => 'admin.corpora.create.', 'uses' => 
 Route::get('/admin/corpora/{corpus}',[ 'as' => 'admin.corpora.show.', 'uses' => 'CorpusController@show'])->middleware('auth');
 Route::post('/admin/corpora',[ 'as' => 'admin.corpora.store.', 'uses' => 'CorpusController@store'])->middleware('auth');
 
-
-
-
-
+Route::get('/admin/roles',[ 'as' => 'admin.roles.index', 'uses' => 'RoleController@index'])->middleware('auth');
+Route::get('/admin/roles/create',[ 'as' => 'admin.roles.create', 'uses' => 'RoleController@create'])->middleware('auth');
+Route::post('/admin/roles',[ 'as' => 'admin.roles.store', 'uses' => 'RoleController@store'])->middleware('auth');
+Route::get('/admin/roles/{role}',[ 'as' => 'admin.roles.show', 'uses' => 'RoleController@show'])->middleware('auth');
+Route::get('/admin/roles/{role}/edit',[ 'as' => 'admin.roles.edit', 'uses' => 'RoleController@edit'])->middleware('auth');
+Route::get('/admin/userroles',[ 'as' => 'admin.roles.assignusers', 'uses' => 'RoleController@assignUsers'])->middleware('auth');
 
 
 Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);

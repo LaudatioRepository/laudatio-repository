@@ -23,11 +23,11 @@
 
                         <div class="tab-content">
                             <div class="tab-pane fade in active" id="description">
-                                <h4>Description</h4>
+                                <br />
                                 <p>{{$corpusproject->description}}</p>
                             </div>
                             <div class="tab-pane fade" id="corpora">
-                                <h4>Corpora</h4>
+                                <br />
                                 <div class="panel-group" id="accordion">
                                     @foreach($corpusproject->corpora as $corpus)
                                         <div class="panel panel-default">

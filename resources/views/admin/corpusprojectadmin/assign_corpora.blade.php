@@ -59,8 +59,9 @@
                 </div>
                 <!-- /.panel -->
             </div>
-            <input type="hidden" name="corpusprojectid" id="corpusprojectid" value="" />
         </form>
     </div>
-    @include('layouts.errors')
+    <div class="col-lg-12">
+        @include('layouts.errors')
+    </div>
 @endsection

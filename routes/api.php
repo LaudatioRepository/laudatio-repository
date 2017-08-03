@@ -40,4 +40,8 @@ Route::group(array('prefix' => 'searchapi'), function() {
     Route::post('truncateIndex','ElasticController@truncateIndex');
 });
 
+Route::group(array('prefix' => 'adminapi'), function() {
+    Route::post('userroles','RoleController@storeRelations');
+});
+
 

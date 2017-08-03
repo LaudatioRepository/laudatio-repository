@@ -245,19 +245,13 @@
                     <a href="/admin"><i class="fa fa-dashboard fa-fw"></i> Admin</a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-group fa-fw"></i> Corpus Projects<span class="fa arrow"></span></a>
+                    <a href="#"><i class="fa fa-archive fa-fw"></i> Corpus Projects<span class="fa arrow"></span></a>
                     <ul class="nav nav-second-level">
                         <li>
                             <a href="/admin/corpusprojects">List all Corpus Projects</a>
                         </li>
                         <li>
                             <a href="/admin/corpusprojects/create">Create a new Corpus Project</a>
-                        </li>
-                        <li>
-                            <a href="/admin/corpusprojects/update">Update a Corpus Project</a>
-                        </li>
-                        <li>
-                            <a href="/admin/corpusprojects/delete">Delete a Corpus Project</a>
                         </li>
                         <li>
                             <a href="#"><i class="fa fa-sitemap fa-fw"></i>Corpora<span class="fa arrow"></span></a>
@@ -268,21 +262,33 @@
                                 <li>
                                     <a href="/admin/corpora/create">Create a new Corpus</a>
                                 </li>
-                                <li>
-                                    <a href="/admin/corpora/update">Update a Corpus </a>
-                                </li>
-                                <li>
-                                    <a href="/admin/corpora/delete">Delete a Corpus</a>
-                                </li>
-                                <li>
-                                    <a href="/admin/corpora/assign">Assign corpora to a Corpus projects</a>
-                                </li>
-                                <li>
                             </ul>
                         </li>
 
                     </ul>
                     <!-- /.nav-second-level -->
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-group fa-fw"></i> User Management<span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="#"><i class="fa fa-suitcase fa-fw"></i>User role management <span class="fa arrow"></span></a>
+                            <ul class="nav nav-third-level">
+                                <li>
+                                    <a href="/admin/roles">List User Roles</a>
+                                </li>
+                                <li>
+                                    <a href="/admin/roles/create">Create User Roles</a>
+                                </li>
+                                <li>
+                                    <a href="/admin/userroles">Assign User Roles</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="/admin/corpusprojects">Manage Users in Corpus Projects</a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>
