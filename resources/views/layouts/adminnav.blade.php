@@ -260,7 +260,7 @@
                                     <a href="/admin/corpora">List all Corpora</a>
                                 </li>
                                 <li>
-                                    <a href="/admin/corpora/create">Create a new Corpus</a>
+                                    <a href="/admin/corpora/create">Assign an existing Corpus to an existing Project</a>
                                 </li>
                             </ul>
                         </li>
@@ -284,9 +284,6 @@
                                     <a href="/admin/userroles">Assign User Roles</a>
                                 </li>
                             </ul>
-                        </li>
-                        <li>
-                            <a href="/admin/corpusprojects">Manage Users in Corpus Projects</a>
                         </li>
                     </ul>
                 </li>

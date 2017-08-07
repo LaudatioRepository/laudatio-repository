@@ -20,6 +20,11 @@ div.tab-content button.btn-circle a {
 }
 
 
+div.row a.adminIcons {
+  color: inherit;
+  text-decoration: none;
+}
+
 #flash-message {
   bottom: 20px;
   position: absolute;
@@ -120,3 +125,52 @@ div.bhoechie-tab-content{
 div.bhoechie-tab div.bhoechie-tab-content:not(.active){
   display: none;
 }
+
+
+/** UPLOAD FORM **/
+
+.upload-drop-zone {
+  height: 200px;
+  border-width: 2px;
+  margin-bottom: 20px;
+}
+
+/* skin.css Style*/
+.upload-drop-zone {
+  color: #ccc;
+  border-style: dashed;
+  border-color: #ccc;
+  line-height: 200px;
+  text-align: center
+}
+.upload-drop-zone.drop {
+  color: #222;
+  border-color: #222;
+}
+
+
+
+.image-preview-input {
+  position: relative;
+  overflow: hidden;
+  margin: 0px;
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+.image-preview-input input[type=file] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0;
+  filter: alpha(opacity=0);
+}
+.image-preview-input-title {
+  margin-left:2px;
+}
+
+/** END UPLOAD FORM **/

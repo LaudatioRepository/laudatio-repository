@@ -34,8 +34,13 @@ class GitFunction
     }
 
     public function doAdd($path){
-        print "<br><br>ADDING: ".$path;
-        $process = new Process("git add .",$path);
+        if($path = ""){
+            $process = new Process("git add .",$path);
+        }
+        else{
+            $process = new Process("git add .",$path);
+        }
+
         $process->run();
 
         // executes after the command finishes
@@ -46,8 +51,8 @@ class GitFunction
         return $process->getOutput();
     }
 
-    public function doAddFile($path,$file){
-        print "<br><br>ADDING: ".$path;
+
+    public function doAddFile($file,$path){
         $process = new Process("git add $file",$path);
         $process->run();
 
@@ -138,7 +143,6 @@ class GitFunction
     }
 
     public function isCommitted($commitmessage, $logmessage){
-        print "<br><br>CHECKING LOG:  ".$logmessage." COMMIT: ".$commitmessage;
         return (strpos($logmessage,$commitmessage) !== false);
     }
 
@@ -179,8 +183,15 @@ class GitFunction
             }
         }
         else {
+
             if(!$this->isTracked($this->basePath."/".$pathWithOutAddedFolder."/".$folder)){
-                $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder."/".$folder);
+                if (is_dir($folder)) {
+                    $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder."/".$folder);
+                }
+                else{
+                    $addResult = $this->doAddFile($folder,$this->basePath."/".$pathWithOutAddedFolder);
+                }
+
                 $addStatus = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
                 if($this->isAdded($addStatus)){
                     $isAdded = true;
@@ -203,13 +214,10 @@ class GitFunction
         }
         else{
             $processOutput = $process->getOutput();
-            print "<br>    <br>PRINCESSOUTPUT: ".$processOutput;
             $logMessage = $this->getLogMessage("1",$this->basePath."/".$path);
-            print "<br><br>GOT LOG: ".$logMessage;
             if($this->isCommitted($commitmessage,$processOutput)){
                 $isCommitted = true;
                 //$status = $this->getStatus($this->basePath."/".$path);
-                print "<br><br>PRINCESSSTATUS: ".$logMessage;
             }
         }
 
@@ -240,7 +248,6 @@ class GitFunction
 
         $dotpos = strrpos($path,".");
         if($dotpos !== false && $dotpos == strlen($path)-4){
-            print "<br><br />>ISFILE: ".$path;
             $isFile = true;
         }
 
@@ -255,10 +262,9 @@ class GitFunction
         }
 
         $trackstatus = $this->getStatus($cwdPath);
-        print "<br><br />trackstatus: ".$trackstatus;
+
         $process = null;
         $folder = str_replace(" ","\\ ",$folder);
-        print "<br>THE FOLDER: ".$folder." cwdPath: $cwdPath";
 
         $process = new Process("rm -rf $folder",$cwdPath);
         $process->run();
@@ -268,7 +274,6 @@ class GitFunction
             throw new ProcessFailedException($process);
         }
         else{
-            print "<br><br />>PROCESSWORKD: ".$cwdPath."/-".$folder;
             if($isFile){
                 $this->doAdd($cwdPath);
             }
@@ -277,14 +282,13 @@ class GitFunction
             }
 
             $addStatus = $this->getStatus($cwdPath);
-            print "<br><br />>ADDSTATUS: ".$addStatus;
+
             if($this->isAdded($addStatus)){
-                print "<br><br />>WASADDED: ".$addStatus;
+
                 $commit = $this->commitFiles($cwdPath,"deleting $cwdPath/$folder");
                 $commitstatus = $this->getStatus($cwdPath);
-                print "<br><br>NOCH SCHTATUZZ: ".$commitstatus;
+
                 if($this->isCleanWorkingTree($commitstatus)){
-                    print "<br><br>ISCLEAN: ";
                     $isdeleted = true;
                 }
             }

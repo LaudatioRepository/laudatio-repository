@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UploadRequest;
 use GrahamCampbell\Flysystem\FlysystemManager;
+use DB;
 
 
 class UploadController extends Controller
@@ -22,7 +23,12 @@ class UploadController extends Controller
     public function uploadForm($dirname = "")
     {
         $isLoggedIn = \Auth::check();
-        return view('gitLab.uploadform',["dirname" => $dirname])
+
+        $dirArray = explode("/",$dirname);
+        $corpusPath = $dirArray[1];
+        $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
+
+        return view('gitLab.uploadform',["dirname" => $dirname,"corpusid" => $corpus[0]->id])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',\Auth::user());
     }
@@ -30,6 +36,7 @@ class UploadController extends Controller
     public function uploadSubmit(UploadRequest $request)
     {
         $dirPath = $request->directorypath;
+        $corpusId = $request->corpusid;
 
         foreach ($request->formats as $format) {
             $fileName = $format->getClientOriginalName();
@@ -49,6 +56,6 @@ class UploadController extends Controller
 
 
         }
-        return redirect()->route('gitRepo.route',['path' => $dirPath]);
+        return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
     }
 }

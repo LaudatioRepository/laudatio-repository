@@ -4,9 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Corpus;
+use App\CorpusProject;
+use App\Custom\GitRepoInterface;
+use GrahamCampbell\Flysystem\FlysystemManager;
 
 class CorpusController extends Controller
 {
+    protected $GitRepoService;
+
+    public function __construct(GitRepoInterface $Gitservice,FlysystemManager $flysystem)
+    {
+        $this->GitRepoService = $Gitservice;
+        $this->flysystem = $flysystem;
+        $this->connection = $this->flysystem->getDefaultConnection();
+        $this->basePath = config('laudatio.basePath');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -28,12 +41,13 @@ class CorpusController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(CorpusProject $corpusproject)
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
         return view('admin.corpusadmin.create')
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('corpusProjectId',$corpusproject->id)
             ->with('user',$user);
     }
 
@@ -47,13 +61,29 @@ class CorpusController extends Controller
     {
         $this->validate(request(), [
             'corpus_name' => 'required',
-            'corpus_description' => 'required'
+            'corpus_description' => 'required',
+            'corpusProjectId' => 'required'
         ]);
 
-        Corpus::create([
-            "name" => request('corpus_name'),
-            "description" => request('corpus_description')
-        ]);
+        $corpusProject = CorpusProject::find(request('corpusProjectId'));
+
+        // Create the directory structure for the Corpus
+        $corpusProjectPath = $corpusProject->directory_path;
+        $corpusPath = null;
+        if(request('corpus_name')){
+            $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,request('corpus_name'));
+        }
+
+        if($corpusPath){
+            $corpus = Corpus::create([
+                "name" => request('corpus_name'),
+                "description" => request('corpus_description'),
+                'directory_path' => $corpusPath
+            ]);
+
+            $corpus->corpusprojects()->attach($corpusProject);
+        }
+
         return redirect()->route('admin.corpora.index');
     }
 
@@ -61,11 +91,34 @@ class CorpusController extends Controller
      * @param Corpus $corpus
      * @return $this
      */
-    public function show(Corpus $corpus)
+    public function show(Corpus $corpus,$path = "")
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-        return view('admin.corpusadmin.show', compact('corpus'))
+
+        $corpusProjects = $corpus->corpusprojects();
+        $corpusProject_directory_path = '';
+
+        if(count($corpusProjects) == 1) {
+            $corpusProject_directory_path = $corpusProjects->first()->directory_path;
+        }
+        else{
+            // what to do when we can assign corpora to many projects?
+        }
+
+        $corpusPath = "";
+        $corpus_directory_path = $corpus->directory_path;
+        if($path == ""){
+            $corpusPath = $corpusProject_directory_path."/".$corpus_directory_path;
+        }
+        else{
+            $corpusPath = $path;
+        }
+
+        $fileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
+        //dd($fileData);
+
+        return view("admin.corpusadmin.show",["corpus" => $corpus, "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath']])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }

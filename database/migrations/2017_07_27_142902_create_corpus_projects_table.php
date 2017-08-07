@@ -17,6 +17,7 @@ class CreateCorpusProjectsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->text('description');
+            $table->text('directory_path');
             $table->timestamps();
         });
     }

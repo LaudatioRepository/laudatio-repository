@@ -7,8 +7,9 @@ class CommitController extends Controller
 {
     public function commitForm($dirname = "")
     {
+        $corpus = request()->corpus;
         $isLoggedIn = \Auth::check();
-        return view('gitLab.commitform',["dirname" => $dirname])
+        return view('gitLab.commitform',["dirname" => $dirname, "corpusid" => $corpus])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',\Auth::user());
     }
@@ -16,7 +17,7 @@ class CommitController extends Controller
     public function commitSubmit(CommitRequest $request)
     {
         return redirect()->action(
-            'GitRepoController@commitFiles', ['dirname' =>  $request->directorypath, 'commitmessage' => $request->commitmessage]
+            'GitRepoController@commitFiles', ['dirname' =>  $request->directorypath, 'commitmessage' => $request->commitmessage, 'corpusid' => $request->corpusid]
         );
     }
 

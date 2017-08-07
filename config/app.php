@@ -181,6 +181,7 @@ return [
         Vinkla\GitLab\GitLabServiceProvider::class,
         Cviebrock\LaravelElasticsearch\ServiceProvider::class,
         App\Providers\ElasticServiceProvider::class,
+        App\Providers\GitRepoProvider::class,
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class
 
     ],

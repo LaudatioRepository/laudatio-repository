@@ -58,14 +58,38 @@
                                         </div>
                                     @endforeach
                                 </div>
-                                <button type="button" class="btn btn-success btn-circle">
-                                    <a href="/admin/corpusprojects/assign/{{$corpusproject->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
-                                </button>
-                                Add a corpus to the corpus project
+                                <span class="pull-right">
+                                    <button type="button" class="btn btn-success btn-circle">
+                                        <a href="/admin/corpora/create/{{$corpusproject->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                        <!--a href="/admin/corpusprojects/assigncorpora/{{$corpusproject->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a-->
+                                    </button>
+                                    Add a corpus to the corpus project
+                                </span>
                             </div>
                             <div class="tab-pane fade" id="collaborators">
                                 <h4>Collaborators</h4>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                                <br />
+                                <div class="panel-group" id="accordion">
+                                    @if(count($corpusproject->users) > 0)
+                                        <ul class="list-group">
+                                            @foreach($corpusproject->users as $user)
+                                            <li class="list-group-item">{{ $user->name }}
+                                                @if(count($user->roles) > 0)
+                                                    @foreach($user->roles as $role)
+                                                        <span class="badge badge-default">{{$role->name}}</span>
+                                                    @endforeach
+                                                @endif
+                                            </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+                                <span class="pull-right">
+                                    <button type="button" class="btn btn-success btn-circle">
+                                        <a href="/admin/corpusprojects/assignusers/{{$corpusproject->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                    </button>
+                                    Add collaborators to the corpus project
+                                </span>
                             </div>
                             <div class="tab-pane fade" id="settings">
                                 <h4>Settings</h4>

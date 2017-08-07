@@ -19,6 +19,8 @@
                 <button type="submit" value="Create" class="btn btn-primary ">Create Corpus</button>
             </div>
 
+            <input type="hidden" name="corpusProjectId" id="corpusProjectId" value="{{$corpusProjectId}}" />
+
             @include('layouts.errors')
         </form>
 

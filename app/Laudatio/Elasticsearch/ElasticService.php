@@ -22,6 +22,12 @@ class ElasticService implements ElasticsearchInterface
 
     }
 
+    /**
+     * @param $index
+     * @param $type
+     * @param $id
+     * @return array
+     */
     public function getDocument($index,$type,$id){
         $params = [
             'index' => $index,

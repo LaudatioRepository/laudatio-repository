@@ -1,4 +1,5 @@
-@extends('layouts.app', ['isLoggedIn' => $isLoggedIn])
+@extends('layouts.admin', ['isLoggedIn' => $isLoggedIn])
+
 
 @section('content')
     @if (count($errors) > 0)
@@ -9,7 +10,7 @@
         </ul>
     @endif
 
-    <form action="/upload" method="post" enctype="multipart/form-data">
+    <form action="/admin/upload" method="post" enctype="multipart/form-data">
         {{ csrf_field() }}
         <!--p>Directory name:
         <br />
@@ -20,5 +21,6 @@
         <br /><br />
         <input type="submit" value="Upload" />
         <input type ="hidden" name="directorypath" value="{{$dirname}}" />
+        <input type ="hidden" name="corpusid" value="{{$corpusid}}" />
     </form>
 @stop

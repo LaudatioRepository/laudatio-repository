@@ -3,24 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Laudatio\GitLaB\GitFunction;
+use App\Custom\GitRepoInterface;
 use Illuminate\Http\Request;
 use GrahamCampbell\Flysystem\Facades\Flysystem;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use Illuminate\Support\Facades\App; // you probably have this aliased already
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\CreateCorpusRequest;
+use DB;
 
 class GitRepoController extends Controller
 {
     protected $flysystem;
     protected $connection;
     protected $basePath;
+    protected $GitRepoService;
 
-    public function __construct(FlysystemManager $flysystem)
+    public function __construct(GitRepoInterface $Gitservice, FlysystemManager $flysystem)
     {
         $this->flysystem = $flysystem;
         $this->connection = $this->flysystem->getDefaultConnection();
         $this->basePath = config('laudatio.basePath');
+        $this->GitRepoService = $Gitservice;
     }
 
     public function listProjects($path = ""){
@@ -72,7 +76,6 @@ class GitRepoController extends Controller
         }
 
         $user = \Auth::user();
-
         return view("gitLab.projectlist",["projects" => $projects, "pathcount" => $count,"path" => $path,"previouspath" => $previouspath])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
@@ -133,17 +136,20 @@ class GitRepoController extends Controller
             ->with('user',\Auth::user());
     }
 
+
     public function deleteFile($path,$isdir = 1){
         $directoryPath = substr($path,0,strrpos($path,"/"));
+        $dirArray = explode("/",$directoryPath);
+        $corpusPath = $dirArray[1];
+        $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
 
         if($this->flysystem->has($path)){
             $gitFunction = new  GitFunction();
             $isTracked = $gitFunction->isTracked($this->basePath."/".$path);
             $result = $gitFunction->deleteFiles($path);
-            //$this->commitFiles($path,"Deleting files in $path");
-        }
 
-        return redirect()->route('gitRepo.route',['path' => $directoryPath]);
+        }
+        return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
     }
 
 
@@ -153,7 +159,6 @@ class GitRepoController extends Controller
         $file = substr($path,strrpos($path,"/")+1);
         $gitFunction = new  GitFunction();
         $isAdded = $gitFunction->addFileUpdate($directoryPath,$file);
-        print "ISADDED: ".$isAdded;
         if($isAdded){
             return redirect()->action(
                 'CommitController@commitForm', ['dirname' => $path]
@@ -162,69 +167,25 @@ class GitRepoController extends Controller
         }
     }
 
-    public function addFiles($path){
-        $gitFunction = new  GitFunction();
+    public function addFiles($path,$corpus){
         $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
-        $folder = substr($path,strrpos($path,"/")+1);
-        $isAdded = $gitFunction->addUntracked($pathWithOutAddedFolder,$folder);
+        $file = substr($path,strrpos($path,"/")+1);
+
+        $isAdded = $this->GitRepoService->addFilesToRepository($pathWithOutAddedFolder,$file);
         if($isAdded){
             return redirect()->action(
-                'CommitController@commitForm', ['dirname' => $path]
+                'CommitController@commitForm', ['dirname' => $path, 'corpus' => $corpus]
             );
 
         }
     }
 
-    public function commitFiles($dirname = "", $commitmessage){
+    public function commitFiles($dirname = "", $commitmessage, $corpusid){
         $gitFunction = new  GitFunction();
         $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
         $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage);
         if($isCommited){
-            return redirect()->route('gitRepo.route',['path' => $pathWithOutAddedFolder]);
-        }
-    }
-
-
-    public function createProjectForm($dirname = ''){
-        $isLoggedIn = \Auth::check();
-        return view('gitLab.createProjectForm',["dirname" => $dirname])
-            ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',\Auth::user());
-    }
-
-    public function createProjectSubmit(CreateProjectRequest $request){
-        $dirPath = $request->directorypath.'/'.$request->projectname;
-
-        if(!$this->flysystem->has($dirPath)){
-            $this->flysystem->createDir($dirPath);
-
-            return redirect()->route('gitRepo.route',['path' => $request->directorypath]);
-        }
-        else{
-            return "Project already exists!";
-        }
-    }
-
-    public function createCorpusForm($dirname = ''){
-        $isLoggedIn = \Auth::check();
-        return view('gitLab.createCorpusForm',["dirname" => $dirname])
-            ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',\Auth::user());
-    }
-
-    public function createCorpusSubmit(CreateCorpusRequest $request){
-        $dirPath = $request->directorypath.'/'.$request->corpusname;
-
-        if(!$this->flysystem->has($dirPath)){
-            $this->flysystem->createDir($dirPath);
-            $this->flysystem->createDir($dirPath."/TEI-HEADER");
-            $this->flysystem->createDir($dirPath."/TEI-HEADER/corpus");
-            $this->flysystem->createDir($dirPath."/TEI-HEADER/document");
-            $this->flysystem->createDir($dirPath."/TEI-HEADER/preparation");
-            return redirect()->route('gitRepo.route',['path' => $request->directorypath]);
-        }
-        else{
-            return "Corpus already exists!";
+            return redirect()->route('admin.corpora.show',['path' => $pathWithOutAddedFolder,'corpus' => $corpusid]);
         }
     }
 
