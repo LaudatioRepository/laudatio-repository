@@ -146,7 +146,13 @@ class GitRepoController extends Controller
         if($this->flysystem->has($path)){
             $gitFunction = new  GitFunction();
             $isTracked = $gitFunction->isTracked($this->basePath."/".$path);
-            $result = $gitFunction->deleteFiles($path);
+            if($isTracked){
+                $result = $gitFunction->deleteFiles($path);
+            }
+
+            if($result) {
+                session()->flash('message', $path.' was sucessfully deleted!');
+            }
 
         }
         return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);

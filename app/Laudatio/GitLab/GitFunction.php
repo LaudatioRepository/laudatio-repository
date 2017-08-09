@@ -34,11 +34,15 @@ class GitFunction
     }
 
     public function doAdd($path){
-        if($path = ""){
+
+        if(is_dir($path)){
             $process = new Process("git add .",$path);
         }
         else{
-            $process = new Process("git add .",$path);
+            $pathWithOutAFile = substr($path,0,strrpos($path,"/"));
+            $file = substr($path,strrpos($path,"/")+1);
+            $cwdPath = $this->basePath."/".$pathWithOutAFile;
+            $process = new Process("git add $file",$cwdPath);
         }
 
         $process->run();
@@ -247,7 +251,7 @@ class GitFunction
         $cwdPath = "";
 
         $dotpos = strrpos($path,".");
-        if($dotpos !== false && $dotpos == strlen($path)-4){
+        if(!is_dir($this->basePath.'/'.$path)){
             $isFile = true;
         }
 
@@ -266,24 +270,34 @@ class GitFunction
         $process = null;
         $folder = str_replace(" ","\\ ",$folder);
 
-        $process = new Process("rm -rf $folder",$cwdPath);
-        $process->run();
 
+
+        if(!$isFile){
+            //$process = new Process("rm -rf $folder",$cwdPath);
+        }
+        else{
+            $process = new Process("git rm -rf $folder",$cwdPath);
+        }
+
+
+        $process->run();
+        $addResult = "";
         // executes after the command finishes
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
         else{
-            if($isFile){
-                $this->doAdd($cwdPath);
+            if(!$isFile){
+                //$addResult = $this->doAdd($cwdPath);
             }
             else{
-                $this->doAdd($cwdPath."/".$folder);
+                //$addResult = $this->doAdd($cwdPath."/".$folder);
+                //dd($path." TRACKSTATUS: ".$trackstatus." FOLDER: ".$folder." CWDPATH: ".$cwdPath." ISFILE: ".$isFile." ADDRESULT: ".$addResult);
             }
 
             $addStatus = $this->getStatus($cwdPath);
-
             if($this->isAdded($addStatus)){
+
 
                 $commit = $this->commitFiles($cwdPath,"deleting $cwdPath/$folder");
                 $commitstatus = $this->getStatus($cwdPath);
