@@ -22,6 +22,21 @@ class ElasticService implements ElasticsearchInterface
 
     }
 
+    public function createIndex($name){
+        $params = [
+            'index' => $name
+        ];
+        $response = Elasticsearch::indices()->create($params);
+        return array(
+            'error' => false,
+            'result' => $response
+        );
+    }
+
+    public function deleteIndex($indexId){
+
+    }
+
     /**
      * @param $index
      * @param $type

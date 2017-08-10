@@ -218,7 +218,6 @@ class GitFunction
         }
         else{
             $processOutput = $process->getOutput();
-            $logMessage = $this->getLogMessage("1",$this->basePath."/".$path);
             if($this->isCommitted($commitmessage,$processOutput)){
                 $isCommitted = true;
                 //$status = $this->getStatus($this->basePath."/".$path);
@@ -250,7 +249,7 @@ class GitFunction
         $folder = "";
         $cwdPath = "";
 
-        $dotpos = strrpos($path,".");
+
         if(!is_dir($this->basePath.'/'.$path)){
             $isFile = true;
         }
@@ -269,31 +268,24 @@ class GitFunction
 
         $process = null;
         $folder = str_replace(" ","\\ ",$folder);
+        //dd("FOLDER: ".$folder." CWDPATH: ".$cwdPath);
 
-
-
-        if(!$isFile){
-            //$process = new Process("rm -rf $folder",$cwdPath);
+        if($isFile){
+            $process = new Process("git rm $folder",$cwdPath);
         }
         else{
-            $process = new Process("git rm -rf $folder",$cwdPath);
+            $process = new Process("git rm -rf *",$cwdPath);
         }
 
 
         $process->run();
-        $addResult = "";
+
+
         // executes after the command finishes
         if (!$process->isSuccessful()) {
             throw new ProcessFailedException($process);
         }
         else{
-            if(!$isFile){
-                //$addResult = $this->doAdd($cwdPath);
-            }
-            else{
-                //$addResult = $this->doAdd($cwdPath."/".$folder);
-                //dd($path." TRACKSTATUS: ".$trackstatus." FOLDER: ".$folder." CWDPATH: ".$cwdPath." ISFILE: ".$isFile." ADDRESULT: ".$addResult);
-            }
 
             $addStatus = $this->getStatus($cwdPath);
             if($this->isAdded($addStatus)){

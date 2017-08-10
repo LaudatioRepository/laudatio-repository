@@ -137,12 +137,12 @@ class GitRepoController extends Controller
     }
 
 
-    public function deleteFile($path,$isdir = 1){
+    public function deleteFile($path){
         $directoryPath = substr($path,0,strrpos($path,"/"));
         $dirArray = explode("/",$directoryPath);
         $corpusPath = $dirArray[1];
         $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
-
+        $result = null;
         if($this->flysystem->has($path)){
             $gitFunction = new  GitFunction();
             $isTracked = $gitFunction->isTracked($this->basePath."/".$path);
@@ -180,7 +180,7 @@ class GitRepoController extends Controller
         $isAdded = $this->GitRepoService->addFilesToRepository($pathWithOutAddedFolder,$file);
         if($isAdded){
             return redirect()->action(
-                'CommitController@commitForm', ['dirname' => $path, 'corpus' => $corpus]
+                'CommitController@commitForm', ['dirname' => $pathWithOutAddedFolder, 'corpus' => $corpus]
             );
 
         }
@@ -188,11 +188,21 @@ class GitRepoController extends Controller
 
     public function commitFiles($dirname = "", $commitmessage, $corpusid){
         $gitFunction = new  GitFunction();
-        $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
-        $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage);
-        if($isCommited){
-            return redirect()->route('admin.corpora.show',['path' => $pathWithOutAddedFolder,'corpus' => $corpusid]);
+
+        if(is_dir($this->basePath.'/'.$dirname)){
+            $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage);
+            if($isCommited){
+                return redirect()->route('admin.corpora.show',['path' => $dirname,'corpus' => $corpusid]);
+            }
         }
+        else{
+            $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
+            $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage);
+            if($isCommited){
+                return redirect()->route('admin.corpora.show',['path' => $pathWithOutAddedFolder,'corpus' => $corpusid]);
+            }
+        }
+
     }
 
     /**

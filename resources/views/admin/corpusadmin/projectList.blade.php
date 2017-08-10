@@ -23,8 +23,8 @@
                                         <td class="text-center"><span class="fa fa-folder"></span></td>
                                         <td><a href="{{ route('admin.corpora.show', array('corpus' => $corpus,'path' => $project['path'])) }}">{{$project['basename']}}</a></td>
                                         <td class="text-center">
-                                            @if($pathcount == 2 || $pathcount == 1)
-                                                <a href="{{route('gitRepo.deleteFile.route', array('path' => $project['path'], 'isdir' => 1)) }}"><span class="btn btn-sm btn-danger fa fa-trash"></span></a>
+                                            @if($pathcount == 3 || $pathcount == 1)
+                                                <a href="{{route('gitRepo.deleteFile.route', array('path' => $project['path'])) }}"><span class="btn btn-sm btn-danger fa fa-trash"></span></a>
                                             @endif
 
                                             @if($project["tracked"] == "false" && $project["foldercount"] > 0 && $pathcount == 3)
@@ -49,7 +49,7 @@
                                                     @endif
                                                 @endforeach
                                             @endif
-                                            <a href="{{route('gitRepo.deleteFile.route', array('path' => $project['path'], 'isdir' => 0)) }}"><span class=  "btn btn-sm btn-danger fa fa-trash"></span></a>
+                                            <a href="{{route('gitRepo.deleteFile.route', array('path' => $project['path'])) }}"><span class=  "btn btn-sm btn-danger fa fa-trash"></span></a>
                                         </td>
                                         <td>{{$project['filesize']}} KB </td>
                                         <td>{{$project['lastupdated']}}</td>

@@ -1,21 +1,10 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
-Route::get('/', ['uses' => 'IndexController@index']);
 
 Auth::routes();
-
+Route::get('/', ['uses' => 'IndexController@index']);
 Route::get('/admin', ['uses' => 'IndexController@admin'])->middleware('auth');
+
 
 /** CORPUS PROJECTS  **/
 Route::get('/admin/corpusprojects',[ 'as' => 'admin.corpusProject.index', 'uses' => 'CorpusProjectController@index'])->middleware('auth');
@@ -33,18 +22,17 @@ Route::get('/admin/corpusprojects/assignusers/{corpusproject}',[ 'as' => 'admin.
 Route::post('/admin/corpusprojects/{corpusproject}/users',[ 'as' => 'admin.corpusProject.StoreUsers', 'uses' => 'CorpusProjectController@storeUserRelations'])->middleware('auth');
 /** END CORPUS PROJECTS  **/
 
-
 /** CORPORA  **/
 Route::get('/admin/corpora',[ 'as' => 'admin.corpora.index', 'uses' => 'CorpusController@index'])->middleware('auth');
 Route::get('/admin/corpora/create/{corpusproject}',[ 'as' => 'admin.corpora.create.', 'uses' => 'CorpusController@create'])->middleware('auth');
-Route::get('/admin/corpora/{corpus}/{path?}',[ 'as' => 'admin.corpora.show', 'uses' => 'CorpusController@show'])->where('path', '.+')->middleware('auth');
+//Route::get('/admin/corpora/{corpus}/{path?}',[ 'as' => 'admin.corpora.show', 'uses' => 'CorpusController@show'])->where('path', '.+')->middleware('auth');
+Route::get('/admin/corpora/{corpus}/{filepath}/show',[ 'as' => 'admin.corpora.show', 'uses' => 'CorpusController@show'])->where('filepath', '.+')->middleware('auth');
 Route::post('/admin/corpora',[ 'as' => 'admin.corpora.store.', 'uses' => 'CorpusController@store'])->middleware('auth');
 Route::get('/admin/corpora/{corpus}/edit',[ 'as' => 'admin.corpora.edit', 'uses' => 'CorpusController@edit'])->middleware('auth');
-Route::get('/admin/corpora/{corpus}/delete',[ 'as' => 'admin.corpora.delete', 'uses' => 'CorpusController@delete'])->middleware('auth');
+Route::get('/admin/corpora/{corpus}/delete',[ 'as' => 'admin.corpora.remove', 'uses' => 'CorpusController@delete'])->middleware('auth');
 Route::patch('/admin/corpora/{corpus}',[ 'as' => 'admin.corpora.update', 'uses' => 'CorpusController@update'])->middleware('auth');
 Route::delete('/admin/corpora/{corpus}',[ 'as' => 'admin.corpora.destroy', 'uses' => 'CorpusController@destroy'])->middleware('auth');
 /** END CORPORA  **/
-
 
 /** UPLOAD **/
 Route::get('/admin/upload/{dirname?}',['as' => 'gitRepo.upload.get', 'uses' => 'UploadController@uploadForm'])->where('dirname', '.+')->middleware('auth');
@@ -80,10 +68,9 @@ Route::get('/updateFile/{path}',[ 'as' => 'gitRepo.updateFile.route', 'uses' => 
 /** GIT **/
 Route::get('/admin/addFiles/{path}/{corpus}',[ 'as' => 'gitRepo.addFile.route', 'uses' => 'GitRepoController@addFiles'])->where('path', '.+')->middleware('auth');
 Route::get('/commitFiles/{dirname}/{commitmessage}/{corpus}',[ 'as' => 'gitRepo.commitFiles.route', 'uses' => 'GitRepoController@commitFiles'])->where('dirname', '.+')->middleware('auth');
-
 Route::get('/commitMessage/{dirname}',[ 'as' => 'gitRepo.commit.route', 'uses' => 'CommitController@commitForm'])->where('dirname', '.+')->middleware('auth');
-
 Route::post('/admin/commit',['as' => 'gitRepo.commit.post', 'uses' => 'CommitController@commitSubmit'])->middleware('auth');
+
 /** END GIT **/
 
 

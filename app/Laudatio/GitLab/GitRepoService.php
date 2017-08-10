@@ -41,9 +41,16 @@ class GitRepoService implements GitRepoInterface
             $flysystem->createDir($dirPath);
             $flysystem->createDir($dirPath."/TEI-HEADERS");
             $flysystem->createDir($dirPath."/TEI-HEADERS/corpus");
+            $flysystem->write($dirPath."/TEI-HEADERS/corpus/.info","Corpus header files for ".$corpusName);
             $flysystem->createDir($dirPath."/TEI-HEADERS/document");
+            $flysystem->write($dirPath."/TEI-HEADERS/document/.info","Document headers files for ".$corpusName);
             $flysystem->createDir($dirPath."/TEI-HEADERS/preparation");
+            $flysystem->write($dirPath."/TEI-HEADERS/preparation/.info","Annotation preparation headers files for ".$corpusName);
             $flysystem->createDir($dirPath."/CORPUS-DATA");
+
+            $this->addFilesToRepository($dirPath,"TEI-HEADERS");
+            $this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
+
         }
 
         return $corpusPath;
@@ -119,6 +126,18 @@ class GitRepoService implements GitRepoInterface
         $gitFunction = new  GitFunction();
         $isAdded = $gitFunction->addUntracked($path,$file);
         return $isAdded;
+    }
+
+    public function commitFilesToRepository($path,$commitMessage){
+        $isCommitted = false;
+        $gitFunction = new  GitFunction();
+        $commit = $gitFunction->commitFiles($path,$commitMessage);
+        $commitStatus = $gitFunction->getStatus($path);
+
+        if($gitFunction->isCleanWorkingTree($commitStatus)){
+            $isCommitted = true;
+        }
+        return $isCommitted;
     }
 
     /**

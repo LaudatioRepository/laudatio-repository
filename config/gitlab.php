@@ -40,7 +40,7 @@ return [
     'connections' => [
 
         'main' => [
-            'token' => 'W3KMGWxA8fVTw6Lnb76M',
+            'token' => 'so-5dNPYLJUmVW648Das',
             'base_url' => 'https://gitlab.com/api/v3/',
         ],
 

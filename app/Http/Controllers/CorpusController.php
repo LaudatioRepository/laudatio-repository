@@ -91,14 +91,14 @@ class CorpusController extends Controller
      * @param Corpus $corpus
      * @return $this
      */
-    public function show(Corpus $corpus,$path = "")
+    public function show(Corpus $corpus,$path = "",$show = "")
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
 
-        $corpusProjects = $corpus->corpusprojects();
+        $corpusProjects = $corpus->corpusprojects()->get();
         $corpusProject_directory_path = '';
-
+        //dd($corpusProjects);
         if(count($corpusProjects) == 1) {
             $corpusProject_directory_path = $corpusProjects->first()->directory_path;
         }
@@ -156,6 +156,7 @@ class CorpusController extends Controller
             ->with('user',$user);
     }
 
+
     /**
      * @param Corpus $corpus
      * @return $this
@@ -164,6 +165,7 @@ class CorpusController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
+
         return view('admin.corpusadmin.delete', compact('corpus'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
