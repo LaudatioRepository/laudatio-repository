@@ -2,8 +2,13 @@
 
 
 Auth::routes();
+Route::get('/auth/{social}',['as' => 'auth.social.login', 'uses' => 'Auth\LoginController@socialLogin'])->where('social','twitter|facebook|linkedin|google|github|bitbucket|gitlab');
+Route::get('/auth/{social}/callback',['as' => 'auth.social.callback', 'uses' => 'Auth\LoginController@handleProviderCallback'])->where('social','twitter|facebook|linkedin|google|github|bitbucket|gitlab');
+
 Route::get('/', ['uses' => 'IndexController@index']);
-Route::get('/admin', ['uses' => 'IndexController@admin'])->middleware('auth');
+Route::get('/admin', ['as' => 'admin', 'uses' => 'IndexController@admin'])->middleware('auth');
+
+
 
 
 /** CORPUS PROJECTS  **/
