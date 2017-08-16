@@ -42570,11 +42570,12 @@ var app = new Vue({
                             var in_corpora = res.data.results[j]._source.in_corpora;
 
                             documentRefs.push(res.data.results[j]._id);
-
-                            for (var jid = 0; jid < in_corpora.length; jid++) {
-                                corpusRefs.push({
-                                    '_id': '' + in_corpora[jid] + ''
-                                });
+                            if (typeof in_corpora != 'undefined') {
+                                for (var jid = 0; jid < in_corpora.length; jid++) {
+                                    corpusRefs.push({
+                                        '_id': '' + in_corpora[jid] + ''
+                                    });
+                                }
                             }
                         }
 
@@ -42591,7 +42592,7 @@ var app = new Vue({
                                 Object.keys(corpusByDocumentRes.data.results).forEach(function (key) {
                                     corpusByDocument[key] = corpusByDocumentRes.data.results[key];
                                 });
-                                console.log(corpusByDocument);
+
                                 _this3.documentresults.push({
                                     search: documentSearchObject.document_title,
                                     results: res.data.results,
@@ -44571,7 +44572,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }, [_c('div', {
       staticClass: "panel-body"
-    }, [(typeof _vm.documentresult.corpusByDocument[documentresultdata._id].corpus_title != 'undefined') ? _c('div', {
+    }, [(typeof _vm.documentresult.corpusByDocument[documentresultdata._id] != 'undefined') ? _c('div', {
       staticClass: "iconwrapper"
     }, [_c('i', {
       staticClass: "fa fa-book",

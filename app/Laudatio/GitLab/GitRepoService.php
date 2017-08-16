@@ -66,6 +66,7 @@ class GitRepoService implements GitRepoInterface
             $projects = $flysystem->listContents($path);
         }
 
+        //dd($path);
         for ($i = 0; $i < count($projects);$i++){
             $foldercount = count($flysystem->listContents($projects[$i]['path']));
             $projects[$i]['foldercount'] = $foldercount;

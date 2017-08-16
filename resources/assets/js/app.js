@@ -151,14 +151,16 @@ const app = new Vue({
                             var in_corpora = res.data.results[j]._source.in_corpora
 
                             documentRefs.push(res.data.results[j]._id);
-
-                            for(var jid = 0; jid < in_corpora.length; jid++) {
-                                corpusRefs.push(
-                                    {
-                                        '_id': ''+in_corpora[jid]+''
-                                    }
-                                );
+                            if(typeof  in_corpora != 'undefined'){
+                                for(var jid = 0; jid < in_corpora.length; jid++) {
+                                    corpusRefs.push(
+                                        {
+                                            '_id': ''+in_corpora[jid]+''
+                                        }
+                                    );
+                                }
                             }
+
 
                         }
 
@@ -170,14 +172,13 @@ const app = new Vue({
                         window.axios.post('api/searchapi/getCorpusByDocument',postDocumentData).then(corpusByDocumentRes => {
                             if (Object.keys(corpusByDocumentRes.data.results).length > 0) {
 
-
                                 var corpusByDocument = []
 
                                 Object.keys(corpusByDocumentRes.data.results).forEach(function(key) {
                                     corpusByDocument[key] = corpusByDocumentRes.data.results[key]
 
                                 });
-                                console.log(corpusByDocument);
+
                                 this.documentresults.push({
                                     search: documentSearchObject.document_title,
                                     results: res.data.results,

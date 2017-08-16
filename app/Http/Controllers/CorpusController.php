@@ -98,7 +98,7 @@ class CorpusController extends Controller
 
         $corpusProjects = $corpus->corpusprojects()->get();
         $corpusProject_directory_path = '';
-        //dd($corpusProjects);
+
         if(count($corpusProjects) == 1) {
             $corpusProject_directory_path = $corpusProjects->first()->directory_path;
         }
@@ -114,6 +114,8 @@ class CorpusController extends Controller
         else{
             $corpusPath = $path;
         }
+
+        $corpusPath = substr($corpusPath,0,strrpos($corpusPath,"/"));
 
         $fileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
         //dd($fileData);
