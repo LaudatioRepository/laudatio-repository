@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Socialite;
 use App\User;
@@ -98,4 +99,23 @@ class LoginController extends Controller
             return view('auth.register',['name' => $userSocial->getName(), 'email' => $userSocial->getEmail()]);
         }
     }
+
+    public function handleLDAPLogin(Request $request){
+        $user = null;
+
+        if (Auth::attempt($request->only(['uid', 'password']))) {
+            $user = Auth::user();
+        }
+
+        if($user) {
+            Auth::login($user);
+            return redirect()->route('admin');
+        }
+        else{
+            return redirect()->to('login')
+                ->withMessage('Hmm... Your username or password is incorrect');
+        }
+    }
+
+
 }

@@ -184,6 +184,8 @@ return [
         App\Providers\GitRepoProvider::class,
         //Laravel\Socialite\SocialiteServiceProvider::class,
         \SocialiteProviders\Manager\ServiceProvider::class,
+        Adldap\Laravel\AdldapServiceProvider::class,
+        Adldap\Laravel\AdldapAuthServiceProvider::class,
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class
 
     ],
@@ -238,7 +240,8 @@ return [
         'GitLab' => Vinkla\GitLab\Facades\GitLab::class,
         'Elasticsearch' => Cviebrock\LaravelElasticsearch\Facade::class,
         'JavaScript' => Laracasts\Utilities\JavaScript\JavaScriptFacade::class,
-        'Socialite' => Laravel\Socialite\Facades\Socialite::class
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'Adldap' => Adldap\Laravel\Facades\Adldap::class
 
     ],
 

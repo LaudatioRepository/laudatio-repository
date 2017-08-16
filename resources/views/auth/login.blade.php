@@ -15,10 +15,22 @@
 
                             <div class="col-md-6">
                                 <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus>
-
                                 @if ($errors->has('email'))
                                     <span class="help-block">
                                         <strong>{{ $errors->first('email') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group{{ $errors->has('uid') ? ' has-error' : '' }}">
+                            <label for="uid" class="col-md-4 control-label">User id</label>
+
+                            <div class="col-md-6">
+                                <input type="text" name="uid" required autofocus />
+                                @if ($errors->has('uid'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('uid') }}</strong>
                                     </span>
                                 @endif
                             </div>

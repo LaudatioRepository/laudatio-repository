@@ -1,9 +1,15 @@
 <?php
 
+use App\Laudatio\HUAuth\LDAPService;
+use Adldap\AdldapInterface;
 
 Auth::routes();
 Route::get('/auth/{social}',['as' => 'auth.social.login', 'uses' => 'Auth\LoginController@socialLogin'])->where('social','twitter|facebook|linkedin|google|github|bitbucket|gitlab');
 Route::get('/auth/{social}/callback',['as' => 'auth.social.callback', 'uses' => 'Auth\LoginController@handleProviderCallback'])->where('social','twitter|facebook|linkedin|google|github|bitbucket|gitlab');
+Route::post('/auth/ldap',['as' => 'auth.ldap.login', 'uses' => 'Auth\LoginController@handleLDAPLogin']);
+
+
+
 
 Route::get('/', ['uses' => 'IndexController@index']);
 Route::get('/admin', ['as' => 'admin', 'uses' => 'IndexController@admin'])->middleware('auth');
