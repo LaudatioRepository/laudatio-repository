@@ -43459,8 +43459,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             corpusSearchData: {
                 corpus_title: '',
                 corpus_publication_publisher: '',
-                corpus_editor_forename: '',
-                corpus_editor_surname: '',
+                corpus_editor_name: '',
+                //corpus_editor_surname: '',
                 corpus_publication_publication_date: '',
                 corpusYearTo: '',
                 corpus_size_value: '',
@@ -43534,44 +43534,25 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.corpusSearchData.corpus_publication_publisher = $event.target.value
       }
     }
-  })]), _vm._v(" "), _c('label', [_vm._v("Corpus Editor Forename "), _c('input', {
+  })]), _vm._v(" "), _c('label', [_vm._v("Corpus Editor "), _c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.corpusSearchData.corpus_editor_forename),
-      expression: "corpusSearchData.corpus_editor_forename"
+      value: (_vm.corpusSearchData.corpus_editor_name),
+      expression: "corpusSearchData.corpus_editor_name"
     }],
     attrs: {
+      "placeholder": "Corpus editor",
       "type": "text",
-      "name": "document-author"
+      "name": "corpus-editor"
     },
     domProps: {
-      "value": (_vm.corpusSearchData.corpus_editor_forename)
+      "value": (_vm.corpusSearchData.corpus_editor_name)
     },
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.corpusSearchData.corpus_editor_forename = $event.target.value
-      }
-    }
-  })]), _vm._v(" "), _c('label', [_vm._v("Corpus Editor Surname "), _c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.corpusSearchData.corpus_editor_surname),
-      expression: "corpusSearchData.corpus_editor_surname"
-    }],
-    attrs: {
-      "type": "text",
-      "name": "document-author"
-    },
-    domProps: {
-      "value": (_vm.corpusSearchData.corpus_editor_surname)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.corpusSearchData.corpus_editor_surname = $event.target.value
+        _vm.corpusSearchData.corpus_editor_name = $event.target.value
       }
     }
   })]), _vm._v(" "), _c('label', [_vm._v("Year "), _c('input', {

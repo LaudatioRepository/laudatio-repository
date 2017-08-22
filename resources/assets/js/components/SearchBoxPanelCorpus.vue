@@ -10,8 +10,8 @@
     <div class="Corpus-body">
         <label>Name <input placeholder="Corpus name" type="text" name="corpus-name" v-model="corpusSearchData.corpus_title" /></label>
         <label>Publisher <input placeholder="Corpus publisher"  type="text" name="corpus-publisher" v-model="corpusSearchData.corpus_publication_publisher" /></label>
-<label>Corpus Editor Forename <input type="text" name="document-author" v-model="corpusSearchData.corpus_editor_forename" /></label>
-            <label>Corpus Editor Surname <input type="text" name="document-author" v-model="corpusSearchData.corpus_editor_surname" /></label>
+        <label>Corpus Editor <input placeholder="Corpus editor" type="text" name="corpus-editor" v-model="corpusSearchData.corpus_editor_name" /></label>
+        <!--label>Corpus Editor Surname <input type="text" name="document-author" v-model="corpusSearchData.corpus_editor_surname" /></label-->
 
         <label>Year <input  placeholder="From" type="text" name="corpus-year-from" v-model="corpusSearchData.corpus_publication_publication_date" /> to <input  placeholder="To" type="text" name="corpus-year-to" v-model="corpusSearchData.corpusYearTo" /></label>
         <label>Size <input placeholder="From"  type="text" name="corpus-size-from" v-model="corpusSearchData.corpus_size_value" /> to <input  placeholder="To" type="text" name="corpus-size-to" v-model="corpusSearchData.corpusSizeTo" /></label>
@@ -29,8 +29,8 @@
                 corpusSearchData : {
                     corpus_title: '',
                     corpus_publication_publisher: '',
-                    corpus_editor_forename: '',
-                    corpus_editor_surname: '',
+                    corpus_editor_name: '',
+                    //corpus_editor_surname: '',
                     corpus_publication_publication_date: '',
                     corpusYearTo: '',
                     corpus_size_value: '',
