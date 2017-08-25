@@ -2,24 +2,29 @@
 <div class="container-fluid archives">
     @if(!empty($projects))
         <div class="row">
-            <a href="/admin/corpora/{{$corpus->id}}/{{$previouspath}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
             <div class="col-md-12">
                 <div class="panel panel-default">
+                    <form id="fileform">
                     <table class="table table-bordered table-hover vmiddle">
                         <thead>
                         <tr>
-                            <th></th>
+                            <th colspan="2"><label>
+                                    <input type="checkbox" class="check" id="checkAll"> Check All
+                                </label></th>
                             <th>Name</th>
                             <th>Action</th>
                             <th>Size</th>
                             <th>Last updated</th>
                         </tr>
                         </thead>
+                        <tbody>
                         @foreach($projects as $project)
 
-                            <tbody>
                                 @if($project["type"] == "dir")
                                     <tr>
+                                        <td>
+                                            &nbsp;
+                                        </td>
                                         <td class="text-center"><span class="fa fa-folder"></span></td>
                                         <td><a href="{{ route('admin.corpora.show', array('corpus' => $corpus,'path' => $project['path'])) }}">{{$project['basename']}}</a></td>
                                         <td class="text-center">
@@ -35,7 +40,10 @@
                                         <td>{{$project['lastupdated']}}</td>
                                     </tr>
                                 @else
-                                    <tr>
+                                    <tr id="cell_{{$loop->index}}">
+                                        <td>
+                                            <input type="checkbox" name="chosen_files" value="{{$project['path']}}" class="check" />
+                                        </td>
                                         <td class="text-center"><span class="fa fa-file"></span></td>
                                         <td><a href="{{ route('gitRepo.readFile.route', array('path' => $project['path'])) }}"> {{$project['basename']}}</a></td>
                                         <td class="text-center">
@@ -55,9 +63,13 @@
                                         <td>{{$project['lastupdated']}}</td>
                                     </tr>
                                 @endif
-                            </tbody>
                         @endforeach
+                        </tbody>
+                        <tr>
+                            <td><a href="#" id="deleteCheckedButton"><span class="btn btn-sm btn-danger fa fa-trash"></span></a>
+                            <td colspan="5">&nbsp;</td>
                         </table>
+                        </form>
                     </div>
                 </div>
             </div>

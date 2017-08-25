@@ -117,10 +117,16 @@ class CorpusController extends Controller
 
         $corpusPath = substr($corpusPath,0,strrpos($corpusPath,"/"));
 
-        $fileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
-        //dd($fileData);
 
-        return view("admin.corpusadmin.show",["corpus" => $corpus, "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath']])
+
+
+        $fileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
+        $folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
+
+        //dd($path." => ".print_r($fileData,1)." FOLDER: ".$folder);
+
+
+        return view("admin.corpusadmin.show",["corpus" => $corpus, "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -172,6 +178,7 @@ class CorpusController extends Controller
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
+
 
     /**
      * @param Request $request

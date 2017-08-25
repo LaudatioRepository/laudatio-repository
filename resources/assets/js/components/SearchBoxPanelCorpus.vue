@@ -13,7 +13,8 @@
 <label>Corpus Editor Forename <input type="text" name="document-author" v-model="corpusSearchData.corpus_editor_forename" /></label>
             <label>Corpus Editor Surname <input type="text" name="document-author" v-model="corpusSearchData.corpus_editor_surname" /></label>
 
-        <label>Year <input  placeholder="From" type="text" name="corpus-year-from" v-model="corpusSearchData.corpus_publication_publication_date" /> to <input  placeholder="To" type="text" name="corpus-year-to" v-model="corpusSearchData.corpusYearTo" /></label>
+        <label>Year <input  placeholder="From" type="text" name="corpus-year-from" v-model="corpusSearchData.corpus_publication_publication_date" />
+        <input  placeholder="To" type="text" name="corpus-year-to" v-model="corpusSearchData.corpusYearTo" /></label>
         <label>Size <input placeholder="From"  type="text" name="corpus-size-from" v-model="corpusSearchData.corpus_size_value" /> to <input  placeholder="To" type="text" name="corpus-size-to" v-model="corpusSearchData.corpusSizeTo" /></label>
         <label>Language <input placeholder="Corpus language"  type="text" name="corpus-language" v-model="corpusSearchData.corpus_languages_language" /></label>
         <label>Format <input placeholder="Corpus format"  type="text" name="corpus-format" v-model="corpusSearchData.corpus_encoding_format" /></label>

@@ -13,6 +13,7 @@ interface GitRepoInterface {
     public function createCorpusFileStructure($flysystem,$corpusProjectPath,$corpusName);
     public function getCorpusFiles($flysystem,$path = "");
     public function addFilesToRepository($path,$file);
+    public function deleteFile($flysystem, $path);
 
     /** HELPERS  **/
     public function filterDottedFiles($array);

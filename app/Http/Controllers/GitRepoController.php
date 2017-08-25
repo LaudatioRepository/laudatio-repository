@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\App; // you probably have this aliased already
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\CreateCorpusRequest;
 use DB;
+use Response;
+use Log;
 
 class GitRepoController extends Controller
 {
@@ -142,22 +144,45 @@ class GitRepoController extends Controller
         $dirArray = explode("/",$directoryPath);
         $corpusPath = $dirArray[1];
         $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
-        $result = null;
-        if($this->flysystem->has($path)){
-            $gitFunction = new  GitFunction();
-            $isTracked = $gitFunction->isTracked($this->basePath."/".$path);
-            if($isTracked){
-                $result = $gitFunction->deleteFiles($path);
-            }
-
-            if($result) {
-                session()->flash('message', $path.' was sucessfully deleted!');
-            }
-
+        $result = $this->GitRepoService->deleteFile($this->flysystem,$path);
+        if($result) {
+            session()->flash('message', $path.' was sucessfully deleted!');
         }
         return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
     }
 
+    /**
+     * @param Request $request
+     * API method
+     */
+    public function deleteMultipleFiles(Request $request)
+    {
+        $input =$request ->all();
+        $msg = "";
+        if ($request->ajax()){
+            $msg .= "<p>Deleted the following files </p>";
+            $filesForDeletion = $input['filesForDeletion'];
+            $msg .= "<ul>";
+            foreach($filesForDeletion as $fileForDeletion) {
+                $result = $this->GitRepoService->deleteFile($this->flysystem,$fileForDeletion);
+                if($result) {
+                    $msg .= "<li>".$fileForDeletion."</li>";
+                }
+
+            }
+            $msg .= "</ul>";
+        }
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $msg,
+        );
+
+
+        return Response::json($response);
+
+
+    }
 
     public function updateFileVersion($path){
         $isLoggedIn = \Auth::check();

@@ -53,6 +53,8 @@
                                 </div>
                             </div>
                             <div class="tab-pane  in active" id="headers">
+                                <a href="/admin/corpora/{{$corpus->id}}/{{$previouspath}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
+                                <h4>{{$folderName}}</h4>
                                 <br />
                                 @include('admin.corpusadmin.projectList')
                             </div>
@@ -74,4 +76,62 @@
             </div>
         </div>
     </div>
+    <script language="JavaScript">
+        $("#checkAll").click(function () {
+            $(".check").prop('checked', $(this).prop('checked'));
+        });
+
+        $("#deleteCheckedButton").click(function() {
+            console.log("HALOO: ");
+
+            var token = $('#_token').val();
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+
+            var postData = {}
+            postData.token = token;
+            postData.filesForDeletion = []
+            var deletedRows = []
+
+            $('[name="chosen_files"]').each( function (){
+                if($(this).prop('checked') == true){
+                    deletedRows.push($(this).parent().parent().attr("id"));
+                    postData.filesForDeletion.push($(this).val());
+                }
+            });
+
+
+
+            console.log(postData.filesForDeletion);
+            console.log(deletedRows);
+            $.ajax({
+                url: '/api/adminapi/deletemultiple',
+                type:"POST",
+                data: postData,
+                async: true,
+                statusCode: {
+                    500: function () {
+                        alert("server down");
+                    }
+                },
+                success:function(data){
+                    console.log("DATA: "+JSON.stringify(data));
+
+                    for(var i = 0; i< deletedRows.length; i++) {
+                        $("#"+deletedRows[i]).remove();
+                    }
+
+                    var flashMessage = '<div id="flash-message" class="alert alert-success"> '+data.msg+' </div>';
+                    $('#page-wrapper').append(flashMessage);
+                },error:function(){
+                    console.log("error!!!!");
+                }
+            }); //end of ajax
+
+        })
+    </script>
 @endsection

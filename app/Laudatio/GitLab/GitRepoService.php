@@ -108,11 +108,15 @@ class GitRepoService implements GitRepoInterface
 
         $projects = $this->filterDottedFiles($projects);
 
-        $pathtarray  = explode("/",$path);
         $previouspath = "";
-        for($i = 0; $i < (count($pathtarray)-1); $i++){
-            $previouspath .= $pathtarray[$i]."/";
+
+        if(strpos($path,"show") !== false){
+            $previouspath = substr($path,0,strrpos($path,"/"));
         }
+        else{
+            $previouspath = $path;
+        }
+
 
         return array(
             "projects" => $projects,
@@ -120,6 +124,19 @@ class GitRepoService implements GitRepoInterface
             "path" => $path,
             "previouspath" => $previouspath,
         );
+    }
+
+
+    public function deleteFile($flysystem, $path){
+        $result = null;
+        if($flysystem->has($path)){
+            $gitFunction = new  GitFunction();
+            $isTracked = $gitFunction->isTracked($this->basePath."/".$path);
+            if($isTracked){
+                $result = $gitFunction->deleteFiles($path);
+            }
+        }
+        return $result;
     }
 
 
