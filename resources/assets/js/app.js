@@ -38,6 +38,7 @@ Vue.component('searchresultheader_annotation', require('./components/SearchResul
 
 window.axios.defaults.headers.post['Content-Type'] = 'application/json';
 
+var eventHub = new Vue();
 
 const app = new Vue({
     el: '#searchapp',
@@ -47,6 +48,7 @@ const app = new Vue({
         documentresults: [],
         annotationresults: [],
         searches: [],
+        documentsByCorpus: [],
         documentsByAnnotation: [],
         corpussearched: false,
         corpusloading: false,
@@ -93,12 +95,14 @@ const app = new Vue({
 
             }
 
+
             if(postDataCollection.length > 0){
                 let postData = {
                     searchData: postDataCollection,
                     scope: 'corpus'
                 };
 
+                let corpus_ids = [];
 
                 window.axios.post('api/searchapi/searchCorpus',JSON.stringify(postData)).then(res => {
                     this.corpussearched = true;
@@ -108,7 +112,32 @@ const app = new Vue({
                             results: res.data.results,
                             total: res.data.total
                         })
+                        for(var ri = 0; ri < res.data.results.length; ri++){
+                            corpus_ids.push({
+                                'in_corpora': ''+res.data.results[ri]._id+''
+                            });
+
+                        }
+
                     }
+
+                    if(corpus_ids.length > 0) {
+                        let documentPostData = {
+                            corpus_ids: corpus_ids
+                        }
+                        window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(documentRes => {
+                            console.log(documentRes)
+                            if(documentRes.data.length > 0) {
+                                this.documentsByCorpus.push(
+                                    {
+                                        results: documentRes.data
+                                    }
+                                )
+                            }
+                        });
+                    }
+
+
                     this.corpusloading = false;
                 });
             }
@@ -301,7 +330,11 @@ const app = new Vue({
                     }
                 });
             }
-        } //submitAnnotation
+        },
+
+        fetchDocumentsByCorpusId: function(corpus_id) {
+
+        }
     }
 
 });

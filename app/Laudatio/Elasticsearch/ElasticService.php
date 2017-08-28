@@ -59,6 +59,27 @@ class ElasticService implements ElasticsearchInterface
         );
     }
 
+    public function getDocumentByCorpus($corpus_ids){
+        $resultData = array();
+
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $counter = 0;
+        foreach($corpus_ids as $queryData){
+            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+            $params = [
+                'index' => 'document',
+                'type' => 'document',
+                'body' => $queryBody,
+                '_source_exclude' => ['message']
+            ];
+
+            $results = Elasticsearch::search($params);
+            array_push($resultData,$results);
+        }//end foreach queries
+        return $resultData;
+    }
+
     /** GET search endpoint
      * @param $index
      * @param $field

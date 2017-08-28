@@ -7,7 +7,7 @@
         <div class="panel-group" id="accordion">
             <div class="panel panel-default" v-for="corpusresultdata in corpusresult.results" v-bind:key="corpusresultdata._id">
                 <div class="panel-heading">
-                    <div class="panel-title"  data-toggle="collapse" data-parent="#accordion" v-bind:data-target="corpusresultdata._id | addHash">
+                    <div class="panel-title"  data-toggle="collapse" data-parent="#accordion" v-bind:data-target="corpusresultdata._id | addHash" v-on:click="emitDocuments">
                     {{ corpusresultdata._source.corpus_title | arrayToString }}
                     <i class="fa fa-expand pull-right" aria-hidden="true"></i>
                     </div>
@@ -29,10 +29,13 @@
 
 <script>
     export default {
-        props: ['corpusresult'],
+        props: ['corpusresult','documentsbycorpus'],
         methods: {
             browseUri: function(id) {
                 return '/browse/corpus/'.concat(id);
+            },
+            emitDocuments: function(){
+
             }
         },
         mounted() {

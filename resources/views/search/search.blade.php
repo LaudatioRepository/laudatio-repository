@@ -16,7 +16,7 @@
                             <searchresultheader_corpus :corpusresults="corpusresults"></searchresultheader_corpus>
                         </div>
                         <div class="Corpus-result-body">
-                            <searchwrapper_corpus :corpusresults="corpusresults" :corpussearched="corpussearched" :corpusloading="corpusloading"></searchwrapper_corpus>
+                            <searchwrapper_corpus :corpusresults="corpusresults" :corpussearched="corpussearched" :corpusloading="corpusloading" :documentsbycorpus="documentsByCorpus"></searchwrapper_corpus>
                         </div>
                     </div>
                     <div class="Document-results">

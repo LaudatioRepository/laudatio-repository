@@ -160,9 +160,21 @@ class ElasticController extends Controller
         );
     }
 
+
+    public function getDocumentByCorpus(Request $request){
+        $documentResults = array();
+        $data = $this->ElasticService->getDocumentByCorpus($request->corpus_ids);
+        return response(
+            $data,
+            200
+        );
+    }
+
     public function getDocumentsByAnnotation(Request $request){
         $corpusResult = array();
         $documentResult = array();
+        $documentRefs = array();
+        $corpusRefs = array();
 
         for($i = 0; $i < count($request->annotationRefs); $i++){
             $annotationRef = $request->annotationRefs[$i];
@@ -175,24 +187,38 @@ class ElasticController extends Controller
 
             $corpusResult[$annotationRef] = array();
             if(!empty($request->documentRefs[$i])) {
-                $documentRefs = $request->documentRefs[$i];
+                if(is_array($request->documentRefs[$i])){
+                    $documentRefs = $request->documentRefs[$i];
+                }
+                else{
+                    array_push($documentRefs,$request->documentRefs[$i]);
+                }
+
             }
             else{
                 $documentRefs = array();
             }
             $documentResult[$annotationRef] = array();
 
-            foreach ($corpusRefs as $corpusRef){
-                array_push($corpusResult[$annotationRef],$this->ElasticService->getCorpusByAnnotation(array(array(
-                    '_id' => $corpusRef
-                ))));
+            $documentRefs = array_unique($documentRefs);
+
+            if(count($corpusRefs) > 0) {
+                foreach ($corpusRefs as $corpusRef){
+                    array_push($corpusResult[$annotationRef],$this->ElasticService->getCorpusByAnnotation(array(array(
+                        '_id' => $corpusRef
+                    ))));
+                }
+            }
+            
+
+            if (count($documentRefs) > 0) {
+                foreach ($documentRefs as $documentRef){
+                    array_push($documentResult[$annotationRef],$this->ElasticService->getDocumentsByAnnotation(array(array(
+                        '_id' => $documentRef
+                    ))));
+                }
             }
 
-            foreach ($documentRefs as $documentRef){
-                array_push($documentResult[$annotationRef],$this->ElasticService->getDocumentsByAnnotation(array(array(
-                    '_id' => $documentRef
-                ))));
-            }
         }//end for annotations
 
         $resultData = array(

@@ -42466,6 +42466,8 @@ Vue.component('searchresultheader_annotation', __webpack_require__(88));
 
 window.axios.defaults.headers.post['Content-Type'] = 'application/json';
 
+var eventHub = new Vue();
+
 var app = new Vue({
     el: '#searchapp',
     data: {
@@ -42474,6 +42476,7 @@ var app = new Vue({
         documentresults: [],
         annotationresults: [],
         searches: [],
+        documentsByCorpus: [],
         documentsByAnnotation: [],
         corpussearched: false,
         corpusloading: false,
@@ -42525,6 +42528,8 @@ var app = new Vue({
                     scope: 'corpus'
                 };
 
+                var corpus_ids = [];
+
                 window.axios.post('api/searchapi/searchCorpus', JSON.stringify(postData)).then(function (res) {
                     _this2.corpussearched = true;
                     if (res.data.results.length > 0) {
@@ -42533,7 +42538,27 @@ var app = new Vue({
                             results: res.data.results,
                             total: res.data.total
                         });
+                        for (var ri = 0; ri < res.data.results.length; ri++) {
+                            corpus_ids.push({
+                                'in_corpora': '' + res.data.results[ri]._id + ''
+                            });
+                        }
                     }
+
+                    if (corpus_ids.length > 0) {
+                        var documentPostData = {
+                            corpus_ids: corpus_ids
+                        };
+                        window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
+                            console.log(documentRes);
+                            if (documentRes.data.length > 0) {
+                                _this2.documentsByCorpus.push({
+                                    results: documentRes.data
+                                });
+                            }
+                        });
+                    }
+
                     _this2.corpusloading = false;
                 });
             }
@@ -42699,7 +42724,9 @@ var app = new Vue({
                     }
                 });
             }
-        } //submitAnnotation
+        },
+
+        fetchDocumentsByCorpusId: function fetchDocumentsByCorpusId(corpus_id) {}
     }
 
 });
@@ -42843,7 +42870,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'corpussearched', 'corpusloading'],
+    props: ['corpusresults', 'corpussearched', 'corpusloading', 'documentsbycorpus'],
     mounted: function mounted() {
         console.log('CorpusResultComponent mounted.');
     }
@@ -42878,7 +42905,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     return _c('searchresultpanel_corpus', {
       key: corpusresult,
       attrs: {
-        "corpusresult": corpusresult
+        "corpusresult": corpusresult,
+        "documentsbycorpus": _vm.documentsbycorpus
       }
     })
   })) : (_vm.corpusresults.length == 0 && _vm.corpussearched && !_vm.corpusloading) ? _c('div', {
@@ -44132,7 +44160,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.annotationSearchData.preparation_title = $event.target.value
       }
     }
-  })]), _vm._v(" "), _c('label', [_vm._v("Category "), _c('input', {
+  })]), _vm._v(" "), _c('label', [_vm._v("Tool "), _c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -44264,11 +44292,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresult'],
+    props: ['corpusresult', 'documentsbycorpus'],
     methods: {
         browseUri: function browseUri(id) {
             return '/browse/corpus/'.concat(id);
-        }
+        },
+        emitDocuments: function emitDocuments() {}
     },
     mounted: function mounted() {
         console.log('CorpusResultComponent mounted.');
@@ -44301,6 +44330,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "data-toggle": "collapse",
         "data-parent": "#accordion",
         "data-target": _vm._f("addHash")(corpusresultdata._id)
+      },
+      on: {
+        "click": _vm.emitDocuments
       }
     }, [_vm._v("\n                    " + _vm._s(_vm._f("arrayToString")(corpusresultdata._source.corpus_title)) + "\n                    "), _c('i', {
       staticClass: "fa fa-expand pull-right",
