@@ -128,6 +128,9 @@ class ElasticService implements ElasticsearchInterface
         $counter = 0;
         foreach($searchData as $queryData){
             $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+
+            //Log::info("SENDING: ".print_r($queryBody,1));
+
             $params = [
                 'size' => 1000,
                 'index' => 'corpus',

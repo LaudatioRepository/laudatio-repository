@@ -42634,15 +42634,16 @@ var app = new Vue({
                             document_ids.push({
                                 'in_documents': '' + res.data.results[j]._id + ''
                             });
-                            if (typeof in_corpora != 'undefined') {
+                            if (typeof in_corpora != 'undefined' && in_corpora.length > 0) {
                                 for (var jid = 0; jid < in_corpora.length; jid++) {
                                     corpusRefs.push({
                                         '_id': '' + in_corpora[jid] + ''
                                     });
-                                    corpus_ids.push({
-                                        'in_corpora': '' + in_corpora[jid] + ''
-                                    });
                                 }
+                            } else if (typeof in_corpora != 'undefined' && in_corpora.length == 0 || typeof in_corpora == 'undefined') {
+                                corpusRefs.push({
+                                    '_id': '0'
+                                });
                             }
                         }
 
@@ -42655,7 +42656,8 @@ var app = new Vue({
                             documentRefs: documentRefs,
                             corpusRefs: corpusRefs
                         };
-
+                        console.log("DOCUREFLEN: " + documentRefs.length);
+                        console.log("corpusRefs: " + corpusRefs.length);
                         window.axios.post('api/searchapi/getAnnotationsByDocument', JSON.stringify(annotationPostData)).then(function (annotationRes) {
                             if (Object.keys(annotationRes.data.results).length > 0) {
                                 var annotationsByDocument = {};
@@ -42668,7 +42670,7 @@ var app = new Vue({
                         });
 
                         window.axios.post('api/searchapi/getCorpusByDocument', JSON.stringify(corpusPostData)).then(function (corpusRes) {
-                            JSON.stringify(corpusRes);
+
                             if (Object.keys(corpusRes.data.results).length > 0) {
                                 var corpusByDocument = {};
                                 Object.keys(corpusRes.data.results).forEach(function (key) {
@@ -44468,7 +44470,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "id": "accordion"
     }
   }, _vm._l((_vm.corpusresult.results), function(corpusresultdata) {
-    return _c('div', {
+    return (_vm.corpusresult.results.length > 0) ? _c('div', {
       key: corpusresultdata._id,
       staticClass: "panel panel-default"
     }, [_c('div', {
@@ -44532,7 +44534,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "aria-hidden": "true"
       }
-    })])])])])
+    })])])])]) : _vm._e()
   }))])
 },staticRenderFns: []}
 module.exports.render._withStripped = true

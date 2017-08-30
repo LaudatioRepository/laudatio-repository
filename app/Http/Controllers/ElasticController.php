@@ -162,6 +162,7 @@ class ElasticController extends Controller
 
     public function getCorpusByDocument(Request $request) {
         $result = $this->ElasticService->getCorpusByDocument($request->corpusRefs, $request->documentRefs);
+        //Log::info("documentDataING: ".print_r($request->corpusRefs,1));
         $resultdata =  array(
             'error' => false,
             'results' => $result

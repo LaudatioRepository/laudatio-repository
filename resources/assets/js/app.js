@@ -213,17 +213,21 @@ const app = new Vue({
                             document_ids.push({
                                 'in_documents': ''+res.data.results[j]._id+''
                             });
-                            if(typeof  in_corpora != 'undefined'){
+                            if(typeof  in_corpora != 'undefined' && in_corpora.length > 0){
                                 for(var jid = 0; jid < in_corpora.length; jid++) {
                                     corpusRefs.push(
                                         {
                                             '_id': ''+in_corpora[jid]+''
                                         }
                                     );
-                                    corpus_ids.push({
-                                        'in_corpora': ''+in_corpora[jid]+''
-                                    });
                                 }
+                            }
+                            else if(typeof  in_corpora != 'undefined' && in_corpora.length == 0 || typeof  in_corpora == 'undefined'){
+                                corpusRefs.push(
+                                    {
+                                        '_id': '0'
+                                    }
+                                );
                             }
                         }
 
@@ -239,7 +243,8 @@ const app = new Vue({
                             documentRefs: documentRefs,
                             corpusRefs: corpusRefs,
                         };
-
+                        console.log("DOCUREFLEN: "+documentRefs.length);
+                        console.log("corpusRefs: "+corpusRefs.length);
                         window.axios.post('api/searchapi/getAnnotationsByDocument', JSON.stringify(annotationPostData)).then(annotationRes => {
                             if (Object.keys(annotationRes.data.results).length > 0) {
                                 var annotationsByDocument = {}
@@ -253,7 +258,7 @@ const app = new Vue({
                         });
 
                         window.axios.post('api/searchapi/getCorpusByDocument', JSON.stringify(corpusPostData)).then(corpusRes => {
-                            JSON.stringify(corpusRes)
+
                             if (Object.keys(corpusRes.data.results).length > 0) {
                                 var corpusByDocument = {}
                                 Object.keys(corpusRes.data.results).forEach(function(key) {
