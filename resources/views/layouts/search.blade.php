@@ -82,5 +82,6 @@
 
 <!-- Scripts -->
 <script src="{{ asset('js/app.js') }}"></script>
+<script src="/path/to/vuex.js"></script>
 </body>
 </html>

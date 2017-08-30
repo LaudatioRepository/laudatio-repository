@@ -148,8 +148,32 @@ class ElasticController extends Controller
         );
     }
 
-    public function getCorpusByDocument(Request $request){
+    public function getCorpusTitlesByDocument(Request $request){
+        $result = $this->ElasticService->getCorpusTitlesByDocument($request->corpusRefs, $request->documentRefs);
+        $resultdata =  array(
+            'error' => false,
+            'results' => $result
+        );
+        return response(
+            $resultdata,
+            200
+        );
+    }
+
+    public function getCorpusByDocument(Request $request) {
         $result = $this->ElasticService->getCorpusByDocument($request->corpusRefs, $request->documentRefs);
+        $resultdata =  array(
+            'error' => false,
+            'results' => $result
+        );
+        return response(
+            $resultdata,
+            200
+        );
+    }
+
+    public function getAnnotationsByDocument(Request $request){
+        $result = $this->ElasticService->getAnnotationByDocument($request->document_ids,$request->documentRefs);
         $resultdata =  array(
             'error' => false,
             'results' => $result
@@ -169,6 +193,17 @@ class ElasticController extends Controller
             200
         );
     }
+
+    public function getAnnotationByCorpus(Request $request){
+        $data = $this->ElasticService->getAnnotationByCorpus($request->corpus_ids);
+        return response(
+            $data,
+            200
+        );
+    }
+
+
+
 
     public function getDocumentsByAnnotation(Request $request){
         $corpusResult = array();
@@ -209,7 +244,7 @@ class ElasticController extends Controller
                     ))));
                 }
             }
-            
+
 
             if (count($documentRefs) > 0) {
                 foreach ($documentRefs as $documentRef){

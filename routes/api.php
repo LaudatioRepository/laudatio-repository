@@ -27,9 +27,13 @@ Route::group(array('prefix' => 'searchapi'), function() {
     Route::post('searchDocumentWithParam','ElasticController@searchDocumentIndexWithParam');
     Route::post('getSearchTotal','ElasticController@getSearchTotal');
     Route::post('searchAnnotation','ElasticController@searchAnnotationIndex');
+    Route::post('getCorpusTitlesByDocument','ElasticController@getCorpusTitlesByDocument');
     Route::post('getCorpusByDocument','ElasticController@getCorpusByDocument');
     Route::post('getDocumentsByCorpus','ElasticController@getDocumentByCorpus');
+    Route::post('getAnnotationsByCorpus','ElasticController@getAnnotationByCorpus');
     Route::post('getDocumentsByAnnotation','ElasticController@getDocumentsByAnnotation');
+    Route::post('getAnnotationsByDocument','ElasticController@getAnnotationsByDocument');
+
     Route::post('truncateIndex','ElasticController@truncateIndex');
 });
 

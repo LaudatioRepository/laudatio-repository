@@ -59,6 +59,7 @@ class ElasticService implements ElasticsearchInterface
         );
     }
 
+
     public function getDocumentByCorpus($corpus_ids){
         $resultData = array();
 
@@ -68,8 +69,31 @@ class ElasticService implements ElasticsearchInterface
         foreach($corpus_ids as $queryData){
             $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
             $params = [
+                'size' => 1000,
                 'index' => 'document',
                 'type' => 'document',
+                'body' => $queryBody,
+                '_source_exclude' => ['message']
+            ];
+
+            $results = Elasticsearch::search($params);
+            array_push($resultData,$results);
+        }//end foreach queries
+        return $resultData;
+    }
+
+    public function getAnnotationByCorpus($corpus_ids){
+        $resultData = array();
+
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $counter = 0;
+        foreach($corpus_ids as $queryData){
+            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+            $params = [
+                'size' => 1000,
+                'index' => 'annotation',
+                'type' => 'annotation',
                 'body' => $queryBody,
                 '_source_exclude' => ['message']
             ];
@@ -89,6 +113,7 @@ class ElasticService implements ElasticsearchInterface
     public function search($index,$field,$term)
     {
         $params = [
+            'size' => 1000,
             'index' => $index,
             'type' => '',
             'body' => [
@@ -130,6 +155,7 @@ class ElasticService implements ElasticsearchInterface
         $queryBody = $queryBuilder->buildMultiMatchQuery($searchData);
 
         $params = [
+            'size' => 1000,
             'index' => '_all',
             'type' => '',
             'body' => $queryBody,
@@ -159,6 +185,7 @@ class ElasticService implements ElasticsearchInterface
         }
 
         $params = [
+            'size' => 1000,
             'index' => 'corpus',
             'type' => '',
             'body' => $queryBody,
@@ -179,7 +206,6 @@ class ElasticService implements ElasticsearchInterface
 
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
-        //Log::info("SENDING: ".print_r($request->searchData,1));
         if(count($searchData) > 1){
             $queryBody = $queryBuilder->buildMustQuery($searchData);
         }
@@ -188,6 +214,7 @@ class ElasticService implements ElasticsearchInterface
         }
 
         $params = [
+            'size' => 1000,
             'index' => 'document',
             'type' => '',
             'body' => $queryBody,
@@ -220,6 +247,7 @@ class ElasticService implements ElasticsearchInterface
 
         $filters = [];
         $params = [
+            'size' => 1000,
             'index' => 'document',
             'type' => '',
             'body' => $queryBody,
@@ -256,6 +284,7 @@ class ElasticService implements ElasticsearchInterface
             $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
             //Log::info("queryBody: ".print_r($queryBody,1));
             $params = [
+                'size' => 1000,
                 'index' => $index,
                 'type' => '',
                 'body' => $queryBody,
@@ -271,7 +300,7 @@ class ElasticService implements ElasticsearchInterface
     }
 
 
-    public function getCorpusByDocument($searchData,$documentData) {
+    public function getCorpusTitlesByDocument($searchData,$documentData) {
         $resultData = array();
 
         $queryBuilder = new QueryBuilder();
@@ -280,6 +309,7 @@ class ElasticService implements ElasticsearchInterface
         foreach($searchData as $queryData){
             $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
             $params = [
+                'size' => 1000,
                 'index' => 'corpus',
                 'type' => 'corpus',
                 'body' => $queryBody,
@@ -300,6 +330,67 @@ class ElasticService implements ElasticsearchInterface
         return $resultData;
     }
 
+    public function getCorpusByDocument($searchData,$documentData){
+        $resultData = array();
+
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $counter = 0;
+        foreach($searchData as $queryData){
+            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+            $params = [
+                'size' => 1000,
+                'index' => 'corpus',
+                'type' => 'corpus',
+                'body' => $queryBody,
+                '_source_exclude' => ['message'],
+                'filter_path' => ['hits.hits']
+            ];
+            $results = Elasticsearch::search($params);
+            $termData = array_values($documentData);
+
+            if(count($results['hits']['hits']) > 0){
+                $resultData[$termData[$counter++]] = $results['hits']['hits'];
+            }
+            else{
+                $resultData[$counter++] = array();
+            }
+
+        }//end foreach queries
+        return $resultData;
+    }
+
+
+    public function getAnnotationByDocument($searchData,$documentData){
+        $resultData = array();
+
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $counter = 0;
+        foreach($searchData as $queryData){
+            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+            $params = [
+                'size' => 1000,
+                'index' => 'annotation',
+                'type' => 'annotation',
+                'body' => $queryBody,
+                '_source_exclude' => ['message'],
+                'filter_path' => ['hits.hits']
+            ];
+
+            $results = Elasticsearch::search($params);
+            $termData = array_values($documentData);
+
+            if(count($results['hits']['hits']) > 0){
+                $resultData[$termData[$counter++]]['results'] = $results['hits']['hits'];
+            }
+            else{
+                $resultData[$counter++]['results'] = array();
+            }
+        }//end foreach queries
+        return $resultData;
+    }
+
     public function getCorpusByAnnotation($searchData) {
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
@@ -307,6 +398,7 @@ class ElasticService implements ElasticsearchInterface
         foreach($searchData as $queryData){
             $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
             $params = [
+                'size' => 1000,
                 'index' => 'corpus',
                 'type' => 'corpus',
                 'body' => $queryBody,
@@ -325,6 +417,7 @@ class ElasticService implements ElasticsearchInterface
         foreach($searchData as $queryData){
             $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
             $params = [
+                'size' => 1000,
                 'index' => 'document',
                 'type' => 'document',
                 'body' => $queryBody,

@@ -18,8 +18,13 @@ interface ElasticsearchInterface {
     public function getSearchTotal($searchData,$index);
     public function searchAnnotationIndex($searchData);
     public function getCorpusByDocument($searchData,$documentData);
+    public function getAnnotationByDocument($searchData,$documentData);
+    public function getCorpusTitlesByDocument($searchData,$documentData);
     public function getCorpusByAnnotation($searchData);
-    public function getDocumentByCorpus($corpus_id);
+    public function getDocumentByCorpus($corpus_ids);
+    public function getAnnotationByCorpus($corpus_ids);
+
+
     public function getDocumentsByAnnotation($searchData);
     public function createIndex($name);
     public function deleteIndex($indexId);

@@ -10,6 +10,8 @@ require('./bootstrap');
 require('./filters');
 window.Vue = require('vue');
 const util = require('util')
+import store from './store'
+import { connect } from 'vuex-connect'
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -38,10 +40,10 @@ Vue.component('searchresultheader_annotation', require('./components/SearchResul
 
 window.axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-var eventHub = new Vue();
 
 const app = new Vue({
     el: '#searchapp',
+    store: store,
     data: {
         results: [],
         corpusresults: [],
@@ -49,6 +51,9 @@ const app = new Vue({
         annotationresults: [],
         searches: [],
         documentsByCorpus: [],
+        annotationsByCorpus: [],
+        corpusByDocument: [],
+        annotationsByDocument: [],
         documentsByAnnotation: [],
         corpussearched: false,
         corpusloading: false,
@@ -112,11 +117,11 @@ const app = new Vue({
                             results: res.data.results,
                             total: res.data.total
                         })
+
                         for(var ri = 0; ri < res.data.results.length; ri++){
                             corpus_ids.push({
                                 'in_corpora': ''+res.data.results[ri]._id+''
                             });
-
                         }
 
                     }
@@ -125,12 +130,29 @@ const app = new Vue({
                         let documentPostData = {
                             corpus_ids: corpus_ids
                         }
+
+                        /**
+                         * Get all documents contained in the corpora
+                         */
                         window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(documentRes => {
-                            console.log(documentRes)
                             if(documentRes.data.length > 0) {
+                                console.log(documentRes.data)
                                 this.documentsByCorpus.push(
                                     {
-                                        results: documentRes.data
+                                        results: documentRes.data[0].hits.hits
+                                    }
+                                )
+                            }
+                        });
+
+                        /**
+                         * get all annotations contained pro corpus
+                         */
+                        window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(documentPostData)).then(annotationRes => {
+                            if(annotationRes.data.length > 0) {
+                                this.annotationsByCorpus.push(
+                                    {
+                                        results: annotationRes.data[0].hits.hits
                                     }
                                 )
                             }
@@ -174,12 +196,17 @@ const app = new Vue({
                         var documentRefs = [];
                         var corpusRefs = [];
 
+                        var corpus_ids = [];
+                        var document_ids = [];
+
 
 
                         for(var j = 0; j< res.data.results.length; j++) {
                             var in_corpora = res.data.results[j]._source.in_corpora
-
                             documentRefs.push(res.data.results[j]._id);
+                            document_ids.push({
+                                'in_documents': ''+res.data.results[j]._id+''
+                            });
                             if(typeof  in_corpora != 'undefined'){
                                 for(var jid = 0; jid < in_corpora.length; jid++) {
                                     corpusRefs.push(
@@ -187,24 +214,64 @@ const app = new Vue({
                                             '_id': ''+in_corpora[jid]+''
                                         }
                                     );
+                                    corpus_ids.push({
+                                        'in_corpora': ''+in_corpora[jid]+''
+                                    });
                                 }
                             }
-
-
                         }
+
+
+
+                        let annotationPostData = {
+                            documentRefs: documentRefs,
+                            document_ids: document_ids
+                        };
+
+
+                        let corpusPostData = {
+                            documentRefs: documentRefs,
+                            corpusRefs: corpusRefs,
+                        };
+
+                        window.axios.post('api/searchapi/getAnnotationsByDocument', JSON.stringify(annotationPostData)).then(annotationRes => {
+                            if (Object.keys(annotationRes.data.results).length > 0) {
+                                var annotationsByDocument = {}
+                                Object.keys(annotationRes.data.results).forEach(function(key) {
+                                    console.log(key+" "+annotationRes.data.results[key])
+                                    annotationsByDocument[key] = annotationRes.data.results[key]
+                                });
+                            }
+
+                            this.annotationsByDocument = annotationsByDocument;
+
+                        });
+
+                        window.axios.post('api/searchapi/getCorpusByDocument', JSON.stringify(corpusPostData)).then(corpusRes => {
+
+                            if (Object.keys(corpusRes.data.results).length > 0) {
+                                var corpusByDocument = {}
+                                Object.keys(corpusRes.data.results).forEach(function(key) {
+                                    corpusByDocument[key] = {results: corpusRes.data.results[key]}
+                                });
+                            }
+
+                            this.corpusByDocument = corpusByDocument;
+                        });
+
+
 
                         let postDocumentData = {
                             documentRefs: documentRefs,
                             corpusRefs: corpusRefs,
                         };
 
-                        window.axios.post('api/searchapi/getCorpusByDocument',postDocumentData).then(corpusByDocumentRes => {
+                        window.axios.post('api/searchapi/getCorpusTitlesByDocument',postDocumentData).then(corpusByDocumentRes => {
                             if (Object.keys(corpusByDocumentRes.data.results).length > 0) {
-
-                                var corpusByDocument = []
+                                var corpusTitleByDocument = []
 
                                 Object.keys(corpusByDocumentRes.data.results).forEach(function(key) {
-                                    corpusByDocument[key] = corpusByDocumentRes.data.results[key]
+                                    corpusTitleByDocument[key] = corpusByDocumentRes.data.results[key]
 
                                 });
 
@@ -212,7 +279,7 @@ const app = new Vue({
                                     search: documentSearchObject.document_title,
                                     results: res.data.results,
                                     total: res.data.total,
-                                    corpusByDocument: corpusByDocument
+                                    corpusByDocument: corpusTitleByDocument
                                 })
 
                             }

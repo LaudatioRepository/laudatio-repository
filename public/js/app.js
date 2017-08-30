@@ -42425,8 +42425,13 @@ module.exports = __webpack_require__(94);
 
 /***/ }),
 /* 42 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__store__ = __webpack_require__(132);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex_connect__ = __webpack_require__(133);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex_connect___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vuex_connect__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
@@ -42440,6 +42445,8 @@ __webpack_require__(13);
 __webpack_require__(37);
 window.Vue = __webpack_require__(10);
 var util = __webpack_require__(38);
+
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -42466,10 +42473,9 @@ Vue.component('searchresultheader_annotation', __webpack_require__(88));
 
 window.axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-var eventHub = new Vue();
-
 var app = new Vue({
     el: '#searchapp',
+    store: __WEBPACK_IMPORTED_MODULE_0__store__["a" /* default */],
     data: {
         results: [],
         corpusresults: [],
@@ -42477,6 +42483,9 @@ var app = new Vue({
         annotationresults: [],
         searches: [],
         documentsByCorpus: [],
+        annotationsByCorpus: [],
+        corpusByDocument: [],
+        annotationsByDocument: [],
         documentsByAnnotation: [],
         corpussearched: false,
         corpusloading: false,
@@ -42538,6 +42547,7 @@ var app = new Vue({
                             results: res.data.results,
                             total: res.data.total
                         });
+
                         for (var ri = 0; ri < res.data.results.length; ri++) {
                             corpus_ids.push({
                                 'in_corpora': '' + res.data.results[ri]._id + ''
@@ -42548,12 +42558,26 @@ var app = new Vue({
                     if (corpus_ids.length > 0) {
                         var documentPostData = {
                             corpus_ids: corpus_ids
-                        };
-                        window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
-                            console.log(documentRes);
+
+                            /**
+                             * Get all documents contained in the corpora
+                             */
+                        };window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
                             if (documentRes.data.length > 0) {
+                                console.log(documentRes.data);
                                 _this2.documentsByCorpus.push({
-                                    results: documentRes.data
+                                    results: documentRes.data[0].hits.hits
+                                });
+                            }
+                        });
+
+                        /**
+                         * get all annotations contained pro corpus
+                         */
+                        window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(documentPostData)).then(function (annotationRes) {
+                            if (annotationRes.data.length > 0) {
+                                _this2.annotationsByCorpus.push({
+                                    results: annotationRes.data[0].hits.hits
                                 });
                             }
                         });
@@ -42591,38 +42615,79 @@ var app = new Vue({
                         var documentRefs = [];
                         var corpusRefs = [];
 
+                        var corpus_ids = [];
+                        var document_ids = [];
+
                         for (var j = 0; j < res.data.results.length; j++) {
                             var in_corpora = res.data.results[j]._source.in_corpora;
-
                             documentRefs.push(res.data.results[j]._id);
+                            document_ids.push({
+                                'in_documents': '' + res.data.results[j]._id + ''
+                            });
                             if (typeof in_corpora != 'undefined') {
                                 for (var jid = 0; jid < in_corpora.length; jid++) {
                                     corpusRefs.push({
                                         '_id': '' + in_corpora[jid] + ''
                                     });
+                                    corpus_ids.push({
+                                        'in_corpora': '' + in_corpora[jid] + ''
+                                    });
                                 }
                             }
                         }
+
+                        var annotationPostData = {
+                            documentRefs: documentRefs,
+                            document_ids: document_ids
+                        };
+
+                        var corpusPostData = {
+                            documentRefs: documentRefs,
+                            corpusRefs: corpusRefs
+                        };
+
+                        window.axios.post('api/searchapi/getAnnotationsByDocument', JSON.stringify(annotationPostData)).then(function (annotationRes) {
+                            if (Object.keys(annotationRes.data.results).length > 0) {
+                                var annotationsByDocument = {};
+                                Object.keys(annotationRes.data.results).forEach(function (key) {
+                                    console.log(key + " " + annotationRes.data.results[key]);
+                                    annotationsByDocument[key] = annotationRes.data.results[key];
+                                });
+                            }
+
+                            _this3.annotationsByDocument = annotationsByDocument;
+                        });
+
+                        window.axios.post('api/searchapi/getCorpusByDocument', JSON.stringify(corpusPostData)).then(function (corpusRes) {
+
+                            if (Object.keys(corpusRes.data.results).length > 0) {
+                                var corpusByDocument = {};
+                                Object.keys(corpusRes.data.results).forEach(function (key) {
+                                    corpusByDocument[key] = { results: corpusRes.data.results[key] };
+                                });
+                            }
+
+                            _this3.corpusByDocument = corpusByDocument;
+                        });
 
                         var postDocumentData = {
                             documentRefs: documentRefs,
                             corpusRefs: corpusRefs
                         };
 
-                        window.axios.post('api/searchapi/getCorpusByDocument', postDocumentData).then(function (corpusByDocumentRes) {
+                        window.axios.post('api/searchapi/getCorpusTitlesByDocument', postDocumentData).then(function (corpusByDocumentRes) {
                             if (Object.keys(corpusByDocumentRes.data.results).length > 0) {
-
-                                var corpusByDocument = [];
+                                var corpusTitleByDocument = [];
 
                                 Object.keys(corpusByDocumentRes.data.results).forEach(function (key) {
-                                    corpusByDocument[key] = corpusByDocumentRes.data.results[key];
+                                    corpusTitleByDocument[key] = corpusByDocumentRes.data.results[key];
                                 });
 
                                 _this3.documentresults.push({
                                     search: documentSearchObject.document_title,
                                     results: res.data.results,
                                     total: res.data.total,
-                                    corpusByDocument: corpusByDocument
+                                    corpusByDocument: corpusTitleByDocument
                                 });
                             } else {
                                 _this3.documentresults.push({
@@ -42810,7 +42875,7 @@ exports = module.exports = __webpack_require__(11)(undefined);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42854,6 +42919,11 @@ module.exports = function listToStyles (parentId, list) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(131);
+//
+//
+//
+//
 //
 //
 //
@@ -42869,8 +42939,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'corpussearched', 'corpusloading', 'documentsbycorpus'],
+    props: ['corpusresults', 'corpussearched', 'corpusloading', 'documentsbycorpus', 'annotationsbycorpus'],
+    computed: __WEBPACK_IMPORTED_MODULE_0_vuex__["mapState"]({
+        stateDocumentCorpusresults: function stateDocumentCorpusresults(state) {
+            return state.corpusByDocument[0];
+        }
+    }),
     mounted: function mounted() {
         console.log('CorpusResultComponent mounted.');
     }
@@ -42901,12 +42977,22 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "corpusloading"
     }],
     staticClass: "sr-only"
-  }, [_vm._v("Loading...")]), _vm._v(" "), (_vm.corpusresults.length >= 1) ? _c('div', _vm._l((_vm.corpusresults), function(corpusresult) {
+  }, [_vm._v("Loading...")]), _vm._v(" "), (_vm.corpusresults && _vm.corpusresults.length >= 1) ? _c('div', _vm._l((_vm.corpusresults), function(corpusresult) {
     return _c('searchresultpanel_corpus', {
       key: corpusresult,
       attrs: {
         "corpusresult": corpusresult,
-        "documentsbycorpus": _vm.documentsbycorpus
+        "documentsbycorpus": _vm.documentsbycorpus,
+        "annotationsbycorpus": _vm.annotationsbycorpus
+      }
+    })
+  })) : (_vm.stateDocumentCorpusresults && _vm.stateDocumentCorpusresults.length >= 1) ? _c('div', _vm._l((_vm.stateDocumentCorpusresults), function(corpusresult) {
+    return _c('searchresultpanel_corpus', {
+      key: corpusresult,
+      attrs: {
+        "corpusresult": corpusresult,
+        "documentsbycorpus": _vm.documentsbycorpus,
+        "annotationsbycorpus": _vm.annotationsbycorpus
       }
     })
   })) : (_vm.corpusresults.length == 0 && _vm.corpussearched && !_vm.corpusloading) ? _c('div', {
@@ -43003,7 +43089,7 @@ exports = module.exports = __webpack_require__(11)(undefined);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -43014,6 +43100,11 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(131);
+//
+//
+//
+//
 //
 //
 //
@@ -43029,8 +43120,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['documentresults', 'documentsearched', 'documentloading'],
+    props: ['documentresults', 'documentsearched', 'documentloading', 'annotationsbydocument', 'corpusbydocument'],
+    computed: __WEBPACK_IMPORTED_MODULE_0_vuex__["mapState"]({
+        statedocumentresults: function statedocumentresults(state) {
+            return state.documentsByCorpus[0];
+        }
+    }),
     mounted: function mounted() {
         console.log('DocumentResultComponent mounted.');
     }
@@ -43061,11 +43158,22 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "documentloading"
     }],
     staticClass: "sr-only"
-  }, [_vm._v("Loading...")]), _vm._v(" "), (_vm.documentresults.length >= 1) ? _c('div', _vm._l((_vm.documentresults), function(documentresult) {
+  }, [_vm._v("Loading...")]), _vm._v(" "), (_vm.documentresults && _vm.documentresults.length >= 1) ? _c('div', _vm._l((_vm.documentresults), function(documentresult) {
     return _c('searchresultpanel_document', {
       key: documentresult,
       attrs: {
-        "documentresult": documentresult
+        "documentresult": documentresult,
+        "annotationsbydocument": _vm.annotationsbydocument,
+        "corpusbydocument": _vm.corpusbydocument
+      }
+    })
+  })) : (_vm.statedocumentresults && _vm.statedocumentresults.length >= 1) ? _c('div', _vm._l((_vm.statedocumentresults), function(documentresult) {
+    return _c('searchresultpanel_document', {
+      key: documentresult,
+      attrs: {
+        "documentresult": documentresult,
+        "annotationsbydocument": _vm.annotationsbydocument,
+        "corpusbydocument": _vm.corpusbydocument
       }
     })
   })) : (_vm.documentresults.length == 0 && _vm.documentsearched && !_vm.documentloading) ? _c('div', {
@@ -43162,7 +43270,7 @@ exports = module.exports = __webpack_require__(11)(undefined);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -43173,6 +43281,15 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(131);
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -43188,8 +43305,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['annotationresults', 'annotationsearched', 'annotationloading'],
+    computed: __WEBPACK_IMPORTED_MODULE_0_vuex__["mapState"]({
+        stateCorpusAnnotationresults: function stateCorpusAnnotationresults(state) {
+            return state.annotationsByCorpus[0];
+        },
+        stateDocumentAnnotationresults: function stateDocumentAnnotationresults(state) {
+            return state.annotationsByDocument[0];
+        }
+    }),
     mounted: function mounted() {
         console.log('AnnotationResultComponent mounted.');
     }
@@ -43220,7 +43346,21 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "annotationloading"
     }],
     staticClass: "sr-only"
-  }, [_vm._v("Loading...")]), _vm._v(" "), (_vm.annotationresults.length >= 1) ? _c('div', _vm._l((_vm.annotationresults), function(annotationresult) {
+  }, [_vm._v("Loading...")]), _vm._v(" "), (_vm.annotationresults && _vm.annotationresults.length >= 1) ? _c('div', _vm._l((_vm.annotationresults), function(annotationresult) {
+    return _c('searchresultpanel_annotation', {
+      key: annotationresult,
+      attrs: {
+        "annotationresult": annotationresult
+      }
+    })
+  })) : (_vm.stateCorpusAnnotationresults && _vm.stateCorpusAnnotationresults.length >= 1) ? _c('div', _vm._l((_vm.stateCorpusAnnotationresults), function(annotationresult) {
+    return _c('searchresultpanel_annotation', {
+      key: annotationresult,
+      attrs: {
+        "annotationresult": annotationresult
+      }
+    })
+  })) : (_vm.stateDocumentAnnotationresults && _vm.stateDocumentAnnotationresults.length >= 1) ? _c('div', _vm._l((_vm.stateDocumentAnnotationresults), function(annotationresult) {
     return _c('searchresultpanel_annotation', {
       key: annotationresult,
       attrs: {
@@ -44261,6 +44401,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(131);
 //
 //
 //
@@ -44291,13 +44432,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresult', 'documentsbycorpus'],
+    props: ['corpusresult', 'documentsbycorpus', 'annotationsbycorpus'],
     methods: {
         browseUri: function browseUri(id) {
             return '/browse/corpus/'.concat(id);
         },
-        emitDocuments: function emitDocuments() {}
+        emitRelations: function emitRelations() {
+            this.$store.dispatch('documentByCorpus', this.documentsbycorpus);
+            this.$store.dispatch('annotationByCorpus', this.annotationsbycorpus);
+        }
     },
     mounted: function mounted() {
         console.log('CorpusResultComponent mounted.');
@@ -44332,7 +44477,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "data-target": _vm._f("addHash")(corpusresultdata._id)
       },
       on: {
-        "click": _vm.emitDocuments
+        "click": _vm.emitRelations
       }
     }, [_vm._v("\n                    " + _vm._s(_vm._f("arrayToString")(corpusresultdata._source.corpus_title)) + "\n                    "), _c('i', {
       staticClass: "fa fa-expand pull-right",
@@ -44554,11 +44699,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['documentresult'],
+    props: ['documentresult', 'corpusbydocument', 'annotationsbydocument', 'corpusbydocument'],
     methods: {
         browseUri: function browseUri(id) {
             return '/browse/document/'.concat(id);
+        },
+        emitDocumentRelations: function emitDocumentRelations(documentId) {
+            this.$store.dispatch('corpusByDocument', this.corpusbydocument[documentId]);
+            this.$store.dispatch('annotationByDocument', this.annotationsbydocument[documentId]);
         }
     },
     mounted: function mounted() {
@@ -44592,6 +44742,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "data-toggle": "collapse",
         "data-parent": "#accordion",
         "data-target": _vm._f("addHash")(documentresultdata._id)
+      },
+      on: {
+        "click": function($event) {
+          _vm.emitDocumentRelations(documentresultdata._id)
+        }
       }
     }, [_vm._v("\n                        " + _vm._s(_vm._f("arrayToString")(documentresultdata._source.document_title)) + "\n                    "), _c('i', {
       staticClass: "fa fa-expand pull-right",
@@ -44605,7 +44760,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }, [_c('div', {
       staticClass: "panel-body"
-    }, [(typeof _vm.documentresult.corpusByDocument[documentresultdata._id] != 'undefined') ? _c('div', {
+    }, [(typeof _vm.documentresult.corpusByDocument != 'undefined' && typeof _vm.documentresult.corpusByDocument[documentresultdata._id] != 'undefined') ? _c('div', {
       staticClass: "iconwrapper"
     }, [_c('i', {
       staticClass: "fa fa-book",
@@ -44865,9 +45020,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "data-parent": "#accordion",
         "data-target": _vm._f("addHash")(annotationresultdata._id)
       }
-    }, [_vm._v("\n                    " + _vm._s(_vm._f("arrayToString")(_vm.annotationtitle = annotationresultdata._source.preparation_title)) + "\n                    "), _c('span', {
+    }, [_vm._v("\n                    " + _vm._s(_vm._f("arrayToString")(_vm.annotationtitle = annotationresultdata._source.preparation_title)) + "\n                    "), (typeof _vm.annotationresult.documentsByAnnotation != 'undefined' && typeof _vm.annotationresult.documentsByAnnotation[_vm.annotationtitle] != 'undefined') ? _c('span', {
       staticClass: "badge"
-    }, [_vm._v(_vm._s(_vm.inDocuments = _vm.annotationresult.documentsByAnnotation[_vm.annotationtitle]))]), _vm._v(" "), _c('i', {
+    }, [_vm._v(_vm._s(_vm.inDocuments = _vm.annotationresult.documentsByAnnotation[_vm.annotationtitle]))]) : _vm._e(), _vm._v(" "), _c('i', {
       staticClass: "fa fa-external-link pull-left",
       attrs: {
         "aria-hidden": "true"
@@ -44884,10 +45039,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     }, [_c('div', {
       staticClass: "panel-body"
-    }, [(typeof _vm.annotationresult.corpusByAnnotation[annotationresultdata._id] != 'undefined') ? _c('div', {
+    }, [(typeof _vm.annotationresult.corpusByAnnotation != 'undefined' && typeof _vm.annotationresult.corpusByAnnotation[annotationresultdata._id] != 'undefined') ? _c('div', {
       staticClass: "iconwrapper"
     }, [_vm._v("\n                    In corpora:\n                    "), _c('ul', _vm._l((_vm.annotationresult.corpusByAnnotation[annotationresultdata._id]), function(fromCorpus, cIndex) {
-      return _c('li', {
+      return (typeof _vm.annotationresult.corpusByAnnotation != 'undefined' && typeof _vm.annotationresult.corpusByAnnotation[annotationresultdata._id] != 'undefined') ? _c('li', {
         key: cIndex,
         staticClass: "list-unstyled"
       }, [_c('i', {
@@ -44899,11 +45054,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         attrs: {
           "href": _vm.browseUri(fromCorpus._id, 'corpus')
         }
-      }, [_vm._v(_vm._s(_vm._f("arrayToString")(fromCorpus._source.corpus_title)))])])
-    }))]) : _vm._e(), _vm._v(" "), (typeof _vm.annotationresult.documentsByAnnotation[annotationresultdata._id] != 'undefined') ? _c('div', {
+      }, [_vm._v(_vm._s(_vm._f("arrayToString")(fromCorpus._source.corpus_title)))])]) : _vm._e()
+    }))]) : _vm._e(), _vm._v(" "), (typeof _vm.annotationresult.documentsByAnnotation != 'undefined' && typeof _vm.annotationresult.documentsByAnnotation[annotationresultdata._id] != 'undefined') ? _c('div', {
       staticClass: "iconwrapper"
     }, [_vm._v("\n                    In documents:\n                        "), _c('ul', _vm._l((_vm.annotationresult.documentsByAnnotation[annotationresultdata._id]), function(fromDocument, dIndex) {
-      return _c('li', {
+      return (typeof _vm.annotationresult.documentsByAnnotation != 'undefined' && typeof _vm.annotationresult.documentsByAnnotation[annotationresultdata._id] != 'undefined') ? _c('li', {
         key: dIndex,
         staticClass: "list-unstyled"
       }, [_c('i', {
@@ -44915,7 +45070,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         attrs: {
           "href": _vm.browseUri(fromDocument._id, 'document')
         }
-      }, [_vm._v(_vm._s(_vm._f("arrayToString")(fromDocument._source.document_title)))])])
+      }, [_vm._v(_vm._s(_vm._f("arrayToString")(fromDocument._source.document_title)))])]) : _vm._e()
     }))]) : _vm._e(), _vm._v(" "), _c('br'), _vm._v(" "), _c('a', {
       attrs: {
         "href": _vm.browseUri(annotationresultdata._id, 'annotation')
@@ -45050,6 +45205,1262 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
+/* 105 */,
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */,
+/* 114 */,
+/* 115 */,
+/* 116 */,
+/* 117 */,
+/* 118 */,
+/* 119 */,
+/* 120 */,
+/* 121 */,
+/* 122 */,
+/* 123 */,
+/* 124 */,
+/* 125 */,
+/* 126 */,
+/* 127 */,
+/* 128 */,
+/* 129 */,
+/* 130 */,
+/* 131 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Store", function() { return Store; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapState", function() { return mapState; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapMutations", function() { return mapMutations; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapGetters", function() { return mapGetters; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapActions", function() { return mapActions; });
+/**
+ * vuex v2.3.0
+ * (c) 2017 Evan You
+ * @license MIT
+ */
+var applyMixin = function (Vue) {
+  var version = Number(Vue.version.split('.')[0]);
+
+  if (version >= 2) {
+    var usesInit = Vue.config._lifecycleHooks.indexOf('init') > -1;
+    Vue.mixin(usesInit ? { init: vuexInit } : { beforeCreate: vuexInit });
+  } else {
+    // override init and inject vuex init procedure
+    // for 1.x backwards compatibility.
+    var _init = Vue.prototype._init;
+    Vue.prototype._init = function (options) {
+      if ( options === void 0 ) options = {};
+
+      options.init = options.init
+        ? [vuexInit].concat(options.init)
+        : vuexInit;
+      _init.call(this, options);
+    };
+  }
+
+  /**
+   * Vuex init hook, injected into each instances init hooks list.
+   */
+
+  function vuexInit () {
+    var options = this.$options;
+    // store injection
+    if (options.store) {
+      this.$store = options.store;
+    } else if (options.parent && options.parent.$store) {
+      this.$store = options.parent.$store;
+    }
+  }
+};
+
+var devtoolHook =
+  typeof window !== 'undefined' &&
+  window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+
+function devtoolPlugin (store) {
+  if (!devtoolHook) { return }
+
+  store._devtoolHook = devtoolHook;
+
+  devtoolHook.emit('vuex:init', store);
+
+  devtoolHook.on('vuex:travel-to-state', function (targetState) {
+    store.replaceState(targetState);
+  });
+
+  store.subscribe(function (mutation, state) {
+    devtoolHook.emit('vuex:mutation', mutation, state);
+  });
+}
+
+/**
+ * Get the first item that pass the test
+ * by second argument function
+ *
+ * @param {Array} list
+ * @param {Function} f
+ * @return {*}
+ */
+/**
+ * Deep copy the given object considering circular structure.
+ * This function caches all nested objects and its copies.
+ * If it detects circular structure, use cached copy to avoid infinite loop.
+ *
+ * @param {*} obj
+ * @param {Array<Object>} cache
+ * @return {*}
+ */
+
+
+/**
+ * forEach for object
+ */
+function forEachValue (obj, fn) {
+  Object.keys(obj).forEach(function (key) { return fn(obj[key], key); });
+}
+
+function isObject (obj) {
+  return obj !== null && typeof obj === 'object'
+}
+
+function isPromise (val) {
+  return val && typeof val.then === 'function'
+}
+
+function assert (condition, msg) {
+  if (!condition) { throw new Error(("[vuex] " + msg)) }
+}
+
+var Module = function Module (rawModule, runtime) {
+  this.runtime = runtime;
+  this._children = Object.create(null);
+  this._rawModule = rawModule;
+  var rawState = rawModule.state;
+  this.state = (typeof rawState === 'function' ? rawState() : rawState) || {};
+};
+
+var prototypeAccessors$1 = { namespaced: {} };
+
+prototypeAccessors$1.namespaced.get = function () {
+  return !!this._rawModule.namespaced
+};
+
+Module.prototype.addChild = function addChild (key, module) {
+  this._children[key] = module;
+};
+
+Module.prototype.removeChild = function removeChild (key) {
+  delete this._children[key];
+};
+
+Module.prototype.getChild = function getChild (key) {
+  return this._children[key]
+};
+
+Module.prototype.update = function update (rawModule) {
+  this._rawModule.namespaced = rawModule.namespaced;
+  if (rawModule.actions) {
+    this._rawModule.actions = rawModule.actions;
+  }
+  if (rawModule.mutations) {
+    this._rawModule.mutations = rawModule.mutations;
+  }
+  if (rawModule.getters) {
+    this._rawModule.getters = rawModule.getters;
+  }
+};
+
+Module.prototype.forEachChild = function forEachChild (fn) {
+  forEachValue(this._children, fn);
+};
+
+Module.prototype.forEachGetter = function forEachGetter (fn) {
+  if (this._rawModule.getters) {
+    forEachValue(this._rawModule.getters, fn);
+  }
+};
+
+Module.prototype.forEachAction = function forEachAction (fn) {
+  if (this._rawModule.actions) {
+    forEachValue(this._rawModule.actions, fn);
+  }
+};
+
+Module.prototype.forEachMutation = function forEachMutation (fn) {
+  if (this._rawModule.mutations) {
+    forEachValue(this._rawModule.mutations, fn);
+  }
+};
+
+Object.defineProperties( Module.prototype, prototypeAccessors$1 );
+
+var ModuleCollection = function ModuleCollection (rawRootModule) {
+  var this$1 = this;
+
+  // register root module (Vuex.Store options)
+  this.root = new Module(rawRootModule, false);
+
+  // register all nested modules
+  if (rawRootModule.modules) {
+    forEachValue(rawRootModule.modules, function (rawModule, key) {
+      this$1.register([key], rawModule, false);
+    });
+  }
+};
+
+ModuleCollection.prototype.get = function get (path) {
+  return path.reduce(function (module, key) {
+    return module.getChild(key)
+  }, this.root)
+};
+
+ModuleCollection.prototype.getNamespace = function getNamespace (path) {
+  var module = this.root;
+  return path.reduce(function (namespace, key) {
+    module = module.getChild(key);
+    return namespace + (module.namespaced ? key + '/' : '')
+  }, '')
+};
+
+ModuleCollection.prototype.update = function update$1 (rawRootModule) {
+  update(this.root, rawRootModule);
+};
+
+ModuleCollection.prototype.register = function register (path, rawModule, runtime) {
+    var this$1 = this;
+    if ( runtime === void 0 ) runtime = true;
+
+  var parent = this.get(path.slice(0, -1));
+  var newModule = new Module(rawModule, runtime);
+  parent.addChild(path[path.length - 1], newModule);
+
+  // register nested modules
+  if (rawModule.modules) {
+    forEachValue(rawModule.modules, function (rawChildModule, key) {
+      this$1.register(path.concat(key), rawChildModule, runtime);
+    });
+  }
+};
+
+ModuleCollection.prototype.unregister = function unregister (path) {
+  var parent = this.get(path.slice(0, -1));
+  var key = path[path.length - 1];
+  if (!parent.getChild(key).runtime) { return }
+
+  parent.removeChild(key);
+};
+
+function update (targetModule, newModule) {
+  // update target module
+  targetModule.update(newModule);
+
+  // update nested modules
+  if (newModule.modules) {
+    for (var key in newModule.modules) {
+      if (!targetModule.getChild(key)) {
+        console.warn(
+          "[vuex] trying to add a new module '" + key + "' on hot reloading, " +
+          'manual reload is needed'
+        );
+        return
+      }
+      update(targetModule.getChild(key), newModule.modules[key]);
+    }
+  }
+}
+
+var Vue; // bind on install
+
+var Store = function Store (options) {
+  var this$1 = this;
+  if ( options === void 0 ) options = {};
+
+  assert(Vue, "must call Vue.use(Vuex) before creating a store instance.");
+  assert(typeof Promise !== 'undefined', "vuex requires a Promise polyfill in this browser.");
+
+  var state = options.state; if ( state === void 0 ) state = {};
+  var plugins = options.plugins; if ( plugins === void 0 ) plugins = [];
+  var strict = options.strict; if ( strict === void 0 ) strict = false;
+
+  // store internal state
+  this._committing = false;
+  this._actions = Object.create(null);
+  this._mutations = Object.create(null);
+  this._wrappedGetters = Object.create(null);
+  this._modules = new ModuleCollection(options);
+  this._modulesNamespaceMap = Object.create(null);
+  this._subscribers = [];
+  this._watcherVM = new Vue();
+
+  // bind commit and dispatch to self
+  var store = this;
+  var ref = this;
+  var dispatch = ref.dispatch;
+  var commit = ref.commit;
+  this.dispatch = function boundDispatch (type, payload) {
+    return dispatch.call(store, type, payload)
+  };
+  this.commit = function boundCommit (type, payload, options) {
+    return commit.call(store, type, payload, options)
+  };
+
+  // strict mode
+  this.strict = strict;
+
+  // init root module.
+  // this also recursively registers all sub-modules
+  // and collects all module getters inside this._wrappedGetters
+  installModule(this, state, [], this._modules.root);
+
+  // initialize the store vm, which is responsible for the reactivity
+  // (also registers _wrappedGetters as computed properties)
+  resetStoreVM(this, state);
+
+  // apply plugins
+  plugins.concat(devtoolPlugin).forEach(function (plugin) { return plugin(this$1); });
+};
+
+var prototypeAccessors = { state: {} };
+
+prototypeAccessors.state.get = function () {
+  return this._vm._data.$$state
+};
+
+prototypeAccessors.state.set = function (v) {
+  assert(false, "Use store.replaceState() to explicit replace store state.");
+};
+
+Store.prototype.commit = function commit (_type, _payload, _options) {
+    var this$1 = this;
+
+  // check object-style commit
+  var ref = unifyObjectStyle(_type, _payload, _options);
+    var type = ref.type;
+    var payload = ref.payload;
+    var options = ref.options;
+
+  var mutation = { type: type, payload: payload };
+  var entry = this._mutations[type];
+  if (!entry) {
+    console.error(("[vuex] unknown mutation type: " + type));
+    return
+  }
+  this._withCommit(function () {
+    entry.forEach(function commitIterator (handler) {
+      handler(payload);
+    });
+  });
+  this._subscribers.forEach(function (sub) { return sub(mutation, this$1.state); });
+
+  if (options && options.silent) {
+    console.warn(
+      "[vuex] mutation type: " + type + ". Silent option has been removed. " +
+      'Use the filter functionality in the vue-devtools'
+    );
+  }
+};
+
+Store.prototype.dispatch = function dispatch (_type, _payload) {
+  // check object-style dispatch
+  var ref = unifyObjectStyle(_type, _payload);
+    var type = ref.type;
+    var payload = ref.payload;
+
+  var entry = this._actions[type];
+  if (!entry) {
+    console.error(("[vuex] unknown action type: " + type));
+    return
+  }
+  return entry.length > 1
+    ? Promise.all(entry.map(function (handler) { return handler(payload); }))
+    : entry[0](payload)
+};
+
+Store.prototype.subscribe = function subscribe (fn) {
+  var subs = this._subscribers;
+  if (subs.indexOf(fn) < 0) {
+    subs.push(fn);
+  }
+  return function () {
+    var i = subs.indexOf(fn);
+    if (i > -1) {
+      subs.splice(i, 1);
+    }
+  }
+};
+
+Store.prototype.watch = function watch (getter, cb, options) {
+    var this$1 = this;
+
+  assert(typeof getter === 'function', "store.watch only accepts a function.");
+  return this._watcherVM.$watch(function () { return getter(this$1.state, this$1.getters); }, cb, options)
+};
+
+Store.prototype.replaceState = function replaceState (state) {
+    var this$1 = this;
+
+  this._withCommit(function () {
+    this$1._vm._data.$$state = state;
+  });
+};
+
+Store.prototype.registerModule = function registerModule (path, rawModule) {
+  if (typeof path === 'string') { path = [path]; }
+  assert(Array.isArray(path), "module path must be a string or an Array.");
+  this._modules.register(path, rawModule);
+  installModule(this, this.state, path, this._modules.get(path));
+  // reset store to update getters...
+  resetStoreVM(this, this.state);
+};
+
+Store.prototype.unregisterModule = function unregisterModule (path) {
+    var this$1 = this;
+
+  if (typeof path === 'string') { path = [path]; }
+  assert(Array.isArray(path), "module path must be a string or an Array.");
+  this._modules.unregister(path);
+  this._withCommit(function () {
+    var parentState = getNestedState(this$1.state, path.slice(0, -1));
+    Vue.delete(parentState, path[path.length - 1]);
+  });
+  resetStore(this);
+};
+
+Store.prototype.hotUpdate = function hotUpdate (newOptions) {
+  this._modules.update(newOptions);
+  resetStore(this, true);
+};
+
+Store.prototype._withCommit = function _withCommit (fn) {
+  var committing = this._committing;
+  this._committing = true;
+  fn();
+  this._committing = committing;
+};
+
+Object.defineProperties( Store.prototype, prototypeAccessors );
+
+function resetStore (store, hot) {
+  store._actions = Object.create(null);
+  store._mutations = Object.create(null);
+  store._wrappedGetters = Object.create(null);
+  store._modulesNamespaceMap = Object.create(null);
+  var state = store.state;
+  // init all modules
+  installModule(store, state, [], store._modules.root, true);
+  // reset vm
+  resetStoreVM(store, state, hot);
+}
+
+function resetStoreVM (store, state, hot) {
+  var oldVm = store._vm;
+
+  // bind store public getters
+  store.getters = {};
+  var wrappedGetters = store._wrappedGetters;
+  var computed = {};
+  forEachValue(wrappedGetters, function (fn, key) {
+    // use computed to leverage its lazy-caching mechanism
+    computed[key] = function () { return fn(store); };
+    Object.defineProperty(store.getters, key, {
+      get: function () { return store._vm[key]; },
+      enumerable: true // for local getters
+    });
+  });
+
+  // use a Vue instance to store the state tree
+  // suppress warnings just in case the user has added
+  // some funky global mixins
+  var silent = Vue.config.silent;
+  Vue.config.silent = true;
+  store._vm = new Vue({
+    data: {
+      $$state: state
+    },
+    computed: computed
+  });
+  Vue.config.silent = silent;
+
+  // enable strict mode for new vm
+  if (store.strict) {
+    enableStrictMode(store);
+  }
+
+  if (oldVm) {
+    if (hot) {
+      // dispatch changes in all subscribed watchers
+      // to force getter re-evaluation for hot reloading.
+      store._withCommit(function () {
+        oldVm._data.$$state = null;
+      });
+    }
+    Vue.nextTick(function () { return oldVm.$destroy(); });
+  }
+}
+
+function installModule (store, rootState, path, module, hot) {
+  var isRoot = !path.length;
+  var namespace = store._modules.getNamespace(path);
+
+  // register in namespace map
+  if (module.namespaced) {
+    store._modulesNamespaceMap[namespace] = module;
+  }
+
+  // set state
+  if (!isRoot && !hot) {
+    var parentState = getNestedState(rootState, path.slice(0, -1));
+    var moduleName = path[path.length - 1];
+    store._withCommit(function () {
+      Vue.set(parentState, moduleName, module.state);
+    });
+  }
+
+  var local = module.context = makeLocalContext(store, namespace, path);
+
+  module.forEachMutation(function (mutation, key) {
+    var namespacedType = namespace + key;
+    registerMutation(store, namespacedType, mutation, local);
+  });
+
+  module.forEachAction(function (action, key) {
+    var namespacedType = namespace + key;
+    registerAction(store, namespacedType, action, local);
+  });
+
+  module.forEachGetter(function (getter, key) {
+    var namespacedType = namespace + key;
+    registerGetter(store, namespacedType, getter, local);
+  });
+
+  module.forEachChild(function (child, key) {
+    installModule(store, rootState, path.concat(key), child, hot);
+  });
+}
+
+/**
+ * make localized dispatch, commit, getters and state
+ * if there is no namespace, just use root ones
+ */
+function makeLocalContext (store, namespace, path) {
+  var noNamespace = namespace === '';
+
+  var local = {
+    dispatch: noNamespace ? store.dispatch : function (_type, _payload, _options) {
+      var args = unifyObjectStyle(_type, _payload, _options);
+      var payload = args.payload;
+      var options = args.options;
+      var type = args.type;
+
+      if (!options || !options.root) {
+        type = namespace + type;
+        if (!store._actions[type]) {
+          console.error(("[vuex] unknown local action type: " + (args.type) + ", global type: " + type));
+          return
+        }
+      }
+
+      return store.dispatch(type, payload)
+    },
+
+    commit: noNamespace ? store.commit : function (_type, _payload, _options) {
+      var args = unifyObjectStyle(_type, _payload, _options);
+      var payload = args.payload;
+      var options = args.options;
+      var type = args.type;
+
+      if (!options || !options.root) {
+        type = namespace + type;
+        if (!store._mutations[type]) {
+          console.error(("[vuex] unknown local mutation type: " + (args.type) + ", global type: " + type));
+          return
+        }
+      }
+
+      store.commit(type, payload, options);
+    }
+  };
+
+  // getters and state object must be gotten lazily
+  // because they will be changed by vm update
+  Object.defineProperties(local, {
+    getters: {
+      get: noNamespace
+        ? function () { return store.getters; }
+        : function () { return makeLocalGetters(store, namespace); }
+    },
+    state: {
+      get: function () { return getNestedState(store.state, path); }
+    }
+  });
+
+  return local
+}
+
+function makeLocalGetters (store, namespace) {
+  var gettersProxy = {};
+
+  var splitPos = namespace.length;
+  Object.keys(store.getters).forEach(function (type) {
+    // skip if the target getter is not match this namespace
+    if (type.slice(0, splitPos) !== namespace) { return }
+
+    // extract local getter type
+    var localType = type.slice(splitPos);
+
+    // Add a port to the getters proxy.
+    // Define as getter property because
+    // we do not want to evaluate the getters in this time.
+    Object.defineProperty(gettersProxy, localType, {
+      get: function () { return store.getters[type]; },
+      enumerable: true
+    });
+  });
+
+  return gettersProxy
+}
+
+function registerMutation (store, type, handler, local) {
+  var entry = store._mutations[type] || (store._mutations[type] = []);
+  entry.push(function wrappedMutationHandler (payload) {
+    handler(local.state, payload);
+  });
+}
+
+function registerAction (store, type, handler, local) {
+  var entry = store._actions[type] || (store._actions[type] = []);
+  entry.push(function wrappedActionHandler (payload, cb) {
+    var res = handler({
+      dispatch: local.dispatch,
+      commit: local.commit,
+      getters: local.getters,
+      state: local.state,
+      rootGetters: store.getters,
+      rootState: store.state
+    }, payload, cb);
+    if (!isPromise(res)) {
+      res = Promise.resolve(res);
+    }
+    if (store._devtoolHook) {
+      return res.catch(function (err) {
+        store._devtoolHook.emit('vuex:error', err);
+        throw err
+      })
+    } else {
+      return res
+    }
+  });
+}
+
+function registerGetter (store, type, rawGetter, local) {
+  if (store._wrappedGetters[type]) {
+    console.error(("[vuex] duplicate getter key: " + type));
+    return
+  }
+  store._wrappedGetters[type] = function wrappedGetter (store) {
+    return rawGetter(
+      local.state, // local state
+      local.getters, // local getters
+      store.state, // root state
+      store.getters // root getters
+    )
+  };
+}
+
+function enableStrictMode (store) {
+  store._vm.$watch(function () { return this._data.$$state }, function () {
+    assert(store._committing, "Do not mutate vuex store state outside mutation handlers.");
+  }, { deep: true, sync: true });
+}
+
+function getNestedState (state, path) {
+  return path.length
+    ? path.reduce(function (state, key) { return state[key]; }, state)
+    : state
+}
+
+function unifyObjectStyle (type, payload, options) {
+  if (isObject(type) && type.type) {
+    options = payload;
+    payload = type;
+    type = type.type;
+  }
+
+  assert(typeof type === 'string', ("Expects string as the type, but found " + (typeof type) + "."));
+
+  return { type: type, payload: payload, options: options }
+}
+
+function install (_Vue) {
+  if (Vue) {
+    console.error(
+      '[vuex] already installed. Vue.use(Vuex) should be called only once.'
+    );
+    return
+  }
+  Vue = _Vue;
+  applyMixin(Vue);
+}
+
+// auto install in dist mode
+if (typeof window !== 'undefined' && window.Vue) {
+  install(window.Vue);
+}
+
+var mapState = normalizeNamespace(function (namespace, states) {
+  var res = {};
+  normalizeMap(states).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedState () {
+      var state = this.$store.state;
+      var getters = this.$store.getters;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
+        if (!module) {
+          return
+        }
+        state = module.context.state;
+        getters = module.context.getters;
+      }
+      return typeof val === 'function'
+        ? val.call(this, state, getters)
+        : state[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+var mapMutations = normalizeNamespace(function (namespace, mutations) {
+  var res = {};
+  normalizeMap(mutations).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    val = namespace + val;
+    res[key] = function mappedMutation () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      if (namespace && !getModuleByNamespace(this.$store, 'mapMutations', namespace)) {
+        return
+      }
+      return this.$store.commit.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+var mapGetters = normalizeNamespace(function (namespace, getters) {
+  var res = {};
+  normalizeMap(getters).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    val = namespace + val;
+    res[key] = function mappedGetter () {
+      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
+        return
+      }
+      if (!(val in this.$store.getters)) {
+        console.error(("[vuex] unknown getter: " + val));
+        return
+      }
+      return this.$store.getters[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+var mapActions = normalizeNamespace(function (namespace, actions) {
+  var res = {};
+  normalizeMap(actions).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    val = namespace + val;
+    res[key] = function mappedAction () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      if (namespace && !getModuleByNamespace(this.$store, 'mapActions', namespace)) {
+        return
+      }
+      return this.$store.dispatch.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+function normalizeMap (map) {
+  return Array.isArray(map)
+    ? map.map(function (key) { return ({ key: key, val: key }); })
+    : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
+}
+
+function normalizeNamespace (fn) {
+  return function (namespace, map) {
+    if (typeof namespace !== 'string') {
+      map = namespace;
+      namespace = '';
+    } else if (namespace.charAt(namespace.length - 1) !== '/') {
+      namespace += '/';
+    }
+    return fn(namespace, map)
+  }
+}
+
+function getModuleByNamespace (store, helper, namespace) {
+  var module = store._modulesNamespaceMap[namespace];
+  if (!module) {
+    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
+  }
+  return module
+}
+
+var index_esm = {
+  Store: Store,
+  install: install,
+  version: '2.3.0',
+  mapState: mapState,
+  mapMutations: mapMutations,
+  mapGetters: mapGetters,
+  mapActions: mapActions
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (index_esm);
+
+
+/***/ }),
+/* 132 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(131);
+
+
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["default"]);
+/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["default"].Store({
+    state: {
+        documentsByCorpus: [],
+        annotationsByCorpus: [],
+        corpusByDocument: [],
+        annotationsByDocument: []
+    },
+
+    actions: {
+        documentByCorpus: function documentByCorpus(_ref, documents) {
+            var commit = _ref.commit;
+
+            commit('PUSH_DOCUMENT_BY_CORPUS', documents);
+        },
+        annotationByCorpus: function annotationByCorpus(_ref2, annotations) {
+            var commit = _ref2.commit;
+
+            commit('PUSH_ANNOTATION_BY_CORPUS', annotations);
+        },
+        annotationByDocument: function annotationByDocument(_ref3, annotations) {
+            var commit = _ref3.commit;
+
+            commit('PUSH_ANNOTATION_BY_DOCUMENT', annotations);
+        },
+        corpusByDocument: function corpusByDocument(_ref4, corpora) {
+            var commit = _ref4.commit;
+
+            commit('PUSH_CORPUS_BY_DOCUMENT', corpora);
+        }
+    },
+    getters: {
+        corpusdocuments: function corpusdocuments(state) {
+            return state.documentsByCorpus;
+        },
+        corpusannotations: function corpusannotations(state) {
+            return state.annotationsByCorpus;
+        },
+        documentannotations: function documentannotations(state) {
+            return state.annotationsByDocument;
+        },
+        documentcorpus: function documentcorpus(state) {
+            return state.corpusByDocument;
+        }
+    },
+    mutations: {
+        PUSH_DOCUMENT_BY_CORPUS: function PUSH_DOCUMENT_BY_CORPUS(state, documents) {
+            state.documentsByCorpus.push(documents);
+        },
+        PUSH_ANNOTATION_BY_CORPUS: function PUSH_ANNOTATION_BY_CORPUS(state, annotations) {
+            state.annotationsByCorpus.push(annotations);
+        },
+        PUSH_ANNOTATION_BY_DOCUMENT: function PUSH_ANNOTATION_BY_DOCUMENT(state, annotations) {
+            state.annotationsByDocument.push(annotations);
+        },
+        PUSH_CORPUS_BY_DOCUMENT: function PUSH_CORPUS_BY_DOCUMENT(state, corpora) {
+            state.corpusByDocument.push(corpora);
+        }
+    }
+}));
+
+/***/ }),
+/* 133 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*!
+ * vuex-connect v1.2.0
+ * https://github.com/ktsn/vuex-connect
+ *
+ * Copyright (c) 2016 katashin
+ * Released under the MIT license
+ * https://github.com/ktsn/vuex-connect/blob/master/LICENSE
+ */
+
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var Vue = _interopDefault(__webpack_require__(10));
+var vuex = __webpack_require__(131);
+
+function camelToKebab(str) {
+  return str.replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+function merge() {
+  var target = {};
+
+  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key];
+  }
+
+  args.forEach(function (obj) {
+    Object.keys(obj).forEach(function (key) {
+      target[key] = obj[key];
+    });
+  });
+  return target;
+}
+
+function pick(obj, keys) {
+  var res = {};
+  keys.forEach(function (key) {
+    if (obj[key] !== void 0) {
+      res[key] = obj[key];
+    }
+  });
+  return res;
+}
+
+function omit(obj, keys) {
+  var res = {};
+  Object.keys(obj).forEach(function (key) {
+    if (!includes(keys, key)) {
+      res[key] = obj[key];
+    }
+  });
+  return res;
+}
+
+function mapValues(obj, f) {
+  var res = {};
+  Object.keys(obj).forEach(function (key) {
+    res[key] = f(obj[key], key);
+  });
+  return res;
+}
+
+function keys() {
+  return Object.keys(merge.apply(undefined, arguments));
+}
+
+function includes(array, item) {
+  return array.indexOf(item) > -1;
+}
+
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+var defineProperty = function (obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+};
+
+var VERSION = Number(Vue.version.split('.')[0]);
+
+var LIFECYCLE_KEYS = ['init', 'created', 'beforeCompile', 'compiled', 'ready', 'attached', 'detached', 'beforeDestroy', 'destroyed',
+
+// 2.0
+'beforeCreate', 'beforeMount', 'mounted', 'beforeUpdate', 'updated', 'activated', 'deactivated'];
+
+var createConnect = function createConnect(transform) {
+  return function () {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    var _mapValues = mapValues(options, normalizeOptions);
+
+    var _mapValues$stateToPro = _mapValues.stateToProps;
+    var stateToProps = _mapValues$stateToPro === undefined ? {} : _mapValues$stateToPro;
+    var _mapValues$gettersToP = _mapValues.gettersToProps;
+    var gettersToProps = _mapValues$gettersToP === undefined ? {} : _mapValues$gettersToP;
+    var _mapValues$actionsToP = _mapValues.actionsToProps;
+    var actionsToProps = _mapValues$actionsToP === undefined ? {} : _mapValues$actionsToP;
+    var _mapValues$actionsToE = _mapValues.actionsToEvents;
+    var actionsToEvents = _mapValues$actionsToE === undefined ? {} : _mapValues$actionsToE;
+    var _mapValues$mutationsT = _mapValues.mutationsToProps;
+    var mutationsToProps = _mapValues$mutationsT === undefined ? {} : _mapValues$mutationsT;
+    var _mapValues$mutationsT2 = _mapValues.mutationsToEvents;
+    var mutationsToEvents = _mapValues$mutationsT2 === undefined ? {} : _mapValues$mutationsT2;
+    var _mapValues$methodsToP = _mapValues.methodsToProps;
+    var methodsToProps = _mapValues$methodsToP === undefined ? {} : _mapValues$methodsToP;
+    var _mapValues$methodsToE = _mapValues.methodsToEvents;
+    var methodsToEvents = _mapValues$methodsToE === undefined ? {} : _mapValues$methodsToE;
+    var _mapValues$lifecycle = _mapValues.lifecycle;
+    var lifecycle = _mapValues$lifecycle === undefined ? {} : _mapValues$lifecycle;
+
+
+    return function (name, Component) {
+      if (typeof name !== 'string') {
+        Component = name;
+        name = getOptions(Component).name || 'wrapped-anonymous-component';
+      }
+
+      var propKeys = keys(stateToProps, gettersToProps, actionsToProps, mutationsToProps, methodsToProps);
+
+      var eventKeys = keys(actionsToEvents, mutationsToEvents, methodsToEvents);
+
+      var containerProps = omit(getOptions(Component).props || {}, propKeys);
+
+      var options = {
+        name: 'connect-' + name,
+        props: containerProps,
+        components: defineProperty({}, name, Component),
+        computed: merge(vuex.mapState(stateToProps), vuex.mapGetters(gettersToProps)),
+        methods: merge(vuex.mapActions(merge(actionsToProps, actionsToEvents)), vuex.mapMutations(merge(mutationsToProps, mutationsToEvents)), mapValues(merge(methodsToProps, methodsToEvents), bindStore))
+      };
+
+      insertLifecycleMixin(options, lifecycle);
+      insertRenderer(options, name, propKeys.concat(Object.keys(containerProps)), eventKeys);
+
+      if (transform) {
+        transform(options, lifecycle);
+      }
+
+      return Vue.extend(options);
+    };
+  };
+};
+
+function insertRenderer(options, name, propKeys, eventKeys) {
+  if (VERSION >= 2) {
+    options.render = function (h) {
+      return h(name, {
+        props: pick(this, propKeys),
+        on: pick(this, eventKeys)
+      });
+    };
+  } else {
+    var props = propKeys.map(bindProp);
+    options.template = '<' + name + ' v-ref:component ' + props.join(' ') + '></' + name + '>';
+
+    // register event listeners on the compiled hook
+    // because vue cannot recognize camelCase name on the template
+    options.compiled = function () {
+      var _this = this;
+
+      eventKeys.forEach(function (key) {
+        _this.$refs.component.$on(key, _this[key]);
+      });
+    };
+  }
+}
+
+function insertLifecycleMixin(options, lifecycle) {
+  options.mixins = [mapValues(pick(lifecycle, LIFECYCLE_KEYS), function (f) {
+    return function boundLifecycle() {
+      f.call(this, this.$store);
+    };
+  })];
+}
+
+function getOptions(Component) {
+  if (typeof Component === 'function') {
+    return Component.options;
+  }
+  return Component;
+}
+
+function bindProp(key) {
+  return ':' + camelToKebab(key) + '="' + key + '"';
+}
+
+function bindStore(fn) {
+  return function boundFunctionWithStore() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return fn.call.apply(fn, [this, this.$store].concat(args));
+  };
+}
+
+function normalizeOptions(options) {
+  return Array.isArray(options) ? options.reduce(function (obj, value) {
+    obj[value] = value;
+    return obj;
+  }, {}) : options;
+}
+
+var connect = createConnect();
+
+exports.connect = connect;
+exports.createConnect = createConnect;
 
 /***/ })
 /******/ ]);

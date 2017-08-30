@@ -2,8 +2,12 @@
 <div id="searchwrapper">
         <i v-show="corpusloading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
         <span v-show="corpusloading" class="sr-only">Loading...</span>
-    <div v-if="corpusresults.length >= 1">
-        <searchresultpanel_corpus v-for="corpusresult in corpusresults"  v-bind:corpusresult="corpusresult" :key="corpusresult" :documentsbycorpus="documentsbycorpus"></searchresultpanel_corpus>
+    <div v-if="corpusresults && corpusresults.length >= 1">
+        <searchresultpanel_corpus v-for="corpusresult in corpusresults"  v-bind:corpusresult="corpusresult" :key="corpusresult" :documentsbycorpus="documentsbycorpus" :annotationsbycorpus="annotationsbycorpus"></searchresultpanel_corpus>
+    </div>
+
+    <div v-else-if="stateDocumentCorpusresults && stateDocumentCorpusresults.length >= 1">
+        <searchresultpanel_corpus v-for="corpusresult in stateDocumentCorpusresults"  v-bind:corpusresult="corpusresult" :key="corpusresult" :documentsbycorpus="documentsbycorpus" :annotationsbycorpus="annotationsbycorpus"></searchresultpanel_corpus>
     </div>
 
     <div  v-else-if="corpusresults.length == 0 && corpussearched && !corpusloading" class="alert alert-info" role="alert">
@@ -13,8 +17,13 @@
 </template>
 
 <script>
+    import { mapState, mapActions } from 'vuex'
     export default {
-        props: ['corpusresults','corpussearched','corpusloading','documentsbycorpus'],
+        props: ['corpusresults','corpussearched','corpusloading','documentsbycorpus','annotationsbycorpus'],
+        computed:
+            mapState({
+                stateDocumentCorpusresults: state => state.corpusByDocument[0],
+            }),
         mounted() {
             console.log('CorpusResultComponent mounted.')
         }
