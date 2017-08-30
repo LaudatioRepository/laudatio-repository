@@ -1,6 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
+
+let initialState = {
+    "token": null,
+    "user": {}
+}
+
 export default new Vuex.Store({
     state: {
         documentsByCorpus: [],
@@ -21,6 +27,15 @@ export default new Vuex.Store({
         },
         corpusByDocument ({commit}, corpora) {
             commit('PUSH_CORPUS_BY_DOCUMENT', corpora)
+        },
+        clearCorpus ({commit}, corpora) {
+            commit('CLEAR_CORPUS_STATE', corpora)
+        },
+        clearDocuments ({commit}, documents) {
+            commit('CLEAR_DOCUMENT_STATE', documents)
+        },
+        clearAnnotations ({commit}, documents) {
+            commit('CLEAR_ANNOTATION_STATE', documents)
         }
     },
     getters: {
@@ -49,6 +64,25 @@ export default new Vuex.Store({
         },
         PUSH_CORPUS_BY_DOCUMENT (state, corpora) {
             state.corpusByDocument.push(corpora)
+        },
+        CLEAR_CORPUS_STATE (state, corpora) {
+            while(state.corpusByDocument.length > 0) {
+                state.corpusByDocument.pop();
+            }
+        },
+        CLEAR_DOCUMENT_STATE (state, documents) {
+            while(state.documentsByCorpus.length > 0) {
+                state.documentsByCorpus.pop();
+            }
+        },
+        CLEAR_ANNOTATION_STATE (state, annotations) {
+            while(state.annotationsByCorpus.length > 0) {
+                state.annotationsByCorpus.pop();
+            }
+            while(state.annotationsByDocument.length > 0) {
+                state.annotationsByDocument.pop();
+            }
         }
+
     },
 })

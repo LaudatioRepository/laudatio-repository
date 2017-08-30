@@ -42541,6 +42541,8 @@ var app = new Vue({
 
                 window.axios.post('api/searchapi/searchCorpus', JSON.stringify(postData)).then(function (res) {
                     _this2.corpussearched = true;
+                    var corpusRefs = [];
+
                     if (res.data.results.length > 0) {
                         _this2.corpusresults.push({
                             search: postDataCollection,
@@ -42549,6 +42551,7 @@ var app = new Vue({
                         });
 
                         for (var ri = 0; ri < res.data.results.length; ri++) {
+                            corpusRefs.push(res.data.results[ri]._id);
                             corpus_ids.push({
                                 'in_corpora': '' + res.data.results[ri]._id + ''
                             });
@@ -42557,29 +42560,36 @@ var app = new Vue({
 
                     if (corpus_ids.length > 0) {
                         var documentPostData = {
-                            corpus_ids: corpus_ids
+                            corpus_ids: corpus_ids,
+                            corpusRefs: corpusRefs
 
                             /**
                              * Get all documents contained in the corpora
                              */
                         };window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
-                            if (documentRes.data.length > 0) {
-                                console.log(documentRes.data);
-                                _this2.documentsByCorpus.push({
-                                    results: documentRes.data[0].hits.hits
+
+                            if (Object.keys(documentRes.data.results).length > 0) {
+                                var documentsByCorpus = {};
+                                Object.keys(documentRes.data.results).forEach(function (key) {
+                                    documentsByCorpus[key] = { results: documentRes.data.results[key] };
                                 });
                             }
+
+                            _this2.documentsByCorpus = documentsByCorpus;
                         });
 
                         /**
                          * get all annotations contained pro corpus
                          */
                         window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(documentPostData)).then(function (annotationRes) {
-                            if (annotationRes.data.length > 0) {
-                                _this2.annotationsByCorpus.push({
-                                    results: annotationRes.data[0].hits.hits
+
+                            if (Object.keys(annotationRes.data.results).length > 0) {
+                                var annotationsByCorpus = {};
+                                Object.keys(annotationRes.data.results).forEach(function (key) {
+                                    annotationsByCorpus[key] = { results: annotationRes.data.results[key] };
                                 });
                             }
+                            _this2.annotationsByCorpus = annotationsByCorpus;
                         });
                     }
 
@@ -42650,7 +42660,6 @@ var app = new Vue({
                             if (Object.keys(annotationRes.data.results).length > 0) {
                                 var annotationsByDocument = {};
                                 Object.keys(annotationRes.data.results).forEach(function (key) {
-                                    console.log(key + " " + annotationRes.data.results[key]);
                                     annotationsByDocument[key] = annotationRes.data.results[key];
                                 });
                             }
@@ -42659,7 +42668,7 @@ var app = new Vue({
                         });
 
                         window.axios.post('api/searchapi/getCorpusByDocument', JSON.stringify(corpusPostData)).then(function (corpusRes) {
-
+                            JSON.stringify(corpusRes);
                             if (Object.keys(corpusRes.data.results).length > 0) {
                                 var corpusByDocument = {};
                                 Object.keys(corpusRes.data.results).forEach(function (key) {
@@ -42942,10 +42951,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['corpusresults', 'corpussearched', 'corpusloading', 'documentsbycorpus', 'annotationsbycorpus'],
-    computed: __WEBPACK_IMPORTED_MODULE_0_vuex__["mapState"]({
-        stateDocumentCorpusresults: function stateDocumentCorpusresults(state) {
-            return state.corpusByDocument[0];
-        }
+    computed: __WEBPACK_IMPORTED_MODULE_0_vuex__["mapGetters"]({
+        stateDocumentCorpusresults: 'documentcorpus'
     }),
     mounted: function mounted() {
         console.log('CorpusResultComponent mounted.');
@@ -43123,10 +43130,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['documentresults', 'documentsearched', 'documentloading', 'annotationsbydocument', 'corpusbydocument'],
-    computed: __WEBPACK_IMPORTED_MODULE_0_vuex__["mapState"]({
-        statedocumentresults: function statedocumentresults(state) {
-            return state.documentsByCorpus[0];
-        }
+    computed: __WEBPACK_IMPORTED_MODULE_0_vuex__["mapGetters"]({
+        statedocumentresults: 'corpusdocuments'
     }),
     mounted: function mounted() {
         console.log('DocumentResultComponent mounted.');
@@ -43308,13 +43313,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['annotationresults', 'annotationsearched', 'annotationloading'],
-    computed: __WEBPACK_IMPORTED_MODULE_0_vuex__["mapState"]({
-        stateCorpusAnnotationresults: function stateCorpusAnnotationresults(state) {
-            return state.annotationsByCorpus[0];
-        },
-        stateDocumentAnnotationresults: function stateDocumentAnnotationresults(state) {
-            return state.annotationsByDocument[0];
-        }
+    computed: __WEBPACK_IMPORTED_MODULE_0_vuex__["mapGetters"]({
+        stateCorpusAnnotationresults: 'corpusannotations',
+        stateDocumentAnnotationresults: 'documentannotations'
     }),
     mounted: function mounted() {
         console.log('AnnotationResultComponent mounted.');
@@ -44439,9 +44440,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         browseUri: function browseUri(id) {
             return '/browse/corpus/'.concat(id);
         },
-        emitRelations: function emitRelations() {
-            this.$store.dispatch('documentByCorpus', this.documentsbycorpus);
-            this.$store.dispatch('annotationByCorpus', this.annotationsbycorpus);
+        emitCorpusRelations: function emitCorpusRelations(corpusId) {
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+            this.$store.dispatch('documentByCorpus', this.documentsbycorpus[corpusId]);
+            this.$store.dispatch('annotationByCorpus', this.annotationsbycorpus[corpusId]);
         }
     },
     mounted: function mounted() {
@@ -44477,7 +44481,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "data-target": _vm._f("addHash")(corpusresultdata._id)
       },
       on: {
-        "click": _vm.emitRelations
+        "click": function($event) {
+          _vm.emitCorpusRelations(corpusresultdata._id)
+        }
       }
     }, [_vm._v("\n                    " + _vm._s(_vm._f("arrayToString")(corpusresultdata._source.corpus_title)) + "\n                    "), _c('i', {
       staticClass: "fa fa-expand pull-right",
@@ -44707,7 +44713,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return '/browse/document/'.concat(id);
         },
         emitDocumentRelations: function emitDocumentRelations(documentId) {
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
             this.$store.dispatch('corpusByDocument', this.corpusbydocument[documentId]);
+            console.log(documentId + " " + this.corpusbydocument[documentId]);
             this.$store.dispatch('annotationByDocument', this.annotationsbydocument[documentId]);
         }
     },
@@ -44767,14 +44777,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       attrs: {
         "aria-hidden": "true"
       }
-    }), _vm._v(" Corpus:  " + _vm._s(_vm._f("arrayToString")(_vm.fromCorpus = _vm.documentresult.corpusByDocument[documentresultdata._id].corpus_title)))]) : _vm._e(), _vm._v(" "), _c('span', {
+    }), _vm._v(" Corpus:  " + _vm._s(_vm._f("arrayToString")(_vm.fromCorpus = _vm.documentresult.corpusByDocument[documentresultdata._id].corpus_title)))]) : _vm._e(), _vm._v(" "), (typeof documentresultdata._source.document_publication_publishing_date != 'undefined') ? _c('span', {
       staticClass: "iconwrapper"
     }, [_c('i', {
       staticClass: "fa fa-university",
       attrs: {
         "aria-hidden": "true"
       }
-    }), _vm._v(" Published: " + _vm._s(_vm._f("lastElement")(documentresultdata._source.document_publication_publishing_date)))]), _vm._v(" "), _c('span', {
+    }), _vm._v(" Published: " + _vm._s(_vm._f("lastElement")(documentresultdata._source.document_publication_publishing_date)))]) : _vm._e(), _vm._v(" "), _c('span', {
       staticClass: "iconwrapper"
     }, [_c('i', {
       staticClass: "fa fa-pencil-square-o",
@@ -46067,6 +46077,12 @@ var index_esm = {
 
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["default"]);
+
+var initialState = {
+    "token": null,
+    "user": {}
+};
+
 /* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["default"].Store({
     state: {
         documentsByCorpus: [],
@@ -46095,6 +46111,21 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
             var commit = _ref4.commit;
 
             commit('PUSH_CORPUS_BY_DOCUMENT', corpora);
+        },
+        clearCorpus: function clearCorpus(_ref5, corpora) {
+            var commit = _ref5.commit;
+
+            commit('CLEAR_CORPUS_STATE', corpora);
+        },
+        clearDocuments: function clearDocuments(_ref6, documents) {
+            var commit = _ref6.commit;
+
+            commit('CLEAR_DOCUMENT_STATE', documents);
+        },
+        clearAnnotations: function clearAnnotations(_ref7, documents) {
+            var commit = _ref7.commit;
+
+            commit('CLEAR_ANNOTATION_STATE', documents);
         }
     },
     getters: {
@@ -46123,6 +46154,24 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
         },
         PUSH_CORPUS_BY_DOCUMENT: function PUSH_CORPUS_BY_DOCUMENT(state, corpora) {
             state.corpusByDocument.push(corpora);
+        },
+        CLEAR_CORPUS_STATE: function CLEAR_CORPUS_STATE(state, corpora) {
+            while (state.corpusByDocument.length > 0) {
+                state.corpusByDocument.pop();
+            }
+        },
+        CLEAR_DOCUMENT_STATE: function CLEAR_DOCUMENT_STATE(state, documents) {
+            while (state.documentsByCorpus.length > 0) {
+                state.documentsByCorpus.pop();
+            }
+        },
+        CLEAR_ANNOTATION_STATE: function CLEAR_ANNOTATION_STATE(state, annotations) {
+            while (state.annotationsByCorpus.length > 0) {
+                state.annotationsByCorpus.pop();
+            }
+            while (state.annotationsByDocument.length > 0) {
+                state.annotationsByDocument.pop();
+            }
         }
     }
 }));

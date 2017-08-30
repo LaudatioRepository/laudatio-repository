@@ -17,12 +17,12 @@
 </template>
 
 <script>
-    import { mapState, mapActions } from 'vuex'
+    import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
         props: ['documentresults','documentsearched','documentloading','annotationsbydocument', 'corpusbydocument'],
         computed:
-            mapState({
-                statedocumentresults: state => state.documentsByCorpus[0],
+            mapGetters({
+                statedocumentresults: 'corpusdocuments'
             }),
         mounted() {
             console.log('DocumentResultComponent mounted.')

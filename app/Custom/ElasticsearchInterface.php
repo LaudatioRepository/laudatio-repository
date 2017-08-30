@@ -21,8 +21,8 @@ interface ElasticsearchInterface {
     public function getAnnotationByDocument($searchData,$documentData);
     public function getCorpusTitlesByDocument($searchData,$documentData);
     public function getCorpusByAnnotation($searchData);
-    public function getDocumentByCorpus($corpus_ids);
-    public function getAnnotationByCorpus($corpus_ids);
+    public function getDocumentByCorpus($searchData,$corpusData);
+    public function getAnnotationByCorpus($searchData,$corpusData);
 
 
     public function getDocumentsByAnnotation($searchData);

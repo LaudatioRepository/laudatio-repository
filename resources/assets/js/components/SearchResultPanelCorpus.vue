@@ -7,7 +7,7 @@
         <div class="panel-group" id="accordion">
             <div class="panel panel-default" v-for="corpusresultdata in corpusresult.results" v-bind:key="corpusresultdata._id">
                 <div class="panel-heading">
-                    <div class="panel-title"  data-toggle="collapse" data-parent="#accordion" v-bind:data-target="corpusresultdata._id | addHash" v-on:click="emitRelations">
+                    <div class="panel-title"  data-toggle="collapse" data-parent="#accordion" v-bind:data-target="corpusresultdata._id | addHash" v-on:click="emitCorpusRelations(corpusresultdata._id)">
                     {{ corpusresultdata._source.corpus_title | arrayToString }}
                     <i class="fa fa-expand pull-right" aria-hidden="true"></i>
                     </div>
@@ -35,9 +35,12 @@
             browseUri: function(id) {
                 return '/browse/corpus/'.concat(id);
             },
-            emitRelations: function(){
-                this.$store.dispatch('documentByCorpus',this.documentsbycorpus)
-                this.$store.dispatch('annotationByCorpus',this.annotationsbycorpus)
+            emitCorpusRelations: function(corpusId){
+                this.$store.dispatch('clearCorpus',[])
+                this.$store.dispatch('clearDocuments',[])
+                this.$store.dispatch('clearAnnotations',[])
+                this.$store.dispatch('documentByCorpus',this.documentsbycorpus[corpusId])
+                this.$store.dispatch('annotationByCorpus',this.annotationsbycorpus[corpusId])
             }
         },
         mounted() {

@@ -21,13 +21,13 @@
 </template>
 
 <script>
-    import { mapState, mapActions } from 'vuex'
+    import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
         props: ['annotationresults', 'annotationsearched','annotationloading'],
         computed:
-            mapState({
-                stateCorpusAnnotationresults: state => state.annotationsByCorpus[0],
-                stateDocumentAnnotationresults: state => state.annotationsByDocument[0],
+            mapGetters({
+                stateCorpusAnnotationresults: 'corpusannotations',
+                stateDocumentAnnotationresults: 'documentannotations',
             }),
         mounted() {
             console.log('AnnotationResultComponent mounted.')

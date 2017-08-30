@@ -11,7 +11,7 @@
                  <div :id="documentresultdata._id" class="panel-collapse collapse">
                     <div   class="panel-body">
                         <div class="iconwrapper" v-if="typeof documentresult.corpusByDocument != 'undefined' && typeof documentresult.corpusByDocument[documentresultdata._id]  != 'undefined'"><i class="fa fa-book" aria-hidden="true"></i> Corpus:  {{ fromCorpus = documentresult.corpusByDocument[documentresultdata._id].corpus_title | arrayToString }}</div>
-                        <span class="iconwrapper"><i class="fa fa-university" aria-hidden="true"></i> Published: {{documentresultdata._source.document_publication_publishing_date | lastElement}}</span>
+                        <span class="iconwrapper" v-if="typeof documentresultdata._source.document_publication_publishing_date  != 'undefined'"><i class="fa fa-university" aria-hidden="true"></i> Published: {{documentresultdata._source.document_publication_publishing_date | lastElement}}</span>
                             <span class="iconwrapper"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Annotations: {{documentresultdata._source.document_list_of_annotations_name.length}}</span>
                         <br /> <a v-bind:href="browseUri(documentresultdata._id)" ><i class="fa fa-external-link pull-right" aria-hidden="true"></i></a>
                     </div>
@@ -31,7 +31,11 @@
                 return '/browse/document/'.concat(id);
             },
             emitDocumentRelations: function(documentId){
+                this.$store.dispatch('clearCorpus',[])
+                this.$store.dispatch('clearDocuments',[])
+                this.$store.dispatch('clearAnnotations',[])
                 this.$store.dispatch('corpusByDocument',this.corpusbydocument[documentId])
+                console.log(documentId+" "+this.corpusbydocument[documentId])
                 this.$store.dispatch('annotationByDocument',this.annotationsbydocument[documentId])
             }
         },

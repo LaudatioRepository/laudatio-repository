@@ -111,6 +111,8 @@ const app = new Vue({
 
                 window.axios.post('api/searchapi/searchCorpus',JSON.stringify(postData)).then(res => {
                     this.corpussearched = true;
+                    var corpusRefs = [];
+
                     if(res.data.results.length > 0) {
                         this.corpusresults.push({
                             search: postDataCollection,
@@ -119,6 +121,7 @@ const app = new Vue({
                         })
 
                         for(var ri = 0; ri < res.data.results.length; ri++){
+                            corpusRefs.push(res.data.results[ri]._id);
                             corpus_ids.push({
                                 'in_corpora': ''+res.data.results[ri]._id+''
                             });
@@ -128,34 +131,37 @@ const app = new Vue({
 
                     if(corpus_ids.length > 0) {
                         let documentPostData = {
-                            corpus_ids: corpus_ids
+                            corpus_ids: corpus_ids,
+                            corpusRefs: corpusRefs
                         }
 
                         /**
                          * Get all documents contained in the corpora
                          */
                         window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(documentRes => {
-                            if(documentRes.data.length > 0) {
-                                console.log(documentRes.data)
-                                this.documentsByCorpus.push(
-                                    {
-                                        results: documentRes.data[0].hits.hits
-                                    }
-                                )
+
+                            if (Object.keys(documentRes.data.results).length > 0) {
+                                var documentsByCorpus = {}
+                                Object.keys(documentRes.data.results).forEach(function(key) {
+                                    documentsByCorpus[key] = {results: documentRes.data.results[key]}
+                                });
                             }
+
+                            this.documentsByCorpus = documentsByCorpus;
                         });
 
                         /**
                          * get all annotations contained pro corpus
                          */
                         window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(documentPostData)).then(annotationRes => {
-                            if(annotationRes.data.length > 0) {
-                                this.annotationsByCorpus.push(
-                                    {
-                                        results: annotationRes.data[0].hits.hits
-                                    }
-                                )
+
+                            if (Object.keys(annotationRes.data.results).length > 0) {
+                                var annotationsByCorpus = {}
+                                Object.keys(annotationRes.data.results).forEach(function(key) {
+                                    annotationsByCorpus[key] = {results: annotationRes.data.results[key]}
+                                });
                             }
+                            this.annotationsByCorpus = annotationsByCorpus;
                         });
                     }
 
@@ -238,7 +244,6 @@ const app = new Vue({
                             if (Object.keys(annotationRes.data.results).length > 0) {
                                 var annotationsByDocument = {}
                                 Object.keys(annotationRes.data.results).forEach(function(key) {
-                                    console.log(key+" "+annotationRes.data.results[key])
                                     annotationsByDocument[key] = annotationRes.data.results[key]
                                 });
                             }
@@ -248,7 +253,7 @@ const app = new Vue({
                         });
 
                         window.axios.post('api/searchapi/getCorpusByDocument', JSON.stringify(corpusPostData)).then(corpusRes => {
-
+                            JSON.stringify(corpusRes)
                             if (Object.keys(corpusRes.data.results).length > 0) {
                                 var corpusByDocument = {}
                                 Object.keys(corpusRes.data.results).forEach(function(key) {

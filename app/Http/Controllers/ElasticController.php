@@ -185,19 +185,26 @@ class ElasticController extends Controller
     }
 
 
-    public function getDocumentByCorpus(Request $request){
-        $documentResults = array();
-        $data = $this->ElasticService->getDocumentByCorpus($request->corpus_ids);
+    public function getDocumentsByCorpus(Request $request){
+        $result = $this->ElasticService->getDocumentByCorpus($request->corpus_ids,$request->corpusRefs);
+        $resultdata =  array(
+            'error' => false,
+            'results' => $result
+        );
         return response(
-            $data,
+            $resultdata,
             200
         );
     }
 
     public function getAnnotationByCorpus(Request $request){
-        $data = $this->ElasticService->getAnnotationByCorpus($request->corpus_ids);
+        $result = $this->ElasticService->getAnnotationByCorpus($request->corpus_ids,$request->corpusRefs);
+        $resultdata =  array(
+            'error' => false,
+            'results' => $result
+        );
         return response(
-            $data,
+            $resultdata,
             200
         );
     }
