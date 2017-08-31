@@ -69,11 +69,11 @@ const app = new Vue({
             this.searches.push(search.generalSearchTerm);
             let postData = {
                 searchData: {
-                    fields: ["corpus_title","corpus_editor_forename","corpus_editor_surname","corpus_publication_publisher","corpus_documents","corpus_encoding_format","corpus_encoding_tool","corpus_encoding_project_description","annotation_name","annotation_type","corpus_annotator_forename","corpus_annotator_surname"],
+                    fields: ["corpus_title","corpus_editor_forename","corpus_editor_surname","corpus_publication_publisher","corpus_documents","corpus_encoding_format","corpus_encoding_tool","corpus_encoding_project_description","annotation_name","annotation_type","corpus_annotator_forename","corpus_annotator_surname","annotation_tag_description","corpus_encoding_project_description","corpus_publication_license_description"],
                     query: ''+search.generalSearchTerm+''
                 }
             };
-
+            console.log("POSTDATA: "+JSON.stringify(postData))
             window.axios.post('api/searchapi/searchGeneral',JSON.stringify(postData)).then(res => {
                 if(res.data.results.length > 0) {
                     this.corpusresults.push({
@@ -107,7 +107,7 @@ const app = new Vue({
                     searchData: postDataCollection,
                     scope: 'corpus'
                 };
-                console.log("POSTDATA: "+JSON.stringify(postData))
+
                 let corpus_ids = [];
 
                 window.axios.post('api/searchapi/searchCorpus',JSON.stringify(postData)).then(res => {

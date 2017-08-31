@@ -224,16 +224,12 @@ class ElasticService implements ElasticsearchInterface
         //return view("search.searchresult",["took" => $milliseconds, "maxScore" => $maxScore, "results" => $results['hits']['hits']]);
     }
 
-    /** POST search endpoint for general searches
-     * @param Request $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
-     */
+
     public function searchGeneral($searchData)
     {
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
         $queryBody = $queryBuilder->buildMultiMatchQuery($searchData);
-
         $params = [
             'size' => 1000,
             'index' => '_all',
