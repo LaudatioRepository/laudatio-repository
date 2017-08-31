@@ -15,7 +15,14 @@
 
         <label>Year <input  placeholder="From" type="text" name="corpus-year-from" v-model="corpusSearchData.corpus_publication_publication_date" />
         <input  placeholder="To" type="text" name="corpus-year-to" v-model="corpusSearchData.corpusYearTo" /></label>
+        <label>Exact <input type="checkbox" name="corpusyeartype" value="exact" v-model="corpusSearchData.corpusyeartype" /></label>
+		 <label>Range <input type="checkbox" name="corpusyeartype" value="range" v-model="corpusSearchData.corpusyeartype"  /></label>
+
         <label>Size <input placeholder="From"  type="text" name="corpus-size-from" v-model="corpusSearchData.corpus_size_value" /> to <input  placeholder="To" type="text" name="corpus-size-to" v-model="corpusSearchData.corpusSizeTo" /></label>
+        <label>Exact <input type="checkbox" name="corpussizetype" value="exact" v-model="corpusSearchData.corpussizetype"/></label>
+        <label>Range <input type="checkbox" name="corpussizetype" value="range" v-model="corpusSearchData.corpussizetype"/></label>
+
+        <br />
         <label>Language <input placeholder="Corpus language"  type="text" name="corpus-language" v-model="corpusSearchData.corpus_languages_language" /></label>
         <label>Format <input placeholder="Corpus format"  type="text" name="corpus-format" v-model="corpusSearchData.corpus_encoding_format" /></label>
         <button class="btn btn-primary corpus-search-submit-button" @click="emitCorpusData">Search corpora</button>
@@ -34,6 +41,8 @@
                     corpus_editor_surname: '',
                     corpus_publication_publication_date: '',
                     corpusYearTo: '',
+                    corpusyeartype: '',
+                    corpussizetype: '',
                     corpus_size_value: '',
                     corpusSizeTo: '',
                     corpus_languages_language: '',

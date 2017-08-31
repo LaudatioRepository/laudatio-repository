@@ -12,7 +12,12 @@
             <label>Author Surname <input type="text" name="document-author" v-model="documentSearchData.document_author_surname" /></label>
             <label>Place <input type="text" name="document-publication-place" v-model="documentSearchData.document_publication_place" /></label>
             <label>Year <input type="text" name="document-publication-publishing-date-from" v-model="documentSearchData.document_publication_publishing_date_from" /> to <input type="text" name="document-publication-publishing-date-to" v-model="documentSearchData.document_publication_publishing_date_to"  /></label>
+            <label>Exact <input type="checkbox" name="documentyeartype" value="exact" v-model="documentSearchData.documentyeartype" /></label>
+            <label>Range <input type="checkbox" name="documentyeartype" value="range"   v-model="documentSearchData.documentyeartype" /></label>
             <label>Size <input type="text" name="document-size-extent-from" v-model="documentSearchData.document_size_extent_from"  /> to <input type="text" name="document-size-extent-to" v-model="documentSearchData.document_size_extent_to" /></label>
+            <label>Exact <input type="checkbox" name="documentsizetype" value="exact" v-model="documentSearchData.documentsizetype"  /></label>
+            <label>Range <input type="checkbox" name="documentsizetype" value="range" v-model="documentSearchData.documentsizetype"  /></label>
+            <br />
             <label>Language <input type="text" name="document-languages-language" v-model="documentSearchData.document_languages_language"  /></label>
             <button class="btn btn-primary document-search-submit-button" @click="emitDocumentData">Search documents</button>
         </div>
@@ -30,6 +35,8 @@
                     document_publication_place: '',
                     document_publication_publishing_date_from: '',
                     document_publication_publishing_date_to: '',
+                    documentyeartype: '',
+                    documentsizetype: '',
                     document_size_extent_from: '',
                     document_size_extent_to: '',
                     document_languages_language: '',

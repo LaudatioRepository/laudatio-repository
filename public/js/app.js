@@ -43703,6 +43703,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -43714,6 +43721,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 corpus_editor_surname: '',
                 corpus_publication_publication_date: '',
                 corpusYearTo: '',
+                corpusyeartype: '',
+                corpussizetype: '',
                 corpus_size_value: '',
                 corpusSizeTo: '',
                 corpus_languages_language: '',
@@ -43867,6 +43876,72 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.corpusSearchData.corpusYearTo = $event.target.value
       }
     }
+  })]), _vm._v(" "), _c('label', [_vm._v("Exact "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.corpusSearchData.corpusyeartype),
+      expression: "corpusSearchData.corpusyeartype"
+    }],
+    attrs: {
+      "type": "checkbox",
+      "name": "corpusyeartype",
+      "value": "exact"
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.corpusSearchData.corpusyeartype) ? _vm._i(_vm.corpusSearchData.corpusyeartype, "exact") > -1 : (_vm.corpusSearchData.corpusyeartype)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.corpusSearchData.corpusyeartype,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = "exact",
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.corpusSearchData.corpusyeartype = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.corpusSearchData.corpusyeartype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.corpusSearchData.corpusyeartype = $$c
+        }
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Range "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.corpusSearchData.corpusyeartype),
+      expression: "corpusSearchData.corpusyeartype"
+    }],
+    attrs: {
+      "type": "checkbox",
+      "name": "corpusyeartype",
+      "value": "range"
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.corpusSearchData.corpusyeartype) ? _vm._i(_vm.corpusSearchData.corpusyeartype, "range") > -1 : (_vm.corpusSearchData.corpusyeartype)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.corpusSearchData.corpusyeartype,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = "range",
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.corpusSearchData.corpusyeartype = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.corpusSearchData.corpusyeartype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.corpusSearchData.corpusyeartype = $$c
+        }
+      }
+    }
   })]), _vm._v(" "), _c('label', [_vm._v("Size "), _c('input', {
     directives: [{
       name: "model",
@@ -43909,7 +43984,73 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.corpusSearchData.corpusSizeTo = $event.target.value
       }
     }
-  })]), _vm._v(" "), _c('label', [_vm._v("Language "), _c('input', {
+  })]), _vm._v(" "), _c('label', [_vm._v("Exact "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.corpusSearchData.corpussizetype),
+      expression: "corpusSearchData.corpussizetype"
+    }],
+    attrs: {
+      "type": "checkbox",
+      "name": "corpussizetype",
+      "value": "exact"
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.corpusSearchData.corpussizetype) ? _vm._i(_vm.corpusSearchData.corpussizetype, "exact") > -1 : (_vm.corpusSearchData.corpussizetype)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.corpusSearchData.corpussizetype,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = "exact",
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.corpusSearchData.corpussizetype = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.corpusSearchData.corpussizetype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.corpusSearchData.corpussizetype = $$c
+        }
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Range "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.corpusSearchData.corpussizetype),
+      expression: "corpusSearchData.corpussizetype"
+    }],
+    attrs: {
+      "type": "checkbox",
+      "name": "corpussizetype",
+      "value": "range"
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.corpusSearchData.corpussizetype) ? _vm._i(_vm.corpusSearchData.corpussizetype, "range") > -1 : (_vm.corpusSearchData.corpussizetype)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.corpusSearchData.corpussizetype,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = "range",
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.corpusSearchData.corpussizetype = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.corpusSearchData.corpussizetype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.corpusSearchData.corpussizetype = $$c
+        }
+      }
+    }
+  })]), _vm._v(" "), _c('br'), _vm._v(" "), _c('label', [_vm._v("Language "), _c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -44033,6 +44174,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -44044,6 +44190,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 document_publication_place: '',
                 document_publication_publishing_date_from: '',
                 document_publication_publishing_date_to: '',
+                documentyeartype: '',
+                documentsizetype: '',
                 document_size_extent_from: '',
                 document_size_extent_to: '',
                 document_languages_language: ''
@@ -44192,6 +44340,72 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.documentSearchData.document_publication_publishing_date_to = $event.target.value
       }
     }
+  })]), _vm._v(" "), _c('label', [_vm._v("Exact "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.documentyeartype),
+      expression: "documentSearchData.documentyeartype"
+    }],
+    attrs: {
+      "type": "checkbox",
+      "name": "documentyeartype",
+      "value": "exact"
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.documentSearchData.documentyeartype) ? _vm._i(_vm.documentSearchData.documentyeartype, "exact") > -1 : (_vm.documentSearchData.documentyeartype)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.documentSearchData.documentyeartype,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = "exact",
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.documentSearchData.documentyeartype = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.documentSearchData.documentyeartype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.documentSearchData.documentyeartype = $$c
+        }
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Range "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.documentyeartype),
+      expression: "documentSearchData.documentyeartype"
+    }],
+    attrs: {
+      "type": "checkbox",
+      "name": "documentyeartype",
+      "value": "range"
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.documentSearchData.documentyeartype) ? _vm._i(_vm.documentSearchData.documentyeartype, "range") > -1 : (_vm.documentSearchData.documentyeartype)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.documentSearchData.documentyeartype,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = "range",
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.documentSearchData.documentyeartype = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.documentSearchData.documentyeartype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.documentSearchData.documentyeartype = $$c
+        }
+      }
+    }
   })]), _vm._v(" "), _c('label', [_vm._v("Size "), _c('input', {
     directives: [{
       name: "model",
@@ -44232,7 +44446,73 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.documentSearchData.document_size_extent_to = $event.target.value
       }
     }
-  })]), _vm._v(" "), _c('label', [_vm._v("Language "), _c('input', {
+  })]), _vm._v(" "), _c('label', [_vm._v("Exact "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.documentsizetype),
+      expression: "documentSearchData.documentsizetype"
+    }],
+    attrs: {
+      "type": "checkbox",
+      "name": "documentsizetype",
+      "value": "exact"
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.documentSearchData.documentsizetype) ? _vm._i(_vm.documentSearchData.documentsizetype, "exact") > -1 : (_vm.documentSearchData.documentsizetype)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.documentSearchData.documentsizetype,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = "exact",
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.documentSearchData.documentsizetype = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.documentSearchData.documentsizetype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.documentSearchData.documentsizetype = $$c
+        }
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Range "), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.documentSearchData.documentsizetype),
+      expression: "documentSearchData.documentsizetype"
+    }],
+    attrs: {
+      "type": "checkbox",
+      "name": "documentsizetype",
+      "value": "range"
+    },
+    domProps: {
+      "checked": Array.isArray(_vm.documentSearchData.documentsizetype) ? _vm._i(_vm.documentSearchData.documentsizetype, "range") > -1 : (_vm.documentSearchData.documentsizetype)
+    },
+    on: {
+      "__c": function($event) {
+        var $$a = _vm.documentSearchData.documentsizetype,
+          $$el = $event.target,
+          $$c = $$el.checked ? (true) : (false);
+        if (Array.isArray($$a)) {
+          var $$v = "range",
+            $$i = _vm._i($$a, $$v);
+          if ($$c) {
+            $$i < 0 && (_vm.documentSearchData.documentsizetype = $$a.concat($$v))
+          } else {
+            $$i > -1 && (_vm.documentSearchData.documentsizetype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
+          }
+        } else {
+          _vm.documentSearchData.documentsizetype = $$c
+        }
+      }
+    }
+  })]), _vm._v(" "), _c('br'), _vm._v(" "), _c('label', [_vm._v("Language "), _c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -44820,7 +45100,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$store.dispatch('clearDocuments', []);
             this.$store.dispatch('clearAnnotations', []);
             this.$store.dispatch('corpusByDocument', this.corpusbydocument[documentId]);
-            console.log(documentId + " " + this.corpusbydocument[documentId]);
             this.$store.dispatch('annotationByDocument', this.annotationsbydocument[documentId]);
         }
     },

@@ -8510,7 +8510,7 @@ button.close {
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
-  min-height: 370px;
+  min-height: 430px;
   max-width: 40em;
 }
 
@@ -8530,7 +8530,7 @@ button.close {
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
-  min-height: 370px;
+  min-height: 430px;
   border: rgba(147, 128, 108, 0.1) 1px solid;
   min-width: 40em;
 }
@@ -8546,7 +8546,7 @@ button.close {
   border: rgba(147, 128, 108, 0.1) 1px solid;
   border-radius: 5px;
   margin-bottom: 20px;
-  min-height: 330px;
+  min-height: 380px;
   max-width: 40em;
 }
 
@@ -8561,7 +8561,7 @@ button.close {
   border-radius: 5px;
   margin-bottom: 20px;
   border: rgba(147, 128, 108, 0.1) 1px solid;
-  min-height: 330px;
+  min-height: 380px;
   min-width: 40em;
 }
 
