@@ -42537,7 +42537,7 @@ var app = new Vue({
                     searchData: postDataCollection,
                     scope: 'corpus'
                 };
-
+                console.log("POSTDATA: " + JSON.stringify(postData));
                 var corpus_ids = [];
 
                 window.axios.post('api/searchapi/searchCorpus', JSON.stringify(postData)).then(function (res) {
@@ -44188,11 +44188,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 document_author_forename: '',
                 document_author_surname: '',
                 document_publication_place: '',
-                document_publication_publishing_date_from: '',
+                document_publication_publishing_date: '',
                 document_publication_publishing_date_to: '',
                 documentyeartype: '',
                 documentsizetype: '',
-                document_size_extent_from: '',
+                document_size_extent: '',
                 document_size_extent_to: '',
                 document_languages_language: ''
             },
@@ -44304,20 +44304,20 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.documentSearchData.document_publication_publishing_date_from),
-      expression: "documentSearchData.document_publication_publishing_date_from"
+      value: (_vm.documentSearchData.document_publication_publishing_date),
+      expression: "documentSearchData.document_publication_publishing_date"
     }],
     attrs: {
       "type": "text",
       "name": "document-publication-publishing-date-from"
     },
     domProps: {
-      "value": (_vm.documentSearchData.document_publication_publishing_date_from)
+      "value": (_vm.documentSearchData.document_publication_publishing_date)
     },
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.documentSearchData.document_publication_publishing_date_from = $event.target.value
+        _vm.documentSearchData.document_publication_publishing_date = $event.target.value
       }
     }
   }), _vm._v(" to "), _c('input', {
@@ -44410,20 +44410,20 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.documentSearchData.document_size_extent_from),
-      expression: "documentSearchData.document_size_extent_from"
+      value: (_vm.documentSearchData.document_size_extent),
+      expression: "documentSearchData.document_size_extent"
     }],
     attrs: {
       "type": "text",
       "name": "document-size-extent-from"
     },
     domProps: {
-      "value": (_vm.documentSearchData.document_size_extent_from)
+      "value": (_vm.documentSearchData.document_size_extent)
     },
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.documentSearchData.document_size_extent_from = $event.target.value
+        _vm.documentSearchData.document_size_extent = $event.target.value
       }
     }
   }), _vm._v(" to "), _c('input', {

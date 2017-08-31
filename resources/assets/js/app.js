@@ -107,7 +107,7 @@ const app = new Vue({
                     searchData: postDataCollection,
                     scope: 'corpus'
                 };
-
+                console.log("POSTDATA: "+JSON.stringify(postData))
                 let corpus_ids = [];
 
                 window.axios.post('api/searchapi/searchCorpus',JSON.stringify(postData)).then(res => {
