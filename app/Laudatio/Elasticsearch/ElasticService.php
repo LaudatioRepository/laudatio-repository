@@ -431,7 +431,7 @@ class ElasticService implements ElasticsearchInterface
         return $results['hits']['hits'][0];
     }
 
-    public function getDocumentsByAnnotation($searchData){
+    public function getDocumentsByAnnotation2($searchData){
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
         foreach($searchData as $queryData){
@@ -449,6 +449,74 @@ class ElasticService implements ElasticsearchInterface
 
         }//end foreach queries
         return $results['hits']['hits'][0];
+    }
+
+    public function getDocumentsByAnnotation($searchData,$annotationData){
+        $resultData = array();
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $counter = 0;
+        foreach ($searchData as $id => $annotationDatum) {
+            $results = null;
+            if(!isset($resultData[$id])){
+                $resultData[$id] = array();
+            }
+
+            foreach($annotationDatum as $queryData){
+                $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+                $params = [
+                    'size' => 1000,
+                    'index' => 'document',
+                    'type' => 'document',
+                    'body' => $queryBody,
+                    '_source_exclude' => ['message'],
+                    'filter_path' => ['hits.hits']
+                ];
+
+                $results = Elasticsearch::search($params);
+                
+                if(count($results['hits']['hits']) > 0){
+                    array_push($resultData[$id],$results['hits']['hits'][0]);
+                }
+                else{
+                    $resultData[$id] = array();
+                }
+            }
+        }
+        return $resultData;
+    }
+
+
+    public function getCorporaByAnnotation($searchData,$annotationData){
+        $resultData = array();
+
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $counter = 0;
+        foreach ($searchData as $id => $annotationDatum) {
+            foreach($annotationDatum as $queryData){
+                $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+                $params = [
+                    'size' => 1000,
+                    'index' => 'corpus',
+                    'type' => 'corpus',
+                    'body' => $queryBody,
+                    '_source_exclude' => ['message'],
+                    'filter_path' => ['hits.hits']
+                ];
+
+                $results = Elasticsearch::search($params);
+
+                if(count($results['hits']['hits']) > 0){
+                    $resultData[$id] = $results['hits']['hits'];
+                }
+                else{
+                    $resultData[$id] = array();
+                }
+            }//end foreach queries
+        }
+
+        return $resultData;
     }
 
     /**

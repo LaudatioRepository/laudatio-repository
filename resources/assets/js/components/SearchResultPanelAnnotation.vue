@@ -6,7 +6,7 @@
         <div class="panel-group" id="accordion">
             <div class="panel panel-default" v-for="annotationresultdata in annotationresult.results" v-bind:key="annotationresultdata._id">
                 <div class="panel-heading">
-                    <div class="panel-title"  data-toggle="collapse" data-parent="#accordion" v-bind:data-target="annotationresultdata._id | addHash">
+                    <div class="panel-title"  data-toggle="collapse" data-parent="#accordion" v-bind:data-target="annotationresultdata._id | addHash"  v-on:click="emitAnnotationRelations(annotationresultdata._id)">
                         {{ annotationtitle = annotationresultdata._source.preparation_title | arrayToString  }}
                         <span class="badge" v-if="typeof annotationresult.documentsByAnnotation != 'undefined' && typeof annotationresult.documentsByAnnotation[annotationtitle] != 'undefined'">{{ inDocuments = annotationresult.documentsByAnnotation[annotationtitle] }}</span> <i class="fa fa-external-link pull-left" aria-hidden="true"></i>
                     <i class="fa fa-expand pull-right" aria-hidden="true"></i>
@@ -42,10 +42,17 @@
 
 <script>
     export default {
-        props: ['annotationresult'],
+        props: ['annotationresult','corpusbyannotation','documentsbyannotation'],
         methods: {
             browseUri: function(id,type) {
                 return '/browse/'+type+'/'.concat(id);
+            },
+            emitAnnotationRelations: function(annotationId) {
+                this.$store.dispatch('clearCorpus',[])
+                this.$store.dispatch('clearDocuments',[])
+                this.$store.dispatch('clearAnnotations',[])
+                this.$store.dispatch('corpusByAnnotation',this.corpusbyannotation[annotationId])
+                this.$store.dispatch('documentByAnnotation',this.documentsbyannotation[annotationId])
             }
         },
         mounted() {

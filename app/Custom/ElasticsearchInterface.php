@@ -25,7 +25,9 @@ interface ElasticsearchInterface {
     public function getAnnotationByCorpus($searchData,$corpusData);
 
 
-    public function getDocumentsByAnnotation($searchData);
+    public function getDocumentsByAnnotation($searchData,$annotationData);
+    public function getCorporaByAnnotation($searchData,$annotationData);
+
     public function createIndex($name);
     public function deleteIndex($indexId);
     public function truncateIndex($index);

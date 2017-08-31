@@ -10,6 +10,10 @@
         <searchresultpanel_corpus v-for="corpusresult in stateDocumentCorpusresults"  v-bind:corpusresult="corpusresult" :key="corpusresult" :documentsbycorpus="documentsbycorpus" :annotationsbycorpus="annotationsbycorpus"></searchresultpanel_corpus>
     </div>
 
+    <div v-else-if="stateAnnotationCorpusresults && stateAnnotationCorpusresults.length >= 1">
+        <searchresultpanel_corpus v-for="corpusresult in stateAnnotationCorpusresults"  v-bind:corpusresult="corpusresult" :key="corpusresult" :documentsbycorpus="documentsbycorpus" :annotationsbycorpus="annotationsbycorpus"></searchresultpanel_corpus>
+    </div>
+
     <div  v-else-if="corpusresults.length == 0 && corpussearched && !corpusloading" class="alert alert-info" role="alert">
         <strong>Your search returned no results!</strong>
     </div>
@@ -22,7 +26,8 @@
         props: ['corpusresults','corpussearched','corpusloading','documentsbycorpus','annotationsbycorpus'],
         computed:
             mapGetters({
-                stateDocumentCorpusresults: 'documentcorpus'
+                stateDocumentCorpusresults: 'documentcorpus',
+                stateAnnotationCorpusresults: 'annotationcorpus'
             }),
         mounted() {
             console.log('CorpusResultComponent mounted.')

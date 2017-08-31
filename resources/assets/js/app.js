@@ -55,6 +55,7 @@ const app = new Vue({
         corpusByDocument: [],
         annotationsByDocument: [],
         documentsByAnnotation: [],
+        corpusByAnnotation: [],
         corpussearched: false,
         corpusloading: false,
         documentsearched: false,
@@ -337,60 +338,116 @@ const app = new Vue({
                     if(res.data.results.length > 0) {
                         var annotationterms = [];
 
-                        var documentRefs = [];
-                        var corpusRefs = [];
+                        var documentRefs = {};
+                        var corpusRefs = {};
                         var annotationRefs = [];
 
                         for(var j = 0; j< res.data.results.length; j++) {
 
                             annotationRefs.push(res.data.results[j]._id);
                             var id = res.data.results[j]._id;
-                            if(typeof res.data.results[j]._source.in_corpora != 'undefined'){
-                                corpusRefs.push(
-                                    res.data.results[j]._source.in_corpora
+
+                            if(typeof documentRefs[id] == 'undefined'){
+                                documentRefs[id] = []
+                            }
+
+                            if(typeof corpusRefs[id] == 'undefined'){
+                                corpusRefs[id] = []
+                            }
+
+
+                            if(typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length > 0){
+                                for(var jid = 0; jid < res.data.results[j]._source.in_documents.length; jid++) {
+                                    documentRefs[id].push(
+                                        {
+                                            '_id': ''+res.data.results[j]._source.in_documents[jid]+''
+                                        }
+                                    );
+                                }
+                            }
+                            else if(typeof  res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length == 0 || typeof  res.data.results[j]._source.in_documents == 'undefined'){
+                                documentRefs[id].push(
+                                    {
+                                        '_id': '0'
+                                    }
                                 );
                             }
 
-                            if(typeof res.data.results[j]._source.in_documents != 'undefined'){
-                                documentRefs.push(
-                                    res.data.results[j]._source.in_documents
+
+
+                            if(typeof  res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length > 0){
+                                for(var cid = 0; cid < res.data.results[j]._source.in_corpora.length; cid++) {
+                                    corpusRefs[id].push(
+                                        {
+                                            '_id': ''+res.data.results[j]._source.in_corpora[cid]+''
+                                        }
+                                    );
+                                }
+                            }
+                            else if(typeof  res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length == 0 || typeof  res.data.results[j]._source.in_corpora == 'undefined'){
+                                corpusRefs[id].push(
+                                    {
+                                        '_id': '0'
+                                    }
                                 );
                             }
 
-                            postAnnotationData.corpusRefs =  corpusRefs
-                            postAnnotationData.documentRefs = documentRefs
-                            postAnnotationData.annotationRefs = annotationRefs
 
 
 
                         }//end for annotationResults
+                        postAnnotationData.corpusRefs =  corpusRefs
+                        postAnnotationData.documentRefs = documentRefs
+                        postAnnotationData.annotationRefs = annotationRefs
+
                         window.axios.post('api/searchapi/getDocumentsByAnnotation',postAnnotationData).then(documentsByAnnotationRes => {
-                            var corpusByAnnotation = []
-                            var documentsByAnnotation = []
-
                             this.annotationsearched = true;
-                            if (Object.keys(documentsByAnnotationRes.data).length > 0) {
-                                if (Object.keys(documentsByAnnotationRes.data.corpusResult).length > 0) {
-                                    Object.keys(documentsByAnnotationRes.data.corpusResult).forEach(function (key) {
-                                        corpusByAnnotation[key] = documentsByAnnotationRes.data.corpusResult[key]
 
-                                    });
-                                }
+                            if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
+                                var documentsByAnnotation = {}
+                                Object.keys(documentsByAnnotationRes.data.results).forEach(function(key) {
+                                    documentsByAnnotation[key] = {results: documentsByAnnotationRes.data.results[key]}
+                                });
 
-                                if (Object.keys(documentsByAnnotationRes.data.documentResult).length > 0) {
-                                    Object.keys(documentsByAnnotationRes.data.documentResult).forEach(function (key) {
-                                        documentsByAnnotation[key] = documentsByAnnotationRes.data.documentResult[key]
+                                this.documentsByAnnotation = documentsByAnnotation;
 
-                                    });
-                                }
+                                /*
+                                this.annotationresults.push({
+                                    search: annotationSearchObject.preparation_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                });
+                                */
+                            }
+                            else {
+                                /*
+                                this.annotationresults.push({
+                                    search: annotationSearchObject.preparation_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                });
+                                */
+                            }
+
+                            this.annotationloading = false;
+                        });
+
+
+                        window.axios.post('api/searchapi/getCorporaByAnnotation',postAnnotationData).then(corpussByAnnotationRes => {
+
+
+                            if (Object.keys(corpussByAnnotationRes.data.results).length > 0) {
+                                var corpusByAnnotation = {}
+                                Object.keys(corpussByAnnotationRes.data.results).forEach(function(key) {
+                                    corpusByAnnotation[key] = {results: corpussByAnnotationRes.data.results[key]}
+                                });
+
+                                this.corpusByAnnotation = corpusByAnnotation;
 
                                 this.annotationresults.push({
                                     search: annotationSearchObject.preparation_title,
                                     results: res.data.results,
                                     total: res.data.total,
-                                    corpusByAnnotation: corpusByAnnotation,
-                                    documentsByAnnotation: documentsByAnnotation
-                                    //documentsByAnnotation: []
                                 });
                             }
                             else {
@@ -398,12 +455,13 @@ const app = new Vue({
                                     search: annotationSearchObject.preparation_title,
                                     results: res.data.results,
                                     total: res.data.total,
-                                    corpusByAnnotation: [],
-                                    documentsByAnnotation: []
                                 });
                             }
+
                             this.annotationloading = false;
                         });
+
+
                     }
                 });
             }

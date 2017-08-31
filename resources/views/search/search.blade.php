@@ -32,7 +32,7 @@
                             <searchresultheader_annotation :annotationresults="annotationresults"></searchresultheader_annotation>
                         </div>
                         <div class="Annotation-result-body">
-                            <searchwrapper_annotation :annotationresults="annotationresults" :annotationsearched="annotationsearched" :annotationloading="annotationloading"></searchwrapper_annotation>
+                            <searchwrapper_annotation :annotationresults="annotationresults" :annotationsearched="annotationsearched" :annotationloading="annotationloading" :corpusbyannotation="corpusByAnnotation" :documentsbyannotation="documentsByAnnotation"></searchwrapper_annotation>
                         </div>
                     </div>
                 </div>

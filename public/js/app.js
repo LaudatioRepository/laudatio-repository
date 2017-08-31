@@ -42487,6 +42487,7 @@ var app = new Vue({
         corpusByDocument: [],
         annotationsByDocument: [],
         documentsByAnnotation: [],
+        corpusByAnnotation: [],
         corpussearched: false,
         corpusloading: false,
         documentsearched: false,
@@ -42740,61 +42741,105 @@ var app = new Vue({
                     if (res.data.results.length > 0) {
                         var annotationterms = [];
 
-                        var documentRefs = [];
-                        var corpusRefs = [];
+                        var documentRefs = {};
+                        var corpusRefs = {};
                         var annotationRefs = [];
 
                         for (var j = 0; j < res.data.results.length; j++) {
 
                             annotationRefs.push(res.data.results[j]._id);
                             var id = res.data.results[j]._id;
-                            if (typeof res.data.results[j]._source.in_corpora != 'undefined') {
-                                corpusRefs.push(res.data.results[j]._source.in_corpora);
+
+                            if (typeof documentRefs[id] == 'undefined') {
+                                documentRefs[id] = [];
                             }
 
-                            if (typeof res.data.results[j]._source.in_documents != 'undefined') {
-                                documentRefs.push(res.data.results[j]._source.in_documents);
+                            if (typeof corpusRefs[id] == 'undefined') {
+                                corpusRefs[id] = [];
                             }
 
-                            postAnnotationData.corpusRefs = corpusRefs;
-                            postAnnotationData.documentRefs = documentRefs;
-                            postAnnotationData.annotationRefs = annotationRefs;
+                            if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length > 0) {
+                                for (var jid = 0; jid < res.data.results[j]._source.in_documents.length; jid++) {
+                                    documentRefs[id].push({
+                                        '_id': '' + res.data.results[j]._source.in_documents[jid] + ''
+                                    });
+                                }
+                            } else if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length == 0 || typeof res.data.results[j]._source.in_documents == 'undefined') {
+                                documentRefs[id].push({
+                                    '_id': '0'
+                                });
+                            }
+
+                            if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length > 0) {
+                                for (var cid = 0; cid < res.data.results[j]._source.in_corpora.length; cid++) {
+                                    corpusRefs[id].push({
+                                        '_id': '' + res.data.results[j]._source.in_corpora[cid] + ''
+                                    });
+                                }
+                            } else if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length == 0 || typeof res.data.results[j]._source.in_corpora == 'undefined') {
+                                corpusRefs[id].push({
+                                    '_id': '0'
+                                });
+                            }
                         } //end for annotationResults
+                        postAnnotationData.corpusRefs = corpusRefs;
+                        postAnnotationData.documentRefs = documentRefs;
+                        postAnnotationData.annotationRefs = annotationRefs;
+
                         window.axios.post('api/searchapi/getDocumentsByAnnotation', postAnnotationData).then(function (documentsByAnnotationRes) {
-                            var corpusByAnnotation = [];
-                            var documentsByAnnotation = [];
-
                             _this4.annotationsearched = true;
-                            if (Object.keys(documentsByAnnotationRes.data).length > 0) {
-                                if (Object.keys(documentsByAnnotationRes.data.corpusResult).length > 0) {
-                                    Object.keys(documentsByAnnotationRes.data.corpusResult).forEach(function (key) {
-                                        corpusByAnnotation[key] = documentsByAnnotationRes.data.corpusResult[key];
+
+                            if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
+                                var documentsByAnnotation = {};
+                                Object.keys(documentsByAnnotationRes.data.results).forEach(function (key) {
+                                    documentsByAnnotation[key] = { results: documentsByAnnotationRes.data.results[key] };
+                                });
+
+                                _this4.documentsByAnnotation = documentsByAnnotation;
+
+                                /*
+                                this.annotationresults.push({
+                                    search: annotationSearchObject.preparation_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                });
+                                */
+                            } else {
+                                    /*
+                                    this.annotationresults.push({
+                                        search: annotationSearchObject.preparation_title,
+                                        results: res.data.results,
+                                        total: res.data.total,
                                     });
+                                    */
                                 }
 
-                                if (Object.keys(documentsByAnnotationRes.data.documentResult).length > 0) {
-                                    Object.keys(documentsByAnnotationRes.data.documentResult).forEach(function (key) {
-                                        documentsByAnnotation[key] = documentsByAnnotationRes.data.documentResult[key];
-                                    });
-                                }
+                            _this4.annotationloading = false;
+                        });
+
+                        window.axios.post('api/searchapi/getCorporaByAnnotation', postAnnotationData).then(function (corpussByAnnotationRes) {
+
+                            if (Object.keys(corpussByAnnotationRes.data.results).length > 0) {
+                                var corpusByAnnotation = {};
+                                Object.keys(corpussByAnnotationRes.data.results).forEach(function (key) {
+                                    corpusByAnnotation[key] = { results: corpussByAnnotationRes.data.results[key] };
+                                });
+
+                                _this4.corpusByAnnotation = corpusByAnnotation;
 
                                 _this4.annotationresults.push({
                                     search: annotationSearchObject.preparation_title,
                                     results: res.data.results,
-                                    total: res.data.total,
-                                    corpusByAnnotation: corpusByAnnotation,
-                                    documentsByAnnotation: documentsByAnnotation
-                                    //documentsByAnnotation: []
+                                    total: res.data.total
                                 });
                             } else {
                                 _this4.annotationresults.push({
                                     search: annotationSearchObject.preparation_title,
                                     results: res.data.results,
-                                    total: res.data.total,
-                                    corpusByAnnotation: [],
-                                    documentsByAnnotation: []
+                                    total: res.data.total
                                 });
                             }
+
                             _this4.annotationloading = false;
                         });
                     }
@@ -42886,7 +42931,7 @@ exports = module.exports = __webpack_require__(11)(undefined);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42949,12 +42994,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['corpusresults', 'corpussearched', 'corpusloading', 'documentsbycorpus', 'annotationsbycorpus'],
     computed: __WEBPACK_IMPORTED_MODULE_0_vuex__["mapGetters"]({
-        stateDocumentCorpusresults: 'documentcorpus'
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
     }),
     mounted: function mounted() {
         console.log('CorpusResultComponent mounted.');
@@ -42996,6 +43046,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     })
   })) : (_vm.stateDocumentCorpusresults && _vm.stateDocumentCorpusresults.length >= 1) ? _c('div', _vm._l((_vm.stateDocumentCorpusresults), function(corpusresult) {
+    return _c('searchresultpanel_corpus', {
+      key: corpusresult,
+      attrs: {
+        "corpusresult": corpusresult,
+        "documentsbycorpus": _vm.documentsbycorpus,
+        "annotationsbycorpus": _vm.annotationsbycorpus
+      }
+    })
+  })) : (_vm.stateAnnotationCorpusresults && _vm.stateAnnotationCorpusresults.length >= 1) ? _c('div', _vm._l((_vm.stateAnnotationCorpusresults), function(corpusresult) {
     return _c('searchresultpanel_corpus', {
       key: corpusresult,
       attrs: {
@@ -43098,7 +43157,7 @@ exports = module.exports = __webpack_require__(11)(undefined);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -43128,12 +43187,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['documentresults', 'documentsearched', 'documentloading', 'annotationsbydocument', 'corpusbydocument'],
     computed: __WEBPACK_IMPORTED_MODULE_0_vuex__["mapGetters"]({
-        statedocumentresults: 'corpusdocuments'
+        statedocumentresults: 'corpusdocuments',
+        stateannotationdocumentresults: 'annotationdocuments'
     }),
     mounted: function mounted() {
         console.log('DocumentResultComponent mounted.');
@@ -43175,6 +43239,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     })
   })) : (_vm.statedocumentresults && _vm.statedocumentresults.length >= 1) ? _c('div', _vm._l((_vm.statedocumentresults), function(documentresult) {
+    return _c('searchresultpanel_document', {
+      key: documentresult,
+      attrs: {
+        "documentresult": documentresult,
+        "annotationsbydocument": _vm.annotationsbydocument,
+        "corpusbydocument": _vm.corpusbydocument
+      }
+    })
+  })) : (_vm.stateannotationdocumentresults && _vm.stateannotationdocumentresults.length >= 1) ? _c('div', _vm._l((_vm.stateannotationdocumentresults), function(documentresult) {
     return _c('searchresultpanel_document', {
       key: documentresult,
       attrs: {
@@ -43314,7 +43387,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['annotationresults', 'annotationsearched', 'annotationloading'],
+    props: ['annotationresults', 'annotationsearched', 'annotationloading', 'corpusbyannotation', 'documentsbyannotation'],
     computed: __WEBPACK_IMPORTED_MODULE_0_vuex__["mapGetters"]({
         stateCorpusAnnotationresults: 'corpusannotations',
         stateDocumentAnnotationresults: 'documentannotations'
@@ -43353,21 +43426,27 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     return _c('searchresultpanel_annotation', {
       key: annotationresult,
       attrs: {
-        "annotationresult": annotationresult
+        "annotationresult": annotationresult,
+        "corpusbyannotation": _vm.corpusbyannotation,
+        "documentsbyannotation": _vm.documentsbyannotation
       }
     })
   })) : (_vm.stateCorpusAnnotationresults && _vm.stateCorpusAnnotationresults.length >= 1) ? _c('div', _vm._l((_vm.stateCorpusAnnotationresults), function(annotationresult) {
     return _c('searchresultpanel_annotation', {
       key: annotationresult,
       attrs: {
-        "annotationresult": annotationresult
+        "annotationresult": annotationresult,
+        "corpusbyannotation": _vm.corpusbyannotation,
+        "documentsbyannotation": _vm.documentsbyannotation
       }
     })
   })) : (_vm.stateDocumentAnnotationresults && _vm.stateDocumentAnnotationresults.length >= 1) ? _c('div', _vm._l((_vm.stateDocumentAnnotationresults), function(annotationresult) {
     return _c('searchresultpanel_annotation', {
       key: annotationresult,
       attrs: {
-        "annotationresult": annotationresult
+        "annotationresult": annotationresult,
+        "corpusbyannotation": _vm.corpusbyannotation,
+        "documentsbyannotation": _vm.documentsbyannotation
       }
     })
   })) : (_vm.annotationresults.length == 0 && _vm.annotationsearched && !_vm.annotationloading) ? _c('div', {
@@ -44250,6 +44329,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -44257,7 +44337,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             annotationSearchData: {
                 preparation_title: '',
                 preparation_encoding_full_name: '',
-                preparation_encoding_file_extension: ''
+                preparation_encoding_file_extension: '',
+                preparation_encoding_tool: ''
             },
             scope: 'annotation'
         };
@@ -44283,7 +44364,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "Annotation-header"
   }, [_vm._v("\n        Annotation\n    ")]), _vm._v(" "), _c('div', {
     staticClass: "Annotation-body"
-  }, [_c('label', [_vm._v("Name "), _c('input', {
+  }, [_c('label', [_vm._v("Title "), _c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -44323,7 +44404,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.annotationSearchData.preparation_encoding_full_name = $event.target.value
       }
     }
-  })]), _vm._v(" "), _c('label', [_vm._v("Format "), _c('input', {
+  })]), _vm._v(" "), _c('label', [_vm._v("Format extension"), _c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
@@ -44341,6 +44422,26 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "input": function($event) {
         if ($event.target.composing) { return; }
         _vm.annotationSearchData.preparation_encoding_file_extension = $event.target.value
+      }
+    }
+  })]), _vm._v(" "), _c('label', [_vm._v("Notation"), _c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.annotationSearchData.preparation_encoding_tool),
+      expression: "annotationSearchData.preparation_encoding_tool"
+    }],
+    attrs: {
+      "type": "text",
+      "name": "preparation_encoding_tool"
+    },
+    domProps: {
+      "value": (_vm.annotationSearchData.preparation_encoding_tool)
+    },
+    on: {
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.annotationSearchData.preparation_encoding_tool = $event.target.value
       }
     }
   })]), _vm._v(" "), _c('button', {
@@ -44994,10 +45095,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['annotationresult'],
+    props: ['annotationresult', 'corpusbyannotation', 'documentsbyannotation'],
     methods: {
         browseUri: function browseUri(id, type) {
             return '/browse/' + type + '/'.concat(id);
+        },
+        emitAnnotationRelations: function emitAnnotationRelations(annotationId) {
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+            this.$store.dispatch('corpusByAnnotation', this.corpusbyannotation[annotationId]);
+            this.$store.dispatch('documentByAnnotation', this.documentsbyannotation[annotationId]);
         }
     },
     mounted: function mounted() {
@@ -45031,6 +45139,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         "data-toggle": "collapse",
         "data-parent": "#accordion",
         "data-target": _vm._f("addHash")(annotationresultdata._id)
+      },
+      on: {
+        "click": function($event) {
+          _vm.emitAnnotationRelations(annotationresultdata._id)
+        }
       }
     }, [_vm._v("\n                    " + _vm._s(_vm._f("arrayToString")(_vm.annotationtitle = annotationresultdata._source.preparation_title)) + "\n                    "), (typeof _vm.annotationresult.documentsByAnnotation != 'undefined' && typeof _vm.annotationresult.documentsByAnnotation[_vm.annotationtitle] != 'undefined') ? _c('span', {
       staticClass: "badge"
@@ -46090,7 +46203,9 @@ var initialState = {
         documentsByCorpus: [],
         annotationsByCorpus: [],
         corpusByDocument: [],
-        annotationsByDocument: []
+        annotationsByDocument: [],
+        corpusByAnnotation: [],
+        documentsByAnnotation: []
     },
 
     actions: {
@@ -46114,18 +46229,28 @@ var initialState = {
 
             commit('PUSH_CORPUS_BY_DOCUMENT', corpora);
         },
-        clearCorpus: function clearCorpus(_ref5, corpora) {
+        documentByAnnotation: function documentByAnnotation(_ref5, documents) {
             var commit = _ref5.commit;
+
+            commit('PUSH_DOCUMENT_BY_ANNOTATION', documents);
+        },
+        corpusByAnnotation: function corpusByAnnotation(_ref6, corpora) {
+            var commit = _ref6.commit;
+
+            commit('PUSH_CORPUS_BY_ANNOTATION', corpora);
+        },
+        clearCorpus: function clearCorpus(_ref7, corpora) {
+            var commit = _ref7.commit;
 
             commit('CLEAR_CORPUS_STATE', corpora);
         },
-        clearDocuments: function clearDocuments(_ref6, documents) {
-            var commit = _ref6.commit;
+        clearDocuments: function clearDocuments(_ref8, documents) {
+            var commit = _ref8.commit;
 
             commit('CLEAR_DOCUMENT_STATE', documents);
         },
-        clearAnnotations: function clearAnnotations(_ref7, documents) {
-            var commit = _ref7.commit;
+        clearAnnotations: function clearAnnotations(_ref9, documents) {
+            var commit = _ref9.commit;
 
             commit('CLEAR_ANNOTATION_STATE', documents);
         }
@@ -46142,7 +46267,14 @@ var initialState = {
         },
         documentcorpus: function documentcorpus(state) {
             return state.corpusByDocument;
+        },
+        annotationcorpus: function annotationcorpus(state) {
+            return state.corpusByAnnotation;
+        },
+        annotationdocuments: function annotationdocuments(state) {
+            return state.documentsByAnnotation;
         }
+
     },
     mutations: {
         PUSH_DOCUMENT_BY_CORPUS: function PUSH_DOCUMENT_BY_CORPUS(state, documents) {
@@ -46156,6 +46288,12 @@ var initialState = {
         },
         PUSH_CORPUS_BY_DOCUMENT: function PUSH_CORPUS_BY_DOCUMENT(state, corpora) {
             state.corpusByDocument.push(corpora);
+        },
+        PUSH_DOCUMENT_BY_ANNOTATION: function PUSH_DOCUMENT_BY_ANNOTATION(state, documents) {
+            state.documentsByAnnotation.push(documents);
+        },
+        PUSH_CORPUS_BY_ANNOTATION: function PUSH_CORPUS_BY_ANNOTATION(state, corpora) {
+            state.corpusByAnnotation.push(corpora);
         },
         CLEAR_CORPUS_STATE: function CLEAR_CORPUS_STATE(state, corpora) {
             while (state.corpusByDocument.length > 0) {

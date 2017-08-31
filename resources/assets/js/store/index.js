@@ -12,7 +12,9 @@ export default new Vuex.Store({
         documentsByCorpus: [],
         annotationsByCorpus: [],
         corpusByDocument: [],
-        annotationsByDocument: []
+        annotationsByDocument: [],
+        corpusByAnnotation: [],
+        documentsByAnnotation: []
     },
 
     actions: {
@@ -27,6 +29,12 @@ export default new Vuex.Store({
         },
         corpusByDocument ({commit}, corpora) {
             commit('PUSH_CORPUS_BY_DOCUMENT', corpora)
+        },
+        documentByAnnotation ({commit}, documents) {
+            commit('PUSH_DOCUMENT_BY_ANNOTATION', documents)
+        },
+        corpusByAnnotation ({commit}, corpora) {
+            commit('PUSH_CORPUS_BY_ANNOTATION', corpora)
         },
         clearCorpus ({commit}, corpora) {
             commit('CLEAR_CORPUS_STATE', corpora)
@@ -50,7 +58,14 @@ export default new Vuex.Store({
         },
         documentcorpus: state => {
             return state.corpusByDocument
-        }
+        },
+        annotationcorpus: state => {
+            return state.corpusByAnnotation
+        },
+        annotationdocuments: state => {
+            return state.documentsByAnnotation
+        },
+
     },
     mutations: {
         PUSH_DOCUMENT_BY_CORPUS (state, documents) {
@@ -64,6 +79,12 @@ export default new Vuex.Store({
         },
         PUSH_CORPUS_BY_DOCUMENT (state, corpora) {
             state.corpusByDocument.push(corpora)
+        },
+        PUSH_DOCUMENT_BY_ANNOTATION (state, documents) {
+            state.documentsByAnnotation.push(documents)
+        },
+        PUSH_CORPUS_BY_ANNOTATION (state, corpora) {
+            state.corpusByAnnotation.push(corpora)
         },
         CLEAR_CORPUS_STATE (state, corpora) {
             while(state.corpusByDocument.length > 0) {

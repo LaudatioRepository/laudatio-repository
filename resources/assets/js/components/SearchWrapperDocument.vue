@@ -10,6 +10,10 @@
         <searchresultpanel_document v-for="documentresult in statedocumentresults"  v-bind:documentresult="documentresult" :key="documentresult" :annotationsbydocument="annotationsbydocument" :corpusbydocument="corpusbydocument"></searchresultpanel_document>
     </div>
 
+    <div v-else-if="stateannotationdocumentresults && stateannotationdocumentresults.length >= 1">
+        <searchresultpanel_document v-for="documentresult in stateannotationdocumentresults"  v-bind:documentresult="documentresult" :key="documentresult" :annotationsbydocument="annotationsbydocument" :corpusbydocument="corpusbydocument"></searchresultpanel_document>
+    </div>
+
     <div  v-else-if="documentresults.length == 0 && documentsearched && !documentloading" class="alert alert-info" role="alert">
         <strong>Your search returned no results!</strong>
     </div>
@@ -22,7 +26,8 @@
         props: ['documentresults','documentsearched','documentloading','annotationsbydocument', 'corpusbydocument'],
         computed:
             mapGetters({
-                statedocumentresults: 'corpusdocuments'
+                statedocumentresults: 'corpusdocuments',
+                stateannotationdocumentresults: 'annotationdocuments'
             }),
         mounted() {
             console.log('DocumentResultComponent mounted.')

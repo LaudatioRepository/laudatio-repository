@@ -210,9 +210,31 @@ class ElasticController extends Controller
         );
     }
 
+    public function getDocumentsByAnnotation(Request $request){
+        $result = $this->ElasticService->getDocumentsByAnnotation($request->documentRefs,$request->annotationRefs);
+        $resultdata =  array(
+            'error' => false,
+            'results' => $result
+        );
+        return response(
+            $resultdata,
+            200
+        );
+    }
 
+    public function getCorporaByAnnotation(Request $request){
+        $result = $this->ElasticService->getCorporaByAnnotation($request->corpusRefs,$request->annotationRefs);
+        $resultdata =  array(
+            'error' => false,
+            'results' => $result
+        );
+        return response(
+            $resultdata,
+            200
+        );
+    }
 
-
+/*
     public function getDocumentsByAnnotation(Request $request){
         $corpusResult = array();
         $documentResult = array();
@@ -221,6 +243,7 @@ class ElasticController extends Controller
 
         for($i = 0; $i < count($request->annotationRefs); $i++){
             $annotationRef = $request->annotationRefs[$i];
+
             if(!empty($request->corpusRefs[$i])){
                 $corpusRefs = $request->corpusRefs[$i];
             }
@@ -269,13 +292,13 @@ class ElasticController extends Controller
             "documentResult" => $documentResult
         );
 
-
+        Log::info("GOT: ".print_r($resultData,1));
         return response(
             $resultData,
             200
         );
     }
-
+*/
 
     public function searchAnnotationIndex(Request $request)
     {
@@ -288,7 +311,7 @@ class ElasticController extends Controller
             'results' => $result['hits']['hits'],
             'total' => $result['hits']['total']
         );
-
+        //Log::info("GOT: ".print_r($resultData,1));
         return response(
             $resultData,
             200
