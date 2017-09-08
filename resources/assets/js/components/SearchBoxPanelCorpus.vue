@@ -13,14 +13,14 @@
 <label>Corpus Editor Forename <input type="text" name="document-author" v-model="corpusSearchData.corpus_editor_forename" /></label>
             <label>Corpus Editor Surname <input type="text" name="document-author" v-model="corpusSearchData.corpus_editor_surname" /></label>
 
-        <label>Year <input  placeholder="From" type="text" name="corpus-year-from" v-model="corpusSearchData.corpus_publication_publication_date" />
-        <input  placeholder="To" type="text" name="corpus-year-to" v-model="corpusSearchData.corpusYearTo" /></label>
-        <label>Exact <input type="checkbox" name="corpusyeartype" value="exact" v-model="corpusSearchData.corpusyeartype" /></label>
-		 <label>Range <input type="checkbox" name="corpusyeartype" value="range" v-model="corpusSearchData.corpusyeartype"  /></label>
+        <label>Year <input  placeholder="From" type="text" id="corpus-year-from" v-model="corpusSearchData.corpus_publication_publication_date" />
+        <input  placeholder="To" type="text" id="corpus-year-to" v-model="corpusSearchData.corpusYearTo" /></label>
+        <label>Exact <input class="yearradio" type="radio" id="corpusyeartype_exact" value="exact" v-model="corpusSearchData.corpusyeartype" checked="checked" /></label>
+		 <label>Range <input class="yearradio" type="radio" id="corpusyeartype_range" value="range" v-model="corpusSearchData.corpusyeartype"  /></label>
 
-        <label>Size <input placeholder="From"  type="text" name="corpus-size-from" v-model="corpusSearchData.corpus_size_value" /> to <input  placeholder="To" type="text" name="corpus-size-to" v-model="corpusSearchData.corpusSizeTo" /></label>
-        <label>Exact <input type="checkbox" name="corpussizetype" value="exact" v-model="corpusSearchData.corpussizetype"/></label>
-        <label>Range <input type="checkbox" name="corpussizetype" value="range" v-model="corpusSearchData.corpussizetype"/></label>
+        <label>Size <input placeholder="From"  type="text" name="corpus-size-from" v-model="corpusSearchData.corpus_size_value" /> to <input  placeholder="To" type="text" id="corpus-size-to" v-model="corpusSearchData.corpusSizeTo" /></label>
+        <label>Exact <input class="sizeradio" type="radio" id="corpussizetype" value="exact" v-model="corpusSearchData.corpussizetype" checked/></label>
+        <label>Range <input class="sizeradio" type="radio" id="corpussizetype" value="range" v-model="corpusSearchData.corpussizetype"/></label>
 
         <br />
         <label>Language <input placeholder="Corpus language"  type="text" name="corpus-language" v-model="corpusSearchData.corpus_languages_language" /></label>
@@ -41,8 +41,8 @@
                     corpus_editor_surname: '',
                     corpus_publication_publication_date: '',
                     corpusYearTo: '',
-                    corpusyeartype: '',
-                    corpussizetype: '',
+                    corpusyeartype: 'exact',
+                    corpussizetype: 'exact',
                     corpus_size_value: '',
                     corpusSizeTo: '',
                     corpus_languages_language: '',
@@ -53,6 +53,7 @@
         },
         methods: {
             emitCorpusData(){
+
                 this.$emit('corpus-search',this.corpusSearchData);
             }
         },
@@ -60,4 +61,25 @@
             console.log('CorpusSearchBlock mounted.')
         }
     }
+
+    $(function () {
+        $('.sizeradio').change(function () {
+            if($(this).attr('value') == 'exact'){
+                $('#corpus-size-to').prop('disabled', true);
+            }
+            else{
+                $('#corpus-size-to').prop('disabled', false);
+            }
+        });
+
+
+        $('.yearradio').change(function () {
+            if($(this).attr('value') == 'exact'){
+                $('#corpus-year-to').prop('disabled', true);
+            }
+            else{
+                $('#corpus-year-to').prop('disabled', false);
+            }
+        });
+    });
 </script>

@@ -136,7 +136,8 @@ class ElasticService implements ElasticsearchInterface
                 'index' => 'corpus',
                 'type' => 'corpus',
                 'body' => $queryBody,
-                '_source_exclude' => ['message'],
+                //'_source_exclude' => ['message'],
+                '_source_exclude' => ['message','corpus_encoding_project_description','corpus_encoding_normalization','annotation_tag_description','annotation_tag'],
                 'filter_path' => ['hits.hits']
             ];
             $results = Elasticsearch::search($params);
@@ -167,7 +168,8 @@ class ElasticService implements ElasticsearchInterface
                 'index' => 'annotation',
                 'type' => 'annotation',
                 'body' => $queryBody,
-                '_source_exclude' => ['message'],
+                //'_source_exclude' => ['message'],
+                '_source_exclude' => ['message','preparation_publication_description','preparation_revision_description','preparation_encoding_project_url','preparation_encoding_description'],
                 'filter_path' => ['hits.hits']
             ];
 
@@ -250,14 +252,20 @@ class ElasticService implements ElasticsearchInterface
      */
     public function searchCorpusIndex($searchData)
     {
+
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
 
-        if(count($searchData) > 1){
-            $queryBody = $queryBuilder->buildMustQuery($searchData);
+        if(is_array($searchData)){
+            if(count($searchData) > 1){
+                $queryBody = $queryBuilder->buildMustQuery($searchData);
+            }
+            else{
+                $queryBody = $queryBuilder->buildSingleMatchQuery($searchData);
+            }
         }
         else{
-            $queryBody = $queryBuilder->buildSingleMatchQuery($searchData);
+            $queryBody = $queryBuilder->buildMustFilterRangeQuery($searchData->fields,$searchData->range);
         }
 
         $params = [
@@ -271,6 +279,106 @@ class ElasticService implements ElasticsearchInterface
 
         $results = Elasticsearch::search($params);
         return $results;
+    }
+
+    public function rangeSearch($searchData,$returnQueryBody = false)
+    {
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+
+        if(isset($searchData->dateSearchKey) && !isset($searchData->sizeSearchKey)){
+            if(isset($searchData->corpus_publication_publication_date) && !isset($searchData->corpusYearTo)){
+                $queryBody = $queryBuilder->buildRangeQuery('corpus_publication_publication_date',$searchData->corpus_publication_publication_date,null);
+            }
+            else if(!isset($searchData->corpus_publication_publication_date) && isset($searchData->corpusYearTo)){
+                $queryBody = $queryBuilder->buildRangeQuery('corpus_publication_publication_date',null,$searchData->corpusYearTo);
+            }
+            else if(isset($searchData->corpus_publication_publication_date) && isset($searchData->corpusYearTo)){
+                $queryBody = $queryBuilder->buildRangeQuery('corpus_publication_publication_date',$searchData->corpus_publication_publication_date,$searchData->corpusYearTo);
+            }
+        }
+        else if(!isset($searchData->dateSearchKey) && isset($searchData->sizeSearchKey)){
+            if(isset($searchData->corpus_size_value) && !isset($searchData->corpusSizeTo)){
+                $queryBody = $queryBuilder->buildRangeQuery('corpus_size_value',$searchData->corpus_size_value,null);
+            }
+            else if(!isset($searchData->corpus_size_value) && isset($searchData->corpusSizeTo)){
+                $queryBody = $queryBuilder->buildRangeQuery('corpus_size_value',null,$searchData->corpusSizeTo);
+            }
+            else if(isset($searchData->corpus_size_value) && isset($searchData->corpusSizeTo)){
+                $queryBody = $queryBuilder->buildRangeQuery('corpus_size_value',$searchData->corpus_size_value,$searchData->corpusSizeTo);
+            }
+        }
+        else if((isset($searchData->dateSearchKey)) && (isset($searchData->sizeSearchKey))){
+            $searchData = $this->removeKey($searchData,'sizeSearchKey');
+            $searchData = $this->removeKey($searchData,'dateSearchKey');
+            $data = array();
+
+            if(isset($searchData->corpus_publication_publication_date) && $searchData->corpus_publication_publication_date != ""  && !isset($searchData->corpusYearTo) && $searchData->corpusYearTo == ""){
+                $obj = app()->make('stdClass');
+                $obj->field = 'corpus_publication_publication_date';
+                $obj->from = $searchData->corpus_publication_publication_date;
+                $obj->to = "";
+                array_push($data,$obj);
+            }
+            else if($searchData->corpus_publication_publication_date == "" && isset($searchData->corpusYearTo) && $searchData->corpusYearTo != "" ){
+                $obj = app()->make('stdClass');
+                $obj->field = 'corpus_publication_publication_date';
+                $obj->from = "";
+                $obj->to = $searchData->corpusYearTo;
+                array_push($data,$obj);
+            }
+            else if(isset($searchData->corpus_publication_publication_date) && $searchData->corpus_publication_publication_date != ""  && isset($searchData->corpusYearTo) && $searchData->corpusYearTo != "" ){
+                $obj = app()->make('stdClass');
+                $obj->field = 'corpus_publication_publication_date';
+                $obj->from = $searchData->corpus_publication_publication_date;
+                $obj->to = $searchData->corpusYearTo;
+                array_push($data,$obj);
+            }
+
+
+            if(isset($searchData->corpus_size_value) && $searchData->corpus_size_value != ""  && !isset($searchData->corpusSizeTo) && $searchData->corpusSizeTo == "" ){
+                $obj = app()->make('stdClass');
+                $obj->field = 'corpus_size_value';
+                $obj->from = $searchData->corpus_size_value;
+                $obj->to = "";
+                array_push($data,$obj);
+            }
+            else if(!isset($searchData->corpus_size_value) && $searchData->corpus_size_value == "" && isset($searchData->corpusSizeTo) && $searchData->corpusSizeTo != "" ){
+                $obj = app()->make('stdClass');
+                $obj->field = 'corpus_size_value';
+                $obj->from = "";
+                $obj->to = $searchData->corpusSizeTo;
+                array_push($data,$obj);
+            }
+            else if(isset($searchData->corpus_size_value) && $searchData->corpus_size_value != ""  && isset($searchData->corpusSizeTo)  && $searchData->corpusSizeTo != ""  ){
+                $obj = app()->make('stdClass');
+                $obj->field = 'corpus_size_value';
+                $obj->from = $searchData->corpus_size_value;
+                $obj->to = $searchData->corpusSizeTo;
+                array_push($data,$obj);
+            }
+
+            $queryBody = $queryBuilder->buildMustRangeQuery($data);
+
+        }
+
+        if(!$returnQueryBody){
+            $params = [
+                'size' => 1000,
+                'index' => 'corpus',
+                'type' => '',
+                'body' => $queryBody,
+                '_source_exclude' => ['message']
+            ];
+
+
+            $results = Elasticsearch::search($params);
+            return $results;
+        }
+        else{
+            return $queryBody;
+        }
+
     }
 
     /**
@@ -563,4 +671,43 @@ class ElasticService implements ElasticsearchInterface
         $results = Elasticsearch::deleteByQuery($params);
         return $results;
     }
+
+    /**
+     * Helpers
+     */
+
+    public function checkForKey($array, $key){
+        $value = "";
+        foreach($array as $item) {
+            if(array_key_exists($key,$item)) {
+                $value = $item[$key];
+                break;
+            }
+        }
+        return $value;
+    }
+
+    public function removeKey($array, $key){
+        if(is_array($array)){
+            for($i=0; $i < count($array); $i++){
+                foreach($array[$i] as $itemkey => $param){
+                    if($itemkey == $key){
+                        unset($array[$i][$key]);
+                        break;
+                    }
+                }
+            }
+        }
+        else{
+            foreach($array as $itemkey => $item){
+                if($itemkey == $key){
+                    unset($array->{$key});
+                    break;
+                }
+            }
+        }
+
+        return $array;
+    }
+
 }

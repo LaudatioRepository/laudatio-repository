@@ -13,6 +13,7 @@ interface ElasticsearchInterface {
     public function search($index, $field, $term);
     public function searchGeneral($searchData);
     public function searchCorpusIndex($searchData);
+    public function rangeSearch($searchData);
     public function searchDocumentIndex($searchData);
     public function searchDocumentIndexWithParam(Request $request);
     public function getSearchTotal($searchData,$index);
@@ -31,4 +32,11 @@ interface ElasticsearchInterface {
     public function createIndex($name);
     public function deleteIndex($indexId);
     public function truncateIndex($index);
+
+    /**
+     * Helpers
+     */
+
+    public function checkForKey($array, $key);
+    public function removeKey($array, $key);
 }

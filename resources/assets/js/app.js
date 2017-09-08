@@ -6,8 +6,8 @@
  */
 
 require('./bootstrap');
-
 require('./filters');
+require('lodash');
 window.Vue = require('vue');
 const util = require('util')
 import store from './store'
@@ -84,14 +84,55 @@ const app = new Vue({
                 }
             });
         },
-
+        get_if_exist(collection,str) {
+            var value = ""
+            for(var i = 0; i < collection.length; i++){
+                var obj = collection[i];
+                if(obj.hasOwnProperty(str)) {
+                    value = obj[str];
+                }
+            }
+            return value;
+        },
+        remove_if_exist(collection,str) {
+            for(var i = 0; i < collection.length; i++){
+                var obj = collection[i];
+                if(obj.hasOwnProperty(str)) {
+                    collection.splice(i,1);
+                }
+            }
+            return collection
+        },
         submitCorpusSearch: function(corpusSearchObject) {
             this.corpusloading = true;
             this.corpusresults = [];
             this.corpussearched =  false;
+
             let postDataCollection = [];
+            var thereAreMore = false;
+            var hasDateAndSize = false;
+            var dateAndSize = [
+                "corpus_publication_publication_date",
+                "corpusYearTo",
+                "corpus_size_value",
+                "corpusSizeTo",
+                "corpusyeartype",
+                "corpussizetype"
+            ];
             for(var p in corpusSearchObject){
                 if(corpusSearchObject[p].length > 0){
+                    if(dateAndSize.indexOf(p) > -1 && corpusSearchObject[p] != ""
+                    && (corpusSearchObject['corpusyeartype'] == "range" || corpusSearchObject['corpussizetype'] == "range")){
+                        if(!hasDateAndSize){
+                            hasDateAndSize = true;
+                        }
+                    }
+                    else {
+                        if(!thereAreMore && corpusSearchObject[p] != ""){
+                            thereAreMore = true;
+                        }
+                    }
+
                     postDataCollection.push(
                         {
                             [p]: corpusSearchObject[p]
@@ -102,7 +143,62 @@ const app = new Vue({
             }
 
 
+
             if(postDataCollection.length > 0){
+                console.log(JSON.stringify(postDataCollection))
+
+                var corpusyeartype = this.get_if_exist(postDataCollection,'corpusyeartype');
+                var corpussizetype = this.get_if_exist(postDataCollection,'corpussizetype');
+                var corpus_publication_publication_date = this.get_if_exist(postDataCollection,'corpus_publication_publication_date');
+                var corpusYearTo = this.get_if_exist(postDataCollection,'corpusYearTo');
+
+                var corpus_size_value = this.get_if_exist(postDataCollection,'corpus_size_value');
+                var corpusSizeTo = this.get_if_exist(postDataCollection,'corpusSizeTo');
+
+                var documentyeartype = this.get_if_exist(postDataCollection,'documentyeartype');
+                var documentsizetype = this.get_if_exist(postDataCollection,'documentsizetype');
+
+                var document_publication_publishing_date = this.get_if_exist(postDataCollection,'document_publication_publishing_date');
+                var document_publication_publishing_date_to = this.get_if_exist(postDataCollection,'document_publication_publishing_date_to');
+                var document_size_extent = this.get_if_exist(postDataCollection,'document_size_extent');
+                var document_size_extent_to = this.get_if_exist(postDataCollection,'document_size_extent_to');
+
+                if( (corpusyeartype && ! corpus_publication_publication_date) && (corpusyeartype && ! corpusYearTo) ){
+                    postDataCollection = this.remove_if_exist(postDataCollection,"corpusyeartype");
+                }
+
+                if( (corpussizetype && ! corpus_size_value) && (corpussizetype && !corpusSizeTo) ){
+                    postDataCollection = this.remove_if_exist(postDataCollection,"corpussizetype");
+                }
+
+                if( (documentyeartype && ! document_publication_publishing_date) && (documentyeartype && ! document_publication_publishing_date_to)) {
+                    postDataCollection = this.remove_if_exist(postDataCollection,"documentyeartype");
+                }
+
+                if( (documentsizetype && ! document_size_extent) && (documentsizetype && ! document_size_extent_to)) {
+                    postDataCollection = this.remove_if_exist(postDataCollection,"documentsizetype");
+                }
+
+
+                if(hasDateAndSize && thereAreMore){
+                    postDataCollection.push(
+                        {"mixedSearch" : "true"}
+                    )
+                }
+                else{
+                    postDataCollection.push(
+                        {"mixedSearch" : "false"}
+                    )
+                }
+
+
+
+
+
+                console.log("AFTER: "+JSON.stringify(postDataCollection))
+
+
+
                 let postData = {
                     searchData: postDataCollection,
                     scope: 'corpus'
@@ -179,8 +275,29 @@ const app = new Vue({
             this.documentsearched = false;
 
             let postDataCollection = [];
+            var thereAreMore = false;
+            var hasDateAndSize = false;
+            var dateAndSize = [
+                "document_publication_publishing_date",
+                "document_publication_publishing_date_to",
+                "document_size_extent",
+                "document_size_extent_to",
+                "documentyeartype",
+                "documentsizetype"
+            ];
             for(var p in documentSearchObject){
                 if(documentSearchObject[p].length > 0){
+                    if(dateAndSize.indexOf(p) > -1 && documentSearchObject[p] != ""
+                        && (corpusSearchObject['documentyeartype'] == "range" || documentSearchObject['documentsizetype'] == "range")){
+                        if(!hasDateAndSize){
+                            hasDateAndSize = true;
+                        }
+                    }
+                    else {
+                        if(!thereAreMore && documentSearchObject[p] != ""){
+                            thereAreMore = true;
+                        }
+                    }
                     postDataCollection.push(
                         {
                             [p]: documentSearchObject[p]

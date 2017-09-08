@@ -42441,8 +42441,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  */
 
 __webpack_require__(13);
-
 __webpack_require__(37);
+__webpack_require__(14);
 window.Vue = __webpack_require__(10);
 var util = __webpack_require__(38);
 
@@ -42518,6 +42518,25 @@ var app = new Vue({
                 }
             });
         },
+        get_if_exist: function get_if_exist(collection, str) {
+            var value = "";
+            for (var i = 0; i < collection.length; i++) {
+                var obj = collection[i];
+                if (obj.hasOwnProperty(str)) {
+                    value = obj[str];
+                }
+            }
+            return value;
+        },
+        remove_if_exist: function remove_if_exist(collection, str) {
+            for (var i = 0; i < collection.length; i++) {
+                var obj = collection[i];
+                if (obj.hasOwnProperty(str)) {
+                    collection.splice(i, 1);
+                }
+            }
+            return collection;
+        },
 
         submitCorpusSearch: function submitCorpusSearch(corpusSearchObject) {
             var _this2 = this;
@@ -42525,14 +42544,70 @@ var app = new Vue({
             this.corpusloading = true;
             this.corpusresults = [];
             this.corpussearched = false;
+
             var postDataCollection = [];
+            var thereAreMore = false;
+            var hasDateAndSize = false;
+            var dateAndSize = ["corpus_publication_publication_date", "corpusYearTo", "corpus_size_value", "corpusSizeTo", "corpusyeartype", "corpussizetype"];
             for (var p in corpusSearchObject) {
                 if (corpusSearchObject[p].length > 0) {
+                    if (dateAndSize.indexOf(p) > -1 && corpusSearchObject[p] != "" && (corpusSearchObject['corpusyeartype'] == "range" || corpusSearchObject['corpussizetype'] == "range")) {
+                        if (!hasDateAndSize) {
+                            hasDateAndSize = true;
+                        }
+                    } else {
+                        if (!thereAreMore && corpusSearchObject[p] != "") {
+                            thereAreMore = true;
+                        }
+                    }
+
                     postDataCollection.push(_defineProperty({}, p, corpusSearchObject[p]));
                 }
             }
 
             if (postDataCollection.length > 0) {
+                console.log(JSON.stringify(postDataCollection));
+
+                var corpusyeartype = this.get_if_exist(postDataCollection, 'corpusyeartype');
+                var corpussizetype = this.get_if_exist(postDataCollection, 'corpussizetype');
+                var corpus_publication_publication_date = this.get_if_exist(postDataCollection, 'corpus_publication_publication_date');
+                var corpusYearTo = this.get_if_exist(postDataCollection, 'corpusYearTo');
+
+                var corpus_size_value = this.get_if_exist(postDataCollection, 'corpus_size_value');
+                var corpusSizeTo = this.get_if_exist(postDataCollection, 'corpusSizeTo');
+
+                var documentyeartype = this.get_if_exist(postDataCollection, 'documentyeartype');
+                var documentsizetype = this.get_if_exist(postDataCollection, 'documentsizetype');
+
+                var document_publication_publishing_date = this.get_if_exist(postDataCollection, 'document_publication_publishing_date');
+                var document_publication_publishing_date_to = this.get_if_exist(postDataCollection, 'document_publication_publishing_date_to');
+                var document_size_extent = this.get_if_exist(postDataCollection, 'document_size_extent');
+                var document_size_extent_to = this.get_if_exist(postDataCollection, 'document_size_extent_to');
+
+                if (corpusyeartype && !corpus_publication_publication_date && corpusyeartype && !corpusYearTo) {
+                    postDataCollection = this.remove_if_exist(postDataCollection, "corpusyeartype");
+                }
+
+                if (corpussizetype && !corpus_size_value && corpussizetype && !corpusSizeTo) {
+                    postDataCollection = this.remove_if_exist(postDataCollection, "corpussizetype");
+                }
+
+                if (documentyeartype && !document_publication_publishing_date && documentyeartype && !document_publication_publishing_date_to) {
+                    postDataCollection = this.remove_if_exist(postDataCollection, "documentyeartype");
+                }
+
+                if (documentsizetype && !document_size_extent && documentsizetype && !document_size_extent_to) {
+                    postDataCollection = this.remove_if_exist(postDataCollection, "documentsizetype");
+                }
+
+                if (hasDateAndSize && thereAreMore) {
+                    postDataCollection.push({ "mixedSearch": "true" });
+                } else {
+                    postDataCollection.push({ "mixedSearch": "false" });
+                }
+
+                console.log("AFTER: " + JSON.stringify(postDataCollection));
+
                 var postData = {
                     searchData: postDataCollection,
                     scope: 'corpus'
@@ -42607,8 +42682,20 @@ var app = new Vue({
             this.documentsearched = false;
 
             var postDataCollection = [];
+            var thereAreMore = false;
+            var hasDateAndSize = false;
+            var dateAndSize = ["document_publication_publishing_date", "document_publication_publishing_date_to", "document_size_extent", "document_size_extent_to", "documentyeartype", "documentsizetype"];
             for (var p in documentSearchObject) {
                 if (documentSearchObject[p].length > 0) {
+                    if (dateAndSize.indexOf(p) > -1 && documentSearchObject[p] != "" && (corpusSearchObject['documentyeartype'] == "range" || documentSearchObject['documentsizetype'] == "range")) {
+                        if (!hasDateAndSize) {
+                            hasDateAndSize = true;
+                        }
+                    } else {
+                        if (!thereAreMore && documentSearchObject[p] != "") {
+                            thereAreMore = true;
+                        }
+                    }
                     postDataCollection.push(_defineProperty({}, p, documentSearchObject[p]));
                 }
             }
@@ -43721,8 +43808,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 corpus_editor_surname: '',
                 corpus_publication_publication_date: '',
                 corpusYearTo: '',
-                corpusyeartype: '',
-                corpussizetype: '',
+                corpusyeartype: 'exact',
+                corpussizetype: 'exact',
                 corpus_size_value: '',
                 corpusSizeTo: '',
                 corpus_languages_language: '',
@@ -43733,12 +43820,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     methods: {
         emitCorpusData: function emitCorpusData() {
+
             this.$emit('corpus-search', this.corpusSearchData);
         }
     },
     mounted: function mounted() {
         console.log('CorpusSearchBlock mounted.');
     }
+});
+
+$(function () {
+    $('.sizeradio').change(function () {
+        if ($(this).attr('value') == 'exact') {
+            $('#corpus-size-to').prop('disabled', true);
+        } else {
+            $('#corpus-size-to').prop('disabled', false);
+        }
+    });
+
+    $('.yearradio').change(function () {
+        if ($(this).attr('value') == 'exact') {
+            $('#corpus-year-to').prop('disabled', true);
+        } else {
+            $('#corpus-year-to').prop('disabled', false);
+        }
+    });
 });
 
 /***/ }),
@@ -43844,7 +43950,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "placeholder": "From",
       "type": "text",
-      "name": "corpus-year-from"
+      "id": "corpus-year-from"
     },
     domProps: {
       "value": (_vm.corpusSearchData.corpus_publication_publication_date)
@@ -43865,7 +43971,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "placeholder": "To",
       "type": "text",
-      "name": "corpus-year-to"
+      "id": "corpus-year-to"
     },
     domProps: {
       "value": (_vm.corpusSearchData.corpusYearTo)
@@ -43883,30 +43989,19 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.corpusSearchData.corpusyeartype),
       expression: "corpusSearchData.corpusyeartype"
     }],
+    staticClass: "yearradio",
     attrs: {
-      "type": "checkbox",
-      "name": "corpusyeartype",
-      "value": "exact"
+      "type": "radio",
+      "id": "corpusyeartype_exact",
+      "value": "exact",
+      "checked": "checked"
     },
     domProps: {
-      "checked": Array.isArray(_vm.corpusSearchData.corpusyeartype) ? _vm._i(_vm.corpusSearchData.corpusyeartype, "exact") > -1 : (_vm.corpusSearchData.corpusyeartype)
+      "checked": _vm._q(_vm.corpusSearchData.corpusyeartype, "exact")
     },
     on: {
       "__c": function($event) {
-        var $$a = _vm.corpusSearchData.corpusyeartype,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = "exact",
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.corpusSearchData.corpusyeartype = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.corpusSearchData.corpusyeartype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.corpusSearchData.corpusyeartype = $$c
-        }
+        _vm.corpusSearchData.corpusyeartype = "exact"
       }
     }
   })]), _vm._v(" "), _c('label', [_vm._v("Range "), _c('input', {
@@ -43916,30 +44011,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.corpusSearchData.corpusyeartype),
       expression: "corpusSearchData.corpusyeartype"
     }],
+    staticClass: "yearradio",
     attrs: {
-      "type": "checkbox",
-      "name": "corpusyeartype",
+      "type": "radio",
+      "id": "corpusyeartype_range",
       "value": "range"
     },
     domProps: {
-      "checked": Array.isArray(_vm.corpusSearchData.corpusyeartype) ? _vm._i(_vm.corpusSearchData.corpusyeartype, "range") > -1 : (_vm.corpusSearchData.corpusyeartype)
+      "checked": _vm._q(_vm.corpusSearchData.corpusyeartype, "range")
     },
     on: {
       "__c": function($event) {
-        var $$a = _vm.corpusSearchData.corpusyeartype,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = "range",
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.corpusSearchData.corpusyeartype = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.corpusSearchData.corpusyeartype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.corpusSearchData.corpusyeartype = $$c
-        }
+        _vm.corpusSearchData.corpusyeartype = "range"
       }
     }
   })]), _vm._v(" "), _c('label', [_vm._v("Size "), _c('input', {
@@ -43973,7 +44056,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "placeholder": "To",
       "type": "text",
-      "name": "corpus-size-to"
+      "id": "corpus-size-to"
     },
     domProps: {
       "value": (_vm.corpusSearchData.corpusSizeTo)
@@ -43991,30 +44074,19 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.corpusSearchData.corpussizetype),
       expression: "corpusSearchData.corpussizetype"
     }],
+    staticClass: "sizeradio",
     attrs: {
-      "type": "checkbox",
-      "name": "corpussizetype",
-      "value": "exact"
+      "type": "radio",
+      "id": "corpussizetype",
+      "value": "exact",
+      "checked": ""
     },
     domProps: {
-      "checked": Array.isArray(_vm.corpusSearchData.corpussizetype) ? _vm._i(_vm.corpusSearchData.corpussizetype, "exact") > -1 : (_vm.corpusSearchData.corpussizetype)
+      "checked": _vm._q(_vm.corpusSearchData.corpussizetype, "exact")
     },
     on: {
       "__c": function($event) {
-        var $$a = _vm.corpusSearchData.corpussizetype,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = "exact",
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.corpusSearchData.corpussizetype = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.corpusSearchData.corpussizetype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.corpusSearchData.corpussizetype = $$c
-        }
+        _vm.corpusSearchData.corpussizetype = "exact"
       }
     }
   })]), _vm._v(" "), _c('label', [_vm._v("Range "), _c('input', {
@@ -44024,30 +44096,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.corpusSearchData.corpussizetype),
       expression: "corpusSearchData.corpussizetype"
     }],
+    staticClass: "sizeradio",
     attrs: {
-      "type": "checkbox",
-      "name": "corpussizetype",
+      "type": "radio",
+      "id": "corpussizetype",
       "value": "range"
     },
     domProps: {
-      "checked": Array.isArray(_vm.corpusSearchData.corpussizetype) ? _vm._i(_vm.corpusSearchData.corpussizetype, "range") > -1 : (_vm.corpusSearchData.corpussizetype)
+      "checked": _vm._q(_vm.corpusSearchData.corpussizetype, "range")
     },
     on: {
       "__c": function($event) {
-        var $$a = _vm.corpusSearchData.corpussizetype,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = "range",
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.corpusSearchData.corpussizetype = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.corpusSearchData.corpussizetype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.corpusSearchData.corpussizetype = $$c
-        }
+        _vm.corpusSearchData.corpussizetype = "range"
       }
     }
   })]), _vm._v(" "), _c('br'), _vm._v(" "), _c('label', [_vm._v("Language "), _c('input', {
@@ -44190,8 +44250,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 document_publication_place: '',
                 document_publication_publishing_date: '',
                 document_publication_publishing_date_to: '',
-                documentyeartype: '',
-                documentsizetype: '',
+                documentyeartype: 'exact',
+                documentsizetype: 'exact',
                 document_size_extent: '',
                 document_size_extent_to: '',
                 document_languages_language: ''
@@ -44207,6 +44267,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     mounted: function mounted() {
         console.log('DocumentSearchBlock mounted.');
     }
+});
+
+$(function () {
+    $('.sizeradio').change(function () {
+        if ($(this).attr('value') == 'exact') {
+            $('#document-size-extent-to').prop('disabled', true);
+        } else {
+            $('#document-size-extent-to').prop('disabled', false);
+        }
+    });
+
+    $('.yearradio').change(function () {
+        if ($(this).attr('value') == 'exact') {
+            $('#document-publication-publishing-date-to').prop('disabled', true);
+        } else {
+            $('#document-publication-publishing-date-to').prop('disabled', false);
+        }
+    });
 });
 
 /***/ }),
@@ -44309,7 +44387,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }],
     attrs: {
       "type": "text",
-      "name": "document-publication-publishing-date-from"
+      "id": "document-publication-publishing-date-from"
     },
     domProps: {
       "value": (_vm.documentSearchData.document_publication_publishing_date)
@@ -44329,7 +44407,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }],
     attrs: {
       "type": "text",
-      "name": "document-publication-publishing-date-to"
+      "id": "document-publication-publishing-date-to"
     },
     domProps: {
       "value": (_vm.documentSearchData.document_publication_publishing_date_to)
@@ -44347,30 +44425,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.documentSearchData.documentyeartype),
       expression: "documentSearchData.documentyeartype"
     }],
+    staticClass: "yearradio",
     attrs: {
-      "type": "checkbox",
-      "name": "documentyeartype",
+      "type": "radio",
+      "id": "documentyeartype_exact",
       "value": "exact"
     },
     domProps: {
-      "checked": Array.isArray(_vm.documentSearchData.documentyeartype) ? _vm._i(_vm.documentSearchData.documentyeartype, "exact") > -1 : (_vm.documentSearchData.documentyeartype)
+      "checked": _vm._q(_vm.documentSearchData.documentyeartype, "exact")
     },
     on: {
       "__c": function($event) {
-        var $$a = _vm.documentSearchData.documentyeartype,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = "exact",
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.documentSearchData.documentyeartype = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.documentSearchData.documentyeartype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.documentSearchData.documentyeartype = $$c
-        }
+        _vm.documentSearchData.documentyeartype = "exact"
       }
     }
   })]), _vm._v(" "), _c('label', [_vm._v("Range "), _c('input', {
@@ -44380,30 +44446,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.documentSearchData.documentyeartype),
       expression: "documentSearchData.documentyeartype"
     }],
+    staticClass: "yearradio",
     attrs: {
-      "type": "checkbox",
-      "name": "documentyeartype",
+      "type": "radio",
+      "id": "documentyeartype_range",
       "value": "range"
     },
     domProps: {
-      "checked": Array.isArray(_vm.documentSearchData.documentyeartype) ? _vm._i(_vm.documentSearchData.documentyeartype, "range") > -1 : (_vm.documentSearchData.documentyeartype)
+      "checked": _vm._q(_vm.documentSearchData.documentyeartype, "range")
     },
     on: {
       "__c": function($event) {
-        var $$a = _vm.documentSearchData.documentyeartype,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = "range",
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.documentSearchData.documentyeartype = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.documentSearchData.documentyeartype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.documentSearchData.documentyeartype = $$c
-        }
+        _vm.documentSearchData.documentyeartype = "range"
       }
     }
   })]), _vm._v(" "), _c('label', [_vm._v("Size "), _c('input', {
@@ -44415,7 +44469,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }],
     attrs: {
       "type": "text",
-      "name": "document-size-extent-from"
+      "id": "document-size-extent-from"
     },
     domProps: {
       "value": (_vm.documentSearchData.document_size_extent)
@@ -44435,7 +44489,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }],
     attrs: {
       "type": "text",
-      "name": "document-size-extent-to"
+      "id": "document-size-extent-to"
     },
     domProps: {
       "value": (_vm.documentSearchData.document_size_extent_to)
@@ -44453,30 +44507,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.documentSearchData.documentsizetype),
       expression: "documentSearchData.documentsizetype"
     }],
+    staticClass: "sizeradio",
     attrs: {
-      "type": "checkbox",
-      "name": "documentsizetype",
+      "type": "radio",
+      "id": "documentsizetype_exact",
       "value": "exact"
     },
     domProps: {
-      "checked": Array.isArray(_vm.documentSearchData.documentsizetype) ? _vm._i(_vm.documentSearchData.documentsizetype, "exact") > -1 : (_vm.documentSearchData.documentsizetype)
+      "checked": _vm._q(_vm.documentSearchData.documentsizetype, "exact")
     },
     on: {
       "__c": function($event) {
-        var $$a = _vm.documentSearchData.documentsizetype,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = "exact",
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.documentSearchData.documentsizetype = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.documentSearchData.documentsizetype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.documentSearchData.documentsizetype = $$c
-        }
+        _vm.documentSearchData.documentsizetype = "exact"
       }
     }
   })]), _vm._v(" "), _c('label', [_vm._v("Range "), _c('input', {
@@ -44486,30 +44528,18 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       value: (_vm.documentSearchData.documentsizetype),
       expression: "documentSearchData.documentsizetype"
     }],
+    staticClass: "sizeradio",
     attrs: {
-      "type": "checkbox",
-      "name": "documentsizetype",
+      "type": "radio",
+      "id": "documentsizetype_range",
       "value": "range"
     },
     domProps: {
-      "checked": Array.isArray(_vm.documentSearchData.documentsizetype) ? _vm._i(_vm.documentSearchData.documentsizetype, "range") > -1 : (_vm.documentSearchData.documentsizetype)
+      "checked": _vm._q(_vm.documentSearchData.documentsizetype, "range")
     },
     on: {
       "__c": function($event) {
-        var $$a = _vm.documentSearchData.documentsizetype,
-          $$el = $event.target,
-          $$c = $$el.checked ? (true) : (false);
-        if (Array.isArray($$a)) {
-          var $$v = "range",
-            $$i = _vm._i($$a, $$v);
-          if ($$c) {
-            $$i < 0 && (_vm.documentSearchData.documentsizetype = $$a.concat($$v))
-          } else {
-            $$i > -1 && (_vm.documentSearchData.documentsizetype = $$a.slice(0, $$i).concat($$a.slice($$i + 1)))
-          }
-        } else {
-          _vm.documentSearchData.documentsizetype = $$c
-        }
+        _vm.documentSearchData.documentsizetype = "range"
       }
     }
   })]), _vm._v(" "), _c('br'), _vm._v(" "), _c('label', [_vm._v("Language "), _c('input', {
