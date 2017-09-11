@@ -45096,14 +45096,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 corpus_publication_publisher: '',
                 corpus_editor_forename: '',
                 corpus_editor_surname: '',
+                corpus_merged_editors: '',
                 corpus_publication_publication_date: '',
                 corpusYearTo: '',
                 corpusyeartype: 'exact',
                 corpussizetype: 'exact',
                 corpus_size_value: '',
                 corpusSizeTo: '',
-                corpus_languages_language: '',
-                corpus_encoding_format: ''
+                corpus_merged_languages: '',
+                corpus_merged_formats: ''
             },
             scope: 'corpus'
         };
@@ -45190,44 +45191,24 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.corpusSearchData.corpus_publication_publisher = $event.target.value
       }
     }
-  })]), _vm._v(" "), _c('label', [_vm._v("Corpus Editor Forename "), _c('input', {
+  })]), _vm._v(" "), _c('label', [_vm._v("Corpus Editor "), _c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.corpusSearchData.corpus_editor_forename),
-      expression: "corpusSearchData.corpus_editor_forename"
+      value: (_vm.corpusSearchData.corpus_merged_editors),
+      expression: "corpusSearchData.corpus_merged_editors"
     }],
     attrs: {
       "type": "text",
       "name": "document-author"
     },
     domProps: {
-      "value": (_vm.corpusSearchData.corpus_editor_forename)
+      "value": (_vm.corpusSearchData.corpus_merged_editors)
     },
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.corpusSearchData.corpus_editor_forename = $event.target.value
-      }
-    }
-  })]), _vm._v(" "), _c('label', [_vm._v("Corpus Editor Surname "), _c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.corpusSearchData.corpus_editor_surname),
-      expression: "corpusSearchData.corpus_editor_surname"
-    }],
-    attrs: {
-      "type": "text",
-      "name": "document-author"
-    },
-    domProps: {
-      "value": (_vm.corpusSearchData.corpus_editor_surname)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.corpusSearchData.corpus_editor_surname = $event.target.value
+        _vm.corpusSearchData.corpus_merged_editors = $event.target.value
       }
     }
   })]), _vm._v(" "), _c('label', [_vm._v("Year "), _c('input', {
@@ -45404,8 +45385,8 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.corpusSearchData.corpus_languages_language),
-      expression: "corpusSearchData.corpus_languages_language"
+      value: (_vm.corpusSearchData.corpus_merged_languages),
+      expression: "corpusSearchData.corpus_merged_languages"
     }],
     attrs: {
       "placeholder": "Corpus language",
@@ -45413,20 +45394,20 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "name": "corpus-language"
     },
     domProps: {
-      "value": (_vm.corpusSearchData.corpus_languages_language)
+      "value": (_vm.corpusSearchData.corpus_merged_languages)
     },
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.corpusSearchData.corpus_languages_language = $event.target.value
+        _vm.corpusSearchData.corpus_merged_languages = $event.target.value
       }
     }
   })]), _vm._v(" "), _c('label', [_vm._v("Format "), _c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.corpusSearchData.corpus_encoding_format),
-      expression: "corpusSearchData.corpus_encoding_format"
+      value: (_vm.corpusSearchData.corpus_merged_formats),
+      expression: "corpusSearchData.corpus_merged_formats"
     }],
     attrs: {
       "placeholder": "Corpus format",
@@ -45434,12 +45415,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "name": "corpus-format"
     },
     domProps: {
-      "value": (_vm.corpusSearchData.corpus_encoding_format)
+      "value": (_vm.corpusSearchData.corpus_merged_formats)
     },
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.corpusSearchData.corpus_encoding_format = $event.target.value
+        _vm.corpusSearchData.corpus_merged_formats = $event.target.value
       }
     }
   })]), _vm._v(" "), _c('button', {
@@ -45529,6 +45510,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -45537,6 +45519,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 document_title: '',
                 document_author_forename: '',
                 document_author_surname: '',
+                document_merged_authors: '',
                 document_publication_place: '',
                 document_publication_publishing_date: '',
                 document_publication_publishing_date_to: '',
@@ -45544,7 +45527,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 documentsizetype: 'exact',
                 document_size_extent: '',
                 document_size_extent_to: '',
-                document_languages_language: ''
+                document_languages_language: '',
+                document_merged_languages: ''
             },
             scope: 'document'
         };
@@ -45608,44 +45592,24 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.documentSearchData.document_title = $event.target.value
       }
     }
-  })]), _vm._v(" "), _c('label', [_vm._v("Author Forename "), _c('input', {
+  })]), _vm._v(" "), _c('label', [_vm._v("Author "), _c('input', {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.documentSearchData.document_author_forename),
-      expression: "documentSearchData.document_author_forename"
+      value: (_vm.documentSearchData.document_merged_authors),
+      expression: "documentSearchData.document_merged_authors"
     }],
     attrs: {
       "type": "text",
       "name": "document-author"
     },
     domProps: {
-      "value": (_vm.documentSearchData.document_author_forename)
+      "value": (_vm.documentSearchData.document_merged_authors)
     },
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.documentSearchData.document_author_forename = $event.target.value
-      }
-    }
-  })]), _vm._v(" "), _c('label', [_vm._v("Author Surname "), _c('input', {
-    directives: [{
-      name: "model",
-      rawName: "v-model",
-      value: (_vm.documentSearchData.document_author_surname),
-      expression: "documentSearchData.document_author_surname"
-    }],
-    attrs: {
-      "type": "text",
-      "name": "document-author"
-    },
-    domProps: {
-      "value": (_vm.documentSearchData.document_author_surname)
-    },
-    on: {
-      "input": function($event) {
-        if ($event.target.composing) { return; }
-        _vm.documentSearchData.document_author_surname = $event.target.value
+        _vm.documentSearchData.document_merged_authors = $event.target.value
       }
     }
   })]), _vm._v(" "), _c('label', [_vm._v("Place "), _c('input', {
@@ -45836,20 +45800,20 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.documentSearchData.document_languages_language),
-      expression: "documentSearchData.document_languages_language"
+      value: (_vm.documentSearchData.document_merged_languages),
+      expression: "documentSearchData.document_merged_languages"
     }],
     attrs: {
       "type": "text",
       "name": "document-languages-language"
     },
     domProps: {
-      "value": (_vm.documentSearchData.document_languages_language)
+      "value": (_vm.documentSearchData.document_merged_languages)
     },
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.documentSearchData.document_languages_language = $event.target.value
+        _vm.documentSearchData.document_merged_languages = $event.target.value
       }
     }
   })]), _vm._v(" "), _c('button', {
@@ -45937,6 +45901,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             annotationSearchData: {
                 preparation_title: '',
                 preparation_encoding_full_name: '',
+                annotation_merged_formats: '',
                 preparation_encoding_file_extension: '',
                 preparation_encoding_tool: ''
             },
@@ -45988,20 +45953,20 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.annotationSearchData.preparation_encoding_full_name),
-      expression: "annotationSearchData.preparation_encoding_full_name"
+      value: (_vm.annotationSearchData.annotation_merged_formats),
+      expression: "annotationSearchData.annotation_merged_formats"
     }],
     attrs: {
       "type": "text",
       "name": "preparation_encoding_full_name"
     },
     domProps: {
-      "value": (_vm.annotationSearchData.preparation_encoding_full_name)
+      "value": (_vm.annotationSearchData.annotation_merged_formats)
     },
     on: {
       "input": function($event) {
         if ($event.target.composing) { return; }
-        _vm.annotationSearchData.preparation_encoding_full_name = $event.target.value
+        _vm.annotationSearchData.annotation_merged_formats = $event.target.value
       }
     }
   })]), _vm._v(" "), _c('label', [_vm._v("Format extension"), _c('input', {

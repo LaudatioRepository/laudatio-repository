@@ -8,8 +8,9 @@
         </div>
         <div class="Document-body">
             <label>Title <input type="text" name="document-title" v-model="documentSearchData.document_title" /></label>
-            <label>Author Forename <input type="text" name="document-author" v-model="documentSearchData.document_author_forename" /></label>
-            <label>Author Surname <input type="text" name="document-author" v-model="documentSearchData.document_author_surname" /></label>
+            <!--label>Author Forename <input type="text" name="document-author" v-model="documentSearchData.document_author_forename" /></label>
+            <label>Author Surname <input type="text" name="document-author" v-model="documentSearchData.document_author_surname" /></label-->
+            <label>Author <input type="text" name="document-author" v-model="documentSearchData.document_merged_authors" /></label>
             <label>Place <input type="text" name="document-publication-place" v-model="documentSearchData.document_publication_place" /></label>
             <label>Year <input type="text" id="document-publication-publishing-date-from" v-model="documentSearchData.document_publication_publishing_date" /> to <input type="text" id="document-publication-publishing-date-to" v-model="documentSearchData.document_publication_publishing_date_to"  /></label>
             <label>Exact <input class="yearradio" type="radio" id="documentyeartype_exact" value="exact" v-model="documentSearchData.documentyeartype" /></label>
@@ -18,7 +19,7 @@
             <label>Exact <input class="sizeradio" type="radio" id="documentsizetype_exact" value="exact" v-model="documentSearchData.documentsizetype"  /></label>
             <label>Range <input class="sizeradio"  type="radio" id="documentsizetype_range" value="range" v-model="documentSearchData.documentsizetype"  /></label>
             <br />
-            <label>Language <input type="text" name="document-languages-language" v-model="documentSearchData.document_languages_language"  /></label>
+            <label>Language <input type="text" name="document-languages-language" v-model="documentSearchData.document_merged_languages"  /></label>
             <button class="btn btn-primary document-search-submit-button" @click="emitDocumentData">Search documents</button>
         </div>
     </div>
@@ -32,6 +33,7 @@
                     document_title: '',
                     document_author_forename: '',
                     document_author_surname: '',
+                    document_merged_authors: '',
                     document_publication_place: '',
                     document_publication_publishing_date: '',
                     document_publication_publishing_date_to: '',
@@ -40,6 +42,7 @@
                     document_size_extent: '',
                     document_size_extent_to: '',
                     document_languages_language: '',
+                    document_merged_languages: ''
                 },
                 scope: 'document'
             }

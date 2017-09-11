@@ -8,7 +8,7 @@
     </div>
     <div class="Annotation-body">
         <label>Title <input type="text" name="preparation_title" v-model="annotationSearchData.preparation_title" /></label>
-        <label>Tool <input type="text" name="preparation_encoding_full_name" v-model="annotationSearchData.preparation_encoding_full_name" /></label>
+        <label>Tool <input type="text" name="preparation_encoding_full_name" v-model="annotationSearchData.annotation_merged_formats" /></label>
         <label>Format extension<input type="text" name="preparation_encoding_file_extension" v-model="annotationSearchData.preparation_encoding_file_extension"  /></label>
         <label>Notation<input type="text" name="preparation_encoding_tool" v-model="annotationSearchData.preparation_encoding_tool"  /></label>
         <button class="btn btn-primary annotation-search-submit-button" @click="emitAnnotationData">Search annotations</button>
@@ -22,6 +22,7 @@
               annotationSearchData : {
                   preparation_title: '',
                   preparation_encoding_full_name: '',
+                  annotation_merged_formats: '',
                   preparation_encoding_file_extension: '',
                   preparation_encoding_tool: '',
               },
