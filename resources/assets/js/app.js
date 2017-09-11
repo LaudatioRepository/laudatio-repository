@@ -155,13 +155,7 @@ const app = new Vue({
                 var corpus_size_value = this.get_if_exist(postDataCollection,'corpus_size_value');
                 var corpusSizeTo = this.get_if_exist(postDataCollection,'corpusSizeTo');
 
-                var documentyeartype = this.get_if_exist(postDataCollection,'documentyeartype');
-                var documentsizetype = this.get_if_exist(postDataCollection,'documentsizetype');
 
-                var document_publication_publishing_date = this.get_if_exist(postDataCollection,'document_publication_publishing_date');
-                var document_publication_publishing_date_to = this.get_if_exist(postDataCollection,'document_publication_publishing_date_to');
-                var document_size_extent = this.get_if_exist(postDataCollection,'document_size_extent');
-                var document_size_extent_to = this.get_if_exist(postDataCollection,'document_size_extent_to');
 
                 if( (corpusyeartype && ! corpus_publication_publication_date) && (corpusyeartype && ! corpusYearTo) ){
                     postDataCollection = this.remove_if_exist(postDataCollection,"corpusyeartype");
@@ -169,14 +163,6 @@ const app = new Vue({
 
                 if( (corpussizetype && ! corpus_size_value) && (corpussizetype && !corpusSizeTo) ){
                     postDataCollection = this.remove_if_exist(postDataCollection,"corpussizetype");
-                }
-
-                if( (documentyeartype && ! document_publication_publishing_date) && (documentyeartype && ! document_publication_publishing_date_to)) {
-                    postDataCollection = this.remove_if_exist(postDataCollection,"documentyeartype");
-                }
-
-                if( (documentsizetype && ! document_size_extent) && (documentsizetype && ! document_size_extent_to)) {
-                    postDataCollection = this.remove_if_exist(postDataCollection,"documentsizetype");
                 }
 
 
@@ -190,13 +176,6 @@ const app = new Vue({
                         {"mixedSearch" : "false"}
                     )
                 }
-
-
-
-
-
-                console.log("AFTER: "+JSON.stringify(postDataCollection))
-
 
 
                 let postData = {
@@ -224,43 +203,42 @@ const app = new Vue({
                             });
                         }
 
-                    }
+                        if(corpus_ids.length > 0) {
+                            let documentPostData = {
+                                corpus_ids: corpus_ids,
+                                corpusRefs: corpusRefs
+                            }
 
-                    if(corpus_ids.length > 0) {
-                        let documentPostData = {
-                            corpus_ids: corpus_ids,
-                            corpusRefs: corpusRefs
+                            /**
+                             * Get all documents contained in the corpora
+                             */
+                            window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(documentRes => {
+
+                                if (Object.keys(documentRes.data.results).length > 0) {
+                                    var documentsByCorpus = {}
+                                    Object.keys(documentRes.data.results).forEach(function(key) {
+                                        documentsByCorpus[key] = {results: documentRes.data.results[key]}
+                                    });
+                                }
+
+                                this.documentsByCorpus = documentsByCorpus;
+                            });
+
+                            /**
+                             * get all annotations contained pro corpus
+                             */
+                            window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(documentPostData)).then(annotationRes => {
+
+                                if (Object.keys(annotationRes.data.results).length > 0) {
+                                    var annotationsByCorpus = {}
+                                    Object.keys(annotationRes.data.results).forEach(function(key) {
+                                        annotationsByCorpus[key] = {results: annotationRes.data.results[key]}
+                                    });
+                                }
+                                this.annotationsByCorpus = annotationsByCorpus;
+                            });
                         }
-
-                        /**
-                         * Get all documents contained in the corpora
-                         */
-                        window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(documentRes => {
-
-                            if (Object.keys(documentRes.data.results).length > 0) {
-                                var documentsByCorpus = {}
-                                Object.keys(documentRes.data.results).forEach(function(key) {
-                                    documentsByCorpus[key] = {results: documentRes.data.results[key]}
-                                });
-                            }
-
-                            this.documentsByCorpus = documentsByCorpus;
-                        });
-
-                        /**
-                         * get all annotations contained pro corpus
-                         */
-                        window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(documentPostData)).then(annotationRes => {
-
-                            if (Object.keys(annotationRes.data.results).length > 0) {
-                                var annotationsByCorpus = {}
-                                Object.keys(annotationRes.data.results).forEach(function(key) {
-                                    annotationsByCorpus[key] = {results: annotationRes.data.results[key]}
-                                });
-                            }
-                            this.annotationsByCorpus = annotationsByCorpus;
-                        });
-                    }
+                    }//end if data
 
 
                     this.corpusloading = false;
@@ -288,7 +266,7 @@ const app = new Vue({
             for(var p in documentSearchObject){
                 if(documentSearchObject[p].length > 0){
                     if(dateAndSize.indexOf(p) > -1 && documentSearchObject[p] != ""
-                        && (corpusSearchObject['documentyeartype'] == "range" || documentSearchObject['documentsizetype'] == "range")){
+                        && (documentSearchObject['documentyeartype'] == "range" || documentSearchObject['documentsizetype'] == "range")){
                         if(!hasDateAndSize){
                             hasDateAndSize = true;
                         }
@@ -307,14 +285,47 @@ const app = new Vue({
 
             }
 
+            //console.log("POSTDATACOLLECTION: "+JSON.stringify(postDataCollection))
+
             if(postDataCollection.length > 0){
                 let postData = {
                     searchData: postDataCollection,
                     scope: 'document'
                 };
 
+
+
+                var documentyeartype = this.get_if_exist(postDataCollection,'documentyeartype');
+                var documentsizetype = this.get_if_exist(postDataCollection,'documentsizetype');
+
+                var document_publication_publishing_date = this.get_if_exist(postDataCollection,'document_publication_publishing_date');
+                var document_publication_publishing_date_to = this.get_if_exist(postDataCollection,'document_publication_publishing_date_to');
+                var document_size_extent = this.get_if_exist(postDataCollection,'document_size_extent');
+                var document_size_extent_to = this.get_if_exist(postDataCollection,'document_size_extent_to');
+                if( (documentyeartype && ! document_publication_publishing_date) && (documentyeartype && ! document_publication_publishing_date_to)) {
+                    postDataCollection = this.remove_if_exist(postDataCollection,"documentyeartype");
+                }
+
+                if( (documentsizetype && ! document_size_extent) && (documentsizetype && ! document_size_extent_to)) {
+                    postDataCollection = this.remove_if_exist(postDataCollection,"documentsizetype");
+                }
+
+
+                if(hasDateAndSize && thereAreMore){
+                    postDataCollection.push(
+                        {"mixedSearch" : "true"}
+                    )
+                }
+                else{
+                    postDataCollection.push(
+                        {"mixedSearch" : "false"}
+                    )
+                }
+
+
                 window.axios.post('api/searchapi/searchDocument',JSON.stringify(postData)).then(res => {
                     this.documentsearched = true;
+
                     if(res.data.results.length > 0) {
 
                         var documentRefs = [];
@@ -361,8 +372,7 @@ const app = new Vue({
                             documentRefs: documentRefs,
                             corpusRefs: corpusRefs,
                         };
-                        console.log("DOCUREFLEN: "+documentRefs.length);
-                        console.log("corpusRefs: "+corpusRefs.length);
+
                         window.axios.post('api/searchapi/getAnnotationsByDocument', JSON.stringify(annotationPostData)).then(annotationRes => {
                             if (Object.keys(annotationRes.data.results).length > 0) {
                                 var annotationsByDocument = {}
@@ -419,10 +429,11 @@ const app = new Vue({
                                     corpusByDocument: []
                                 })
                             }
-                            this.documentloading = false;
+
                         });
 
                     }
+                    this.documentloading = false;
                 });
             }
         },

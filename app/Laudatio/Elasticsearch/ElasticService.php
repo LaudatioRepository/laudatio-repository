@@ -255,7 +255,6 @@ class ElasticService implements ElasticsearchInterface
 
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
-
         if(is_array($searchData)){
             if(count($searchData) > 1){
                 $queryBody = $queryBuilder->buildMustQuery($searchData);
@@ -285,7 +284,6 @@ class ElasticService implements ElasticsearchInterface
     {
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
-
         if(isset($searchData->dateSearchKey) && !isset($searchData->sizeSearchKey)){
             if(isset($searchData->corpus_publication_publication_date) && !isset($searchData->corpusYearTo)){
                 $queryBody = $queryBuilder->buildRangeQuery('corpus_publication_publication_date',$searchData->corpus_publication_publication_date,null);
@@ -296,8 +294,21 @@ class ElasticService implements ElasticsearchInterface
             else if(isset($searchData->corpus_publication_publication_date) && isset($searchData->corpusYearTo)){
                 $queryBody = $queryBuilder->buildRangeQuery('corpus_publication_publication_date',$searchData->corpus_publication_publication_date,$searchData->corpusYearTo);
             }
+
+
+            if(isset($searchData->document_publication_publishing_date) && !isset($searchData->document_publication_publishing_date_to)){
+                $queryBody = $queryBuilder->buildRangeQuery('corpus_publication_publication_date',$searchData->document_publication_publishing_date,null);
+            }
+            else if(!isset($searchData->document_publication_publishing_date) && isset($searchData->document_publication_publishing_date_to)){
+                $queryBody = $queryBuilder->buildRangeQuery('corpus_publication_publication_date',null,$searchData->document_publication_publishing_date_to);
+            }
+            else if(isset($searchData->document_publication_publishing_date) && isset($searchData->document_publication_publishing_date_to)){
+                $queryBody = $queryBuilder->buildRangeQuery('corpus_publication_publication_date',$searchData->document_publication_publishing_date,$searchData->document_publication_publishing_date_to);
+            }
+
         }
         else if(!isset($searchData->dateSearchKey) && isset($searchData->sizeSearchKey)){
+
             if(isset($searchData->corpus_size_value) && !isset($searchData->corpusSizeTo)){
                 $queryBody = $queryBuilder->buildRangeQuery('corpus_size_value',$searchData->corpus_size_value,null);
             }
@@ -307,20 +318,32 @@ class ElasticService implements ElasticsearchInterface
             else if(isset($searchData->corpus_size_value) && isset($searchData->corpusSizeTo)){
                 $queryBody = $queryBuilder->buildRangeQuery('corpus_size_value',$searchData->corpus_size_value,$searchData->corpusSizeTo);
             }
+
+            if(isset($searchData->document_size_extent) && !isset($searchData->document_size_extent_to)){
+                $queryBody = $queryBuilder->buildRangeQuery('document_size_extent',$searchData->document_size_extent,null);
+            }
+            else if(!isset($searchData->document_size_extent) && isset($searchData->document_size_extent_to)){
+                $queryBody = $queryBuilder->buildRangeQuery('corpus_sizdocument_size_extente_value',null,$searchData->document_size_extent_to);
+            }
+            else if(isset($searchData->document_size_extent) && isset($searchData->document_size_extent_to)){
+                $queryBody = $queryBuilder->buildRangeQuery('document_size_extent',$searchData->document_size_extent,$searchData->document_size_extent_to);
+            }
+
         }
         else if((isset($searchData->dateSearchKey)) && (isset($searchData->sizeSearchKey))){
             $searchData = $this->removeKey($searchData,'sizeSearchKey');
             $searchData = $this->removeKey($searchData,'dateSearchKey');
             $data = array();
 
-            if(isset($searchData->corpus_publication_publication_date) && $searchData->corpus_publication_publication_date != ""  && !isset($searchData->corpusYearTo) && $searchData->corpusYearTo == ""){
+            if(isset($searchData->corpus_publication_publication_date) && $searchData->corpus_publication_publication_date != ""  && empty($searchData->corpusYearTo)){
                 $obj = app()->make('stdClass');
                 $obj->field = 'corpus_publication_publication_date';
                 $obj->from = $searchData->corpus_publication_publication_date;
                 $obj->to = "";
                 array_push($data,$obj);
             }
-            else if($searchData->corpus_publication_publication_date == "" && isset($searchData->corpusYearTo) && $searchData->corpusYearTo != "" ){
+            else if(empty($searchData->corpus_publication_publication_date) && isset($searchData->corpusYearTo) && $searchData->corpusYearTo != "" ){
+                Log::info("searchData : ".print_r($searchData,1));
                 $obj = app()->make('stdClass');
                 $obj->field = 'corpus_publication_publication_date';
                 $obj->from = "";
@@ -336,14 +359,14 @@ class ElasticService implements ElasticsearchInterface
             }
 
 
-            if(isset($searchData->corpus_size_value) && $searchData->corpus_size_value != ""  && !isset($searchData->corpusSizeTo) && $searchData->corpusSizeTo == "" ){
+            if(isset($searchData->corpus_size_value) && $searchData->corpus_size_value != ""  && empty($searchData->corpusSizeTo)){
                 $obj = app()->make('stdClass');
                 $obj->field = 'corpus_size_value';
                 $obj->from = $searchData->corpus_size_value;
                 $obj->to = "";
                 array_push($data,$obj);
             }
-            else if(!isset($searchData->corpus_size_value) && $searchData->corpus_size_value == "" && isset($searchData->corpusSizeTo) && $searchData->corpusSizeTo != "" ){
+            else if(empty($searchData->corpus_size_value) && isset($searchData->corpusSizeTo) && $searchData->corpusSizeTo != "" ){
                 $obj = app()->make('stdClass');
                 $obj->field = 'corpus_size_value';
                 $obj->from = "";
@@ -359,7 +382,6 @@ class ElasticService implements ElasticsearchInterface
             }
 
             $queryBody = $queryBuilder->buildMustRangeQuery($data);
-
         }
 
         if(!$returnQueryBody){
@@ -390,12 +412,22 @@ class ElasticService implements ElasticsearchInterface
 
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
-        if(count($searchData) > 1){
-            $queryBody = $queryBuilder->buildMustQuery($searchData);
+
+        if(is_array($searchData)){
+            if(count($searchData) > 1){
+                $queryBody = $queryBuilder->buildMustQuery($searchData);
+            }
+            else{
+                $queryBody = $queryBuilder->buildSingleMatchQuery($searchData);
+            }
         }
-        else{
-            $queryBody = $queryBuilder->buildSingleMatchQuery($searchData);
+        else {
+            $queryBody = $queryBuilder->buildMustFilterRangeQuery($searchData->fields,$searchData->range);
         }
+
+
+
+
 
         $params = [
             'size' => 1000,

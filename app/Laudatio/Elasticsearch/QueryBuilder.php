@@ -117,9 +117,22 @@ class QueryBuilder
         return $queryArray;
     }
 
+
     public function buildMustFilterRangeQuery($fielddata, $rangedata) {
         $bool = new BoolQuery();
-        $fieldMap = array("corpusYearTo" => "corpus_publication_publication_date", "corpus_publication_publication_date" => "corpus_publication_publication_date","corpusSizeTo" => "corpus_size_value", "corpus_size_value" => "corpus_size_value");
+        $fieldMap = array(
+            "corpusYearTo" => "corpus_publication_publication_date",
+            "corpus_publication_publication_date" => "corpus_publication_publication_date",
+            "corpusSizeTo" => "corpus_size_value",
+            "corpus_size_value" => "corpus_size_value",
+            "document_publication_publishing_date" => "document_publication_publishing_date",
+            "document_publication_publishing_date_to" => "document_publication_publishing_date",
+            "document_size_extent" => "document_size_extent",
+            "document_size_extent_to" => "document_size_extent"
+
+        );
+
+
         foreach($fielddata as $param){
             foreach ($param as $key => $value){
                 $bool->add(new MatchQuery($key, $value), BoolQuery::MUST);
@@ -128,7 +141,7 @@ class QueryBuilder
         foreach ($rangedata as $rangeDataKey => $rangedatum){
             $rangeQuery =  null;
             if($rangedatum != null && $rangedatum != ""){
-                if(strpos($rangedatum,"to") !== false){
+                if(strpos($rangeDataKey,"To") !== false || strpos($rangeDataKey,"to") !== false){
                     $rangeQuery = new RangeQuery(
                         $fieldMap[$rangeDataKey],
                         [
@@ -137,13 +150,24 @@ class QueryBuilder
                     );
                 }
                 else{
-                    $rangeQuery = new RangeQuery(
-                        $fieldMap[$rangeDataKey],
-                        [
-                            'gte' => $rangedatum
-                        ]
-                    );
+                    if($fieldMap[$rangeDataKey] == "corpus_publication_publication_date" || $fieldMap[$rangeDataKey] == "document_publication_publishing_date"){
+                        $rangeQuery = new RangeQuery(
+                            $fieldMap[$rangeDataKey],
+                            [
+                                'gt' => $rangedatum
+                            ]
+                        );
+                    }
+                    else{
+                        $rangeQuery = new RangeQuery(
+                            $fieldMap[$rangeDataKey],
+                            [
+                                'gte' => $rangedatum
+                            ]
+                        );
+                    }
                 }
+                $bool->add($rangeQuery, BoolQuery::FILTER);
             }
         }
 
