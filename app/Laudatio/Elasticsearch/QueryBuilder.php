@@ -131,7 +131,9 @@ class QueryBuilder
             "document_size_extent_to" => "document_size_extent"
 
         );
+        //Log::info("fielddata: ".print_r($fielddata,1));
 
+        //Log::info("rangedata: ".print_r($rangedata,1));
 
         foreach($fielddata as $param){
             foreach ($param as $key => $value){
@@ -142,6 +144,7 @@ class QueryBuilder
             $rangeQuery =  null;
             if($rangedatum != null && $rangedatum != ""){
                 if(strpos($rangeDataKey,"To") !== false || strpos($rangeDataKey,"to") !== false){
+                    Log::info("HASTO: ".print_r($rangedatum,1));
                     $rangeQuery = new RangeQuery(
                         $fieldMap[$rangeDataKey],
                         [
@@ -150,6 +153,7 @@ class QueryBuilder
                     );
                 }
                 else{
+
                     if($fieldMap[$rangeDataKey] == "corpus_publication_publication_date" || $fieldMap[$rangeDataKey] == "document_publication_publishing_date"){
                         $rangeQuery = new RangeQuery(
                             $fieldMap[$rangeDataKey],

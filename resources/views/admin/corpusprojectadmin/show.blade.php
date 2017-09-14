@@ -73,11 +73,19 @@
                                     @if(count($corpusproject->users) > 0)
                                         <ul class="list-group">
                                             @foreach($corpusproject->users as $user)
-                                            <li class="list-group-item">{{ $user->name }}
-                                                @if(count($user->roles) > 0)
-                                                    @foreach($user->roles as $role)
-                                                        <span class="badge badge-default">{{$role->name}}</span>
+                                            <li class="list-group-item">
+
+                                                {{ $user->name }}
+                                                @if(count($user_roles[$user->id]) > 0)
+                                                    @foreach($user_roles[$user->id] as $user_role)
+                                                        <span class="badge badge-default">{{$user_role}}</span>
                                                     @endforeach
+                                                @else
+                                                    <span class="pull-right">
+                                                    Add roles <button type="button" class="btn btn-success btn-circle">
+                                                        <a href="/admin/userroles/{{$corpusproject->id}}/{{$user->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                                    </button>
+                                                    </span>
                                                 @endif
                                             </li>
                                             @endforeach

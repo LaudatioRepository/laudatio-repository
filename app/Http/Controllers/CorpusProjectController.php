@@ -6,8 +6,11 @@ use Illuminate\Http\Request;
 use App\CorpusProject;
 use App\Corpus;
 use App\User;
+use App\Role;
 use App\Custom\GitRepoInterface;
 use GrahamCampbell\Flysystem\FlysystemManager;
+use Response;
+use Log;
 
 
 class CorpusProjectController extends Controller
@@ -88,8 +91,21 @@ class CorpusProjectController extends Controller
     public function show(CorpusProject $corpusproject){
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
+
+        $user_roles = array();
+        $corpusProjectUsers = $corpusproject->users()->get();
+        foreach ($corpusProjectUsers as $corpusProjectUser){
+            if(!isset($user_roles[$corpusProjectUser->id])){
+                $user_roles[$corpusProjectUser->id] = array();
+            }
+
+            $role = Role::find($corpusProjectUser->pivot->role_id);
+            array_push($user_roles[$corpusProjectUser->id],$role->name);
+        }
+
         return view('admin.corpusprojectadmin.show', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('user_roles',$user_roles)
             ->with('user',$user);
     }
 
@@ -216,7 +232,7 @@ class CorpusProjectController extends Controller
      */
     public function assignUsers(CorpusProject $corpusproject) {
         $isLoggedIn = \Auth::check();
-        $user = \Auth::user();
+        $loggedInUser = \Auth::user();
         $users = User::latest()->get();
         $filteredList = array();
 
@@ -226,12 +242,34 @@ class CorpusProjectController extends Controller
             }
         }
 
-        return view('admin.corpusprojectadmin.assign_users')
-            ->with('corpusproject', $corpusproject)
+        $user_roles = array();
+        $corpusProjectUsers = $corpusproject->users()->get();
+
+
+        foreach ($corpusProjectUsers as $corpusProjectUser){
+            $role = Role::find($corpusProjectUser->pivot->role_id);
+
+            if(!isset($user_roles[$corpusProjectUser->pivot->role_id])){
+                $user_roles[$corpusProjectUser->pivot->role_id] = array();
+            }
+
+
+            array_push($user_roles[$corpusProjectUser->pivot->role_id],$corpusProjectUser->id);
+        }
+
+        $roles = Role::where('super_user',0)->get();
+
+        return view('admin.useradmin.roles.assign_roles_to_user')
+            ->with('corpusProject', $corpusproject)
             ->with('users', $users)
+            ->with('roles', $roles)
+            ->with('user_roles',$user_roles)
             ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',$user);
+            ->with('loggedInUser',$loggedInUser);
+
+
     }
+
 
 
     /**
@@ -252,5 +290,42 @@ class CorpusProjectController extends Controller
         }
 
         return redirect()->route('admin.corpusProject.index');
+    }
+
+
+    public function storeRelationsByProject(Request $request)
+    {
+
+        $input =$request ->all();
+        $msg = "";
+        if ($request->ajax()){
+            $msg .= "<p>Assigned the following roles to user </p>";
+            $role_users = $input['role_users'];
+            $corpus_project = CorpusProject::find($input['project_id']);
+            $msg .= "<ul>";
+            foreach($role_users as $roleId => $user_data) {
+                $role = Role::find($roleId);
+                if($role){
+                    $msg .= "<li>".$role->name."<ul>";
+                    foreach($user_data as $userId) {
+                        $user = User::find($userId);
+                        if($user) {
+                            $msg .= "<li>".$user->name."</li>";
+                            $corpus_project->users()->save($user,['role_id' => $roleId]);
+
+                        }
+                    }
+                    $msg .= "</ul></li>";
+                }
+            }
+            $msg .= "</ul>";
+        }
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $msg,
+        );
+
+        return Response::json($response);
     }
 }

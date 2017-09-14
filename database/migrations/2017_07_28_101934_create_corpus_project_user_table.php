@@ -16,7 +16,7 @@ class CreateCorpusProjectUserTable extends Migration
         Schema::create('corpus_project_user', function (Blueprint $table) {
             $table->integer('corpus_project_id');
             $table->integer('user_id');
-            $table->primary(['corpus_project_id','user_id']);
+            $table->integer('role_id')->nullable();;
         });
     }
 

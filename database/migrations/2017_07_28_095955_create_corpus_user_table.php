@@ -17,7 +17,7 @@ class CreateCorpusUserTable extends Migration
             $table->increments('id');
             $table->integer('corpus_id');
             $table->integer('user_id');
-            $table->timestamps();
+            $table->integer('role_id')->nullable();;
         });
     }
 

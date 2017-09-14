@@ -39,4 +39,5 @@ interface ElasticsearchInterface {
 
     public function checkForKey($array, $key);
     public function removeKey($array, $key);
+
 }

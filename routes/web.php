@@ -55,6 +55,7 @@ Route::get('/admin/roles/{role}/delete',[ 'as' => 'admin.roles.delete', 'uses' =
 Route::patch('/admin/roles/{role}',[ 'as' => 'admin.roles.update', 'uses' => 'RoleController@update'])->middleware('auth');
 Route::delete('/admin/roles/{role}',[ 'as' => 'admin.roles.destroy', 'uses' => 'RoleController@destroy'])->middleware('auth');
 Route::get('/admin/userroles',[ 'as' => 'admin.roles.assignusers', 'uses' => 'RoleController@assignUsers'])->middleware('auth');
+Route::get('/admin/userroles/{corpusproject}/{user}',[ 'as' => 'admin.roles.assignroletocpbyuser', 'uses' => 'RoleController@assignRolesToUsers'])->middleware('auth');
 /** END ROLES  **/
 
 Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);

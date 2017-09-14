@@ -209,6 +209,9 @@ const app = new Vue({
                                 corpusRefs: corpusRefs
                             }
 
+                            console.log("corpus_ids: "+corpus_ids)
+                            console.log("corpusRefs: "+corpusRefs)
+
                             /**
                              * Get all documents contained in the corpora
                              */
@@ -530,7 +533,7 @@ const app = new Vue({
 
                         window.axios.post('api/searchapi/getDocumentsByAnnotation',postAnnotationData).then(documentsByAnnotationRes => {
                             this.annotationsearched = true;
-
+                            console.log("documentsByAnnotationRes: "+documentsByAnnotationRes);
                             if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
                                 var documentsByAnnotation = {}
                                 Object.keys(documentsByAnnotationRes.data.results).forEach(function(key) {
@@ -557,7 +560,7 @@ const app = new Vue({
                                 */
                             }
 
-                            this.annotationloading = false;
+
                         });
 
 
@@ -586,9 +589,9 @@ const app = new Vue({
                                 });
                             }
 
-                            this.annotationloading = false;
-                        });
 
+                        });
+                        this.annotationloading = false;
 
                     }
                 });

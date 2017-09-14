@@ -43433,11 +43433,15 @@ var app = new Vue({
                             var documentPostData = {
                                 corpus_ids: corpus_ids,
                                 corpusRefs: corpusRefs
+                            };
 
-                                /**
-                                 * Get all documents contained in the corpora
-                                 */
-                            };window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
+                            console.log("corpus_ids: " + corpus_ids);
+                            console.log("corpusRefs: " + corpusRefs);
+
+                            /**
+                             * Get all documents contained in the corpora
+                             */
+                            window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
 
                                 if (Object.keys(documentRes.data.results).length > 0) {
                                     var documentsByCorpus = {};
@@ -43695,7 +43699,7 @@ var app = new Vue({
 
                         window.axios.post('api/searchapi/getDocumentsByAnnotation', postAnnotationData).then(function (documentsByAnnotationRes) {
                             _this4.annotationsearched = true;
-
+                            console.log("documentsByAnnotationRes: " + documentsByAnnotationRes);
                             if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
                                 var documentsByAnnotation = {};
                                 Object.keys(documentsByAnnotationRes.data.results).forEach(function (key) {
@@ -43720,8 +43724,6 @@ var app = new Vue({
                                     });
                                     */
                                 }
-
-                            _this4.annotationloading = false;
                         });
 
                         window.axios.post('api/searchapi/getCorporaByAnnotation', postAnnotationData).then(function (corpussByAnnotationRes) {
@@ -43746,9 +43748,8 @@ var app = new Vue({
                                     total: res.data.total
                                 });
                             }
-
-                            _this4.annotationloading = false;
                         });
+                        _this4.annotationloading = false;
                     }
                 });
             }

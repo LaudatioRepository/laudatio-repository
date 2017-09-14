@@ -13,8 +13,8 @@
                         <button type="button" class="btn btn-primary btn-circle btn-xl pull-right">
                             <a href="/admin/roles/{{$role->id}}/edit"><i class="fa fa-edit fa-2x" aria-hidden="true"></i></a>
                         </button>
-                        <h1>{{$role->name}}
-                        </h1>
+                        <h1>
+                            {{$role->name}}</h1>
                     </div>
                     <div class="panel-body">
 

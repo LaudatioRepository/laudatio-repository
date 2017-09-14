@@ -12,15 +12,19 @@
                     <div class="panel-body">
                         <div class="row">
                             <div class="form-group>">
-                                <label for="corpus_name">Role Name</label>
+                                <label for="role_name">Role Name</label>
                                 <input type="text" name="role_name" id="role_name" class="form-control" />
                             </div>
                             <br /><br />
                             <div class="form-group>">
-                                <label for="corpus_description">Role Description</label>
+                                <label for="role_description">Role Description</label>
                                 <textarea name="role_description" id="role_description" placeholder="Write a description for your Role"  class="form-control"></textarea>
                             </div>
-
+                            <br /><br />
+                            <div class="form-group>">
+                                <label for="role_superuser"><i class="fa fa-superpowers" aria-hidden="true"></i> Is super user <input type="checkbox" name="role_superuser" id="role_superuser" /></label>
+                            </div>
+                            <br /><br />
                             <div class="form-group>">
                                 <button type="submit" value="Create" class="btn btn-primary ">Create Role</button>
                             </div>

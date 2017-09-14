@@ -16,6 +16,11 @@
                                     <div class="panel-heading">
                                         <span class="panel-title">
                                             <a data-toggle="collapse" data-parent="#accordion" href="#{{$role->id}}" aria-expanded="false" class="collapsed">
+                                                @if($role->super_user == 1)
+                                                    <i class="fa fa-superpowers" aria-hidden="true"></i>
+                                                @else
+                                                    <i class="fa fa-users" aria-hidden="true"></i>
+                                                @endif
                                                 {{ $role->name }}
                                             </a>
                                         </span>

@@ -29,7 +29,7 @@
                                 <div class="col-lg">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
-                                            <h2>Corpora</h2>
+                                            <h2>Users</h2>
                                         </div>
                                         <div class="panel-body">
                                             <div class="form-group">

@@ -16,10 +16,19 @@ use Illuminate\Http\Request;
 
 class ElasticService implements ElasticsearchInterface
 {
+    private $ELASTICSEARCH_HOST;
+    private $ELASTICSEARCH_PORT;
+    private $ELASTICSEARCH_SCHEME;
+    private $ELASTICSEARCH_USER;
+    private $ELASTICSEARCH_PASS;
 
     public function __construct()
     {
-
+        $this->ELASTICSEARCH_HOST = env('ELASTICSEARCH_HOST', 'localhost');
+        $this->ELASTICSEARCH_PORT = env('ELASTICSEARCH_PORT', 9200);
+        $this->ELASTICSEARCH_SCHEME = env('ELASTICSEARCH_SCHEME', null);
+        $this->ELASTICSEARCH_USER = env('ELASTICSEARCH_USER', null);
+        $this->ELASTICSEARCH_PASS = env('ELASTICSEARCH_PASS', null);
     }
 
     public function createIndex($name){
@@ -48,7 +57,8 @@ class ElasticService implements ElasticsearchInterface
             'index' => $index,
             'type' => $type,
             'id' => $id,
-            '_source_exclude' => ['message']
+            '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
+            //'_source_exclude' => ['message']
         ];
 
         $response = Elasticsearch::get($params);
@@ -73,7 +83,8 @@ class ElasticService implements ElasticsearchInterface
                 'index' => 'document',
                 'type' => 'document',
                 'body' => $queryBody,
-                '_source_exclude' => ['message'],
+                //'_source_exclude' => ['message'],
+                '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
                 'filter_path' => ['hits.hits']
             ];
 
@@ -103,7 +114,7 @@ class ElasticService implements ElasticsearchInterface
                 'index' => 'annotation',
                 'type' => 'annotation',
                 'body' => $queryBody,
-                '_source_exclude' => ['message']
+                '_source' => ["preparation_title", "in_corpora", "in_documents"],
             ];
 
             $results = Elasticsearch::search($params);
@@ -137,7 +148,7 @@ class ElasticService implements ElasticsearchInterface
                 'type' => 'corpus',
                 'body' => $queryBody,
                 //'_source_exclude' => ['message'],
-                '_source_exclude' => ['message','corpus_encoding_project_description','corpus_encoding_normalization','annotation_tag_description','annotation_tag'],
+                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description"],
                 'filter_path' => ['hits.hits']
             ];
             $results = Elasticsearch::search($params);
@@ -169,7 +180,7 @@ class ElasticService implements ElasticsearchInterface
                 'type' => 'annotation',
                 'body' => $queryBody,
                 //'_source_exclude' => ['message'],
-                '_source_exclude' => ['message','preparation_publication_description','preparation_revision_description','preparation_encoding_project_url','preparation_encoding_description'],
+                '_source' => ["preparation_title", "in_corpora", "in_documents"],
                 'filter_path' => ['hits.hits']
             ];
 
@@ -272,7 +283,8 @@ class ElasticService implements ElasticsearchInterface
             'index' => 'corpus',
             'type' => '',
             'body' => $queryBody,
-            '_source_exclude' => ['message']
+            '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description"],
+            //'_source_exclude' => ['message']
         ];
 
 
@@ -507,9 +519,10 @@ class ElasticService implements ElasticsearchInterface
             'index' => 'document',
             'type' => '',
             'body' => $queryBody,
-            '_source_exclude' => ['message']
+            '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
+            //'_source_exclude' => ['message']
         ];
-
+        Log::info("PARAMS: ".print_r($params,1));
 
         $results = Elasticsearch::search($params);
         return $results;
@@ -540,6 +553,7 @@ class ElasticService implements ElasticsearchInterface
             'index' => 'document',
             'type' => '',
             'body' => $queryBody,
+            '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
         ];
 
         if(count($request->params) > 0){
@@ -631,7 +645,7 @@ class ElasticService implements ElasticsearchInterface
                 'index' => 'corpus',
                 'type' => 'corpus',
                 'body' => $queryBody,
-                '_source' => ["corpus_title","_id"],
+                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description"],
                 'filter_path' => ['hits.hits']
             ];
 
@@ -640,58 +654,122 @@ class ElasticService implements ElasticsearchInterface
         return $results['hits']['hits'][0];
     }
 
-    public function getDocumentsByAnnotation2($searchData){
-        $queryBuilder = new QueryBuilder();
-        $queryBody = null;
-        foreach($searchData as $queryData){
-            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
-            $params = [
-                'size' => 1000,
-                'index' => 'document',
-                'type' => 'document',
-                'body' => $queryBody,
-                '_source' => ["document_title","_id"],
-                'filter_path' => ['hits.hits']
-            ];
 
-            $results = Elasticsearch::search($params);
-
-        }//end foreach queries
-        return $results['hits']['hits'][0];
-    }
 
     public function getDocumentsByAnnotation($searchData,$annotationData){
         $resultData = array();
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
         $counter = 0;
+
+
+
         foreach ($searchData as $id => $annotationDatum) {
             $results = null;
             if(!isset($resultData[$id])){
                 $resultData[$id] = array();
             }
-
+            $qs = "\r";
+            $queries = array();
             foreach($annotationDatum as $queryData){
                 $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
-                $params = [
-                    'size' => 1000,
-                    'index' => 'document',
-                    'type' => 'document',
-                    'body' => $queryBody,
-                    '_source_exclude' => ['message'],
-                    'filter_path' => ['hits.hits']
-                ];
+                array_push($queries,$queryBody);
+                foreach ($queryData as $key => $value){
+                    if($value != ""){
+                        $qs .= '{"query": {"match": {"'.$key.'": "'.$value.'"}}, "size": 1000, "_source": ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]}'."\n";
 
-                $results = Elasticsearch::search($params);
+                    }
+                }
+            }
 
+            //Log::info("getDocumentsByAnnotation:qs ".print_r($qs,1));
+            $results = $this->curlRequest($qs,'document/_msearch');
+            //Log::info("getDocumentsByAnnotation:results ".print_r($results,1));
+
+            $results = json_decode($results,true);
+            if(isset($results['responses'])){
+                foreach ($results['responses'] as $result){
+                    if(count($result['hits']['hits']) > 0){
+                        array_push($resultData[$id],$result['hits']['hits'][0]);
+                    }
+                    else{
+                        $resultData[$id] = array();
+                    }
+                }
+            }
+
+        }
+
+
+        return $resultData;
+    }
+
+    public function getDocumentsByAnnotation2($searchData,$annotationData){
+        $resultData = array();
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $counter = 0;
+
+
+        foreach ($searchData as $id => $annotationDatum) {
+            $results = null;
+            if(!isset($resultData[$id])){
+                $resultData[$id] = array();
+            }
+            $qs = "";
+            $queries = array();
+            foreach($annotationDatum as $queryData){
+                $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+                array_push($queries,$queryBody);
+                foreach ($queryData as $key => $value){
+                    if($value != ""){
+                        $qs .= '{"query": {"match": {"'.$key.'": "'.$value.'"}}}'."\n";
+
+                    }
+
+                }
+
+
+                //$queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+                //array_push($queries,$queryBody);
+                //$qs .= $queryBody."\n";
+
+                /*
+                 $results = Elasticsearch::search($params);
                 if(count($results['hits']['hits']) > 0){
                     array_push($resultData[$id],$results['hits']['hits'][0]);
                 }
                 else{
                     $resultData[$id] = array();
                 }
+                */
+            }
+            $params = [
+                //'size' => 1000,
+                'index' => 'document',
+                'type' => 'document',
+                'body' => $queries,
+                //'_source_exclude' => ['message'],
+                //'_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
+                //'filter_path' => ['hits.hits']
+            ];
+            Log::info("getDocumentsByAnnotation:params ".print_r($params,1));
+            $results = Elasticsearch::msearch($params);
+            foreach ($results['responses'] as $result){
+                if(count($result['hits']['hits']) > 0){
+                    array_push($resultData[$id],$result['hits']['hits'][0]);
+                }
+                else{
+                    $resultData[$id] = array();
+                }
             }
         }
+
+
+        Log::info("getDocumentsByAnnotation:response ".print_r($results,1));
+
+
+
         return $resultData;
     }
 
@@ -710,7 +788,7 @@ class ElasticService implements ElasticsearchInterface
                     'index' => 'corpus',
                     'type' => 'corpus',
                     'body' => $queryBody,
-                    '_source_exclude' => ['message'],
+                    '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description"],
                     'filter_path' => ['hits.hits']
                 ];
 
@@ -744,16 +822,17 @@ class ElasticService implements ElasticsearchInterface
             $queryBody = $queryBuilder->buildSingleMatchQuery($searchData);
         }
 
-
         $params = [
             'index' => 'annotation',
             'type' => '',
             'body' => $queryBody,
-            '_source_exclude' => ['message'],
+            //'_source_exclude' => ['message'],
+            '_source' => ["preparation_title", "in_corpora", "in_documents"],
             'size'=> 100
         ];
 
         $results = Elasticsearch::search($params);
+
         return $results;
     }
 
@@ -813,6 +892,24 @@ class ElasticService implements ElasticsearchInterface
         }
 
         return $array;
+    }
+
+    public function curlRequest($queries,$path){
+        $header = array(
+            "content-type: application/x-ndjson; charset=UTF-8"
+        );
+
+        $url = $this->ELASTICSEARCH_SCHEME.'://'.$this->ELASTICSEARCH_HOST.':'.$this->ELASTICSEARCH_PORT.'/'.$path;
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl,CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $queries);
+        $results = curl_exec($curl);
+        curl_close($curl);
+
+        return $results;
     }
 
 }

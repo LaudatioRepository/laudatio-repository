@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Role;
 use App\User;
+use App\CorpusProject;
 use Response;
 use Log;
 
@@ -49,13 +50,21 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $this->validate(request(), [
-            'role_name' => 'required',
+            'role_name' => 'required'
         ]);
+
+
+        $role_super_user = 0;
+        if(request('role_superuser') == 'on'){
+            $role_super_user = 1;
+        }
 
         Role::create([
             "name" => request('role_name'),
-            "description" => request('role_description')
+            "description" => request('role_description'),
+            'super_user' => $role_super_user
         ]);
+
         session()->flash('message', request('role_name').' was sucessfully created!');
         return redirect()->route('admin.roles.index');
     }
@@ -158,6 +167,21 @@ class RoleController extends Controller
             ->with('user',$user);
     }
 
+    public function assignRolesToUsers($corpusProjectId, $userId) {
+        $isLoggedIn = \Auth::check();
+        $loggedInUser = \Auth::user();
+        $corpusproject = CorpusProject::find($corpusProjectId);
+        $user = User::find($userId);
+        $roles = Role::where('super_user',0)->get();
+
+        return view('admin.useradmin.roles.assign_roles_to_user')
+            ->with('corpusProject', $corpusproject)
+            ->with('user', $user)
+            ->with('roles', $roles)
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('loggedInUser',$loggedInUser);
+    }
+
     /**
      * @param Request $request
      * @return mixed
@@ -181,6 +205,42 @@ class RoleController extends Controller
                         if($user) {
                             $msg .= "<li>".$user->name."</li>";
                             $role->users()->attach($user);
+                        }
+                    }
+                    $msg .= "</ul></li>";
+                }
+            }
+            $msg .= "</ul>";
+        }
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $msg,
+        );
+
+        return Response::json($response);
+    }
+
+    public function storeRelationsByProject(Request $request)
+    {
+
+        $input =$request ->all();
+        $msg = "";
+        if ($request->ajax()){
+            $msg .= "<p>Assigned the following roles to user </p>";
+            $role_users = $input['role_users'];
+            $corpus_project = CorpusProject::find($input['project_id']);
+            $msg .= "<ul>";
+            foreach($role_users as $roleId => $user_data) {
+                $role = Role::find($roleId);
+                if($role){
+                    $msg .= "<li>".$role->name."<ul>";
+                    foreach($user_data as $userId) {
+                        $user = User::find($userId);
+                        if($user) {
+                            $msg .= "<li>".$user->name."</li>";
+                            $corpus_project->users()->save($user,['role_id' => $roleId]);
+
                         }
                     }
                     $msg .= "</ul></li>";
