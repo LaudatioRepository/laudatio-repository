@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Role;
 use App\User;
 use App\CorpusProject;
+use App\Corpus;
 use Response;
 use Log;
+use DB;
 
 class RoleController extends Controller
 {
@@ -78,8 +80,59 @@ class RoleController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
+
+        $project_user_roles = array();
+        $projectuserdata = DB::table('corpus_project_user')->select("corpus_project_id",'user_id', "role_id")->where("role_id",$role->id)->get();
+
+        foreach ($projectuserdata as $data){
+            $user = User::find($data->user_id);
+            $projectRole = Role::find($data->role_id);
+            $corpus_project = CorpusProject::find($data->corpus_project_id);
+            if(!isset($project_user_roles[$data->user_id])){
+                $project_user_roles[$data->user_id] = array();
+                $project_user_roles[$data->user_id]['user_name'] = $user->name;
+                $project_user_roles[$data->user_id]['user_id'] = $user->id;
+                $project_user_roles[$data->user_id]['role_data'] = array();
+            }
+            if(isset($user)){
+
+                array_push($project_user_roles[$data->user_id]['role_data'],array(
+                    "project_name" => $corpus_project->name,
+                    "project_id" => $corpus_project->id
+                ));
+            }
+
+        }
+
+        $corpus_user_roles = array();
+        $corpususerdata = DB::table('corpus_user')->select("corpus_id",'user_id', "role_id")->where("role_id",$role->id)->get();
+        foreach ($corpususerdata as $cdata){
+            $user = User::find($cdata->user_id);
+            $corpusrole = Role::find($cdata->role_id);
+            $corpus = Corpus::find($cdata->corpus_id);
+            if(!isset($corpus_user_roles[$cdata->user_id])){
+                $corpus_user_roles[$cdata->user_id] = array();
+                $corpus_user_roles[$cdata->user_id]['user_name'] = $user->name;
+                $corpus_user_roles[$cdata->user_id]['user_id'] = $user->id;
+                $corpus_user_roles[$cdata->user_id]['role_data'] = array();
+            }
+
+            if(isset($user)){
+
+                array_push($corpus_user_roles[$cdata->user_id]['role_data'],array(
+                    "corpus_name" => $corpus->name,
+                    "corpus_id" => $corpus->id,
+                ));
+            }
+
+        }
+
+        //dd("projectuserdata: ".print_r($project_user_roles,1)."\ncorpususerdata: ".print_r($corpus_user_roles,1));
+
         return view('admin.useradmin.roles.show', compact('role'))
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('project_user_roles', $project_user_roles)
+            ->with('corpus_user_roles', $corpus_user_roles)
             ->with('user',$user);
     }
 
@@ -157,10 +210,17 @@ class RoleController extends Controller
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
 
-        $users = User::all();
-        $roles = Role::latest()->get();
+        $usercollection = User::all();
+        $users = array();
+        $roles = Role::where('super_user',1)->get();
+        foreach ($usercollection as $useritem){
+            if(!$useritem->roles->contains(1)){
+                array_push($users,$useritem);
+            }
+        }
 
-        return view('admin.useradmin.roles.assign_users')
+
+        return view('admin.useradmin.roles.assign_superusers')
             ->with('roles', $roles)
             ->with('users', $users)
             ->with('isLoggedIn', $isLoggedIn)

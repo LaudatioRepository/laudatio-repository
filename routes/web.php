@@ -18,6 +18,7 @@ Route::get('/admin/corpusprojects/{corpusproject}',[ 'as' => 'admin.corpusProjec
 Route::post('/admin/corpusprojects',[ 'as' => 'admin.corpusProject.store.', 'uses' => 'CorpusProjectController@store'])->middleware('auth');
 Route::get('/admin/corpusprojects/{corpusproject}/edit',[ 'as' => 'admin.corpusProject.edit', 'uses' => 'CorpusProjectController@edit'])->middleware('auth');
 Route::get('/admin/corpusprojects/{corpusproject}/delete',[ 'as' => 'admin.corpusProject.delete', 'uses' => 'CorpusProjectController@delete'])->middleware('auth');
+Route::get('/admin/corpusprojects/{corpusproject}/{user}/delete',[ 'as' => 'admin.usercorpusroles.destroy', 'uses' => 'CorpusProjectController@destroyCorpusProjectUser'])->middleware('auth');
 Route::patch('/admin/corpusprojects/{corpusproject}',[ 'as' => 'admin.corpusProject.update', 'uses' => 'CorpusProjectController@update'])->middleware('auth');
 Route::delete('/admin/corpusprojects/{corpusproject}',[ 'as' => 'admin.corpusProject.destroy', 'uses' => 'CorpusProjectController@destroy'])->middleware('auth');
 
@@ -35,6 +36,7 @@ Route::get('/admin/corpora/{corpus}/{filepath}/show',[ 'as' => 'admin.corpora.sh
 Route::post('/admin/corpora',[ 'as' => 'admin.corpora.store.', 'uses' => 'CorpusController@store'])->middleware('auth');
 Route::get('/admin/corpora/{corpus}/edit',[ 'as' => 'admin.corpora.edit', 'uses' => 'CorpusController@edit'])->middleware('auth');
 Route::get('/admin/corpora/{corpus}/delete',[ 'as' => 'admin.corpora.remove', 'uses' => 'CorpusController@delete'])->middleware('auth');
+Route::get('/admin/corpora/{corpus}/{user}/delete',[ 'as' => 'admin.usercorpusroles.destroy', 'uses' => 'CorpusController@destroyCorpusUser'])->middleware('auth');
 Route::patch('/admin/corpora/{corpus}',[ 'as' => 'admin.corpora.update', 'uses' => 'CorpusController@update'])->middleware('auth');
 Route::delete('/admin/corpora/{corpus}',[ 'as' => 'admin.corpora.destroy', 'uses' => 'CorpusController@destroy'])->middleware('auth');
 Route::get('/admin/corpora/{corpus}/{path?}',[ 'as' => 'admin.corpora.show', 'uses' => 'CorpusController@show'])->where('path', '.+')->middleware('auth');
@@ -59,6 +61,9 @@ Route::patch('/admin/roles/{role}',[ 'as' => 'admin.roles.update', 'uses' => 'Ro
 Route::delete('/admin/roles/{role}',[ 'as' => 'admin.roles.destroy', 'uses' => 'RoleController@destroy'])->middleware('auth');
 Route::get('/admin/userroles',[ 'as' => 'admin.roles.assignusers', 'uses' => 'RoleController@assignUsers'])->middleware('auth');
 Route::get('/admin/userroles/{corpusproject}/{user}',[ 'as' => 'admin.roles.assignroletocpbyuser', 'uses' => 'RoleController@assignRolesToUsers'])->middleware('auth');
+
+
+http://phpelastic.local/admin/roles/2/5/delete
 /** END ROLES  **/
 
 Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);

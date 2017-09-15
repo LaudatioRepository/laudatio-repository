@@ -299,4 +299,17 @@ class CorpusController extends Controller
 
         return Response::json($response);
     }
+
+    public function  destroyCorpusUser($corpusId,$userId){
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+
+        $corpus = Corpus::find($corpusId);
+        $corpus->users()->detach($userId);
+
+        $roles = Role::latest()->get();
+        return view('admin.useradmin.roles.index', compact('roles'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
+    }
 }

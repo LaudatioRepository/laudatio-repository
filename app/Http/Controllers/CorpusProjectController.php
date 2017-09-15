@@ -329,4 +329,17 @@ class CorpusProjectController extends Controller
 
         return Response::json($response);
     }
+
+    public function  destroyCorpusProjectUser($corpusProjectId,$userId){
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+
+        $corpusProject = CorpusProject::find($corpusProjectId);
+        $corpusProject->users()->detach($userId);
+
+        $roles = Role::latest()->get();
+        return view('admin.useradmin.roles.index', compact('roles'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
+    }
 }

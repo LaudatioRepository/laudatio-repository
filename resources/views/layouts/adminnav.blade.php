@@ -286,7 +286,7 @@
                                     <a href="/admin/roles/create">Create User Roles</a>
                                 </li>
                                 <li>
-                                    <a href="/admin/userroles">Assign User Roles</a>
+                                    <a href="/admin/userroles">Assign Super users</a>
                                 </li>
                             </ul>
                         </li>

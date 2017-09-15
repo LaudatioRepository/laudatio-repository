@@ -62,7 +62,7 @@
                                             @foreach($corpus->users as $user)
                                                 <li class="list-group-item">
 
-                                                    {{ $user->name }}
+                                                    {{ $user->name }} {{$user->id}}
                                                     @if(count($user_roles[$user->id]) > 0)
                                                         @foreach($user_roles[$user->id] as $user_role)
                                                             <span class="badge badge-default">{{$user_role}}</span>
