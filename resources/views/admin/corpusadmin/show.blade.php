@@ -21,6 +21,7 @@
                             <li class="active"><a href="#headers" data-toggle="tab">Metadata Headers</a></li>
                             <li><a href="#description" data-toggle="tab">Description</a></li>
                             <li><a href="#corpusprojects" data-toggle="tab">Corpus projects</a></li>
+                            <li><a href="#collaborators" data-toggle="tab">Collaborators</a></li>
                             <li><a href="#publications" data-toggle="tab">Publications</a></li>
                             <li><a href="#settings" data-toggle="tab">Settings</a></li>
                         </ul>
@@ -51,6 +52,39 @@
                                         </div>
                                     @endforeach
                                 </div>
+                            </div>
+                            <div class="tab-pane fade" id="collaborators">
+                                <h4>Collaborators</h4>
+                                <br />
+                                <div class="panel-group" id="accordion">
+                                    @if(count($corpus->users) > 0)
+                                        <ul class="list-group">
+                                            @foreach($corpus->users as $user)
+                                                <li class="list-group-item">
+
+                                                    {{ $user->name }}
+                                                    @if(count($user_roles[$user->id]) > 0)
+                                                        @foreach($user_roles[$user->id] as $user_role)
+                                                            <span class="badge badge-default">{{$user_role}}</span>
+                                                        @endforeach
+                                                    @else
+                                                        <span class="pull-right">
+                                                    Add roles <button type="button" class="btn btn-success btn-circle">
+                                                        <a href="/admin/userroles/{{$corpus->id}}/{{$user->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                                    </button>
+                                                    </span>
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+                                <span class="pull-right">
+                                    <button type="button" class="btn btn-success btn-circle">
+                                        <a href="{{ URL::route('admin.corpora.assignusers',$corpus->id)}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                    </button>
+                                    Add collaborators to the corpus project
+                                </span>
                             </div>
                             <div class="tab-pane  in active" id="headers">
                                 <a href="/admin/corpora/{{$corpus->id}}/{{$previouspath}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>

@@ -259,7 +259,7 @@ class CorpusProjectController extends Controller
 
         $roles = Role::where('super_user',0)->get();
 
-        
+
         return view('admin.useradmin.roles.assign_roles_to_user')
             ->with('corpusProject', $corpusproject)
             ->with('users', $users)

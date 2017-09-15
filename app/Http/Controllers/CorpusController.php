@@ -5,8 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Corpus;
 use App\CorpusProject;
+use App\User;
+use App\Role;
 use App\Custom\GitRepoInterface;
 use GrahamCampbell\Flysystem\FlysystemManager;
+use Response;
+use Log;
 
 class CorpusController extends Controller
 {
@@ -118,16 +122,24 @@ class CorpusController extends Controller
         $corpusPath = substr($corpusPath,0,strrpos($corpusPath,"/"));
 
 
-
-
         $fileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
         $folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
 
-        //dd($path." => ".print_r($fileData,1)." FOLDER: ".$folder);
+        $user_roles = array();
+        $corpusUsers = $corpus->users()->get();
+        foreach ($corpusUsers as $corpusUser){
+            if(!isset($user_roles[$corpusUser->id])){
+                $user_roles[$corpusUser->id] = array();
+            }
+
+            $role = Role::find($corpusUser->pivot->role_id);
+            array_push($user_roles[$corpusUser->id],$role->name);
+        }
 
 
         return view("admin.corpusadmin.show",["corpus" => $corpus, "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('user_roles',$user_roles)
             ->with('user',$user);
     }
 
@@ -204,5 +216,87 @@ class CorpusController extends Controller
         return view('admin.corpusadmin.index', compact('corpora'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
+    }
+
+
+    /**
+     * @param Corpus $corpus
+     * @return $this
+     */
+    public function assignCorpusUsers(Corpus $corpus) {
+
+        $isLoggedIn = \Auth::check();
+        $loggedInUser = \Auth::user();
+        $users = User::latest()->get();
+        $filteredList = array();
+
+        foreach ($users as $user){
+            if(!$corpus->users->contains($user)){
+                array_push($filteredList,$user);
+            }
+        }
+
+        $user_roles = array();
+        $corpusUsers = $corpus->users()->get();
+
+
+        foreach ($corpusUsers as $corpusUser){
+            $role = Role::find($corpusUser->pivot->role_id);
+
+            if(!isset($user_roles[$corpusUser->pivot->role_id])){
+                $user_roles[$corpusUser->pivot->role_id] = array();
+            }
+
+
+            array_push($user_roles[$corpusUser->pivot->role_id],$corpusUser->id);
+        }
+
+        $roles = Role::where('super_user',0)->get();
+
+
+        return view('admin.useradmin.roles.assign_corpusroles_to_user')
+            ->with('corpus', $corpus)
+            ->with('users', $users)
+            ->with('roles', $roles)
+            ->with('user_roles',$user_roles)
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('loggedInUser',$loggedInUser);
+
+    }
+
+    public function storeRelationsByProject(Request $request)
+    {
+
+        $input =$request ->all();
+        $msg = "";
+        if ($request->ajax()){
+            $msg .= "<p>Assigned the following roles to user </p>";
+            $role_users = $input['role_users'];
+            $corpus = Corpus::find($input['corpus_id']);
+            $msg .= "<ul>";
+            foreach($role_users as $roleId => $user_data) {
+                $role = Role::find($roleId);
+                if($role){
+                    $msg .= "<li>".$role->name."<ul>";
+                    foreach($user_data as $userId) {
+                        $user = User::find($userId);
+                        if($user) {
+                            $msg .= "<li>".$user->name."</li>";
+                            $corpus->users()->save($user,['role_id' => $roleId]);
+
+                        }
+                    }
+                    $msg .= "</ul></li>";
+                }
+            }
+            $msg .= "</ul>";
+        }
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $msg,
+        );
+
+        return Response::json($response);
     }
 }

@@ -30,14 +30,17 @@ Route::post('/admin/corpusprojects/{corpusproject}/users',[ 'as' => 'admin.corpu
 /** CORPORA  **/
 Route::get('/admin/corpora',[ 'as' => 'admin.corpora.index', 'uses' => 'CorpusController@index'])->middleware('auth');
 Route::get('/admin/corpora/create/{corpusproject}',[ 'as' => 'admin.corpora.create.', 'uses' => 'CorpusController@create'])->middleware('auth');
-Route::get('/admin/corpora/{corpus}/{path?}',[ 'as' => 'admin.corpora.show', 'uses' => 'CorpusController@show'])->where('path', '.+')->middleware('auth');
+Route::get('admin/corpora/assignusers/{corpus}',[ 'as' => 'admin.corpora.assignusers', 'uses' => 'CorpusController@assignCorpusUsers'])->middleware('auth');;
 Route::get('/admin/corpora/{corpus}/{filepath}/show',[ 'as' => 'admin.corpora.show', 'uses' => 'CorpusController@show'])->where('filepath', '.+')->middleware('auth');
 Route::post('/admin/corpora',[ 'as' => 'admin.corpora.store.', 'uses' => 'CorpusController@store'])->middleware('auth');
 Route::get('/admin/corpora/{corpus}/edit',[ 'as' => 'admin.corpora.edit', 'uses' => 'CorpusController@edit'])->middleware('auth');
 Route::get('/admin/corpora/{corpus}/delete',[ 'as' => 'admin.corpora.remove', 'uses' => 'CorpusController@delete'])->middleware('auth');
 Route::patch('/admin/corpora/{corpus}',[ 'as' => 'admin.corpora.update', 'uses' => 'CorpusController@update'])->middleware('auth');
 Route::delete('/admin/corpora/{corpus}',[ 'as' => 'admin.corpora.destroy', 'uses' => 'CorpusController@destroy'])->middleware('auth');
+Route::get('/admin/corpora/{corpus}/{path?}',[ 'as' => 'admin.corpora.show', 'uses' => 'CorpusController@show'])->where('path', '.+')->middleware('auth');
 /** END CORPORA  **/
+
+
 
 /** UPLOAD **/
 Route::get('/admin/upload/{dirname?}',['as' => 'gitRepo.upload.get', 'uses' => 'UploadController@uploadForm'])->where('dirname', '.+')->middleware('auth');

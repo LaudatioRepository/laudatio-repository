@@ -88,7 +88,7 @@
                 </div>
             </div>
             <br />
-            <button type="submit" value="Create" id="assignButton" class="btn btn-primary pull-right">Assign roles to {{$user->name}} for {{$corpusProject->name}}</button>
+            <button type="submit" value="Create" id="assignButton" class="btn btn-primary pull-right">Assign users with roles to {{$corpusProject->name}}</button>
         </div>
         <input type="hidden" id="_token" value="{{ csrf_token() }}" />
         <input type="hidden" id="project_id" value="{{$corpusProject->id}}" />
