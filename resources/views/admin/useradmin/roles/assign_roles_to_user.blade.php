@@ -67,10 +67,14 @@
                                                                 <ul class="list-group" id="ul_{{$loop->index}}">
                                                                     @endif
                                                                     @foreach($users as $user)
-                                                                        @if(!in_array($user->id,$user_roles[$role->id]))
+
+                                                                        @if(count($user_roles) > 0 && isset($user_roles[$role->id]))
+                                                                            @if(!in_array($user->id,$user_roles[$role->id]))
+                                                                                <li class="list-group-item"  data-userid="{{$user->id}}" ><i class="fa fa-user fa-fw"></i> {{$user->name}}</li>
+                                                                            @endif
+                                                                        @else
                                                                             <li class="list-group-item"  data-userid="{{$user->id}}" ><i class="fa fa-user fa-fw"></i> {{$user->name}}</li>
                                                                         @endif
-
                                                                     @endforeach
                                                                 </ul>
                                                 </div>
