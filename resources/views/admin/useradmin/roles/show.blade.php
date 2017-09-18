@@ -42,6 +42,7 @@
                                                         <a data-toggle="collapse" data-parent="#accordion" href="#{{$user->id}}" aria-expanded="false" class="collapsed">
                                                             {{ $user->name }}
                                                         </a>
+                                                        <span class="pull-right"> <a href="/admin/userroles/{{$role->id}}/{{$user->id}}/delete"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></a></span>
                                                     </span>
                                                 </div>
                                                 <div id="{{$user->id}}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
@@ -98,7 +99,7 @@
                                                                             <div class="panel-body">
                                                                                 <ul class="list-group">
                                                                                     @foreach($corpus_user_role['role_data'] as $corpus_role_data)
-                                                                                        <li class="list-group-item">{{$corpus_role_data['corpus_name']}} <span class="pull-right"><a href="/admin/corpora/{$corpus_role_data['corpus_id']}}/{{$corpus_user_role['user_id']}}/delete"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></a></span></li>
+                                                                                        <li class="list-group-item">{{$corpus_role_data['corpus_name']}} <span class="pull-right"><a href="/admin/corpora/{{$corpus_role_data['corpus_id']}}/{{$corpus_user_role['user_id']}}/delete"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></a></span></li>
                                                                                     @endforeach
                                                                                 </ul>
                                                                             </div>

@@ -246,12 +246,21 @@ class CorpusController extends Controller
             if(!isset($user_roles[$corpusUser->pivot->role_id])){
                 $user_roles[$corpusUser->pivot->role_id] = array();
             }
-
-
-            array_push($user_roles[$corpusUser->pivot->role_id],$corpusUser->id);
+                array_push($user_roles[$corpusUser->pivot->role_id],$corpusUser->id);
         }
 
-        $roles = Role::where('super_user',0)->get();
+        /*
+        $projects = $corpus->corpusprojects()->get();
+        $project_user_roles = array();
+
+        foreach ($projects as $project){
+            $projectUsers = $project->users()->get();
+            foreach ($projectUsers as $projectUser){
+                $project_user_roles[$projectUser->id] = $projectUser->pivot->role_id;
+            }
+        }
+*/
+        $roles = Role::where([['super_user','=',0],['role_type','!=','corpusproject']])->get();
 
 
         return view('admin.useradmin.roles.assign_corpusroles_to_user')

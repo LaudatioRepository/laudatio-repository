@@ -206,6 +206,8 @@ class GitFunction
         return $isAdded;
     }
 
+    public function initiateRepository($pat)
+
     public function commitFiles($path, $commitmessage){
         $isCommitted = false;
         $process = new Process("git commit -m \"".$commitmessage."\" ",$path);

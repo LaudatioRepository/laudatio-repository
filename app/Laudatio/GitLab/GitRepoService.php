@@ -43,13 +43,13 @@ class GitRepoService implements GitRepoInterface
             $flysystem->createDir($dirPath."/TEI-HEADERS/corpus");
             $flysystem->write($dirPath."/TEI-HEADERS/corpus/.info","Corpus header files for ".$corpusName);
             $flysystem->createDir($dirPath."/TEI-HEADERS/document");
-            $flysystem->write($dirPath."/TEI-HEADERS/document/.info","Document headers files for ".$corpusName);
-            $flysystem->createDir($dirPath."/TEI-HEADERS/preparation");
-            $flysystem->write($dirPath."/TEI-HEADERS/preparation/.info","Annotation preparation headers files for ".$corpusName);
+            $flysystem->write($dirPath."/TEI-HEADERS/document/.info","Document header file structure for ".$corpusName);
+            $flysystem->createDir($dirPath."/TEI-HEADERS/annotation");
+            $flysystem->write($dirPath."/TEI-HEADERS/annotation/.info","Annotation header file structure for ".$corpusName);
             $flysystem->createDir($dirPath."/CORPUS-DATA");
 
             $this->addFilesToRepository($dirPath,"TEI-HEADERS");
-            $this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
+            //$this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
 
         }
 
@@ -146,6 +146,11 @@ class GitRepoService implements GitRepoInterface
         return $isAdded;
     }
 
+    public function initiateRepository($path){
+        $gitFunction = new GitFunction();
+        $isInitiated;
+    }
+
     public function commitFilesToRepository($path,$commitMessage){
         $isCommitted = false;
         $gitFunction = new  GitFunction();
@@ -157,6 +162,7 @@ class GitRepoService implements GitRepoInterface
         }
         return $isCommitted;
     }
+
 
     /**
      * HELPERS

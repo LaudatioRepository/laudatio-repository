@@ -22,6 +22,13 @@
                             </div>
                             <br /><br />
                             <div class="form-group>">
+                                <label for="role_corpusproject">Corpus project role: <input type="radio" name="role_type" id="role_type" value="corpusproject" /></label>
+                            </div>
+                            <div class="form-group>">
+                                <label for="role_corpus">Corpus role: <input type="radio" name="role_type" id="role_type" value="corpus" /></label>
+                            </div>
+                            <br /><br />
+                            <div class="form-group>">
                                 <label for="role_superuser"><i class="fa fa-superpowers" aria-hidden="true"></i> Is super user <input type="checkbox" name="role_superuser" id="role_superuser" /></label>
                             </div>
                             <br /><br />

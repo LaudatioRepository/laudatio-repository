@@ -55,15 +55,22 @@ class RoleController extends Controller
             'role_name' => 'required'
         ]);
 
-
         $role_super_user = 0;
         if(request('role_superuser') == 'on'){
             $role_super_user = 1;
         }
 
+
+        $role_type = "";
+
+        if(request('role_type') != null){
+            $role_type = request('role_type');
+        }
+
         Role::create([
             "name" => request('role_name'),
             "description" => request('role_description'),
+            "role_type" => $role_type,
             'super_user' => $role_super_user
         ]);
 
@@ -279,6 +286,20 @@ class RoleController extends Controller
         );
 
         return Response::json($response);
+    }
+
+    public function removeRoleFromUser($roleId, $userId){
+        $isLoggedIn = \Auth::check();
+        $loggedInUser = \Auth::user();
+        $role = Role::find($roleId);
+        $user = User::find($userId);
+        $role->users()->detach($user);
+        $roles = Role::latest()->get();
+        session()->flash('message', $role->name.' was sucessfully revoked for user '.$user->name);
+
+        return view('admin.useradmin.roles.index', compact('roles'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$loggedInUser);
     }
 
     public function storeRelationsByProject(Request $request)
