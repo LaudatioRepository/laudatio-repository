@@ -144,7 +144,6 @@ class QueryBuilder
             $rangeQuery =  null;
             if($rangedatum != null && $rangedatum != ""){
                 if(strpos($rangeDataKey,"To") !== false || strpos($rangeDataKey,"to") !== false){
-                    Log::info("HASTO: ".print_r($rangedatum,1));
                     $rangeQuery = new RangeQuery(
                         $fieldMap[$rangeDataKey],
                         [
@@ -179,7 +178,6 @@ class QueryBuilder
         $search->addQuery($bool);
 
         $queryArray = $search->toArray();
-
         return $queryArray;
     }
 

@@ -61,6 +61,9 @@ const app = new Vue({
         documentsearched: false,
         documentloading: false,
         annotationsearched: false,
+        corpusCacheString: "",
+        documentCacheString: "",
+        annotationCacheString: "",
         annotationloading: false,
     },
     methods: {
@@ -107,6 +110,7 @@ const app = new Vue({
             this.corpusloading = true;
             this.corpusresults = [];
             this.corpussearched =  false;
+            this.corpusCacheString = "";
 
             let postDataCollection = [];
             var thereAreMore = false;
@@ -138,6 +142,7 @@ const app = new Vue({
                             [p]: corpusSearchObject[p]
                         }
                     );
+                    this.corpusCacheString += '|'+p+'|'+corpusSearchObject[p];
                 }
 
             }
@@ -180,7 +185,8 @@ const app = new Vue({
 
                 let postData = {
                     searchData: postDataCollection,
-                    scope: 'corpus'
+                    scope: 'corpus',
+                    cacheString: this.corpusCacheString
                 };
 
                 let corpus_ids = [];
@@ -206,7 +212,8 @@ const app = new Vue({
                         if(corpus_ids.length > 0) {
                             let documentPostData = {
                                 corpus_ids: corpus_ids,
-                                corpusRefs: corpusRefs
+                                corpusRefs: corpusRefs,
+                                cacheString: this.corpusCacheString
                             }
 
                             console.log("corpus_ids: "+corpus_ids)
@@ -254,7 +261,7 @@ const app = new Vue({
             this.documentloading = true;
             this.documentresults = [];
             this.documentsearched = false;
-
+            this.documentCacheString = "";
             let postDataCollection = [];
             var thereAreMore = false;
             var hasDateAndSize = false;
@@ -284,15 +291,17 @@ const app = new Vue({
                             [p]: documentSearchObject[p]
                         }
                     );
+                    this.documentCacheString += '|'+p+'|'+documentSearchObject[p];
                 }
 
             }
 
-            //console.log("POSTDATACOLLECTION: "+JSON.stringify(postDataCollection))
+
 
             if(postDataCollection.length > 0){
                 let postData = {
                     searchData: postDataCollection,
+                    cacheString: this.documentCacheString,
                     scope: 'document'
                 };
 
@@ -324,7 +333,7 @@ const app = new Vue({
                         {"mixedSearch" : "false"}
                     )
                 }
-
+                console.log("POSTDATACOLLECTION: "+JSON.stringify(postData))
 
                 window.axios.post('api/searchapi/searchDocument',JSON.stringify(postData)).then(res => {
                     this.documentsearched = true;
@@ -367,15 +376,17 @@ const app = new Vue({
 
                         let annotationPostData = {
                             documentRefs: documentRefs,
-                            document_ids: document_ids
+                            document_ids: document_ids,
+                            cacheString: this.documentCacheString,
                         };
 
 
                         let corpusPostData = {
                             documentRefs: documentRefs,
                             corpusRefs: corpusRefs,
+                            cacheString: this.documentCacheString
                         };
-
+                        console.log("annotationPostData: "+this.documentCacheString);
                         window.axios.post('api/searchapi/getAnnotationsByDocument', JSON.stringify(annotationPostData)).then(annotationRes => {
                             if (Object.keys(annotationRes.data.results).length > 0) {
                                 var annotationsByDocument = {}
@@ -388,6 +399,8 @@ const app = new Vue({
 
                         });
 
+
+                        //console.log("corpusPostData: "+JSON.stringify(corpusPostData));
                         window.axios.post('api/searchapi/getCorpusByDocument', JSON.stringify(corpusPostData)).then(corpusRes => {
 
                             if (Object.keys(corpusRes.data.results).length > 0) {
@@ -405,6 +418,7 @@ const app = new Vue({
                         let postDocumentData = {
                             documentRefs: documentRefs,
                             corpusRefs: corpusRefs,
+                            cacheString: this.documentCacheString
                         };
 
                         window.axios.post('api/searchapi/getCorpusTitlesByDocument',postDocumentData).then(corpusByDocumentRes => {
@@ -447,6 +461,9 @@ const app = new Vue({
             this.annotationsearched = false;
             let postAnnotationData = {}
             let postDataCollection = [];
+
+            this.annotationCacheString = "";
+
             for(var p in annotationSearchObject){
                 if(annotationSearchObject[p].length > 0){
                     postDataCollection.push(
@@ -454,13 +471,16 @@ const app = new Vue({
                             [p]: annotationSearchObject[p]
                         }
                     );
+                    this.annotationCacheString += '|'+p+'|'+annotationSearchObject[p];
                 }
 
             }
 
+
             if(postDataCollection.length > 0){
                 let postData = {
                     searchData: postDataCollection,
+                    cacheString: this.annotationCacheString,
                     scope: 'annotation'
                 };
 
@@ -530,6 +550,8 @@ const app = new Vue({
                         postAnnotationData.corpusRefs =  corpusRefs
                         postAnnotationData.documentRefs = documentRefs
                         postAnnotationData.annotationRefs = annotationRefs
+                        postAnnotationData.cacheString =  this.annotationCacheString;
+
 
                         window.axios.post('api/searchapi/getDocumentsByAnnotation',postAnnotationData).then(documentsByAnnotationRes => {
                             this.annotationsearched = true;

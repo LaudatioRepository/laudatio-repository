@@ -43307,6 +43307,9 @@ var app = new Vue({
         documentsearched: false,
         documentloading: false,
         annotationsearched: false,
+        corpusCacheString: "",
+        documentCacheString: "",
+        annotationCacheString: "",
         annotationloading: false
     },
     methods: {
@@ -43358,6 +43361,7 @@ var app = new Vue({
             this.corpusloading = true;
             this.corpusresults = [];
             this.corpussearched = false;
+            this.corpusCacheString = "";
 
             var postDataCollection = [];
             var thereAreMore = false;
@@ -43376,6 +43380,7 @@ var app = new Vue({
                     }
 
                     postDataCollection.push(_defineProperty({}, p, corpusSearchObject[p]));
+                    this.corpusCacheString += '|' + p + '|' + corpusSearchObject[p];
                 }
             }
 
@@ -43406,7 +43411,8 @@ var app = new Vue({
 
                 var postData = {
                     searchData: postDataCollection,
-                    scope: 'corpus'
+                    scope: 'corpus',
+                    cacheString: this.corpusCacheString
                 };
 
                 var corpus_ids = [];
@@ -43432,7 +43438,8 @@ var app = new Vue({
                         if (corpus_ids.length > 0) {
                             var documentPostData = {
                                 corpus_ids: corpus_ids,
-                                corpusRefs: corpusRefs
+                                corpusRefs: corpusRefs,
+                                cacheString: _this2.corpusCacheString
                             };
 
                             console.log("corpus_ids: " + corpus_ids);
@@ -43481,7 +43488,7 @@ var app = new Vue({
             this.documentloading = true;
             this.documentresults = [];
             this.documentsearched = false;
-
+            this.documentCacheString = "";
             var postDataCollection = [];
             var thereAreMore = false;
             var hasDateAndSize = false;
@@ -43498,14 +43505,14 @@ var app = new Vue({
                         }
                     }
                     postDataCollection.push(_defineProperty({}, p, documentSearchObject[p]));
+                    this.documentCacheString += '|' + p + '|' + documentSearchObject[p];
                 }
             }
-
-            //console.log("POSTDATACOLLECTION: "+JSON.stringify(postDataCollection))
 
             if (postDataCollection.length > 0) {
                 var postData = {
                     searchData: postDataCollection,
+                    cacheString: this.documentCacheString,
                     scope: 'document'
                 };
 
@@ -43529,6 +43536,7 @@ var app = new Vue({
                 } else {
                     postDataCollection.push({ "mixedSearch": "false" });
                 }
+                console.log("POSTDATACOLLECTION: " + JSON.stringify(postData));
 
                 window.axios.post('api/searchapi/searchDocument', JSON.stringify(postData)).then(function (res) {
                     _this3.documentsearched = true;
@@ -43562,14 +43570,16 @@ var app = new Vue({
 
                         var annotationPostData = {
                             documentRefs: documentRefs,
-                            document_ids: document_ids
+                            document_ids: document_ids,
+                            cacheString: _this3.documentCacheString
                         };
 
                         var corpusPostData = {
                             documentRefs: documentRefs,
-                            corpusRefs: corpusRefs
+                            corpusRefs: corpusRefs,
+                            cacheString: _this3.documentCacheString
                         };
-
+                        console.log("annotationPostData: " + _this3.documentCacheString);
                         window.axios.post('api/searchapi/getAnnotationsByDocument', JSON.stringify(annotationPostData)).then(function (annotationRes) {
                             if (Object.keys(annotationRes.data.results).length > 0) {
                                 var annotationsByDocument = {};
@@ -43581,6 +43591,7 @@ var app = new Vue({
                             _this3.annotationsByDocument = annotationsByDocument;
                         });
 
+                        //console.log("corpusPostData: "+JSON.stringify(corpusPostData));
                         window.axios.post('api/searchapi/getCorpusByDocument', JSON.stringify(corpusPostData)).then(function (corpusRes) {
 
                             if (Object.keys(corpusRes.data.results).length > 0) {
@@ -43595,7 +43606,8 @@ var app = new Vue({
 
                         var postDocumentData = {
                             documentRefs: documentRefs,
-                            corpusRefs: corpusRefs
+                            corpusRefs: corpusRefs,
+                            cacheString: _this3.documentCacheString
                         };
 
                         window.axios.post('api/searchapi/getCorpusTitlesByDocument', postDocumentData).then(function (corpusByDocumentRes) {
@@ -43635,15 +43647,20 @@ var app = new Vue({
             this.annotationsearched = false;
             var postAnnotationData = {};
             var postDataCollection = [];
+
+            this.annotationCacheString = "";
+
             for (var p in annotationSearchObject) {
                 if (annotationSearchObject[p].length > 0) {
                     postDataCollection.push(_defineProperty({}, p, annotationSearchObject[p]));
+                    this.annotationCacheString += '|' + p + '|' + annotationSearchObject[p];
                 }
             }
 
             if (postDataCollection.length > 0) {
                 var postData = {
                     searchData: postDataCollection,
+                    cacheString: this.annotationCacheString,
                     scope: 'annotation'
                 };
 
@@ -43696,6 +43713,7 @@ var app = new Vue({
                         postAnnotationData.corpusRefs = corpusRefs;
                         postAnnotationData.documentRefs = documentRefs;
                         postAnnotationData.annotationRefs = annotationRefs;
+                        postAnnotationData.cacheString = _this4.annotationCacheString;
 
                         window.axios.post('api/searchapi/getDocumentsByAnnotation', postAnnotationData).then(function (documentsByAnnotationRes) {
                             _this4.annotationsearched = true;

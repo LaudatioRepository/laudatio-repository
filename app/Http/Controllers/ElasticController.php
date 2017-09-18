@@ -8,7 +8,7 @@ use Cviebrock\LaravelElasticsearch\Facade;
 use Elasticsearch;
 use App\Laudatio\Elasticsearch\QueryBuilder;
 use App\Custom\ElasticsearchInterface;
-
+use Cache;
 use Log;
 
 class ElasticController extends Controller
@@ -84,47 +84,63 @@ class ElasticController extends Controller
 
     public function searchCorpusIndex(Request $request)
     {
-        $dateSearchKey = $this->ElasticService->checkForKey($request->searchData,'corpusyeartype');
-        $sizeSearchKey = $this->ElasticService->checkForKey($request->searchData,'corpussizetype');
-        $mixedSearch = $this->ElasticService->checkForKey($request->searchData,'mixedSearch');
 
-        $corpus_publication_publication_date = $this->ElasticService->checkForKey($request->searchData, 'corpus_publication_publication_date');
-        $corpusYearTo = $this->ElasticService->checkForKey($request->searchData,'corpusYearTo');
-        $corpus_size_value = $this->ElasticService->checkForKey($request->searchData,'corpus_size_value');
-        $corpusSizeTo = $this->ElasticService->checkForKey($request->searchData,'corpusSizeTo');
+        $resultData = null;
+        $cacheString = $request->cacheString;
 
-        $result = null;
+        if (Cache::has($cacheString.'|searchCorpusIndex')) {
+            $resultData = Cache::get($cacheString.'|searchCorpusIndex');
+            Log::info("GOT: ".$cacheString.'|searchCorpusIndex');
+        }
+        else{
+            $dateSearchKey = $this->ElasticService->checkForKey($request->searchData,'corpusyeartype');
+            $sizeSearchKey = $this->ElasticService->checkForKey($request->searchData,'corpussizetype');
+            $mixedSearch = $this->ElasticService->checkForKey($request->searchData,'mixedSearch');
 
-        if($mixedSearch == "false"){
-            if(isset($dateSearchKey) && $dateSearchKey != "" || isset($sizeSearchKey) && $sizeSearchKey != "") {
-                if($dateSearchKey == "range" && $sizeSearchKey == "range"){
-                    if(isset($corpus_publication_publication_date) && isset($corpusYearTo) && isset($corpus_size_value) && isset($corpusSizeTo)){
-                        $obj = app()->make('stdClass');
-                        $obj->corpus_size_value = $corpus_size_value;
-                        $obj->corpusSizeTo = $corpusSizeTo;
-                        $obj->sizeSearchKey = $sizeSearchKey;
-                        $obj->corpus_publication_publication_date = $corpus_publication_publication_date;
-                        $obj->corpusYearTo = $corpusYearTo;
-                        $obj->dateSearchKey = $dateSearchKey;
-                        $result = $this->ElasticService->rangeSearch($obj);
+            $corpus_publication_publication_date = $this->ElasticService->checkForKey($request->searchData, 'corpus_publication_publication_date');
+            $corpusYearTo = $this->ElasticService->checkForKey($request->searchData,'corpusYearTo');
+            $corpus_size_value = $this->ElasticService->checkForKey($request->searchData,'corpus_size_value');
+            $corpusSizeTo = $this->ElasticService->checkForKey($request->searchData,'corpusSizeTo');
+
+            $result = null;
+
+            if($mixedSearch == "false"){
+                if(isset($dateSearchKey) && $dateSearchKey != "" || isset($sizeSearchKey) && $sizeSearchKey != "") {
+                    if($dateSearchKey == "range" && $sizeSearchKey == "range"){
+                        if(isset($corpus_publication_publication_date) && isset($corpusYearTo) && isset($corpus_size_value) && isset($corpusSizeTo)){
+                            $obj = app()->make('stdClass');
+                            $obj->corpus_size_value = $corpus_size_value;
+                            $obj->corpusSizeTo = $corpusSizeTo;
+                            $obj->sizeSearchKey = $sizeSearchKey;
+                            $obj->corpus_publication_publication_date = $corpus_publication_publication_date;
+                            $obj->corpusYearTo = $corpusYearTo;
+                            $obj->dateSearchKey = $dateSearchKey;
+                            $result = $this->ElasticService->rangeSearch($obj);
+                        }
                     }
-                }
-                else if($sizeSearchKey == "range"){
-                    if(isset($corpus_size_value) && isset($corpusSizeTo)){
-                        $obj = app()->make('stdClass');
-                        $obj->corpus_size_value = $corpus_size_value;
-                        $obj->corpusSizeTo = $corpusSizeTo;
-                        $obj->sizeSearchKey = $sizeSearchKey;
-                        $result = $this->ElasticService->rangeSearch($obj);
+                    else if($sizeSearchKey == "range"){
+                        if(isset($corpus_size_value) && isset($corpusSizeTo)){
+                            $obj = app()->make('stdClass');
+                            $obj->corpus_size_value = $corpus_size_value;
+                            $obj->corpusSizeTo = $corpusSizeTo;
+                            $obj->sizeSearchKey = $sizeSearchKey;
+                            $result = $this->ElasticService->rangeSearch($obj);
+                        }
                     }
-                }
-                else if($dateSearchKey == "range"){
-                    if(isset($corpus_publication_publication_date) && isset($corpusYearTo)){
-                        $obj = app()->make('stdClass');
-                        $obj->corpus_publication_publication_date = $corpus_publication_publication_date;
-                        $obj->corpusYearTo = $corpusYearTo;
-                        $obj->dateSearchKey = $dateSearchKey;
-                        $result = $this->ElasticService->rangeSearch($obj);
+                    else if($dateSearchKey == "range"){
+                        if(isset($corpus_publication_publication_date) && isset($corpusYearTo)){
+                            $obj = app()->make('stdClass');
+                            $obj->corpus_publication_publication_date = $corpus_publication_publication_date;
+                            $obj->corpusYearTo = $corpusYearTo;
+                            $obj->dateSearchKey = $dateSearchKey;
+                            $result = $this->ElasticService->rangeSearch($obj);
+                        }
+                    }
+                    else{
+                        $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpusyeartype');
+                        $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpussizetype');
+                        $request->searchData = $this->ElasticService->removeKey($request->searchData,'mixedSearch');
+                        $result = $this->ElasticService->searchCorpusIndex($request->searchData);
                     }
                 }
                 else{
@@ -135,54 +151,54 @@ class ElasticController extends Controller
                 }
             }
             else{
+                $obj = app()->make('stdClass');
+                $obj->range = app()->make('stdClass');
+                $obj->fields = array();
+
+                if(isset($dateSearchKey) && $dateSearchKey != "" || isset($sizeSearchKey) && $sizeSearchKey != "") {
+                    if(isset($corpus_publication_publication_date) && isset($corpusYearTo) && isset($corpus_size_value) && isset($corpusSizeTo)){
+                        $obj->range->corpus_size_value = $corpus_size_value;
+                        $obj->range->corpusSizeTo = $corpusSizeTo;
+                        $obj->range->corpus_publication_publication_date = $corpus_publication_publication_date;
+                        $obj->range->corpusYearTo = $corpusYearTo;
+                    }
+                }//end dateSearch
                 $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpusyeartype');
+                $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpus_publication_publication_date');
+                $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpusYearTo');
                 $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpussizetype');
+                $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpus_size_value');
+                $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpusSizeTo');
                 $request->searchData = $this->ElasticService->removeKey($request->searchData,'mixedSearch');
-                $result = $this->ElasticService->searchCorpusIndex($request->searchData);
-            }
-        }
-        else{
-            $obj = app()->make('stdClass');
-            $obj->range = app()->make('stdClass');
-            $obj->fields = array();
 
-            if(isset($dateSearchKey) && $dateSearchKey != "" || isset($sizeSearchKey) && $sizeSearchKey != "") {
-                if(isset($corpus_publication_publication_date) && isset($corpusYearTo) && isset($corpus_size_value) && isset($corpusSizeTo)){
-                    $obj->range->corpus_size_value = $corpus_size_value;
-                    $obj->range->corpusSizeTo = $corpusSizeTo;
-                    $obj->range->corpus_publication_publication_date = $corpus_publication_publication_date;
-                    $obj->range->corpusYearTo = $corpusYearTo;
-                }
-            }//end dateSearch
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpusyeartype');
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpus_publication_publication_date');
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpusYearTo');
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpussizetype');
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpus_size_value');
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'corpusSizeTo');
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'mixedSearch');
-
-            foreach ($request->searchData as $item) {
-                if(count($item) > 0){
-                    foreach ($item as $key => $value){
-                        array_push($obj->fields,array($key => $value));
+                foreach ($request->searchData as $item) {
+                    if(count($item) > 0){
+                        foreach ($item as $key => $value){
+                            array_push($obj->fields,array($key => $value));
+                        }
                     }
                 }
+
+
+                $result = $this->ElasticService->searchCorpusIndex($obj);
+
             }
 
 
-            $result = $this->ElasticService->searchCorpusIndex($obj);
+
+            $resultData = array(
+                'error' => false,
+                'milliseconds' => $result['took'],
+                'maxscore' => $result['hits']['max_score'],
+                'results' => $result['hits']['hits'],
+                'total' => $result['hits']['total']
+            );
+            Cache::forever($cacheString.'|searchCorpusIndex', $resultData);
+            Log::info("SET: ".$cacheString.'|searchCorpusIndex');
         }
 
 
 
-        $resultData = array(
-            'error' => false,
-            'milliseconds' => $result['took'],
-            'maxscore' => $result['hits']['max_score'],
-            'results' => $result['hits']['hits'],
-            'total' => $result['hits']['total']
-        );
         return response(
             $resultData,
             200
@@ -192,47 +208,62 @@ class ElasticController extends Controller
     public function searchDocumentIndex(Request $request)
     {
 
-        $dateSearchKey = $this->ElasticService->checkForKey($request->searchData,'documentyeartype');
-        $sizeSearchKey = $this->ElasticService->checkForKey($request->searchData,'documentsizetype');
-        $mixedSearch = $this->ElasticService->checkForKey($request->searchData,'mixedSearch');
+        $resultData = null;
+        $cacheString = $request->cacheString;
+        if (Cache::has($cacheString.'|searchDocumentIndex')) {
+            $resultData = Cache::get($cacheString.'|searchDocumentIndex');
+            Log::info("GOT: ".$cacheString.'|searchDocumentIndex');
+        }
+        else{
 
-        $document_publication_publishing_date = $this->ElasticService->checkForKey($request->searchData,'document_publication_publishing_date');
-        $document_publication_publishing_date_to  = $this->ElasticService->checkForKey($request->searchData,'document_publication_publishing_date_to');
-        $document_size_extent = $this->ElasticService->checkForKey($request->searchData,'document_size_extent');
-        $document_size_extent_to = $this->ElasticService->checkForKey($request->searchData,'document_size_extent_to');
-        $result = null;
+            $dateSearchKey = $this->ElasticService->checkForKey($request->searchData,'documentyeartype');
+            $sizeSearchKey = $this->ElasticService->checkForKey($request->searchData,'documentsizetype');
+            $mixedSearch = $this->ElasticService->checkForKey($request->searchData,'mixedSearch');
 
-        if($mixedSearch == "false"){
-            if(isset($dateSearchKey) && $dateSearchKey != "" || isset($sizeSearchKey) && $sizeSearchKey != "") {
-                if($dateSearchKey == "range" && $sizeSearchKey == "range") {
-                    if(isset($document_publication_publishing_date) && isset($document_publication_publishing_date_to) && isset($document_size_extent) && isset($document_size_extent_to)){
-                        $obj = app()->make('stdClass');
-                        $obj->document_publication_publishing_date = $document_publication_publishing_date;
-                        $obj->document_publication_publishing_date_to = $document_publication_publishing_date_to;
-                        $obj->document_size_extent = $document_size_extent;
-                        $obj->document_size_extent_to = $document_size_extent_to;
-                        $obj->sizeSearchKey = $sizeSearchKey;
-                        $obj->dateSearchKey = $dateSearchKey;
-                        $result = $this->ElasticService->rangeSearch($obj);
+            $document_publication_publishing_date = $this->ElasticService->checkForKey($request->searchData,'document_publication_publishing_date');
+            $document_publication_publishing_date_to  = $this->ElasticService->checkForKey($request->searchData,'document_publication_publishing_date_to');
+            $document_size_extent = $this->ElasticService->checkForKey($request->searchData,'document_size_extent');
+            $document_size_extent_to = $this->ElasticService->checkForKey($request->searchData,'document_size_extent_to');
+            $result = null;
+
+            if($mixedSearch == "false"){
+                if(isset($dateSearchKey) && $dateSearchKey != "" || isset($sizeSearchKey) && $sizeSearchKey != "") {
+                    if($dateSearchKey == "range" && $sizeSearchKey == "range") {
+                        if(isset($document_publication_publishing_date) && isset($document_publication_publishing_date_to) && isset($document_size_extent) && isset($document_size_extent_to)){
+                            $obj = app()->make('stdClass');
+                            $obj->document_publication_publishing_date = $document_publication_publishing_date;
+                            $obj->document_publication_publishing_date_to = $document_publication_publishing_date_to;
+                            $obj->document_size_extent = $document_size_extent;
+                            $obj->document_size_extent_to = $document_size_extent_to;
+                            $obj->sizeSearchKey = $sizeSearchKey;
+                            $obj->dateSearchKey = $dateSearchKey;
+                            $result = $this->ElasticService->rangeSearch($obj);
+                        }
                     }
-                }
-                else if($dateSearchKey == "range"){
-                    if(isset($document_publication_publishing_date) && isset($document_publication_publishing_date_to)){
-                        $obj = app()->make('stdClass');
-                        $obj->document_publication_publishing_date = $document_publication_publishing_date;
-                        $obj->document_publication_publishing_date_to = $document_publication_publishing_date_to;
-                        $obj->dateSearchKey = $dateSearchKey;
-                        $result = $this->ElasticService->rangeSearch($obj);
-                    }
+                    else if($dateSearchKey == "range"){
+                        if(isset($document_publication_publishing_date) && isset($document_publication_publishing_date_to)){
+                            $obj = app()->make('stdClass');
+                            $obj->document_publication_publishing_date = $document_publication_publishing_date;
+                            $obj->document_publication_publishing_date_to = $document_publication_publishing_date_to;
+                            $obj->dateSearchKey = $dateSearchKey;
+                            $result = $this->ElasticService->rangeSearch($obj);
+                        }
 
-                }
-                else if($sizeSearchKey == "range"){
-                    if(isset($document_size_extent) && isset($document_size_extent_to)){
-                        $obj = app()->make('stdClass');
-                        $obj->document_size_extent = $document_size_extent;
-                        $obj->document_size_extent_to = $document_size_extent_to;
-                        $obj->sizeSearchKey = $sizeSearchKey;
-                        $result = $this->ElasticService->rangeSearch($obj);
+                    }
+                    else if($sizeSearchKey == "range"){
+                        if(isset($document_size_extent) && isset($document_size_extent_to)){
+                            $obj = app()->make('stdClass');
+                            $obj->document_size_extent = $document_size_extent;
+                            $obj->document_size_extent_to = $document_size_extent_to;
+                            $obj->sizeSearchKey = $sizeSearchKey;
+                            $result = $this->ElasticService->rangeSearch($obj);
+                        }
+                    }
+                    else {
+                        $request->searchData = $this->ElasticService->removeKey($request->searchData,'documentyeartype');
+                        $request->searchData = $this->ElasticService->removeKey($request->searchData,'documentsizetype');
+                        $request->searchData = $this->ElasticService->removeKey($request->searchData,'mixedSearch');
+                        $result = $this->ElasticService->searchDocumentIndex($request->searchData);
                     }
                 }
                 else {
@@ -241,62 +272,57 @@ class ElasticController extends Controller
                     $request->searchData = $this->ElasticService->removeKey($request->searchData,'mixedSearch');
                     $result = $this->ElasticService->searchDocumentIndex($request->searchData);
                 }
+
             }
             else {
+
+                $obj = app()->make('stdClass');
+                $obj->range = app()->make('stdClass');
+                $obj->fields = array();
+
+                if(isset($dateSearchKey) && $dateSearchKey != "" || isset($sizeSearchKey) && $sizeSearchKey != "") {
+                    //Log::info("DOCUMENTSEARCH: ".print_r($request->searchData,1));
+
+
+                    if(isset($document_publication_publishing_date) || isset($document_publication_publishing_date_to) || isset($document_size_extent) || isset($document_size_extent_to)){
+                        $obj->range->document_size_extent = $document_size_extent;
+                        $obj->range->document_size_extent_to = $document_size_extent_to;
+                        $obj->range->document_publication_publishing_date = $document_publication_publishing_date;
+                        $obj->range->document_publication_publishing_date_to = $document_publication_publishing_date_to;
+                    }
+                }//end dateSearch
                 $request->searchData = $this->ElasticService->removeKey($request->searchData,'documentyeartype');
+                $request->searchData = $this->ElasticService->removeKey($request->searchData,'document_publication_publishing_date');
+                $request->searchData = $this->ElasticService->removeKey($request->searchData,'document_publication_publishing_date_to');
                 $request->searchData = $this->ElasticService->removeKey($request->searchData,'documentsizetype');
+                $request->searchData = $this->ElasticService->removeKey($request->searchData,'document_size_extent');
+                $request->searchData = $this->ElasticService->removeKey($request->searchData,'document_size_extent_to');
                 $request->searchData = $this->ElasticService->removeKey($request->searchData,'mixedSearch');
-                $result = $this->ElasticService->searchDocumentIndex($request->searchData);
-            }
 
-        }
-        else {
-
-            $obj = app()->make('stdClass');
-            $obj->range = app()->make('stdClass');
-            $obj->fields = array();
-
-            if(isset($dateSearchKey) && $dateSearchKey != "" || isset($sizeSearchKey) && $sizeSearchKey != "") {
-                //Log::info("DOCUMENTSEARCH: ".print_r($request->searchData,1));
-
-
-                if(isset($document_publication_publishing_date) || isset($document_publication_publishing_date_to) || isset($document_size_extent) || isset($document_size_extent_to)){
-                    $obj->range->document_size_extent = $document_size_extent;
-                    $obj->range->document_size_extent_to = $document_size_extent_to;
-                    $obj->range->document_publication_publishing_date = $document_publication_publishing_date;
-                    $obj->range->document_publication_publishing_date_to = $document_publication_publishing_date_to;
-                }
-            }//end dateSearch
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'documentyeartype');
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'document_publication_publishing_date');
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'document_publication_publishing_date_to');
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'documentsizetype');
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'document_size_extent');
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'document_size_extent_to');
-            $request->searchData = $this->ElasticService->removeKey($request->searchData,'mixedSearch');
-
-            foreach ($request->searchData as $item) {
-                if(count($item) > 0){
-                    foreach ($item as $key => $value){
-                        array_push($obj->fields,array($key => $value));
+                foreach ($request->searchData as $item) {
+                    if(count($item) > 0){
+                        foreach ($item as $key => $value){
+                            array_push($obj->fields,array($key => $value));
+                        }
                     }
                 }
+                $result = $this->ElasticService->searchDocumentIndex($obj);
             }
-            $result = $this->ElasticService->searchDocumentIndex($obj);
+
+
+
+            $resultData = array(
+                'error' => false,
+                'milliseconds' => $result['took'],
+                'maxscore' => $result['hits']['max_score'],
+                'results' => $result['hits']['hits'],
+                'total' => $result['hits']['total']
+            );
+            Cache::forever($cacheString.'|searchDocumentIndex', $resultData);
+            Log::info("SET: ".$cacheString.'|searchDocumentIndex');
         }
 
 
-
-
-
-
-        $resultData = array(
-            'error' => false,
-            'milliseconds' => $result['took'],
-            'maxscore' => $result['hits']['max_score'],
-            'results' => $result['hits']['hits'],
-            'total' => $result['hits']['total']
-        );
         return response(
             $resultData,
             200
@@ -349,75 +375,146 @@ class ElasticController extends Controller
     }
 
     public function getCorpusByDocument(Request $request) {
-        $result = $this->ElasticService->getCorpusByDocument($request->corpusRefs, $request->documentRefs);
-        //Log::info("documentDataING: ".print_r($request->corpusRefs,1));
-        $resultdata =  array(
-            'error' => false,
-            'results' => $result
-        );
+        $resultData = null;
+        $cacheString = $request->cacheString;
+
+        if (Cache::has($cacheString.'|getCorpusByDocument')) {
+            $resultData = Cache::get($cacheString.'|getCorpusByDocument');
+            Log::info("GOT: ".$cacheString.'|getCorpusByDocument');
+        }
+        else{
+            $result = $this->ElasticService->getCorpusByDocument($request->corpusRefs, $request->documentRefs);
+            $resultData =  array(
+                'error' => false,
+                'results' => $result
+            );
+            Cache::forever($cacheString.'|getCorpusByDocument', $resultData);
+            Log::info("SET: ".$cacheString.'|getCorpusByDocument');
+        }
+
+
         return response(
-            $resultdata,
+            $resultData,
             200
         );
     }
 
     public function getAnnotationsByDocument(Request $request){
-        $result = $this->ElasticService->getAnnotationByDocument($request->document_ids,$request->documentRefs);
-        $resultdata =  array(
-            'error' => false,
-            'results' => $result
-        );
+        $resultData = null;
+        $cacheString = $request->cacheString;
+        Log::info("TIME TO GET ANNOS: ".$cacheString.'|getAnnotationsByDocument');
+        //Cache::flush();
+
+        if (Cache::has($cacheString.'|getAnnotationsByDocument')) {
+            Log::info("GOT: ".$cacheString.'|getAnnotationsByDocument');
+            $resultData = Cache::get($cacheString.'|getAnnotationsByDocument');
+
+        }
+        else{
+            $result = $this->ElasticService->getAnnotationByDocument($request->document_ids,$request->documentRefs);
+            $resultData =  array(
+                'error' => false,
+                'results' => $result
+            );
+            Cache::forever($cacheString.'|getAnnotationsByDocument', $resultData);
+            Log::info("SET: ".$cacheString.'|getAnnotationsByDocument');
+        }
+
         return response(
-            $resultdata,
+            $resultData,
             200
         );
     }
 
 
     public function getDocumentsByCorpus(Request $request){
-        $result = $this->ElasticService->getDocumentByCorpus($request->corpus_ids,$request->corpusRefs);
-        $resultdata =  array(
-            'error' => false,
-            'results' => $result
-        );
+
+        $resultData = null;
+        $cacheString = $request->cacheString;
+
+        if (Cache::has($cacheString.'|getDocumentsByCorpus')) {
+            $resultData = Cache::get($cacheString.'|getDocumentsByCorpus');
+        }
+        else{
+            $result = $this->ElasticService->getDocumentByCorpus($request->corpus_ids,$request->corpusRefs);
+            $resultData =  array(
+                'error' => false,
+                'results' => $result
+            );
+            Cache::forever($cacheString.'|getDocumentsByCorpus', $resultData);
+        }
+
         return response(
-            $resultdata,
+            $resultData,
             200
         );
     }
 
     public function getAnnotationByCorpus(Request $request){
-        $result = $this->ElasticService->getAnnotationByCorpus($request->corpus_ids,$request->corpusRefs);
-        $resultdata =  array(
-            'error' => false,
-            'results' => $result
-        );
+
+        $resultData = null;
+        $cacheString = $request->cacheString;
+
+        if (Cache::has($cacheString.'|getAnnotationByCorpus')) {
+            $resultData = Cache::get($cacheString.'|getAnnotationByCorpus');
+        }
+        else{
+            $result = $this->ElasticService->getAnnotationByCorpus($request->corpus_ids,$request->corpusRefs);
+            $resultData =  array(
+                'error' => false,
+                'results' => $result
+            );
+            Cache::forever($cacheString.'|getAnnotationByCorpus', $resultData);
+        }
+
         return response(
-            $resultdata,
+            $resultData,
             200
         );
     }
 
     public function getDocumentsByAnnotation(Request $request){
-        $result = $this->ElasticService->getDocumentsByAnnotation($request->documentRefs,$request->annotationRefs);
-        $resultdata =  array(
-            'error' => false,
-            'results' => $result
-        );
+
+        $resultData = null;
+        $cacheString = $request->cacheString;
+
+
+        if (Cache::has($cacheString.'|getDocumentsByAnnotation')) {
+            $resultData = Cache::get($cacheString.'|getDocumentsByAnnotation');
+        }
+        else{
+            $result = $this->ElasticService->getDocumentsByAnnotation($request->documentRefs,$request->annotationRefs);
+            $resultData =  array(
+                'error' => false,
+                'results' => $result
+            );
+            Cache::forever($cacheString.'|getDocumentsByAnnotation', $resultData);
+        }
+
         return response(
-            $resultdata,
+            $resultData,
             200
         );
     }
 
     public function getCorporaByAnnotation(Request $request){
-        $result = $this->ElasticService->getCorporaByAnnotation($request->corpusRefs,$request->annotationRefs);
-        $resultdata =  array(
-            'error' => false,
-            'results' => $result
-        );
+        $resultData = null;
+        $cacheString = $request->cacheString;
+
+        if (Cache::has($cacheString.'|getCorporaByAnnotation')) {
+            $resultData = Cache::get($cacheString.'|getCorporaByAnnotation');
+        }
+        else{
+            $result = $this->ElasticService->getCorporaByAnnotation($request->corpusRefs,$request->annotationRefs);
+            $resultData =  array(
+                'error' => false,
+                'results' => $result
+            );
+            Cache::forever($cacheString.'|getCorporaByAnnotation', $resultData);
+        }
+
         return response(
-            $resultdata,
+            $resultData,
             200
         );
     }
@@ -490,20 +587,45 @@ class ElasticController extends Controller
 
     public function searchAnnotationIndex(Request $request)
     {
-        $result = $this->ElasticService->searchAnnotationIndex($request->searchData);
 
-        $resultData = array(
-            'error' => false,
-            'milliseconds' => $result['took'],
-            'maxscore' => $result['hits']['max_score'],
-            'results' => $result['hits']['hits'],
-            'total' => $result['hits']['total']
-        );
-        //Log::info("GOT: ".print_r($resultData,1));
+        $resultData = null;
+        $cacheString = $request->cacheString;
+
+        if (Cache::has($cacheString.'|searchAnnotationIndex')) {
+            $resultData = Cache::get($cacheString.'|searchAnnotationIndex');
+            Log::info("GOT : ".$cacheString.'|searchAnnotationIndex');
+        }
+        else{
+            $result = $this->ElasticService->searchAnnotationIndex($request->searchData);
+            $resultData = array(
+                'error' => false,
+                'milliseconds' => $result['took'],
+                'maxscore' => $result['hits']['max_score'],
+                'results' => $result['hits']['hits'],
+                'total' => $result['hits']['total']
+            );
+            Cache::forever($cacheString.'|searchAnnotationIndex', $resultData);
+            Log::info("SET : ".$cacheString.'|searchAnnotationIndex');
+        }
+
+
         return response(
             $resultData,
             200
         );
+    }
+
+    public function createKeyFromQuery($data) {
+        $createdKey = "";
+        if($data){
+            foreach ($data as $item){
+                foreach ($item as $key => $value){
+                    $createdKey .= "|".$key."|".$value;
+                }
+            }
+        }
+
+        return $createdKey;
     }
 
     public function truncateIndex(Request $request)

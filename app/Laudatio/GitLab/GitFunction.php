@@ -205,7 +205,7 @@ class GitFunction
 
         return $isAdded;
     }
-    
+
 
     public function commitFiles($path, $commitmessage){
         $isCommitted = false;
@@ -240,6 +240,23 @@ class GitFunction
         }
 
         return $isAdded;
+    }
+
+    public function initiateRepository($path){
+        $isInitiated = false;
+        $process = new Process("git init",$this->basePath."/".$path);
+        $process->setTimeout(3600);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            $isInitiated = true;
+        }
+        return $isInitiated;
     }
 
     public function deleteFiles($path){

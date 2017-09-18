@@ -522,7 +522,6 @@ class ElasticService implements ElasticsearchInterface
             '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
             //'_source_exclude' => ['message']
         ];
-        Log::info("PARAMS: ".print_r($params,1));
 
         $results = Elasticsearch::search($params);
         return $results;

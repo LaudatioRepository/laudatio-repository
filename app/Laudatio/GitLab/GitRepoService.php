@@ -48,6 +48,7 @@ class GitRepoService implements GitRepoInterface
             $flysystem->write($dirPath."/TEI-HEADERS/annotation/.info","Annotation header file structure for ".$corpusName);
             $flysystem->createDir($dirPath."/CORPUS-DATA");
 
+            //$this->initiateRepository($dirPath);
             $this->addFilesToRepository($dirPath,"TEI-HEADERS");
             //$this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
 
@@ -59,6 +60,7 @@ class GitRepoService implements GitRepoInterface
     public function getCorpusFiles($flysystem,$path = ""){
         $gitFunction = new GitFunction();
         $projects = array();
+        //dd($path);
         if($path == ""){
             $projects = $flysystem->listContents();
         }
@@ -66,7 +68,7 @@ class GitRepoService implements GitRepoInterface
             $projects = $flysystem->listContents($path);
         }
 
-        //dd($path);
+        //dd($projects);
         for ($i = 0; $i < count($projects);$i++){
             $foldercount = count($flysystem->listContents($projects[$i]['path']));
             $projects[$i]['foldercount'] = $foldercount;
@@ -148,7 +150,8 @@ class GitRepoService implements GitRepoInterface
 
     public function initiateRepository($path){
         $gitFunction = new GitFunction();
-        $isInitiated;
+        $isInitiated = $gitFunction->initiateRepository($path);
+        return $isInitiated;
     }
 
     public function commitFilesToRepository($path,$commitMessage){
