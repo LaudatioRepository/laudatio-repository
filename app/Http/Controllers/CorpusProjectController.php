@@ -72,7 +72,7 @@ class CorpusProjectController extends Controller
 
         // Create the directory structure for the Corpus Project
         $filePath = $this->GitRepoService->createProjectFileStructure($this->flysystem,request('corpusproject_name'));
-        $this->GitRepoService->createGitProject($filePath);
+        //$this->GitRepoService->createGitProject($filePath);
         if($filePath){
             CorpusProject::create([
                 'name' => request('corpusproject_name'),
