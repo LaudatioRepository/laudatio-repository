@@ -111,6 +111,9 @@ const app = new Vue({
             this.corpusresults = [];
             this.corpussearched =  false;
             this.corpusCacheString = "";
+            this.$store.dispatch('clearCorpus',[])
+            this.$store.dispatch('clearDocuments',[])
+            this.$store.dispatch('clearAnnotations',[])
 
             let postDataCollection = [];
             var thereAreMore = false;
@@ -262,6 +265,9 @@ const app = new Vue({
             this.documentresults = [];
             this.documentsearched = false;
             this.documentCacheString = "";
+            this.$store.dispatch('clearCorpus',[])
+            this.$store.dispatch('clearDocuments',[])
+            this.$store.dispatch('clearAnnotations',[])
             let postDataCollection = [];
             var thereAreMore = false;
             var hasDateAndSize = false;
@@ -448,9 +454,9 @@ const app = new Vue({
                             }
 
                         });
-
+                        this.documentloading = false;
                     }
-                    this.documentloading = false;
+
                 });
             }
         },
@@ -463,6 +469,9 @@ const app = new Vue({
             let postDataCollection = [];
 
             this.annotationCacheString = "";
+            this.$store.dispatch('clearCorpus',[])
+            this.$store.dispatch('clearDocuments',[])
+            this.$store.dispatch('clearAnnotations',[])
 
             for(var p in annotationSearchObject){
                 if(annotationSearchObject[p].length > 0){

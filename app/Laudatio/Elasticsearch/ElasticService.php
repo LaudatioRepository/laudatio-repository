@@ -57,8 +57,8 @@ class ElasticService implements ElasticsearchInterface
             'index' => $index,
             'type' => $type,
             'id' => $id,
-            '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
-            //'_source_exclude' => ['message']
+            //'_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
+            '_source_exclude' => ['message']
         ];
 
         $response = Elasticsearch::get($params);
@@ -476,10 +476,10 @@ class ElasticService implements ElasticsearchInterface
                 'body' => $queryBody,
                 '_source_exclude' => ['message']
             ];
-            Log::info("queryBody : ".print_r($queryBody,1));
+            //Log::info("queryBody : ".print_r($queryBody,1));
 
             $results = Elasticsearch::search($params);
-            Log::info("results : ".print_r($results,1));
+            //Log::info("results : ".print_r($results,1));
             return $results;
         }
         else{

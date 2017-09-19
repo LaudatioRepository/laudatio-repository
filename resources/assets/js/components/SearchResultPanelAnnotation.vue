@@ -50,7 +50,6 @@
             emitAnnotationRelations: function(annotationId) {
                 this.$store.dispatch('clearCorpus',[])
                 this.$store.dispatch('clearDocuments',[])
-                this.$store.dispatch('clearAnnotations',[])
                 this.$store.dispatch('corpusByAnnotation',this.corpusbyannotation[annotationId])
                 this.$store.dispatch('documentByAnnotation',this.documentsbyannotation[annotationId])
             }

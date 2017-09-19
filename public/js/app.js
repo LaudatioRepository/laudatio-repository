@@ -43362,6 +43362,9 @@ var app = new Vue({
             this.corpusresults = [];
             this.corpussearched = false;
             this.corpusCacheString = "";
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
 
             var postDataCollection = [];
             var thereAreMore = false;
@@ -43489,6 +43492,9 @@ var app = new Vue({
             this.documentresults = [];
             this.documentsearched = false;
             this.documentCacheString = "";
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
             var postDataCollection = [];
             var thereAreMore = false;
             var hasDateAndSize = false;
@@ -43633,8 +43639,8 @@ var app = new Vue({
                                 });
                             }
                         });
+                        _this3.documentloading = false;
                     }
-                    _this3.documentloading = false;
                 });
             }
         },
@@ -43649,6 +43655,9 @@ var app = new Vue({
             var postDataCollection = [];
 
             this.annotationCacheString = "";
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
 
             for (var p in annotationSearchObject) {
                 if (annotationSearchObject[p].length > 0) {
@@ -43896,10 +43905,18 @@ var initialState = {
             while (state.corpusByDocument.length > 0) {
                 state.corpusByDocument.pop();
             }
+
+            while (state.corpusByAnnotation.length > 0) {
+                state.corpusByAnnotation.pop();
+            }
         },
         CLEAR_DOCUMENT_STATE: function CLEAR_DOCUMENT_STATE(state, documents) {
             while (state.documentsByCorpus.length > 0) {
                 state.documentsByCorpus.pop();
+            }
+
+            while (state.documentsByAnnotation.length > 0) {
+                state.documentsByAnnotation.pop();
             }
         },
         CLEAR_ANNOTATION_STATE: function CLEAR_ANNOTATION_STATE(state, annotations) {
@@ -46128,7 +46145,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return '/browse/corpus/'.concat(id);
         },
         emitCorpusRelations: function emitCorpusRelations(corpusId) {
-            this.$store.dispatch('clearCorpus', []);
             this.$store.dispatch('clearDocuments', []);
             this.$store.dispatch('clearAnnotations', []);
             this.$store.dispatch('documentByCorpus', this.documentsbycorpus[corpusId]);
@@ -46401,7 +46417,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         emitDocumentRelations: function emitDocumentRelations(documentId) {
             this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearDocuments', []);
             this.$store.dispatch('clearAnnotations', []);
             this.$store.dispatch('corpusByDocument', this.corpusbydocument[documentId]);
             this.$store.dispatch('annotationByDocument', this.annotationsbydocument[documentId]);
@@ -46686,7 +46701,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         emitAnnotationRelations: function emitAnnotationRelations(annotationId) {
             this.$store.dispatch('clearCorpus', []);
             this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('clearAnnotations', []);
             this.$store.dispatch('corpusByAnnotation', this.corpusbyannotation[annotationId]);
             this.$store.dispatch('documentByAnnotation', this.documentsbyannotation[annotationId]);
         }

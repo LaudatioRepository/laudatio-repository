@@ -90,10 +90,19 @@ export default new Vuex.Store({
             while(state.corpusByDocument.length > 0) {
                 state.corpusByDocument.pop();
             }
+
+            while(state.corpusByAnnotation.length > 0) {
+                state.corpusByAnnotation.pop();
+            }
+
         },
         CLEAR_DOCUMENT_STATE (state, documents) {
             while(state.documentsByCorpus.length > 0) {
                 state.documentsByCorpus.pop();
+            }
+
+            while(state.documentsByAnnotation.length > 0) {
+                state.documentsByAnnotation.pop();
             }
         },
         CLEAR_ANNOTATION_STATE (state, annotations) {

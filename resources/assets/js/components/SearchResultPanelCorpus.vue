@@ -36,7 +36,6 @@
                 return '/browse/corpus/'.concat(id);
             },
             emitCorpusRelations: function(corpusId){
-                this.$store.dispatch('clearCorpus',[])
                 this.$store.dispatch('clearDocuments',[])
                 this.$store.dispatch('clearAnnotations',[])
                 this.$store.dispatch('documentByCorpus',this.documentsbycorpus[corpusId])
