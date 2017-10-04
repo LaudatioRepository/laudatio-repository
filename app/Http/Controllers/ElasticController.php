@@ -478,7 +478,8 @@ class ElasticController extends Controller
         $resultData = null;
         $cacheString = $request->cacheString;
 
-
+       Cache::flush();
+        Log::info("SEARCHING getDocumentsByAnnotation : ".$cacheString.'|getDocumentsByAnnotation');
         if (Cache::has($cacheString.'|getDocumentsByAnnotation')) {
             $resultData = Cache::get($cacheString.'|getDocumentsByAnnotation');
         }
@@ -500,7 +501,8 @@ class ElasticController extends Controller
     public function getCorporaByAnnotation(Request $request){
         $resultData = null;
         $cacheString = $request->cacheString;
-
+       // Cache::flush();
+        Log::info("SEARCHING getCorporaByAnnotation : ".$cacheString.'|getCorporaByAnnotation');
         if (Cache::has($cacheString.'|getCorporaByAnnotation')) {
             $resultData = Cache::get($cacheString.'|getCorporaByAnnotation');
         }
@@ -590,13 +592,15 @@ class ElasticController extends Controller
 
         $resultData = null;
         $cacheString = $request->cacheString;
-
+        Cache::flush();
+        Log::info("SEARCHING ANNOTATONINDEX : ".$cacheString.'|searchAnnotationIndex');
         if (Cache::has($cacheString.'|searchAnnotationIndex')) {
             $resultData = Cache::get($cacheString.'|searchAnnotationIndex');
             Log::info("GOT : ".$cacheString.'|searchAnnotationIndex');
         }
         else{
             $result = $this->ElasticService->searchAnnotationIndex($request->searchData);
+            Log::info("SEARCHING ANNOTATONINDEX MIILISEXZ: : ".$result['took']);
             $resultData = array(
                 'error' => false,
                 'milliseconds' => $result['took'],

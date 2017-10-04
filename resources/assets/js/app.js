@@ -65,20 +65,21 @@ const app = new Vue({
         documentCacheString: "",
         annotationCacheString: "",
         annotationloading: false,
+        postAnnotationData: {}
     },
     methods: {
-        askElastic: function(search) {
+        askElastic: function (search) {
             this.corpusresults = [];
             this.searches.push(search.generalSearchTerm);
             let postData = {
                 searchData: {
-                    fields: ["corpus_title","corpus_editor_forename","corpus_editor_surname","corpus_publication_publisher","corpus_documents","corpus_encoding_format","corpus_encoding_tool","corpus_encoding_project_description","annotation_name","annotation_type","corpus_annotator_forename","corpus_annotator_surname","annotation_tag_description","corpus_encoding_project_description","corpus_publication_license_description"],
-                    query: ''+search.generalSearchTerm+''
+                    fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "annotation_name", "annotation_type", "corpus_annotator_forename", "corpus_annotator_surname", "annotation_tag_description", "corpus_encoding_project_description", "corpus_publication_license_description"],
+                    query: '' + search.generalSearchTerm + ''
                 }
             };
-            console.log("POSTDATA: "+JSON.stringify(postData))
-            window.axios.post('api/searchapi/searchGeneral',JSON.stringify(postData)).then(res => {
-                if(res.data.results.length > 0) {
+            console.log("POSTDATA: " + JSON.stringify(postData))
+            window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(res => {
+                if (res.data.results.length > 0) {
                     this.corpusresults.push({
                         search: search.generalSearchTerm,
                         results: res.data.results,
@@ -87,33 +88,33 @@ const app = new Vue({
                 }
             });
         },
-        get_if_exist(collection,str) {
+        get_if_exist(collection, str) {
             var value = ""
-            for(var i = 0; i < collection.length; i++){
+            for (var i = 0; i < collection.length; i++) {
                 var obj = collection[i];
-                if(obj.hasOwnProperty(str)) {
+                if (obj.hasOwnProperty(str)) {
                     value = obj[str];
                 }
             }
             return value;
         },
-        remove_if_exist(collection,str) {
-            for(var i = 0; i < collection.length; i++){
+        remove_if_exist(collection, str) {
+            for (var i = 0; i < collection.length; i++) {
                 var obj = collection[i];
-                if(obj.hasOwnProperty(str)) {
-                    collection.splice(i,1);
+                if (obj.hasOwnProperty(str)) {
+                    collection.splice(i, 1);
                 }
             }
             return collection
         },
-        submitCorpusSearch: function(corpusSearchObject) {
+        submitCorpusSearch: function (corpusSearchObject) {
             this.corpusloading = true;
             this.corpusresults = [];
-            this.corpussearched =  false;
+            this.corpussearched = false;
             this.corpusCacheString = "";
-            this.$store.dispatch('clearCorpus',[])
-            this.$store.dispatch('clearDocuments',[])
-            this.$store.dispatch('clearAnnotations',[])
+            this.$store.dispatch('clearCorpus', [])
+            this.$store.dispatch('clearDocuments', [])
+            this.$store.dispatch('clearAnnotations', [])
 
             let postDataCollection = [];
             var thereAreMore = false;
@@ -126,16 +127,16 @@ const app = new Vue({
                 "corpusyeartype",
                 "corpussizetype"
             ];
-            for(var p in corpusSearchObject){
-                if(corpusSearchObject[p].length > 0){
-                    if(dateAndSize.indexOf(p) > -1 && corpusSearchObject[p] != ""
-                    && (corpusSearchObject['corpusyeartype'] == "range" || corpusSearchObject['corpussizetype'] == "range")){
-                        if(!hasDateAndSize){
+            for (var p in corpusSearchObject) {
+                if (corpusSearchObject[p].length > 0) {
+                    if (dateAndSize.indexOf(p) > -1 && corpusSearchObject[p] != ""
+                        && (corpusSearchObject['corpusyeartype'] == "range" || corpusSearchObject['corpussizetype'] == "range")) {
+                        if (!hasDateAndSize) {
                             hasDateAndSize = true;
                         }
                     }
                     else {
-                        if(!thereAreMore && corpusSearchObject[p] != ""){
+                        if (!thereAreMore && corpusSearchObject[p] != "") {
                             thereAreMore = true;
                         }
                     }
@@ -145,43 +146,41 @@ const app = new Vue({
                             [p]: corpusSearchObject[p]
                         }
                     );
-                    this.corpusCacheString += '|'+p+'|'+corpusSearchObject[p];
+                    this.corpusCacheString += '|' + p + '|' + corpusSearchObject[p];
                 }
 
             }
 
 
-
-            if(postDataCollection.length > 0){
+            if (postDataCollection.length > 0) {
                 console.log(JSON.stringify(postDataCollection))
 
-                var corpusyeartype = this.get_if_exist(postDataCollection,'corpusyeartype');
-                var corpussizetype = this.get_if_exist(postDataCollection,'corpussizetype');
-                var corpus_publication_publication_date = this.get_if_exist(postDataCollection,'corpus_publication_publication_date');
-                var corpusYearTo = this.get_if_exist(postDataCollection,'corpusYearTo');
+                var corpusyeartype = this.get_if_exist(postDataCollection, 'corpusyeartype');
+                var corpussizetype = this.get_if_exist(postDataCollection, 'corpussizetype');
+                var corpus_publication_publication_date = this.get_if_exist(postDataCollection, 'corpus_publication_publication_date');
+                var corpusYearTo = this.get_if_exist(postDataCollection, 'corpusYearTo');
 
-                var corpus_size_value = this.get_if_exist(postDataCollection,'corpus_size_value');
-                var corpusSizeTo = this.get_if_exist(postDataCollection,'corpusSizeTo');
+                var corpus_size_value = this.get_if_exist(postDataCollection, 'corpus_size_value');
+                var corpusSizeTo = this.get_if_exist(postDataCollection, 'corpusSizeTo');
 
 
-
-                if( (corpusyeartype && ! corpus_publication_publication_date) && (corpusyeartype && ! corpusYearTo) ){
-                    postDataCollection = this.remove_if_exist(postDataCollection,"corpusyeartype");
+                if ((corpusyeartype && !corpus_publication_publication_date) && (corpusyeartype && !corpusYearTo)) {
+                    postDataCollection = this.remove_if_exist(postDataCollection, "corpusyeartype");
                 }
 
-                if( (corpussizetype && ! corpus_size_value) && (corpussizetype && !corpusSizeTo) ){
-                    postDataCollection = this.remove_if_exist(postDataCollection,"corpussizetype");
+                if ((corpussizetype && !corpus_size_value) && (corpussizetype && !corpusSizeTo)) {
+                    postDataCollection = this.remove_if_exist(postDataCollection, "corpussizetype");
                 }
 
 
-                if(hasDateAndSize && thereAreMore){
+                if (hasDateAndSize && thereAreMore) {
                     postDataCollection.push(
-                        {"mixedSearch" : "true"}
+                        {"mixedSearch": "true"}
                     )
                 }
-                else{
+                else {
                     postDataCollection.push(
-                        {"mixedSearch" : "false"}
+                        {"mixedSearch": "false"}
                     )
                 }
 
@@ -194,33 +193,33 @@ const app = new Vue({
 
                 let corpus_ids = [];
 
-                window.axios.post('api/searchapi/searchCorpus',JSON.stringify(postData)).then(res => {
+                window.axios.post('api/searchapi/searchCorpus', JSON.stringify(postData)).then(res => {
                     this.corpussearched = true;
                     var corpusRefs = [];
 
-                    if(res.data.results.length > 0) {
+                    if (res.data.results.length > 0) {
                         this.corpusresults.push({
                             search: postDataCollection,
                             results: res.data.results,
                             total: res.data.total
                         })
 
-                        for(var ri = 0; ri < res.data.results.length; ri++){
+                        for (var ri = 0; ri < res.data.results.length; ri++) {
                             corpusRefs.push(res.data.results[ri]._id);
                             corpus_ids.push({
-                                'in_corpora': ''+res.data.results[ri]._id+''
+                                'in_corpora': '' + res.data.results[ri]._id + ''
                             });
                         }
 
-                        if(corpus_ids.length > 0) {
+                        if (corpus_ids.length > 0) {
                             let documentPostData = {
                                 corpus_ids: corpus_ids,
                                 corpusRefs: corpusRefs,
                                 cacheString: this.corpusCacheString
                             }
 
-                            console.log("corpus_ids: "+corpus_ids)
-                            console.log("corpusRefs: "+corpusRefs)
+                            console.log("corpus_ids: " + corpus_ids)
+                            console.log("corpusRefs: " + corpusRefs)
 
                             /**
                              * Get all documents contained in the corpora
@@ -229,7 +228,7 @@ const app = new Vue({
 
                                 if (Object.keys(documentRes.data.results).length > 0) {
                                     var documentsByCorpus = {}
-                                    Object.keys(documentRes.data.results).forEach(function(key) {
+                                    Object.keys(documentRes.data.results).forEach(function (key) {
                                         documentsByCorpus[key] = {results: documentRes.data.results[key]}
                                     });
                                 }
@@ -244,7 +243,7 @@ const app = new Vue({
 
                                 if (Object.keys(annotationRes.data.results).length > 0) {
                                     var annotationsByCorpus = {}
-                                    Object.keys(annotationRes.data.results).forEach(function(key) {
+                                    Object.keys(annotationRes.data.results).forEach(function (key) {
                                         annotationsByCorpus[key] = {results: annotationRes.data.results[key]}
                                     });
                                 }
@@ -260,14 +259,14 @@ const app = new Vue({
 
         },
 
-        submitDocumentSearch: function(documentSearchObject) {
+        submitDocumentSearch: function (documentSearchObject) {
             this.documentloading = true;
             this.documentresults = [];
             this.documentsearched = false;
             this.documentCacheString = "";
-            this.$store.dispatch('clearCorpus',[])
-            this.$store.dispatch('clearDocuments',[])
-            this.$store.dispatch('clearAnnotations',[])
+            this.$store.dispatch('clearCorpus', [])
+            this.$store.dispatch('clearDocuments', [])
+            this.$store.dispatch('clearAnnotations', [])
             let postDataCollection = [];
             var thereAreMore = false;
             var hasDateAndSize = false;
@@ -279,16 +278,16 @@ const app = new Vue({
                 "documentyeartype",
                 "documentsizetype"
             ];
-            for(var p in documentSearchObject){
-                if(documentSearchObject[p].length > 0){
-                    if(dateAndSize.indexOf(p) > -1 && documentSearchObject[p] != ""
-                        && (documentSearchObject['documentyeartype'] == "range" || documentSearchObject['documentsizetype'] == "range")){
-                        if(!hasDateAndSize){
+            for (var p in documentSearchObject) {
+                if (documentSearchObject[p].length > 0) {
+                    if (dateAndSize.indexOf(p) > -1 && documentSearchObject[p] != ""
+                        && (documentSearchObject['documentyeartype'] == "range" || documentSearchObject['documentsizetype'] == "range")) {
+                        if (!hasDateAndSize) {
                             hasDateAndSize = true;
                         }
                     }
                     else {
-                        if(!thereAreMore && documentSearchObject[p] != ""){
+                        if (!thereAreMore && documentSearchObject[p] != "") {
                             thereAreMore = true;
                         }
                     }
@@ -297,14 +296,13 @@ const app = new Vue({
                             [p]: documentSearchObject[p]
                         }
                     );
-                    this.documentCacheString += '|'+p+'|'+documentSearchObject[p];
+                    this.documentCacheString += '|' + p + '|' + documentSearchObject[p];
                 }
 
             }
 
 
-
-            if(postDataCollection.length > 0){
+            if (postDataCollection.length > 0) {
                 let postData = {
                     searchData: postDataCollection,
                     cacheString: this.documentCacheString,
@@ -312,39 +310,38 @@ const app = new Vue({
                 };
 
 
+                var documentyeartype = this.get_if_exist(postDataCollection, 'documentyeartype');
+                var documentsizetype = this.get_if_exist(postDataCollection, 'documentsizetype');
 
-                var documentyeartype = this.get_if_exist(postDataCollection,'documentyeartype');
-                var documentsizetype = this.get_if_exist(postDataCollection,'documentsizetype');
-
-                var document_publication_publishing_date = this.get_if_exist(postDataCollection,'document_publication_publishing_date');
-                var document_publication_publishing_date_to = this.get_if_exist(postDataCollection,'document_publication_publishing_date_to');
-                var document_size_extent = this.get_if_exist(postDataCollection,'document_size_extent');
-                var document_size_extent_to = this.get_if_exist(postDataCollection,'document_size_extent_to');
-                if( (documentyeartype && ! document_publication_publishing_date) && (documentyeartype && ! document_publication_publishing_date_to)) {
-                    postDataCollection = this.remove_if_exist(postDataCollection,"documentyeartype");
+                var document_publication_publishing_date = this.get_if_exist(postDataCollection, 'document_publication_publishing_date');
+                var document_publication_publishing_date_to = this.get_if_exist(postDataCollection, 'document_publication_publishing_date_to');
+                var document_size_extent = this.get_if_exist(postDataCollection, 'document_size_extent');
+                var document_size_extent_to = this.get_if_exist(postDataCollection, 'document_size_extent_to');
+                if ((documentyeartype && !document_publication_publishing_date) && (documentyeartype && !document_publication_publishing_date_to)) {
+                    postDataCollection = this.remove_if_exist(postDataCollection, "documentyeartype");
                 }
 
-                if( (documentsizetype && ! document_size_extent) && (documentsizetype && ! document_size_extent_to)) {
-                    postDataCollection = this.remove_if_exist(postDataCollection,"documentsizetype");
+                if ((documentsizetype && !document_size_extent) && (documentsizetype && !document_size_extent_to)) {
+                    postDataCollection = this.remove_if_exist(postDataCollection, "documentsizetype");
                 }
 
 
-                if(hasDateAndSize && thereAreMore){
+                if (hasDateAndSize && thereAreMore) {
                     postDataCollection.push(
-                        {"mixedSearch" : "true"}
+                        {"mixedSearch": "true"}
                     )
                 }
-                else{
+                else {
                     postDataCollection.push(
-                        {"mixedSearch" : "false"}
+                        {"mixedSearch": "false"}
                     )
                 }
-                console.log("POSTDATACOLLECTION: "+JSON.stringify(postData))
-
-                window.axios.post('api/searchapi/searchDocument',JSON.stringify(postData)).then(res => {
+                console.log("POSTDATACOLLECTION: " + JSON.stringify(postData))
+                let that = this;
+                window.axios.post('api/searchapi/searchDocument', JSON.stringify(postData)).then(res => {
                     this.documentsearched = true;
 
-                    if(res.data.results.length > 0) {
+                    if (res.data.results.length > 0) {
 
                         var documentRefs = [];
                         var corpusRefs = [];
@@ -353,23 +350,22 @@ const app = new Vue({
                         var document_ids = [];
 
 
-
-                        for(var j = 0; j< res.data.results.length; j++) {
+                        for (var j = 0; j < res.data.results.length; j++) {
                             var in_corpora = res.data.results[j]._source.in_corpora
                             documentRefs.push(res.data.results[j]._id);
                             document_ids.push({
-                                'in_documents': ''+res.data.results[j]._id+''
+                                'in_documents': '' + res.data.results[j]._id + ''
                             });
-                            if(typeof  in_corpora != 'undefined' && in_corpora.length > 0){
-                                for(var jid = 0; jid < in_corpora.length; jid++) {
+                            if (typeof  in_corpora != 'undefined' && in_corpora.length > 0) {
+                                for (var jid = 0; jid < in_corpora.length; jid++) {
                                     corpusRefs.push(
                                         {
-                                            '_id': ''+in_corpora[jid]+''
+                                            '_id': '' + in_corpora[jid] + ''
                                         }
                                     );
                                 }
                             }
-                            else if(typeof  in_corpora != 'undefined' && in_corpora.length == 0 || typeof  in_corpora == 'undefined'){
+                            else if (typeof  in_corpora != 'undefined' && in_corpora.length == 0 || typeof  in_corpora == 'undefined') {
                                 corpusRefs.push(
                                     {
                                         '_id': '0'
@@ -377,7 +373,6 @@ const app = new Vue({
                                 );
                             }
                         }
-
 
 
                         let annotationPostData = {
@@ -392,11 +387,11 @@ const app = new Vue({
                             corpusRefs: corpusRefs,
                             cacheString: this.documentCacheString
                         };
-                        console.log("annotationPostData: "+this.documentCacheString);
+                        console.log("annotationPostData: " + this.documentCacheString);
                         window.axios.post('api/searchapi/getAnnotationsByDocument', JSON.stringify(annotationPostData)).then(annotationRes => {
                             if (Object.keys(annotationRes.data.results).length > 0) {
                                 var annotationsByDocument = {}
-                                Object.keys(annotationRes.data.results).forEach(function(key) {
+                                Object.keys(annotationRes.data.results).forEach(function (key) {
                                     annotationsByDocument[key] = annotationRes.data.results[key]
                                 });
                             }
@@ -411,7 +406,7 @@ const app = new Vue({
 
                             if (Object.keys(corpusRes.data.results).length > 0) {
                                 var corpusByDocument = {}
-                                Object.keys(corpusRes.data.results).forEach(function(key) {
+                                Object.keys(corpusRes.data.results).forEach(function (key) {
                                     corpusByDocument[key] = {results: corpusRes.data.results[key]}
                                 });
                             }
@@ -420,18 +415,17 @@ const app = new Vue({
                         });
 
 
-
                         let postDocumentData = {
                             documentRefs: documentRefs,
                             corpusRefs: corpusRefs,
                             cacheString: this.documentCacheString
                         };
 
-                        window.axios.post('api/searchapi/getCorpusTitlesByDocument',postDocumentData).then(corpusByDocumentRes => {
+                        window.axios.post('api/searchapi/getCorpusTitlesByDocument', postDocumentData).then(corpusByDocumentRes => {
                             if (Object.keys(corpusByDocumentRes.data.results).length > 0) {
                                 var corpusTitleByDocument = []
 
-                                Object.keys(corpusByDocumentRes.data.results).forEach(function(key) {
+                                Object.keys(corpusByDocumentRes.data.results).forEach(function (key) {
                                     corpusTitleByDocument[key] = corpusByDocumentRes.data.results[key]
 
                                 });
@@ -444,7 +438,7 @@ const app = new Vue({
                                 })
 
                             }
-                            else{
+                            else {
                                 this.documentresults.push({
                                     search: documentSearchObject.document_title,
                                     results: res.data.results,
@@ -460,8 +454,144 @@ const app = new Vue({
                 });
             }
         },
+        searchAnnotation: function (postData, postAnnotationData) {
+            var annotationterms = [];
 
-        submitAnnotationSearch: function(annotationSearchObject) {
+
+            window.axios.post('api/searchapi/searchAnnotation', postData).then(res => {
+                this.annotationsearched = true;
+                console.log("RESSS: " + JSON.stringify(res));
+                var documentRefs = {};
+                var corpusRefs = {};
+                var annotationRefs = [];
+                if (res.data.results.length > 0) {
+
+                    for (var j = 0; j < res.data.results.length; j++) {
+
+                        annotationRefs.push(res.data.results[j]._id);
+                        var id = res.data.results[j]._id;
+
+                        if (typeof documentRefs[id] == 'undefined') {
+                            documentRefs[id] = []
+                        }
+
+                        if (typeof corpusRefs[id] == 'undefined') {
+                            corpusRefs[id] = []
+                        }
+
+
+                        if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length > 0) {
+                            for (var jid = 0; jid < res.data.results[j]._source.in_documents.length; jid++) {
+                                documentRefs[id].push(
+                                    {
+                                        '_id': '' + res.data.results[j]._source.in_documents[jid] + ''
+                                    }
+                                );
+                            }
+                        }
+                        else if (typeof  res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length == 0 || typeof  res.data.results[j]._source.in_documents == 'undefined') {
+                            documentRefs[id].push(
+                                {
+                                    '_id': '0'
+                                }
+                            );
+                        }
+
+
+                        if (typeof  res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length > 0) {
+                            for (var cid = 0; cid < res.data.results[j]._source.in_corpora.length; cid++) {
+                                corpusRefs[id].push(
+                                    {
+                                        '_id': '' + res.data.results[j]._source.in_corpora[cid] + ''
+                                    }
+                                );
+                            }
+                        }
+                        else if (typeof  res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length == 0 || typeof  res.data.results[j]._source.in_corpora == 'undefined') {
+                            corpusRefs[id].push(
+                                {
+                                    '_id': '0'
+                                }
+                            );
+                        }
+
+                    }//end for annotationResults
+
+                    this.annotationresults.push({
+                        results: res.data.results,
+                        total: res.data.total,
+                    });
+
+
+                }
+                this.postAnnotationData.corpusRefs = corpusRefs
+                this.postAnnotationData.documentRefs = documentRefs
+                this.postAnnotationData.annotationRefs = annotationRefs
+            });
+
+
+            this.postAnnotationData.cacheString = this.annotationCacheString;
+
+        },
+        getDocumentsByAnnotation: function (postAnnotationData) {
+            console.log("getDocumentsByAnnotation: " + JSON.stringify(this.postAnnotationData));
+            window.axios.post('api/searchapi/getDocumentsByAnnotation', this.postAnnotationData).then(documentsByAnnotationRes => {
+                this.annotationsearched = true;
+                console.log("documentsByAnnotationRes: " + documentsByAnnotationRes);
+                if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
+                    var documentsByAnnotation = {}
+                    Object.keys(documentsByAnnotationRes.data.results).forEach(function (key) {
+                        documentsByAnnotation[key] = {results: documentsByAnnotationRes.data.results[key]}
+                    });
+
+                    this.documentsByAnnotation = documentsByAnnotation;
+
+                    /*
+                     this.annotationresults.push({
+                     search: annotationSearchObject.preparation_title,
+                     results: res.data.results,
+                     total: res.data.total,
+                     });
+                     */
+                }
+                else {
+                    /*
+                     this.annotationresults.push({
+                     search: annotationSearchObject.preparation_title,
+                     results: res.data.results,
+                     total: res.data.total,
+                     });
+                     */
+                }
+
+
+            });
+
+
+        },
+        getCorporaByAnnotation: function (postAnnotationData) {
+            console.log("getCorporaByAnnotation: " + JSON.stringify(this.postAnnotationData));
+            window.axios.post('api/searchapi/getCorporaByAnnotation', this.postAnnotationData).then(corpussByAnnotationRes => {
+
+
+                if (Object.keys(corpussByAnnotationRes.data.results).length > 0) {
+                    var corpusByAnnotation = {}
+                    Object.keys(corpussByAnnotationRes.data.results).forEach(function (key) {
+                        corpusByAnnotation[key] = {results: corpussByAnnotationRes.data.results[key]}
+                    });
+
+                    this.corpusByAnnotation = corpusByAnnotation;
+
+
+                }
+
+            });
+        },
+        removeAnnotationSpinner: function () {
+            this.annotationsearched = true;
+            this.annotationloading = true;
+        },
+        submitAnnotationSearch: function (annotationSearchObject) {
             this.annotationloading = true;
             this.annotationresults = [];
             this.annotationsearched = false;
@@ -492,7 +622,7 @@ const app = new Vue({
                     cacheString: this.annotationCacheString,
                     scope: 'annotation'
                 };
-
+                var searchAnnotation0 = performance.now();
                 window.axios.post('api/searchapi/searchAnnotation',postData).then(res => {
                     this.annotationsearched = true;
                     if(res.data.results.length > 0) {
@@ -552,19 +682,18 @@ const app = new Vue({
                                 );
                             }
 
-
-
-
                         }//end for annotationResults
+                        var searchAnnotation1 = performance.now();
+                        console.log("searchAnnotation took " + (searchAnnotation1 - searchAnnotation0) + " milliseconds.")
+
                         postAnnotationData.corpusRefs =  corpusRefs
                         postAnnotationData.documentRefs = documentRefs
                         postAnnotationData.annotationRefs = annotationRefs
                         postAnnotationData.cacheString =  this.annotationCacheString;
 
-
+                        var getDocumentsByAnnotation1 = performance.now();
                         window.axios.post('api/searchapi/getDocumentsByAnnotation',postAnnotationData).then(documentsByAnnotationRes => {
                             this.annotationsearched = true;
-                            console.log("documentsByAnnotationRes: "+documentsByAnnotationRes);
                             if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
                                 var documentsByAnnotation = {}
                                 Object.keys(documentsByAnnotationRes.data.results).forEach(function(key) {
@@ -572,29 +701,15 @@ const app = new Vue({
                                 });
 
                                 this.documentsByAnnotation = documentsByAnnotation;
-
-                                /*
-                                this.annotationresults.push({
-                                    search: annotationSearchObject.preparation_title,
-                                    results: res.data.results,
-                                    total: res.data.total,
-                                });
-                                */
                             }
-                            else {
-                                /*
-                                this.annotationresults.push({
-                                    search: annotationSearchObject.preparation_title,
-                                    results: res.data.results,
-                                    total: res.data.total,
-                                });
-                                */
-                            }
-
 
                         });
 
+                        var getDocumentsByAnnotation2 = performance.now();
+                        console.log("getDocumentsByAnnotation took " + (getDocumentsByAnnotation2 - getDocumentsByAnnotation1) + " milliseconds.")
 
+
+                        var getCorporaByAnnotation1 = performance.now();
                         window.axios.post('api/searchapi/getCorporaByAnnotation',postAnnotationData).then(corpussByAnnotationRes => {
 
 
@@ -610,6 +725,7 @@ const app = new Vue({
                                     search: annotationSearchObject.preparation_title,
                                     results: res.data.results,
                                     total: res.data.total,
+                                    took: res.data.milliseconds
                                 });
                             }
                             else {
@@ -617,21 +733,19 @@ const app = new Vue({
                                     search: annotationSearchObject.preparation_title,
                                     results: res.data.results,
                                     total: res.data.total,
+                                    took: res.data.milliseconds
                                 });
                             }
 
 
                         });
                         this.annotationloading = false;
-
+                        var getCorporaByAnnotation2 = performance.now();
+                        console.log("getCorporaByAnnotation took " + (getCorporaByAnnotation2 - getCorporaByAnnotation1) + " milliseconds.")
                     }
                 });
+
             }
-        },
-
-        fetchDocumentsByCorpusId: function(corpus_id) {
-
         }
     }
-
 });

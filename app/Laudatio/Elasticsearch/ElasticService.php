@@ -234,7 +234,6 @@ class ElasticService implements ElasticsearchInterface
             200
         );
 
-        //return view("search.searchresult",["took" => $milliseconds, "maxScore" => $maxScore, "results" => $results['hits']['hits']]);
     }
 
 
@@ -675,7 +674,7 @@ class ElasticService implements ElasticsearchInterface
                 array_push($queries,$queryBody);
                 foreach ($queryData as $key => $value){
                     if($value != ""){
-                        $qs .= '{"query": {"match": {"'.$key.'": "'.$value.'"}}, "size": 1000, "_source": ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]}'."\n";
+                        $qs .= '{"profile": true,"query": {"match": {"'.$key.'": "'.$value.'"}}, "size": 1000, "_source": ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]}'."\n";
 
                     }
                 }
@@ -683,7 +682,8 @@ class ElasticService implements ElasticsearchInterface
 
             //Log::info("getDocumentsByAnnotation:qs ".print_r($qs,1));
             $results = $this->curlRequest($qs,'document/_msearch');
-            //Log::info("getDocumentsByAnnotation:results ".print_r($results,1));
+            Log::info("getDocumentsByAnnotation:results ".print_r($results,1));
+            $metrics = array();
 
             $results = json_decode($results,true);
             if(isset($results['responses'])){
@@ -693,6 +693,16 @@ class ElasticService implements ElasticsearchInterface
                     }
                     else{
                         $resultData[$id] = array();
+                    }
+
+                    if(count($result['profile']['shards']) > 0){
+                        foreach($result['profile']['shards'] as $shard) {
+                            foreach($shard['searches'] as $shardsearch) {
+                                if(!array_key_exists($metrics[$id])){
+                                    $metrics[$id] = array();
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -826,7 +836,7 @@ class ElasticService implements ElasticsearchInterface
             'type' => '',
             'body' => $queryBody,
             //'_source_exclude' => ['message'],
-            '_source' => ["preparation_title", "in_corpora", "in_documents"],
+            //'_source' => ["preparation_title", "in_corpora", "in_documents"],
             'size'=> 100
         ];
 

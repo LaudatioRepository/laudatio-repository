@@ -43310,7 +43310,8 @@ var app = new Vue({
         corpusCacheString: "",
         documentCacheString: "",
         annotationCacheString: "",
-        annotationloading: false
+        annotationloading: false,
+        postAnnotationData: {}
     },
     methods: {
         askElastic: function askElastic(search) {
@@ -43543,7 +43544,7 @@ var app = new Vue({
                     postDataCollection.push({ "mixedSearch": "false" });
                 }
                 console.log("POSTDATACOLLECTION: " + JSON.stringify(postData));
-
+                var that = this;
                 window.axios.post('api/searchapi/searchDocument', JSON.stringify(postData)).then(function (res) {
                     _this3.documentsearched = true;
 
@@ -43644,9 +43645,124 @@ var app = new Vue({
                 });
             }
         },
-
-        submitAnnotationSearch: function submitAnnotationSearch(annotationSearchObject) {
+        searchAnnotation: function searchAnnotation(postData, postAnnotationData) {
             var _this4 = this;
+
+            var annotationterms = [];
+
+            window.axios.post('api/searchapi/searchAnnotation', postData).then(function (res) {
+                _this4.annotationsearched = true;
+                console.log("RESSS: " + JSON.stringify(res));
+                var documentRefs = {};
+                var corpusRefs = {};
+                var annotationRefs = [];
+                if (res.data.results.length > 0) {
+
+                    for (var j = 0; j < res.data.results.length; j++) {
+
+                        annotationRefs.push(res.data.results[j]._id);
+                        var id = res.data.results[j]._id;
+
+                        if (typeof documentRefs[id] == 'undefined') {
+                            documentRefs[id] = [];
+                        }
+
+                        if (typeof corpusRefs[id] == 'undefined') {
+                            corpusRefs[id] = [];
+                        }
+
+                        if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length > 0) {
+                            for (var jid = 0; jid < res.data.results[j]._source.in_documents.length; jid++) {
+                                documentRefs[id].push({
+                                    '_id': '' + res.data.results[j]._source.in_documents[jid] + ''
+                                });
+                            }
+                        } else if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length == 0 || typeof res.data.results[j]._source.in_documents == 'undefined') {
+                            documentRefs[id].push({
+                                '_id': '0'
+                            });
+                        }
+
+                        if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length > 0) {
+                            for (var cid = 0; cid < res.data.results[j]._source.in_corpora.length; cid++) {
+                                corpusRefs[id].push({
+                                    '_id': '' + res.data.results[j]._source.in_corpora[cid] + ''
+                                });
+                            }
+                        } else if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length == 0 || typeof res.data.results[j]._source.in_corpora == 'undefined') {
+                            corpusRefs[id].push({
+                                '_id': '0'
+                            });
+                        }
+                    } //end for annotationResults
+
+                    _this4.annotationresults.push({
+                        results: res.data.results,
+                        total: res.data.total
+                    });
+                }
+                _this4.postAnnotationData.corpusRefs = corpusRefs;
+                _this4.postAnnotationData.documentRefs = documentRefs;
+                _this4.postAnnotationData.annotationRefs = annotationRefs;
+            });
+
+            this.postAnnotationData.cacheString = this.annotationCacheString;
+        },
+        getDocumentsByAnnotation: function getDocumentsByAnnotation(postAnnotationData) {
+            var _this5 = this;
+
+            console.log("getDocumentsByAnnotation: " + JSON.stringify(this.postAnnotationData));
+            window.axios.post('api/searchapi/getDocumentsByAnnotation', this.postAnnotationData).then(function (documentsByAnnotationRes) {
+                _this5.annotationsearched = true;
+                console.log("documentsByAnnotationRes: " + documentsByAnnotationRes);
+                if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
+                    var documentsByAnnotation = {};
+                    Object.keys(documentsByAnnotationRes.data.results).forEach(function (key) {
+                        documentsByAnnotation[key] = { results: documentsByAnnotationRes.data.results[key] };
+                    });
+
+                    _this5.documentsByAnnotation = documentsByAnnotation;
+
+                    /*
+                     this.annotationresults.push({
+                     search: annotationSearchObject.preparation_title,
+                     results: res.data.results,
+                     total: res.data.total,
+                     });
+                     */
+                } else {
+                        /*
+                         this.annotationresults.push({
+                         search: annotationSearchObject.preparation_title,
+                         results: res.data.results,
+                         total: res.data.total,
+                         });
+                         */
+                    }
+            });
+        },
+        getCorporaByAnnotation: function getCorporaByAnnotation(postAnnotationData) {
+            var _this6 = this;
+
+            console.log("getCorporaByAnnotation: " + JSON.stringify(this.postAnnotationData));
+            window.axios.post('api/searchapi/getCorporaByAnnotation', this.postAnnotationData).then(function (corpussByAnnotationRes) {
+
+                if (Object.keys(corpussByAnnotationRes.data.results).length > 0) {
+                    var corpusByAnnotation = {};
+                    Object.keys(corpussByAnnotationRes.data.results).forEach(function (key) {
+                        corpusByAnnotation[key] = { results: corpussByAnnotationRes.data.results[key] };
+                    });
+
+                    _this6.corpusByAnnotation = corpusByAnnotation;
+                }
+            });
+        },
+        removeAnnotationSpinner: function removeAnnotationSpinner() {
+            this.annotationsearched = true;
+            this.annotationloading = true;
+        },
+        submitAnnotationSearch: function submitAnnotationSearch(annotationSearchObject) {
+            var _this7 = this;
 
             this.annotationloading = true;
             this.annotationresults = [];
@@ -43672,9 +43788,9 @@ var app = new Vue({
                     cacheString: this.annotationCacheString,
                     scope: 'annotation'
                 };
-
+                var searchAnnotation0 = performance.now();
                 window.axios.post('api/searchapi/searchAnnotation', postData).then(function (res) {
-                    _this4.annotationsearched = true;
+                    _this7.annotationsearched = true;
                     if (res.data.results.length > 0) {
                         var annotationterms = [];
 
@@ -43719,40 +43835,31 @@ var app = new Vue({
                                 });
                             }
                         } //end for annotationResults
+                        var searchAnnotation1 = performance.now();
+                        console.log("searchAnnotation took " + (searchAnnotation1 - searchAnnotation0) + " milliseconds.");
+
                         postAnnotationData.corpusRefs = corpusRefs;
                         postAnnotationData.documentRefs = documentRefs;
                         postAnnotationData.annotationRefs = annotationRefs;
-                        postAnnotationData.cacheString = _this4.annotationCacheString;
+                        postAnnotationData.cacheString = _this7.annotationCacheString;
 
+                        var getDocumentsByAnnotation1 = performance.now();
                         window.axios.post('api/searchapi/getDocumentsByAnnotation', postAnnotationData).then(function (documentsByAnnotationRes) {
-                            _this4.annotationsearched = true;
-                            console.log("documentsByAnnotationRes: " + documentsByAnnotationRes);
+                            _this7.annotationsearched = true;
                             if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
                                 var documentsByAnnotation = {};
                                 Object.keys(documentsByAnnotationRes.data.results).forEach(function (key) {
                                     documentsByAnnotation[key] = { results: documentsByAnnotationRes.data.results[key] };
                                 });
 
-                                _this4.documentsByAnnotation = documentsByAnnotation;
-
-                                /*
-                                this.annotationresults.push({
-                                    search: annotationSearchObject.preparation_title,
-                                    results: res.data.results,
-                                    total: res.data.total,
-                                });
-                                */
-                            } else {
-                                    /*
-                                    this.annotationresults.push({
-                                        search: annotationSearchObject.preparation_title,
-                                        results: res.data.results,
-                                        total: res.data.total,
-                                    });
-                                    */
-                                }
+                                _this7.documentsByAnnotation = documentsByAnnotation;
+                            }
                         });
 
+                        var getDocumentsByAnnotation2 = performance.now();
+                        console.log("getDocumentsByAnnotation took " + (getDocumentsByAnnotation2 - getDocumentsByAnnotation1) + " milliseconds.");
+
+                        var getCorporaByAnnotation1 = performance.now();
                         window.axios.post('api/searchapi/getCorporaByAnnotation', postAnnotationData).then(function (corpussByAnnotationRes) {
 
                             if (Object.keys(corpussByAnnotationRes.data.results).length > 0) {
@@ -43761,30 +43868,31 @@ var app = new Vue({
                                     corpusByAnnotation[key] = { results: corpussByAnnotationRes.data.results[key] };
                                 });
 
-                                _this4.corpusByAnnotation = corpusByAnnotation;
+                                _this7.corpusByAnnotation = corpusByAnnotation;
 
-                                _this4.annotationresults.push({
+                                _this7.annotationresults.push({
                                     search: annotationSearchObject.preparation_title,
                                     results: res.data.results,
-                                    total: res.data.total
+                                    total: res.data.total,
+                                    took: res.data.milliseconds
                                 });
                             } else {
-                                _this4.annotationresults.push({
+                                _this7.annotationresults.push({
                                     search: annotationSearchObject.preparation_title,
                                     results: res.data.results,
-                                    total: res.data.total
+                                    total: res.data.total,
+                                    took: res.data.milliseconds
                                 });
                             }
                         });
-                        _this4.annotationloading = false;
+                        _this7.annotationloading = false;
+                        var getCorporaByAnnotation2 = performance.now();
+                        console.log("getCorporaByAnnotation took " + (getCorporaByAnnotation2 - getCorporaByAnnotation1) + " milliseconds.");
                     }
                 });
             }
-        },
-
-        fetchDocumentsByCorpusId: function fetchDocumentsByCorpusId(corpus_id) {}
+        }
     }
-
 });
 
 /***/ }),
