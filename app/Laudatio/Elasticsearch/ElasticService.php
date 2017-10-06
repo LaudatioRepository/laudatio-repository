@@ -658,8 +658,8 @@ class ElasticService implements ElasticsearchInterface
         $resultData = array();
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
-        $counter = 0;
-
+        $totaltime = 0;
+        $metrics = array();
 
 
         foreach ($searchData as $id => $annotationDatum) {
@@ -669,6 +669,7 @@ class ElasticService implements ElasticsearchInterface
             }
             $qs = "\r";
             $queries = array();
+            Log::info("getDocumentsByAnnotation:id ".$id);
             foreach($annotationDatum as $queryData){
                 $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
                 array_push($queries,$queryBody);
@@ -682,8 +683,8 @@ class ElasticService implements ElasticsearchInterface
 
             //Log::info("getDocumentsByAnnotation:qs ".print_r($qs,1));
             $results = $this->curlRequest($qs,'document/_msearch');
-            Log::info("getDocumentsByAnnotation:results ".print_r($results,1));
-            $metrics = array();
+            //Log::info("getDocumentsByAnnotation:results ".print_r($results,1));
+
 
             $results = json_decode($results,true);
             if(isset($results['responses'])){
@@ -698,16 +699,34 @@ class ElasticService implements ElasticsearchInterface
                     if(count($result['profile']['shards']) > 0){
                         foreach($result['profile']['shards'] as $shard) {
                             foreach($shard['searches'] as $shardsearch) {
-                                if(!array_key_exists($metrics[$id])){
-                                    $metrics[$id] = array();
+                                foreach($shardsearch['query'] as $shardquery) {
+                                    if(!array_key_exists($id,$metrics)){
+                                        $metrics[$id] = array();
+                                    }
+
+                                    $metrics[$id]['id'] = $id;
+                                    $totaltime += $shardquery['time'];
+                                    $metrics[$id]['time'] = $shardquery['time'];
                                 }
+
                             }
                         }
                     }
                 }
             }
-
         }
+        $file = fopen("/var/www/html/laravelaudatio/shared/storage/metrics.csv","w");
+        foreach($metrics as $id => $data){
+            array_push($data,'{"profile": true,"query": {"match": {"'.$key.'": "'.$value.'"}}, "size": 1000, "_source": ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]}');
+            fputcsv($file,$data);
+        }
+        fclose($file);
+        $resultData['metrics'] = $metrics;
+        $totaltime = floor($totaltime/60000).':'.floor(($totaltime%60000)/1000).':'.str_pad(floor($totaltime%1000),3,'0', STR_PAD_LEFT);
+        $resultData['totaltime'] = $totaltime;
+        Log::info("metrics ".print_r($resultData['metrics'],1));
+        Log::info("metrics:total ".print_r($resultData['totaltime'],1));
+
 
 
         return $resultData;

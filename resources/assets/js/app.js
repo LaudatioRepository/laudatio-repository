@@ -602,6 +602,7 @@ const app = new Vue({
             this.$store.dispatch('clearCorpus',[])
             this.$store.dispatch('clearDocuments',[])
             this.$store.dispatch('clearAnnotations',[])
+            var documentsByAnnotationTime = 0;
 
             for(var p in annotationSearchObject){
                 if(annotationSearchObject[p].length > 0){
@@ -707,7 +708,7 @@ const app = new Vue({
 
                         var getDocumentsByAnnotation2 = performance.now();
                         console.log("getDocumentsByAnnotation took " + (getDocumentsByAnnotation2 - getDocumentsByAnnotation1) + " milliseconds.")
-
+                        documentsByAnnotationTime += (getDocumentsByAnnotation2 - getDocumentsByAnnotation1);
 
                         var getCorporaByAnnotation1 = performance.now();
                         window.axios.post('api/searchapi/getCorporaByAnnotation',postAnnotationData).then(corpussByAnnotationRes => {
@@ -742,10 +743,11 @@ const app = new Vue({
                         this.annotationloading = false;
                         var getCorporaByAnnotation2 = performance.now();
                         console.log("getCorporaByAnnotation took " + (getCorporaByAnnotation2 - getCorporaByAnnotation1) + " milliseconds.")
+
                     }
                 });
-
             }
+            console.log("DocumentsByAnnotation total took " + documentsByAnnotationTime + " milliseconds.")
         }
     }
 });
