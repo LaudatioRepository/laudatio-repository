@@ -660,8 +660,25 @@ class ElasticService implements ElasticsearchInterface
         $queryBody = null;
         $totaltime = 0;
         $metrics = array();
+        //$file = fopen("/Users/rolfguescini/source/phpelasticsearchlaudatio/storage/metrics.csv","w");
+        $file = fopen("/var/www/html/laravelaudatio/current/storage/metrics.csv","w");
+        fputcsv($file,array(
+            'id',
+            'EStime',
+            'curlinfo_url',
+            'curlinfo_http_code',
+            'curlinfo_size_download',
+            'curlinfo_size_upload',
+            'curlinfo_starttransfer_time',
+            'curlinfo_namelookup_time',
+            'curlinfo_connect_time',
+            'curlinfo_request',
+            'curlinfo_speed_upload',
+            'curlinfo_speed_download',
+            'query'
 
 
+        ));
         foreach ($searchData as $id => $annotationDatum) {
             $results = null;
             if(!isset($resultData[$id])){
@@ -669,7 +686,7 @@ class ElasticService implements ElasticsearchInterface
             }
             $qs = "\r";
             $queries = array();
-            Log::info("getDocumentsByAnnotation:id ".$id);
+            //Log::info("getDocumentsByAnnotation:id ".$id);
             foreach($annotationDatum as $queryData){
                 $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
                 array_push($queries,$queryBody);
@@ -682,7 +699,8 @@ class ElasticService implements ElasticsearchInterface
             }
 
             //Log::info("getDocumentsByAnnotation:qs ".print_r($qs,1));
-            $results = $this->curlRequest($qs,'document/_msearch');
+            $resultset = $this->curlRequest($qs,'document/_msearch');
+            $results = $resultset['resultdata'];
             //Log::info("getDocumentsByAnnotation:results ".print_r($results,1));
 
 
@@ -713,19 +731,35 @@ class ElasticService implements ElasticsearchInterface
                         }
                     }
                 }
+                //Log::info("curlinfo ".print_r($resultset['curlinfo'],1));
+                $metrics[$id]['curlinfo_url'] = $resultset['curlinfo']['url'];
+                $metrics[$id]['curlinfo_http_code'] = $resultset['curlinfo']['http_code'];
+                $metrics[$id]['curlinfo_size_download'] = $resultset['curlinfo']['size_download'];
+                $metrics[$id]['curlinfo_size_upload'] = $resultset['curlinfo']['size_upload'];
+                $metrics[$id]['curlinfo_starttransfer_time'] = $resultset['curlinfo']['starttransfer_time'];
+                $metrics[$id]['curlinfo_namelookup_time'] = $resultset['curlinfo']['namelookup_time'];
+                $metrics[$id]['curlinfo_connect_time'] = $resultset['curlinfo']['connect_time'];
+                $metrics[$id]['curlinfo_request'] = $resultset['curlinfo']['pretransfer_time'];
+                $metrics[$id]['curlinfo_speed_upload'] = $resultset['curlinfo']['speed_upload'];
+                $metrics[$id]['curlinfo_speed_download'] = $resultset['curlinfo']['speed_download'];
             }
         }
-        $file = fopen("/var/www/html/laravelaudatio/shared/storage/metrics.csv","w");
+
+        $allhits = array();
         foreach($metrics as $id => $data){
+            //Log::info("data: ".print_r($data,1));
             array_push($data,'{"profile": true,"query": {"match": {"'.$key.'": "'.$value.'"}}, "size": 1000, "_source": ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]}');
+            //array_push($allhits,$data);
             fputcsv($file,$data);
         }
         fclose($file);
+        //file_put_contents("/Users/rolfguescini/source/phpelasticsearchlaudatio/storage/serialized.txt",serialize($allhits));
+
         $resultData['metrics'] = $metrics;
         $totaltime = floor($totaltime/60000).':'.floor(($totaltime%60000)/1000).':'.str_pad(floor($totaltime%1000),3,'0', STR_PAD_LEFT);
         $resultData['totaltime'] = $totaltime;
-        Log::info("metrics ".print_r($resultData['metrics'],1));
-        Log::info("metrics:total ".print_r($resultData['totaltime'],1));
+        //Log::info("metrics ".print_r($resultData['metrics'],1));
+        //Log::info("metrics:total ".print_r($resultData['totaltime'],1));
 
 
 
@@ -935,9 +969,13 @@ class ElasticService implements ElasticsearchInterface
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $queries);
         $results = curl_exec($curl);
+        $info = curl_getinfo($curl);
         curl_close($curl);
-
-        return $results;
+        $resultset = array(
+            "curlinfo" => $info,
+            "resultdata" => $results
+        );
+        return $resultset;
     }
 
 }
