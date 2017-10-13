@@ -660,8 +660,8 @@ class ElasticService implements ElasticsearchInterface
         $queryBody = null;
         $totaltime = 0;
         $metrics = array();
-        //$file = fopen("/Users/rolfguescini/source/phpelasticsearchlaudatio/storage/metrics.csv","w");
-        $file = fopen("/var/www/html/laravelaudatio/shared/storage/metrics.csv","w");
+        $file = fopen("/Users/rolfguescini/source/phpelasticsearchlaudatio/storage/metrics.csv","w");
+        //$file = fopen("/var/www/html/laravelaudatio/shared/storage/metrics.csv","w");
         fputcsv($file,array(
             'id',
             'EStime',
@@ -673,6 +673,7 @@ class ElasticService implements ElasticsearchInterface
             'curlinfo_namelookup_time',
             'curlinfo_connect_time',
             'curlinfo_request',
+            'total_time',
             'curlinfo_speed_upload',
             'curlinfo_speed_download',
             'query'
@@ -740,6 +741,7 @@ class ElasticService implements ElasticsearchInterface
                 $metrics[$id]['curlinfo_namelookup_time'] = $resultset['curlinfo']['namelookup_time'];
                 $metrics[$id]['curlinfo_connect_time'] = $resultset['curlinfo']['connect_time'];
                 $metrics[$id]['curlinfo_request'] = $resultset['curlinfo']['pretransfer_time'];
+                $metrics[$id]['total_time'] = $resultset['curlinfo']['total_time'];
                 $metrics[$id]['curlinfo_speed_upload'] = $resultset['curlinfo']['speed_upload'];
                 $metrics[$id]['curlinfo_speed_download'] = $resultset['curlinfo']['speed_download'];
             }
