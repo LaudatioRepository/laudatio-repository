@@ -50,23 +50,44 @@ class ElasticService implements ElasticsearchInterface
      * @param $index
      * @param $type
      * @param $id
+     * @param bool $full
      * @return array
      */
-    public function getDocument($index,$type,$id){
-        $params = [
-            'index' => $index,
-            'type' => $type,
-            'id' => $id,
-            //'_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
-            '_source_exclude' => ['message']
-        ];
+    public function getDocument($index,$type,$id,$full = true){
+        if(!$full){
+            $params = [
+                'index' => $index,
+                'type' => $type,
+                'id' => $id,
+                '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]
+            ];
+        }
+        else{
+            $params = [
+                'index' => $index,
+                'type' => $type,
+                'id' => $id,
+                '_source_exclude' => ['message']
+            ];
+        }
+
 
         $response = Elasticsearch::get($params);
-        return array(
-            'error' => false,
-            'found' => $response['found'],
-            'result' => $response['_source']
-        );
+        if(!$full){
+//            Log::info("SENDING: ".print_r($response,1));
+            return array(
+                'error' => false,
+                'result' => $response['_source']
+            );
+        }
+        else{
+            return array(
+                'error' => false,
+                'found' => $response['found'],
+                'result' => $response['_source']
+            );
+        }
+
     }
 
 
@@ -660,8 +681,65 @@ class ElasticService implements ElasticsearchInterface
         $queryBody = null;
         $totaltime = 0;
         $metrics = array();
-        //$file = fopen("/Users/rolfguescini/source/phpelasticsearchlaudatio/storage/metrics.csv","w");
-        $file = fopen("/var/www/html/laravelaudatio/shared/storage/metrics.csv","w");
+        $file = fopen("/Users/rolfguescini/source/phpelasticsearchlaudatio/storage/metrics.csv","w");
+        //$file = fopen("/var/www/html/laravelaudatio/shared/storage/metrics.csv","w");
+        fputcsv($file,array(
+            'id',
+            'EStime',
+            'total_time',
+            'curlinfo_speed_upload',
+            'curlinfo_speed_download',
+            'query'
+
+
+        ));
+        foreach ($searchData as $id => $annotationDatum) {
+            $results = null;
+            if(!isset($resultData[$id])){
+                $resultData[$id] = array();
+            }
+
+
+
+            foreach ($annotationDatum as $documentElement){
+                $time_start = microtime(true);
+                //Log::info("SEARCHING documentRefs : ".print_r($documentElement,1  ));
+                if(strlen($documentElement['_id']) > 1){
+                    $resultset = $this->getDocument('document','document',$documentElement['_id'],false);
+                    //Log::info("resultset : ".print_r($resultset,1  ));
+                    $time_end = microtime(true);
+                    array_push($resultData[$id],array("_source" => $resultset['result']));
+                }
+
+            }
+
+        }
+
+        $allhits = array();
+        $metrics[$id]['script_execution'] = $time_end - $time_start;
+        foreach($metrics as $id => $data){
+            fputcsv($file,$data);
+        }
+
+        $resultData['metrics'] = $metrics;
+        $totaltime = floor($totaltime/60000).':'.floor(($totaltime%60000)/1000).':'.str_pad(floor($totaltime%1000),3,'0', STR_PAD_LEFT);
+        $resultData['totaltime'] = $totaltime;
+        //Log::info("metrics ".print_r($resultData['metrics'],1));
+        //Log::info("metrics:total ".print_r($resultData['totaltime'],1));
+
+
+
+        return $resultData;
+    }
+
+    public function getDocumentsByAnnotation3($searchData,$annotationData){
+        $resultData = array();
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $totaltime = 0;
+        $metrics = array();
+        $file = fopen("/Users/rolfguescini/source/phpelasticsearchlaudatio/storage/metrics.csv","w");
+        //$file = fopen("/var/www/html/laravelaudatio/shared/storage/metrics.csv","w");
         fputcsv($file,array(
             'id',
             'EStime',
@@ -702,7 +780,7 @@ class ElasticService implements ElasticsearchInterface
             //Log::info("getDocumentsByAnnotation:qs ".print_r($qs,1));
             $resultset = $this->curlRequest($qs,'document/_msearch');
             $results = $resultset['resultdata'];
-            //Log::info("getDocumentsByAnnotation:results ".print_r($results,1));
+
 
 
             $results = json_decode($results,true);
@@ -732,6 +810,8 @@ class ElasticService implements ElasticsearchInterface
                         }
                     }
                 }
+
+                //Log::info("getDocumentsByAnnotation:results ".print_r($resultData[$id],1));
                 //Log::info("curlinfo ".print_r($resultset['curlinfo'],1));
                 $metrics[$id]['curlinfo_url'] = $resultset['curlinfo']['url'];
                 $metrics[$id]['curlinfo_http_code'] = $resultset['curlinfo']['http_code'];
