@@ -647,7 +647,7 @@ const app = new Vue({
                             }
 
 
-                            if(typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length > 0){
+                            if(typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length >= 1){
                                 for(var jid = 0; jid < res.data.results[j]._source.in_documents.length; jid++) {
                                     documentRefs[id].push(
                                         {
@@ -656,17 +656,11 @@ const app = new Vue({
                                     );
                                 }
                             }
-                            else if(typeof  res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length == 0 || typeof  res.data.results[j]._source.in_documents == 'undefined'){
-                                documentRefs[id].push(
-                                    {
-                                        '_id': '0'
-                                    }
-                                );
-                            }
 
 
 
-                            if(typeof  res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length > 0){
+
+                            if(typeof  res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length >= 1){
                                 for(var cid = 0; cid < res.data.results[j]._source.in_corpora.length; cid++) {
                                     corpusRefs[id].push(
                                         {
@@ -675,13 +669,7 @@ const app = new Vue({
                                     );
                                 }
                             }
-                            else if(typeof  res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length == 0 || typeof  res.data.results[j]._source.in_corpora == 'undefined'){
-                                corpusRefs[id].push(
-                                    {
-                                        '_id': '0'
-                                    }
-                                );
-                            }
+
 
                         }//end for annotationResults
                         var searchAnnotation1 = performance.now();
@@ -691,8 +679,9 @@ const app = new Vue({
                         postAnnotationData.documentRefs = documentRefs
                         postAnnotationData.annotationRefs = annotationRefs
                         postAnnotationData.cacheString =  this.annotationCacheString;
-
+                        console.log("getDocumentsByAnnotation  " + JSON.stringify(postAnnotationData));
                         var getDocumentsByAnnotation1 = performance.now();
+
                         window.axios.post('api/searchapi/getDocumentsByAnnotation',postAnnotationData).then(documentsByAnnotationRes => {
                             this.annotationsearched = true;
                             if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {

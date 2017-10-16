@@ -674,67 +674,50 @@ class ElasticService implements ElasticsearchInterface
     }
 
 
-
     public function getDocumentsByAnnotation($searchData,$annotationData){
         $resultData = array();
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
-        $totaltime = 0;
-        $metrics = array();
 
-        /*
-        fputcsv($file,array(
-            'id',
-            'EStime',
-            'total_time',
-            'curlinfo_speed_upload',
-            'curlinfo_speed_download',
-            'query'
-
-
-        ));
-        */
         foreach ($searchData as $id => $annotationDatum) {
             $results = null;
             if(!isset($resultData[$id])){
                 $resultData[$id] = array();
             }
+            $qs = "\r";
 
+            foreach($annotationDatum as $queryData){
+                $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+                foreach ($queryData as $key => $value){
+                    if($value != ""){
+                        $qs .= '{"profile": true,"query": {"match": {"'.$key.'": "'.$value.'"}}, "size": 1000, "_source": ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]}'."\n";
 
-
-            foreach ($annotationDatum as $documentElement){
-                $time_start = microtime(true);
-                //Log::info("SEARCHING documentRefs : ".print_r($documentElement,1  ));
-                if(strlen($documentElement['_id']) > 1){
-                    $resultset = $this->getDocument('document','document',$documentElement['_id'],false);
-                    //Log::info("resultset : ".print_r($resultset,1  ));
-                    $time_end = microtime(true);
-                    array_push($resultData[$id],array("_source" => $resultset['result']));
+                    }
                 }
-
             }
 
-        }
+            $resultset = $this->curlRequest($qs,'document/_msearch');
+            $results = $resultset['resultdata'];
 
-        $allhits = array();
-        $metrics[$id]['script_execution'] = $time_end - $time_start;
-        /*
-        foreach($metrics as $id => $data){
-            fputcsv($file,$data);
+            $results = json_decode($results,true);
+            if(isset($results['responses'])){
+                foreach ($results['responses'] as $result){
+                    if(count($result['hits']['hits']) > 0){
+                        array_push($resultData[$id],$result['hits']['hits'][0]);
+                    }
+                    else{
+                        $resultData[$id] = array();
+                    }
+                }
+            }
         }
-*/
-        $resultData['metrics'] = $metrics;
-        $totaltime = floor($totaltime/60000).':'.floor(($totaltime%60000)/1000).':'.str_pad(floor($totaltime%1000),3,'0', STR_PAD_LEFT);
-        $resultData['totaltime'] = $totaltime;
-        //Log::info("metrics ".print_r($resultData['metrics'],1));
-        //Log::info("metrics:total ".print_r($resultData['totaltime'],1));
-
 
 
         return $resultData;
     }
 
-    public function getDocumentsByAnnotation3($searchData,$annotationData){
+
+    public function getDocumentsByAnnotation_metrics($searchData,$annotationData){
         $resultData = array();
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
@@ -850,12 +833,12 @@ class ElasticService implements ElasticsearchInterface
         return $resultData;
     }
 
-    public function getDocumentsByAnnotation2($searchData,$annotationData){
+    public function getDocumentsByAnnotation_too_memory_consuming($searchData,$annotationData){
         $resultData = array();
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
         $counter = 0;
-
+        $queries = array();
 
         foreach ($searchData as $id => $annotationDatum) {
             $results = null;
@@ -863,33 +846,16 @@ class ElasticService implements ElasticsearchInterface
                 $resultData[$id] = array();
             }
             $qs = "";
-            $queries = array();
+
             foreach($annotationDatum as $queryData){
-                $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
-                array_push($queries,$queryBody);
-                foreach ($queryData as $key => $value){
-                    if($value != ""){
-                        $qs .= '{"query": {"match": {"'.$key.'": "'.$value.'"}}}'."\n";
 
-                    }
-
+                if(strlen($queryData['_id']) > 1){
+                    //Log::info("getDocumentsByAnnotation:params ".print_r($queryData,1));
+                    $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+                    array_push($queries,$queryBody);
                 }
-
-
-                //$queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
-                //array_push($queries,$queryBody);
-                //$qs .= $queryBody."\n";
-
-                /*
-                 $results = Elasticsearch::search($params);
-                if(count($results['hits']['hits']) > 0){
-                    array_push($resultData[$id],$results['hits']['hits'][0]);
-                }
-                else{
-                    $resultData[$id] = array();
-                }
-                */
             }
+
             $params = [
                 //'size' => 1000,
                 'index' => 'document',
@@ -899,8 +865,9 @@ class ElasticService implements ElasticsearchInterface
                 //'_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
                 //'filter_path' => ['hits.hits']
             ];
-            Log::info("getDocumentsByAnnotation:params ".print_r($params,1));
+
             $results = Elasticsearch::msearch($params);
+            //Log::info("DOING MSEEARCH: ".print_r($results,1));
             foreach ($results['responses'] as $result){
                 if(count($result['hits']['hits']) > 0){
                     array_push($resultData[$id],$result['hits']['hits'][0]);
@@ -910,10 +877,6 @@ class ElasticService implements ElasticsearchInterface
                 }
             }
         }
-
-
-        Log::info("getDocumentsByAnnotation:response ".print_r($results,1));
-
 
 
         return $resultData;

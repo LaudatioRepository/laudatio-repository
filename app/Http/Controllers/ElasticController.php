@@ -478,12 +478,13 @@ class ElasticController extends Controller
         $resultData = null;
         $cacheString = $request->cacheString;
 
-       Cache::flush();
-        Log::info("SEARCHING getDocumentsByAnnotation : ".$cacheString.'|getDocumentsByAnnotation');
+       //Cache::flush();
+        //Log::info("SEARCHING getDocumentsByAnnotation : ".$cacheString.'|getDocumentsByAnnotation');
         if (Cache::has($cacheString.'|getDocumentsByAnnotation')) {
             $resultData = Cache::get($cacheString.'|getDocumentsByAnnotation');
         }
         else{
+            //Log::info("SEARCHING documentRefs : ".print_r($request->documentRefs,1  ));
             $result = $this->ElasticService->getDocumentsByAnnotation($request->documentRefs,$request->annotationRefs);
             $resultData =  array(
                 'error' => false,
