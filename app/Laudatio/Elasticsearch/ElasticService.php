@@ -682,6 +682,7 @@ class ElasticService implements ElasticsearchInterface
         $totaltime = 0;
         $metrics = array();
 
+        /*
         fputcsv($file,array(
             'id',
             'EStime',
@@ -692,6 +693,7 @@ class ElasticService implements ElasticsearchInterface
 
 
         ));
+        */
         foreach ($searchData as $id => $annotationDatum) {
             $results = null;
             if(!isset($resultData[$id])){
