@@ -681,8 +681,7 @@ class ElasticService implements ElasticsearchInterface
         $queryBody = null;
         $totaltime = 0;
         $metrics = array();
-        //$file = fopen("/Users/rolfguescini/source/phpelasticsearchlaudatio/storage/metrics.csv","w");
-        //$file = fopen("/var/www/html/laravelaudatio/shared/storage/metrics.csv","w");
+
         fputcsv($file,array(
             'id',
             'EStime',
@@ -717,10 +716,11 @@ class ElasticService implements ElasticsearchInterface
 
         $allhits = array();
         $metrics[$id]['script_execution'] = $time_end - $time_start;
+        /*
         foreach($metrics as $id => $data){
             fputcsv($file,$data);
         }
-
+*/
         $resultData['metrics'] = $metrics;
         $totaltime = floor($totaltime/60000).':'.floor(($totaltime%60000)/1000).':'.str_pad(floor($totaltime%1000),3,'0', STR_PAD_LEFT);
         $resultData['totaltime'] = $totaltime;
