@@ -681,7 +681,7 @@ class ElasticService implements ElasticsearchInterface
         $queryBody = null;
         $totaltime = 0;
         $metrics = array();
-        $file = fopen("/Users/rolfguescini/source/phpelasticsearchlaudatio/storage/metrics.csv","w");
+        //$file = fopen("/Users/rolfguescini/source/phpelasticsearchlaudatio/storage/metrics.csv","w");
         //$file = fopen("/var/www/html/laravelaudatio/shared/storage/metrics.csv","w");
         fputcsv($file,array(
             'id',
