@@ -35,13 +35,19 @@ return [
     | configuration has been included, but you may add as many connections as
     | you would like.
     |
+
+        'main' => [
+            'token' => 'so-5dNPYLJUmVW648Das',
+            'base_url' => 'https://gitlab.com/api/v3/',
+        ],
+
     */
 
     'connections' => [
 
         'main' => [
-            'token' => 'so-5dNPYLJUmVW648Das',
-            'base_url' => 'https://gitlab.com/api/v3/',
+            'token' => '5XiSvE9Jd6WmuV3jw7EP',
+            'base_url' => 'https://scm.cms.hu-berlin.de/api/v4/',
         ],
 
         'alternative' => [

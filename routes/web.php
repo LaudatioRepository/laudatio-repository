@@ -63,8 +63,6 @@ Route::get('/admin/userroles',[ 'as' => 'admin.roles.assignusers', 'uses' => 'Ro
 Route::get('/admin/userroles/{corpusproject}/{user}',[ 'as' => 'admin.roles.assignroletocpbyuser', 'uses' => 'RoleController@assignRolesToUsers'])->middleware('auth');
 Route::get('/admin/userroles/{role}/{user}/delete',[ 'as' => 'admin.roles.deleteroleforuser', 'uses' => 'RoleController@removeRoleFromUser'])->middleware('auth');
 
-
-http://phpelastic.local/admin/roles/2/5/delete
 /** END ROLES  **/
 
 Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
@@ -89,8 +87,11 @@ Route::post('/admin/commit',['as' => 'gitRepo.commit.post', 'uses' => 'CommitCon
 /** END GIT **/
 
 
-
-
+/** GITLAB **/
+Route::get('/admin/gitlabgroups', ['as' => 'admin.gitlab.getGroups', 'uses' => 'GitLabController@listGroups'])->middleware('auth');
+Route::get('/admin/gitlabgroups/{groupId}', ['as' => 'admin.gitlab.getGroups', 'uses' => 'GitLabController@showGitLabGroup'])->middleware('auth');
+Route::get('/admin/gitlabgroups/create',[ 'as' => 'admin.gitlab.createGroup.', 'uses' => 'CorpusController@createGitLabGroup'])->middleware('auth');
+/** END GITLAB **/
 
 
 

@@ -20,6 +20,7 @@ class Handler extends ExceptionHandler
         \Illuminate\Database\Eloquent\ModelNotFoundException::class,
         \Illuminate\Session\TokenMismatchException::class,
         \Illuminate\Validation\ValidationException::class,
+        \ErrorException::class
     ];
 
     /**
@@ -44,7 +45,37 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        return parent::render($request, $exception);
+        if (config('app.debug')) {
+            return parent::render($request, $exception);
+        }
+
+        return $this->handle($request, $exception);
+        //return parent::render($request, $exception);
+    }
+
+    /**
+     * Convert the Exception into a JSON HTTP Response
+     *
+     * @param Request $request
+     * @param Exception $e
+     * @return JSONResponse
+     */
+    private function handle($request, Exception $e) {
+        if ($e instanceOf \ErrorException) {
+            $data   = $e->toArray();
+            $status = $e->getStatus();
+        }
+
+        if ($e instanceOf NotFoundHttpException) {
+            $data = array_merge([
+                'id'     => 'not_found',
+                'status' => '404'
+            ], config('errors.not_found'));
+
+            $status = 404;
+        }
+
+        return response()->json($data, $status);
     }
 
     /**

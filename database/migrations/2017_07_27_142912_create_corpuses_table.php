@@ -18,6 +18,8 @@ class CreateCorpusesTable extends Migration
             $table->string('name');
             $table->text('description');
             $table->text('directory_path');
+            $table->text('gitlab_project_path')->nullable();
+            $table->integer('gitlab_id')->nullable();
             $table->timestamps();
         });
     }

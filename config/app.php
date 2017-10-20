@@ -182,6 +182,7 @@ return [
         Cviebrock\LaravelElasticsearch\ServiceProvider::class,
         App\Providers\ElasticServiceProvider::class,
         App\Providers\GitRepoProvider::class,
+        App\Providers\GitLabServiceProvider::class,
         //Laravel\Socialite\SocialiteServiceProvider::class,
         \SocialiteProviders\Manager\ServiceProvider::class,
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class
