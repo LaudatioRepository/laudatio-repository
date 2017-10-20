@@ -93,6 +93,10 @@ Route::get('/admin/gitlabgroups/{groupId}', ['as' => 'admin.gitlab.getGroups', '
 Route::get('/admin/gitlabgroups/create',[ 'as' => 'admin.gitlab.createGroup.', 'uses' => 'CorpusController@createGitLabGroup'])->middleware('auth');
 /** END GITLAB **/
 
+/** LDAP **/
+Route::get('/ldapusers', ['as' => 'ldap.getUsers', 'uses' => 'LDAPController@index']);
+/** END LDAP **/
+
 
 
 /**OLD**/

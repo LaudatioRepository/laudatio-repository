@@ -162,6 +162,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        Adldap\Laravel\AdldapServiceProvider::class,
 
 
         /*
@@ -239,7 +240,8 @@ return [
         'GitLab' => Vinkla\GitLab\Facades\GitLab::class,
         'Elasticsearch' => Cviebrock\LaravelElasticsearch\Facade::class,
         'JavaScript' => Laracasts\Utilities\JavaScript\JavaScriptFacade::class,
-        'Socialite' => Laravel\Socialite\Facades\Socialite::class
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'Adldap' => Adldap\Laravel\Facades\Adldap::class
 
     ],
 
