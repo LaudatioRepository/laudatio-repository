@@ -113,3 +113,6 @@ Route::get('/validatetei/{dirname}',['as' => 'gitRepo.validatetei.get', 'uses' =
 
 
 Route::get('/browse/{header}/{id}', ['as' => 'browse.showHeaders.get', 'uses' => 'BrowseController@index']);
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

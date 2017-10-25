@@ -3,11 +3,13 @@
 namespace App;
 
 use Illuminate\Notifications\Notifiable;
+use Adldap\Laravel\Traits\HasLdapUser;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable,SoftDeletes, HasLdapUser;
 
     /**
      * The attributes that are mass assignable.
@@ -15,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'oauth_id', 'avatar','password',
+        'name', 'username', 'oauth_id', 'avatar', 'password', // was 'email' instead of 'username'
     ];
 
     /**

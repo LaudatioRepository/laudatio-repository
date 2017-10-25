@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Socialite;
 use App\User;
-use Auth;
+//use Auth;
 use App\OauthDriver;
 use App\OauthUser;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Adldap\Laravel\Facades\Adldap;
+use Log;
 
 class LoginController extends Controller
 {
@@ -40,6 +44,46 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    public function username() {
+        return config('adldap_auth.usernames.eloquent');
+    }
+
+
+    protected function validateLogin(Request $request) {
+        $this->validate($request, [
+            $this->username() => 'required|string|regex:/^\w+$/',
+            'password' => 'required|string',
+        ]);
+    }
+
+    protected function attemptLogin(Request $request) {
+        $credentials = $request->only($this->username(), 'password');
+        $username = $credentials[$this->username()];
+        $password = $credentials['password'];
+
+        $user_format = env('ADLDAP_USER_FORMAT', 'cn=%s,'.env('ADLDAP_BASEDN', ''));
+        $userdn = sprintf($user_format, $username);
+
+        if(Adldap::auth()->attempt($userdn, $password, $bindAsUser = false)) {
+
+            // the user exists in the LDAP server, with the provided password
+            $user = User::where($this->username(), $username) -> first();
+            Log::info("passed: : ".print_r($user,1));
+
+            if ( !$user ) {
+                // the user doesn't exist in the local database
+                $user = new \App\User();
+                $user->name = $username;
+                $user->username = $username;
+                $user->password = '';
+            }
+            // by logging the user we create the session so there is no need to login again (in the configured time)
+            $this->guard()->login($user, true);
+            return true;
+        }
+        // the user doesn't exist in the LDAP server or the password is wrong
+        return false;
+    }
 
     public function socialLogin($social){
         return Socialite::driver($social)->redirect();
