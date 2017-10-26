@@ -28,6 +28,10 @@ class GitLabController extends Controller
     public function createGitLabGroup($groupId){
 
     }
+
+    public function createGitLabProject($name, $path, $description,$visibility){
+        
+    }
     public function updateGitLabGroup($groupId){}
     public function deleteGitLabGroup($groupId){}
 
