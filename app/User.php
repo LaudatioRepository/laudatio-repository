@@ -38,4 +38,12 @@ class User extends Authenticatable
     public function corpora() {
         return $this->belongsToMany(Corpus::class);
     }
+
+    /**
+     * The entitlements that belong to the user.
+     */
+    public function entitlements()
+    {
+        return $this->belongsToMany(Entitlement::class);
+    }
 }

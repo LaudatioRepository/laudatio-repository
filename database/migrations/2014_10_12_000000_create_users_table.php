@@ -20,6 +20,8 @@ class CreateUsersTable extends Migration
             $table->string('oauth_id')->unique()->nullable()    ;
             $table->string('avatar')->nullable();
             $table->string('password')->nullable();
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
