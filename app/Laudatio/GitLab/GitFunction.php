@@ -286,7 +286,7 @@ class GitFunction
 
         $process = null;
         $folder = str_replace(" ","\\ ",$folder);
-        //dd("FOLDER: ".$folder." CWDPATH: ".$cwdPath);
+        dd("FOLDER: ".$folder." CWDPATH: ".$cwdPath);
 
         if($isFile){
             $process = new Process("git rm $folder",$cwdPath);

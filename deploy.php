@@ -9,7 +9,7 @@ set('repository', 'git@bitbucket.org:guescini-HU/vuelasticsearchjslaudatio.git')
 set('git_tty', true); // [Optional] Allocate tty for git on first deployment
 add('shared_files', ['.env','config/flysystem.php','config/filesystems.php','config/gitlab.php']);
 add('shared_dirs', ['storage']);
-add('writable_dirs', []);
+add('writable_dirs', ['releases']);
 set('ssh_type', 'native');
 set('ssh_multiplexing', true);
 set('http_user', 'www-data');
