@@ -114,12 +114,12 @@ return [
 
         'gitlocal' => [
             'driver' => 'local',
-            'path' => '/Users/rolfguescini/source/laudatiofiles/projects',
+            'path' => '/Users/rolfguescini/source/gitfiles/laudatiofiles/projects',
         ],
 
         'schemalocal' => [
             'driver' => 'local',
-            'path' => '/Users/rolfguescini/source/laudatiofiles/schema',
+            'path' => '/Users/rolfguescini/source/gitfiles/laudatiofiles/schema',
         ],
 
         'null' => [

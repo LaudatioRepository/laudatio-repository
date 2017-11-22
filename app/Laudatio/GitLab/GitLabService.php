@@ -38,5 +38,8 @@ class GitLabService implements GitLabInterface {
         return GitLab::api('groups')->remove($groupId);
     }
 
+    public function createGitLabProject($name, $path, $description,$visibility){
+
+    }
 
 }
