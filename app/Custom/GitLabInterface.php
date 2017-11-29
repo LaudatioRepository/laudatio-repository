@@ -16,4 +16,6 @@ interface GitLabInterface {
     public function deleteGitLabGroup($groupId);
 
     public function createGitLabProject($name, $path, $description,$visibility);
+    public function deleteGitLabProject($projectId);
+    public function unlinkProjectFromGroup($projectId,$groupId);
 }

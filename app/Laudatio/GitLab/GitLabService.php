@@ -9,12 +9,23 @@ namespace App\Laudatio\GitLab;
 
 use App\Custom\GitLabInterface;
 use Vinkla\GitLab\Facades\GitLab;
-use Gitlab\Exception\ErrorException;
+use Gitlab\Api\AbstractApi;
+use Gitlab\Client;
 
-class GitLabService implements GitLabInterface {
-    public function __construct()
+
+class GitLabService extends AbstractApi implements GitLabInterface {
+
+
+    /**
+     * The client
+     *
+     * @var Client
+     */
+    protected $client;
+
+    public function __construct(Client $client)
     {
-
+        $this->client = $client;
     }
 
     /**
@@ -38,8 +49,16 @@ class GitLabService implements GitLabInterface {
         return GitLab::api('groups')->remove($groupId);
     }
 
-    public function createGitLabProject($name, $path, $description,$visibility){
+    public function createGitLabProject($name, $groupId, $description = null,$visibility = 'public'){
+        return GitLab::api('projects')->create($name, $groupId, $description, $visibility);
+    }
 
+    public function deleteGitLabProject($projectId){
+        return GitLab::api('projects')->remove($projectId);
+    }
+
+    public function unlinkProjectFromGroup($projectId,$groupId){
+        return $this->delete('projects/'.$this->encodePath($projectId).'/share/'.$this->encodePath($groupId));
     }
 
 }

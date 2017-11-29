@@ -10,7 +10,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Laudatio\GitLab\GitLabService;
-
+use Gitlab\Client;
 class GitLabServiceProvider extends ServiceProvider
 {
     /**
@@ -32,7 +32,7 @@ class GitLabServiceProvider extends ServiceProvider
     {
         //
         $this->app->singleton('App\Custom\GitLabInterface', function ($app){
-            return new GitLabService();
+            return new GitLabService($client);
         });
     }
 }

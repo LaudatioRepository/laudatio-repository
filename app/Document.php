@@ -2,14 +2,10 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Model;
 
-class Corpus extends Model
+class Document extends Model
 {
-
-    public function corpusprojects(){
-        return $this->belongsToMany(CorpusProject::class);
-    }
-
     /**
      * Editors
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -18,12 +14,16 @@ class Corpus extends Model
         return $this->belongsToMany(Editor::class);
     }
 
-    public function users() {
-        return $this->belongsToMany(User::class)->withPivot('role_id');
+    /**
+     * Authors
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function authors(){
+        return $this->belongsToMany(Author::class);
     }
 
     /**
-     * The publications that belong to the Corpus.
+     * The publications that belong to the Document.
      */
     public function publications()
     {

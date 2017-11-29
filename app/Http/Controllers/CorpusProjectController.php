@@ -84,7 +84,7 @@ class CorpusProjectController extends Controller
                 'internal'
                 );
 
-            Log::info("gitLabResponse ".print_r($gitLabResponse,1));
+            Log::info("gitLabResponse: CorpusProject ".print_r($gitLabResponse,1));
 
 
             CorpusProject::create([
@@ -97,7 +97,6 @@ class CorpusProjectController extends Controller
                 'gitlab_parent_id' => $gitLabResponse['parent_id']
             ]);
         }
-
 
         return redirect()->route('admin.corpusProject.index');
     }
@@ -192,7 +191,9 @@ class CorpusProjectController extends Controller
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
 
-        if(count($corpusproject->corpora()) > 0) {
+        $projectCorpora = $corpusproject->corpora();
+
+        if(count($projectCorpora) > 0) {
             $corpusproject->corpora()->detach();
         }
 
@@ -201,6 +202,10 @@ class CorpusProjectController extends Controller
         }
 
         $gitLabGroupId = $corpusproject->gitlab_id;
+
+        foreach($projectCorpora as $projectCorpus) {
+            $this->GitLabService->unlinkProjectFromGroup($projectCorpus->gitlab_id,$gitLabGroupId);
+        }
 
         $this->GitLabService->deleteGitLabGroup($gitLabGroupId);
 
