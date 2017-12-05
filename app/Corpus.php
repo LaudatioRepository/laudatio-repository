@@ -37,4 +37,12 @@ class Corpus extends Model
     {
         return $this->hasMany(Document::class);
     }
+
+    /**
+     * Annotations
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function annotations(){
+        return $this->hasMany(Annotation::class);
+    }
 }

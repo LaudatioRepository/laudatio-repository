@@ -44,5 +44,13 @@ class Annotation extends Model
         return $this->belongsTo(Document::class);
     }
 
+    /**
+     * Corpora
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function corpus(){
+        return $this->belongsTo(Corpus::class);
+    }
+
 
 }

@@ -15,6 +15,13 @@ class CreatePublicationsTable extends Migration
     {
         Schema::create('publications', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('project_id')->nullable();
+            $table->string('publication_description')->nullable();
+            $table->date("publication_date");
+            $table->string('publisher')->nullable();
+            $table->string('license_description')->nullable();
+
+
             $table->timestamps();
         });
     }

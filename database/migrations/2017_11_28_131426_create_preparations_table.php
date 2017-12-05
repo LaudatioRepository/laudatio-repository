@@ -15,6 +15,15 @@ class CreatePreparationsTable extends Migration
     {
         Schema::create('preparations', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('preparation_encoding_step')->nullable();
+            $table->string('preparation_encoding_style')->nullable();
+            $table->string('preparation_encoding_tool')->nullable();
+            $table->string('preparation_encoding_full_name')->nullable();
+            $table->text('preparation_encoding_description')->nullable();
+            $table->string('preparation_encoding_annotation_style')->nullable();
+            $table->string('preparation_encoding_segmentation_style')->nullable();
+            $table->string('preparation_encoding_segmentation_type')->nullable();
+            $table->text('preparation_encoding_segmentation_description')->nullable();
             $table->integer('annotation_id')->nullable();
             $table->timestamps();
         });
