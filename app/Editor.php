@@ -35,4 +35,13 @@ class Editor extends Person
     public function annotations(){
         return $this->belongsToMany(Annotation::class);
     }
+
+    /**
+     * Get the Organizations affiliated.
+     */
+    public function organizations()
+    {
+        return $this->morphToMany('\App\Organization', 'organizable');
+        //return $this->belongsToMany(Organization::class);
+    }
 }

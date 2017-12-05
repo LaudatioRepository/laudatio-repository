@@ -23,10 +23,26 @@ class Document extends Model
     }
 
     /**
+     * Annotations
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function annotations(){
+        return $this->hasMany(Annotation::class);
+    }
+
+    /**
      * The publications that belong to the Document.
      */
     public function publications()
     {
         return $this->hasMany(Publication::class);
+    }
+
+    /**
+     * Authors
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function corpus(){
+        return $this->belongsTo(Corpus::class);
     }
 }

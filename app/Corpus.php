@@ -29,4 +29,12 @@ class Corpus extends Model
     {
         return $this->hasMany(Publication::class);
     }
+
+    /**
+     * The documents that belong to the Corpus.
+     */
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
+    }
 }

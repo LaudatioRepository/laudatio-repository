@@ -15,4 +15,13 @@ class Author extends Person
     public function documents(){
         return $this->belongsToMany(Document::class);
     }
+
+    /**
+    * Get the Organizations affiliated.
+    */
+    public function organizations()
+    {
+        return $this->morphToMany('\App\Organization', 'organizable');
+        //return $this->belongsToMany(Organization::class);
+    }
 }

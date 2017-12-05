@@ -15,6 +15,7 @@ class CreateAnnotationValuesTable extends Migration
     {
         Schema::create('annotation_values', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('annotation_id')->nullable();
             $table->timestamps();
         });
     }

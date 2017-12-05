@@ -7,6 +7,7 @@
  */
 
 namespace App;
+use Eloquent;
 
 
 abstract class Person extends Eloquent
@@ -18,8 +19,9 @@ abstract class Person extends Eloquent
     /**
      * Get the post that owns the comment.
      */
-    public function post()
+    public function organizations()
     {
-        return $this->belongsTo(Organization::class);
+        return $this->morphToMany('\App\Organization', 'organizable');
+        //return $this->belongsToMany(Organization::class);
     }
 }

@@ -15,6 +15,7 @@ class CreatePreparationsTable extends Migration
     {
         Schema::create('preparations', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('annotation_id')->nullable();
             $table->timestamps();
         });
     }
