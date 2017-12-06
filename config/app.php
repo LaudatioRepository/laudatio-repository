@@ -183,6 +183,7 @@ return [
         App\Providers\ElasticServiceProvider::class,
         App\Providers\GitRepoProvider::class,
         App\Providers\GitLabServiceProvider::class,
+        App\Providers\LaudatioUtilsServiceProvider::class,
         //Laravel\Socialite\SocialiteServiceProvider::class,
         \SocialiteProviders\Manager\ServiceProvider::class,
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class

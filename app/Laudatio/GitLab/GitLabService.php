@@ -9,23 +9,13 @@ namespace App\Laudatio\GitLab;
 
 use App\Custom\GitLabInterface;
 use Vinkla\GitLab\Facades\GitLab;
-use Gitlab\Api\AbstractApi;
-use Gitlab\Client;
 
 
-class GitLabService extends AbstractApi implements GitLabInterface {
+class GitLabService implements GitLabInterface {
 
 
-    /**
-     * The client
-     *
-     * @var Client
-     */
-    protected $client;
-
-    public function __construct(Client $client)
+    public function __construct()
     {
-        $this->client = $client;
     }
 
     /**

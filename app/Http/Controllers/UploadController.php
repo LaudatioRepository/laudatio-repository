@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UploadRequest;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use DB;
+use App\Laudatio\Utils\LaudatioUtilService;
 
 
 class UploadController extends Controller

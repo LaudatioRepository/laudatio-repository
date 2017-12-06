@@ -9,6 +9,7 @@
         "cviebrock/laravel-elasticsearch": "^2.0",
         "doctrine/dbal": "^2.5",
         "elasticsearch/elasticsearch": "~5.0",
+        "flow/jsonpath": "^0.3.4",
         "graham-campbell/flysystem": "^3.7",
         "laracasts/utilities": "~2.0",
         "laravel/framework": "5.4.*",
