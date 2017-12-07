@@ -18,7 +18,7 @@ class CreateAnnotationsTable extends Migration
             $table->integer('annotation_id')->nullable();
             $table->string('annotation_group')->nullable();
             $table->string('annotation_size_type')->nullable();
-            $table->integer('annotation_size_value')->nullable();
+            $table->string('annotation_size_value')->nullable();
             $table->integer('corpus_id')->nullable();
             $table->integer('document_id')->nullable();
             $table->timestamps();

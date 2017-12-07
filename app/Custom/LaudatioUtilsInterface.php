@@ -11,7 +11,7 @@ namespace App\Custom;
 
 interface LaudatioUtilsInterface
 {
-    public function parseXMLToJson($xml, $options, $format);
+    public function parseXMLToJson($xml, $options);
 
     public function setCorpusAttributes($json,$corpusId);
     public function setDocumentAttributes($json,$documentId);

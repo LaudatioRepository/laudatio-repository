@@ -16,21 +16,22 @@ use App\Corpus;
 use App\Document;
 use App\Annotation;
 use App\Preparation;
+use Log;
 
 class LaudatioUtilService implements LaudatioUtilsInterface
 {
 
     /**
+     * Parse xml to json
      * @param $xml
      * @param $options
-     * @param $format
-     *
-     * @return mixed
+     * @return array
      */
-    public function parseXMLToJson($xml, $options, $format = 'json'){
+    public function parseXMLToJson($xml, $options){
+
         $defaults = array(
             'namespaceSeparator' => ':',//you may want this to be something other than a colon
-            'attributePrefix' => '§',   //to distinguish between attributes and nodes with the same name
+            'attributePrefix' => '',   //to distinguish between attributes and nodes with the same name
             'alwaysArray' => array(),   //array of xml tag names which should always become arrays
             'autoArray' => true,        //only create arrays for tags which appear more than once
             'textContent' => 'text',       //key used for the text content of elements
@@ -62,7 +63,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         foreach ($namespaces as $prefix => $namespace) {
             foreach ($xml->children($namespace) as $childXml) {
                 //recurse into child nodes
-                $childArray = xmlToArray($childXml, $options);
+                $childArray = $this->parseXMLToJson($childXml, $options);
                 list($childTagName, $childProperties) = each($childArray);
 
                 //replace characters in tag name
@@ -104,20 +105,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $propertiesArray = !$options['autoText'] || $attributesArray || $tagsArray || ($plainText === '')
             ? array_merge($attributesArray, $tagsArray, $textContentArray) : $plainText;
 
-
-
-        if($format == 'json') {
-            //return node as json
-            return json_encode(array(
-                $xml->getName() => $propertiesArray
-            ));
-        }
-        else{
-            //return node as array
-            return array(
-                $xml->getName() => $propertiesArray
-            );
-        }
+        return array(
+            $xml->getName() => $propertiesArray
+        );
     }
 
     /**
@@ -127,18 +117,19 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @return mixed|static
      */
     public function setCorpusAttributes($json,$corpusId){
-        $jsonPath = new JSONPath($json);
-        $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text');
-        $corpusDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text');
-        $corpusSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type');
-        $corpusSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text');
+        $jsonPath = new JSONPath($json,JSONPath::ALLOW_MAGIC);
+
+        $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
+        $corpusDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
+        $corpusSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
+        $corpusSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text')->data();
 
         $corpus = Corpus::find($corpusId);
         $corpus->update([
-            "name" => $corpusTitle,
-            "description" => $corpusDesc,
-            "corpus_size_type" => $corpusSizeType,
-            "corpus_size_value" => $corpusSizeValue
+            "name" => $corpusTitle[0],
+            "description" => $corpusDesc[0],
+            "corpus_size_type" => $corpusSizeType[0],
+            "corpus_size_value" => $corpusSizeValue[0]
         ]);
 
         return $corpus;

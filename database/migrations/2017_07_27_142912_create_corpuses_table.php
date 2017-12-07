@@ -18,7 +18,7 @@ class CreateCorpusesTable extends Migration
             $table->string('name');
             $table->text('description');
             $table->string('corpus_size_type')->nullable();
-            $table->integer('corpus_size_value')->nullable();
+            $table->string('corpus_size_value')->nullable();
             $table->string('directory_path');
             $table->text('gitlab_group_id')->nullable();
             $table->integer('gitlab_id')->nullable();
