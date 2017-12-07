@@ -218,4 +218,66 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             "preparation_encoding_segmentation_description" => $preparationEncodingSegmentationDescription
         ]);
     }
+
+
+    /**
+     * Associate an array of Document objects to a Corpus
+     * @param $documents
+     * @param $corpusId
+     * @return mixed|static Corpus
+     */
+    public function associateDocumentsToCorpus($documents,$corpusId){
+        $corpus = Corpus::find($corpusId);
+
+        foreach($documents as $document){
+            $corpus->documents()->save($document);
+        }
+        return $corpus;
+    }
+
+    /**
+     * Associate an array of Annotation objects to a Document
+     * @param $annotations
+     * @param $documentId
+     * @return mixed|static Document
+     */
+    public function associateAnnotationsToDocument($annotations,$documentId){
+        $document = Document::find($documentId);
+
+        foreach ($annotations as $annotation) {
+            $document->annotations()->save($annotation);
+        }
+
+        return $document;
+    }
+
+    /**
+     * Associate an array of Annotation objects to a Corpus
+     * @param $annotations
+     * @param $corpusId
+     * @return mixed|static Corpus
+     */
+    public function associateAnnotationsToCorpus($annotations,$corpusId){
+        $corpus = Corpus::find($corpusId);
+        foreach ($annotations as $annotation) {
+            $corpus->annotations()->save($annotation);
+        }
+
+        return $corpus;
+    }
+
+    /**
+     * Associate an array of Preparation objects to an Annotation
+     * @param $preparations
+     * @param $annotationId
+     * @return mixed|static Annotation
+     */
+    public function associatePreparationsToAnnotation($preparations,$annotationId){
+        $annotation = Annotation::find($corpusId);
+        foreach ($preparations as $preparation) {
+            $annotation->preparations()->save($preparation);
+        }
+
+        return $annotation;
+    }
 }
