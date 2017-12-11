@@ -15,8 +15,7 @@ class CreateAnnotationsTable extends Migration
     {
         Schema::create('annotations', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('annotation_id')->nullable();
-            $table->string('annotation_group')->nullable();
+            $table->string('annotation_id')->nullable();
             $table->string('annotation_size_type')->nullable();
             $table->string('annotation_size_value')->nullable();
             $table->integer('corpus_id')->nullable();

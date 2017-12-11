@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Annotation extends Model
 {
 
+    protected $fillable = ['annotation_id', 'annotation_size_type', 'annotation_size_value','corpus_id','document_id'];
+
     public function annotationvalue()
     {
         return $this->hasOne(AnnotationValue::class);

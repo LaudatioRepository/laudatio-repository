@@ -42,7 +42,7 @@ class UploadController extends Controller
     public function uploadSubmit(UploadRequest $request)
     {
         $dirPath = $request->directorypath;;
-        $entityId = $request->corpusid;
+        $corpusId = $request->corpusid;
 
 
         foreach ($request->formats as $format) {
@@ -70,13 +70,14 @@ class UploadController extends Controller
                 $json = $this->laudatioUtilsService->parseXMLToJson($xmlNode, array());
 
                 if(strpos($dirPath,'corpus') !== false){
-                    $corpus = $this->laudatioUtilsService->setCorpusAttributes($json,$entityId);
+                    $corpus = $this->laudatioUtilsService->setCorpusAttributes($json,$corpusId);
                 }
                 else if(strpos($dirPath,'document') !== false){
-                    $document = $this->laudatioUtilsService->setDocumentAttributes($json,$entityId);
+                    $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId);
                 }
                 else if(strpos($dirPath,'annotation') !== false){
-                    $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$entityId);
+                    $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId);
+                    $preparationSteps = $this->laudatioUtilsService->setPreparationAttributes($json,$annotation->id,$corpusId);
                 }
             }
 
@@ -84,6 +85,6 @@ class UploadController extends Controller
 
 
         }
-        return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $entityId]);
+        return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
     }
 }

@@ -11,6 +11,7 @@ namespace App\Laudatio\Utils;
 use App\Custom\LaudatioUtilsInterface;
 use Flow\JSONPath\JSONPath;
 
+
 use App\CorpusProject;
 use App\Corpus;
 use App\Document;
@@ -141,73 +142,134 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $documentId
      * @return mixed|static
      */
-    public function setDocumentAttributes($json,$documentId){
+    public function setDocumentAttributes($json,$corpusId){
         $jsonPath = new JSONPath($json);
+        $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
+        $documentGenre = $jsonPath->find('$.TEI.teiHeader.style')->data();
+        $documentSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
+        $documentSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text')->data();
 
-        $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text');
-        $documentGenre = $jsonPath->find('$.TEI.teiHeader.style');
-        $documentSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type');
-        $documentSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text');
+        $documentListOfAnnotations = $jsonPath->find('$.TEI.teiHeader.encodingDesc.schemaSpec.elementSpec[*].valList.valItem[*].corresp')->data();
 
-        $document = Document::find($documentId);
-        $document->update([
-            "title" => $documentTitle,
-            "document_genre" => $documentGenre,
-            "document_size_type" => $documentSizeType,
-            "document_size_value" => $documentSizeValue
-        ]);
+        $document = new Document;
+        $document->title = $documentTitle[0];
+        $document->document_genre = $documentGenre[0];
+        $document->document_size_type = $documentSizeType[0];
+        $document->document_size_value = $documentSizeValue[0];
+        $document->corpus_id = $corpusId;
+        $document->save();
+
+
+        /*
+         * Populate database with list of annotations, with document_id and corpus_id as compund primary_key
+         */
+        foreach ($documentListOfAnnotations as $annotation) {
+            $annotationObject = new Annotation;
+            $annotationObject->annotation_id = $annotation;
+            $annotationObject->corpus_id = $corpusId;
+            $annotationObject->document_id = $document->id;
+            $annotationObject->save();
+        }
 
         return $document;
     }
 
     /**
-     * Pouplate Annotation object with attributes from the Annotation Header
+     * Populate Annotation object with attributes from the Annotation Header
      * @param $json
-     * @param $annotationId
-     * @return mixed|static
+     * @param $corpusId
+     * @return Annotation
      */
-    public function setAnnotationAttributes($json,$annotationId){
+    public function setAnnotationAttributes($json,$corpusId){
+
         $jsonPath = new JSONPath($json);
 
-        $annotationId = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text');
-        $annotationGroup = $jsonPath->find('$.TEI.teiHeader.encodingDesc.appInfo.application.type');
-        $annotationSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type');
-        $annotationSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text');
-        $annotation = Annotation::find($annotationId);
-        $annotation->update([
-            "annotation_id" => $annotationId,
-            "annotation_group" => $annotationGroup,
-            "annotation_size_type" => $annotationSizeType,
-            "annotation_size_value" => $annotationSizeValue
-        ]);
-        return $annotation;
+        $annotationId = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.corresp')->data();
+        $annotationSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
+        $annotationSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text')->data();
+
+        $annotationsFromDB = Annotation::where(
+            [
+                ['annotation_id', '=', $annotationId[0]],
+                ['corpus_id', '=', $corpusId],
+            ]
+        )->get();
+
+
+        if(count($annotationsFromDB) > 0){
+
+            foreach($annotationsFromDB as $annotationFromDB)
+              $annotationFromDB->update([
+                "annotation_size_type" => $annotationSizeType[0],
+                "annotation_size_value" => $annotationSizeValue[0]
+            ]);
+
+            $annotationFromDB->save();
+
+            return $annotationFromDB;
+        }
+        else{
+            $annotation = new Annotation;
+
+            $annotation->annotation_id = $annotationId[0];
+            $annotation->annotation_size_type = $annotationSizeType[0];
+            $annotation->annotation_size_value = $annotationSizeValue[0];
+            $annotation->corpus_id = $corpusId;
+            $annotation->save();
+            return $annotation;
+        }
     }
 
-    public function setPreparationAttributes($json,$preparationId){
+    public function setPreparationAttributes($json,$annotationId,$corpusId){
         $jsonPath = new JSONPath($json);
+        
+        $preparationFromDB = Preparation::where([
+            ['annotation_id', '=', $annotationId],
+            ['corpus_id', '=', $corpusId],
+        ])->get();
 
-        $preparation = Preparation::find($preparationId);
-        $preparationEncodingStep = $jsonPath->find('$.TEI.teiHeader.encodingDesc.style');
-        $preparationEncodingStyle = $jsonPath->find('$.TEI.teiHeader.encodingDesc.appInfo.style');
-        $preparationEncodingTool = $jsonPath->find('$.TEI.teiHeader.encodingDesc.appInfo.application.ident');
-        $preparationEncodingFullName = $jsonPath->find('$.TEI.teiHeader.encodingDesc.appInfo.application.label');
-        $preparationEncodingDescription = $jsonPath->find('$.TEI.teiHeader.encodingDesc.appInfo.application.p');
-        $preparationEncodingAnnotationStyle = $jsonPath->find('$.TEI.teiHeader.encodingDesc.appInfo.application.style');
-        $preparationEncodingSegmentationStyle = $jsonPath->find('$.TEI.teiHeader.encodingDesc.editorialDecl.segmentation.style');
-        $preparationEncodingSegmentationType = $jsonPath->find('$.TEI.teiHeader.encodingDesc.editorialDecl.segmentation.corresp');
-        $preparationEncodingSegmentationDescription = $jsonPath->find('$.TEI.teiHeader.encodingDesc.editorialDecl.segmentation.p');
+
+        if(count($preparationFromDB) > 0){
+
+        }
+        else{
+
+            $preparationEncodingSteps = $jsonPath->find('$.TEI.teiHeader.encodingDesc[*]')->data();
+            Log::info("preparationEncodingSteps: ".print_r($preparationEncodingSteps,1));
+            foreach ($preparationEncodingSteps as $preparationEncodingStep) {
+                $preparation = new Preparation;
+                $preparation->preparation_encoding_step = $preparationEncodingStep['style'];
+                $preparation->preparation_encoding_style = $preparationEncodingStep['appInfo']['style'];
+                $preparation->preparation_encoding_tool =  $preparationEncodingStep['appInfo']['application']['ident'];
+                $preparation->preparation_encoding_full_name = $preparationEncodingStep['appInfo']['application']['label'];
+                $preparation->preparation_encoding_description = $preparationEncodingStep['appInfo']['application']['p'];
+                $preparation->preparation_encoding_annotation_style = $preparationEncodingStep['appInfo']['application']['style'];
+                $preparation->preparation_encoding_segmentation_style = $preparationEncodingStep['editorialDecl']['segmentation']['style'];
+                $preparation->preparation_encoding_segmentation_type = $preparationEncodingStep['editorialDecl']['segmentation']['corresp'];
+                $preparation->preparation_encoding_segmentation_description= $preparationEncodingStep['editorialDecl']['segmentation']['p'];
+                $preparation->annotation_id = $annotationId;
+                $preparation->corpus_id = $corpusId;
+                $preparation->save();
+            }
+        }
+
+
+        //Log::info("preparationEncodingSteps: ".print_r($preparationEncodingSteps,1));
+
+        /*
 
         $preparation->update([
-            "preparation_encoding_step" => $preparationEncodingStep,
-            "preparation_encoding_style" => $preparationEncodingStyle,
-            "preparation_encoding_tool" => $preparationEncodingTool,
-            "preparation_encoding_full_name" => $preparationEncodingFullName,
-            "preparation_encoding_description" => $preparationEncodingDescription,
-            "preparation_encoding_annotation_style" => $preparationEncodingAnnotationStyle,
-            "preparation_encoding_segmentation_style" => $preparationEncodingSegmentationStyle,
-            "preparation_encoding_segmentation_type" => $preparationEncodingSegmentationType,
-            "preparation_encoding_segmentation_description" => $preparationEncodingSegmentationDescription
+            "preparation_encoding_step" => $preparationEncodingStep[0],
+            "preparation_encoding_style" => $preparationEncodingStyle[0],
+            "preparation_encoding_tool" => $preparationEncodingTool[0],
+            "preparation_encoding_full_name" => $preparationEncodingFullName[0],
+            "preparation_encoding_description" => $preparationEncodingDescription[0],
+            "preparation_encoding_annotation_style" => $preparationEncodingAnnotationStyle[0],
+            "preparation_encoding_segmentation_style" => $preparationEncodingSegmentationStyle[0],
+            "preparation_encoding_segmentation_type" => $preparationEncodingSegmentationType[0],
+            "preparation_encoding_segmentation_description" => $preparationEncodingSegmentationDescription[0]
         ]);
+        */
     }
 
 

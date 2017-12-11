@@ -25,6 +25,7 @@ class CreatePreparationsTable extends Migration
             $table->string('preparation_encoding_segmentation_type')->nullable();
             $table->text('preparation_encoding_segmentation_description')->nullable();
             $table->integer('annotation_id')->nullable();
+            $table->integer('corpus_id')->nullable();
             $table->timestamps();
         });
     }
