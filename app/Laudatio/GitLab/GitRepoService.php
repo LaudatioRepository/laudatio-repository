@@ -48,9 +48,9 @@ class GitRepoService implements GitRepoInterface
             $flysystem->write($dirPath."/TEI-HEADERS/annotation/.info","Annotation header file structure for ".$corpusName);
             $flysystem->createDir($dirPath."/CORPUS-DATA");
 
-            //$this->initiateRepository($dirPath);
+            $this->initiateRepository($dirPath);
             $this->addFilesToRepository($dirPath,"TEI-HEADERS");
-            //$this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
+            $this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
 
         }
 
@@ -107,17 +107,19 @@ class GitRepoService implements GitRepoInterface
 
         $patharray = explode("/",$path);
         $count = count($patharray);
-
         $projects = $this->filterDottedFiles($projects);
 
         $previouspath = "";
 
+        /*
         if(strpos($path,"show") !== false){
             $previouspath = substr($path,0,strrpos($path,"/"));
         }
         else{
             $previouspath = $path;
         }
+        */
+        $previouspath = substr($path,0,strrpos($path,"/"));
 
 
         return array(
@@ -166,6 +168,11 @@ class GitRepoService implements GitRepoInterface
         return $isCommitted;
     }
 
+    public function getCommitData(){
+        $gitFunction = new GitFunction();
+        return $gitFunction->getCommitData();
+    }
+
 
     /**
      * HELPERS
@@ -197,5 +204,6 @@ class GitRepoService implements GitRepoInterface
         $str = str_replace('%', '-', $str);
         return $str;
     }
+
 
 }

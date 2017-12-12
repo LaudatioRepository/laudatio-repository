@@ -9,6 +9,7 @@
 namespace App\Laudatio\GitLaB;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Log;
 
 class GitFunction
 {
@@ -142,6 +143,14 @@ class GitFunction
         return (strpos($status,"Changes to be committed") !== false || strpos($status,"\"use git add\" and/or \"git commit -a\"") !== false);
     }
 
+    public function isModified($status){
+        return (strpos($status,"modified:") !== false && strpos($status, 'Changes not staged for commit') !== false);
+    }
+
+    public function isModifiedAndAdded($status){
+        return (strpos($status,"Changes to be committed") !== false && strpos($status,"modified:") !== false);
+    }
+
     public function isCommitted2($status){
         return (strpos($status,"file changed,") !== false);
     }
@@ -176,7 +185,8 @@ class GitFunction
     public function addUntracked($pathWithOutAddedFolder, $folder = ""){
         $isAdded = false;
         $status = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
-
+        Log::info("pathWithOutAddedFolder: ".print_r($pathWithOutAddedFolder,1));
+        Log::info("folder: ".print_r($folder,1));
         if($folder == ""){
             if($this->isUntracked($status)){
                 $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder);
@@ -187,12 +197,14 @@ class GitFunction
             }
         }
         else {
-
+            Log::info("NOT TRACKED ".$this->basePath."/".$pathWithOutAddedFolder);
             if(!$this->isTracked($this->basePath."/".$pathWithOutAddedFolder."/".$folder)){
+
                 if (is_dir($folder)) {
                     $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder."/".$folder);
                 }
                 else{
+
                     $addResult = $this->doAddFile($folder,$this->basePath."/".$pathWithOutAddedFolder);
                 }
 
@@ -206,6 +218,24 @@ class GitFunction
         return $isAdded;
     }
 
+
+    public function addModified($pathWithOutAddedFolder, $folder = ""){
+        $isAdded = false;
+        $status = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
+
+        if($folder == ""){
+            /**
+             * @todo
+             */
+        }
+        else {
+            $this->doAddFile($folder, $this->basePath."/".$pathWithOutAddedFolder);
+            $addStatus = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
+            $isAdded = $this->isModifiedAndAdded($addStatus);
+        }
+
+        return $isAdded;
+    }
 
     public function commitFiles($path, $commitmessage){
         $isCommitted = false;
@@ -228,14 +258,16 @@ class GitFunction
         return $isCommitted;
     }
 
+
+
     public function addFileUpdate($path, $file){
         $isAdded = false;
 
         if($this->fileHasDiff($this->basePath."/".$path,$file)){
-            $addResult = $this->doAddFile($this->basePath."/".$path,$file);
             $addStatus = $this->getStatus($this->basePath."/".$path);
-            if($this->isAdded($addStatus)){
-                $isAdded = true;
+            $modifiedStatus = $this->isModified($addStatus);
+            if($modifiedStatus == 1){
+                $isAdded = $this->addModified($path,$file);
             }
         }
 
@@ -286,7 +318,7 @@ class GitFunction
 
         $process = null;
         $folder = str_replace(" ","\\ ",$folder);
-        dd("FOLDER: ".$folder." CWDPATH: ".$cwdPath);
+        //dd("FOLDER: ".$folder." CWDPATH: ".$cwdPath);
 
         if($isFile){
             $process = new Process("git rm $folder",$cwdPath);
@@ -319,5 +351,38 @@ class GitFunction
         }
 
         return $isdeleted;
+    }
+
+    public function getCommitData(){
+        $process = new Process("git show -s");
+        $process->run();
+
+        // executes after the command finishes
+        $commitData = array();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            //parse the output
+            $stringArray = explode("\n",$processOutput);
+
+            $sha_string_arr = explode(" ",$stringArray[0]);
+            $sha_string = trim($sha_string_arr[1]);
+            $commitData["sha_string"] = $sha_string;
+
+            $author_string_arr = explode(":",$stringArray[1]);
+            $author = trim($sha_string_arr[1]);
+            $commitData["author"] = $author;
+
+            $date_string_arr = explode(":",$stringArray[2]);
+            $date = $date_string_arr[1];
+            $commitData["date"] = $date;
+
+            $message = trim($stringArray[4]);
+            $commitData["message"] = $message;
+
+        }
+        return $commitData;
     }
 }

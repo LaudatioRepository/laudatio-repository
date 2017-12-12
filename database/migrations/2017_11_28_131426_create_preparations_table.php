@@ -26,6 +26,9 @@ class CreatePreparationsTable extends Migration
             $table->text('preparation_encoding_segmentation_description')->nullable();
             $table->integer('annotation_id')->nullable();
             $table->integer('corpus_id')->nullable();
+            $table->string('gitlab_commit_sha')->nullable();
+            $table->string('gitlab_version_tag')->nullable();
+            $table->integer('workflow_status')->nullable();
             $table->timestamps();
         });
     }

@@ -10,6 +10,7 @@ use GrahamCampbell\Flysystem\FlysystemManager;
 use Illuminate\Support\Facades\App; // you probably have this aliased already
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\CreateCorpusRequest;
+use App\Custom\LaudatioUtilsInterface;
 use DB;
 use Response;
 use Log;
@@ -20,13 +21,15 @@ class GitRepoController extends Controller
     protected $connection;
     protected $basePath;
     protected $GitRepoService;
+    protected $laudatioUtils;
 
-    public function __construct(GitRepoInterface $Gitservice, FlysystemManager $flysystem)
+    public function __construct(GitRepoInterface $Gitservice, FlysystemManager $flysystem, LaudatioUtilsInterface $laudatioUtils)
     {
         $this->flysystem = $flysystem;
         $this->connection = $this->flysystem->getDefaultConnection();
         $this->basePath = config('laudatio.basePath');
         $this->GitRepoService = $Gitservice;
+        $this->laudatioUtils = $laudatioUtils;
     }
 
     public function listProjects($path = ""){
@@ -213,21 +216,43 @@ class GitRepoController extends Controller
 
     public function commitFiles($dirname = "", $commitmessage, $corpusid){
         $gitFunction = new  GitFunction();
+        $patharray = explode("/",$dirname);
+        end($patharray);
+        $last_id = key($patharray);
+
+        $object = null;
+        $returnPath = "";
 
         if(is_dir($this->basePath.'/'.$dirname)){
-            $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage);
+            $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$corpusid);
             if($isCommited){
-                return redirect()->route('admin.corpora.show',['path' => $dirname,'corpus' => $corpusid]);
+                $this->laudatioUtils->setVersionMapping($corpusid,$patharray[$last_id]);
+                $returnPath = $dirname;
+                $object = $this->laudatioUtils->getModelByType($corpusid,$patharray[$last_id]);
             }
         }
         else{
             $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
-            $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage);
+            $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$corpusid);
             if($isCommited){
-                return redirect()->route('admin.corpora.show',['path' => $pathWithOutAddedFolder,'corpus' => $corpusid]);
+                $this->laudatioUtils->setVersionMapping($corpusid,$patharray[($last_id-1)]);
+                $returnPath = $pathWithOutAddedFolder;
+                $object = $this->laudatioUtils->getModelByType($corpusid,$patharray[($last_id-1)]);
             }
         }
 
+
+        $fileName = substr($dirname, strrpos($dirname,"/")+1);
+        $commitdata = $this->GitRepoService->getCommitData();
+
+        if($object->file_name == $fileName){
+            $object->gitlab_commit_sha = $commitdata['sha_string'];
+            $object->gitlab_commit_date = $commitdata['date'];
+            $object->gitlab_commit_description = $commitdata['message'];
+            $object->save();
+        }
+
+        return redirect()->route('admin.corpora.show',['path' => $returnPath,'corpus' => $corpusid]);
     }
 
     /**

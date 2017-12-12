@@ -41,6 +41,7 @@ class UploadController extends Controller
 
     public function uploadSubmit(UploadRequest $request)
     {
+        $updated = false;
         $dirPath = $request->directorypath;;
         $corpusId = $request->corpusid;
 
@@ -57,6 +58,7 @@ class UploadController extends Controller
             else{
                 $stream = fopen($format->getRealPath(), 'r+');
                 $this->flysystem->updateStream($filePath, $stream);
+                $updated = true;
             }
 
             if (is_resource($stream)) {
@@ -66,17 +68,20 @@ class UploadController extends Controller
             $xmlpath = $this->basePath.'/'.$filePath;
 
             if(!empty($filePath)){
+                $dirPathArray = explode("/",$dirPath);
+                end($dirPathArray);
+                $last_id=key($dirPathArray);
                 $xmlNode = simplexml_load_file($xmlpath);
                 $json = $this->laudatioUtilsService->parseXMLToJson($xmlNode, array());
 
-                if(strpos($dirPath,'corpus') !== false){
-                    $corpus = $this->laudatioUtilsService->setCorpusAttributes($json,$corpusId);
+                if($dirPathArray[$last_id] == 'corpus'){
+                    $corpus = $this->laudatioUtilsService->setCorpusAttributes($json,$corpusId,$fileName);
                 }
-                else if(strpos($dirPath,'document') !== false){
-                    $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId);
+                else if($dirPathArray[$last_id] == 'document'){
+                    $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId,$fileName);
                 }
-                else if(strpos($dirPath,'annotation') !== false){
-                    $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId);
+                else if($dirPathArray[$last_id] == 'annotation'){
+                    $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId,$fileName);
                     $preparationSteps = $this->laudatioUtilsService->setPreparationAttributes($json,$annotation->id,$corpusId);
                 }
             }

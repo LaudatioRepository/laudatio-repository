@@ -18,6 +18,7 @@ use App\Document;
 use App\Annotation;
 use App\Preparation;
 use Log;
+use DB;
 
 class LaudatioUtilService implements LaudatioUtilsInterface
 {
@@ -115,9 +116,10 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * Populate Corpus  object with attributes from the Corpus Header
      * @param $json
      * @param $corpusId
+     * @param $fileName
      * @return mixed|static
      */
-    public function setCorpusAttributes($json,$corpusId){
+    public function setCorpusAttributes($json,$corpusId,$fileName){
         $jsonPath = new JSONPath($json,JSONPath::ALLOW_MAGIC);
 
         $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
@@ -130,7 +132,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             "name" => $corpusTitle[0],
             "description" => $corpusDesc[0],
             "corpus_size_type" => $corpusSizeType[0],
-            "corpus_size_value" => $corpusSizeValue[0]
+            "corpus_size_value" => $corpusSizeValue[0],
+            "file_name" => $fileName
+
         ]);
 
         return $corpus;
@@ -139,10 +143,11 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     /**
      * Populate Document object with attributes fom the Document header
      * @param $json
-     * @param $documentId
-     * @return mixed|static
+     * @param $corpusId
+     * @param $fileName
+     * @return Document
      */
-    public function setDocumentAttributes($json,$corpusId){
+    public function setDocumentAttributes($json,$corpusId,$fileName){
         $jsonPath = new JSONPath($json);
         $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
         $documentGenre = $jsonPath->find('$.TEI.teiHeader.style')->data();
@@ -157,6 +162,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $document->document_size_type = $documentSizeType[0];
         $document->document_size_value = $documentSizeValue[0];
         $document->corpus_id = $corpusId;
+        $document->file_name = $fileName;
         $document->save();
 
 
@@ -168,6 +174,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $annotationObject->annotation_id = $annotation;
             $annotationObject->corpus_id = $corpusId;
             $annotationObject->document_id = $document->id;
+            $document->file_name = $fileName;
             $annotationObject->save();
         }
 
@@ -178,9 +185,10 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * Populate Annotation object with attributes from the Annotation Header
      * @param $json
      * @param $corpusId
-     * @return Annotation
+     * @param $fileName
+     * @return Annotation|mixed
      */
-    public function setAnnotationAttributes($json,$corpusId){
+    public function setAnnotationAttributes($json,$corpusId,$fileName){
 
         $jsonPath = new JSONPath($json);
 
@@ -222,7 +230,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     public function setPreparationAttributes($json,$annotationId,$corpusId){
         $jsonPath = new JSONPath($json);
-        
+
         $preparationFromDB = Preparation::where([
             ['annotation_id', '=', $annotationId],
             ['corpus_id', '=', $corpusId],
@@ -332,5 +340,48 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         }
 
         return $annotation;
+    }
+
+
+    /**
+     * Set the version mapping for each version of a header
+     * @param $id
+     * @param $type
+     */
+    public function setVersionMapping($id,$type){
+        $vid = 1;
+        $object = $this->getModelByType($id,$type);
+        if(null != $object->vid){
+            $object->vid++;
+        }
+        //Log::info("objectvid: ".print_r($object->vid,1));
+        $object->save();
+
+        /**
+         * @todo: must update, not insert new
+         */
+        DB::table('versions')->insert(
+            [
+                'id' => $id,
+                'vid' => $object->vid,
+                'type' => $type
+            ]
+        );
+    }
+
+    public function getModelByType($id,$type){
+        $object = null;
+        switch ($type){
+            case 'corpus':
+                $object = Corpus::find($id);
+                break;
+            case 'document':
+                $object = Document::find($id);
+                break;
+            case 'annotation':
+                $object = Annotation::find($id);
+                break;
+        }
+        return $object;
     }
 }

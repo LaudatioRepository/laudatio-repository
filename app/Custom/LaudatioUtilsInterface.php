@@ -13,13 +13,16 @@ interface LaudatioUtilsInterface
 {
     public function parseXMLToJson($xml, $options);
 
-    public function setCorpusAttributes($json,$corpusId);
-    public function setDocumentAttributes($json,$corpusId);
-    public function setAnnotationAttributes($json,$corpusId);
+    public function setCorpusAttributes($json,$corpusId,$fileName);
+    public function setDocumentAttributes($json,$corpusId,$fileName);
+    public function setAnnotationAttributes($json,$corpusId,$fileName);
     public function setPreparationAttributes($json,$annotationId,$corpusId);
 
     public function associateDocumentsToCorpus($documents,$corpusId);
     public function associateAnnotationsToDocument($annotations,$documentId);
     public function associateAnnotationsToCorpus($annotations,$corpusId);
     public function associatePreparationsToAnnotation($preparations,$annotationId);
+
+    public function getModelByType($id,$type);
+    public function setVersionMapping($id,$type);
 }
