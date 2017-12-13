@@ -156,18 +156,32 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
         $documentListOfAnnotations = $jsonPath->find('$.TEI.teiHeader.encodingDesc.schemaSpec.elementSpec[*].valList.valItem[*].corresp')->data();
 
-        $document = new Document;
-        $document->title = $documentTitle[0];
-        $document->document_genre = $documentGenre[0];
-        $document->document_size_type = $documentSizeType[0];
-        $document->document_size_value = $documentSizeValue[0];
-        $document->corpus_id = $corpusId;
-        $document->file_name = $fileName;
-        $document->save();
+        $document = null;
+        $documentObject = $this->getModelByFileName($fileName,'document');
+        if(count($documentObject) > 0){
+            $document = $documentObject[0];
+            $document->title = $documentTitle[0];
+            $document->document_genre = $documentGenre[0];
+            $document->document_size_type = $documentSizeType[0];
+            $document->document_size_value = $documentSizeValue[0];
+            $document->corpus_id = $corpusId;
+            $document->file_name = $fileName;
+            $document->save();
+        }
+        else{
+            $document = new Document;
+            $document->title = $documentTitle[0];
+            $document->document_genre = $documentGenre[0];
+            $document->document_size_type = $documentSizeType[0];
+            $document->document_size_value = $documentSizeValue[0];
+            $document->corpus_id = $corpusId;
+            $document->file_name = $fileName;
+            $document->save();
+        }
 
 
         /*
-         * Populate database with list of annotations, with document_id and corpus_id as compund primary_key
+         * Populate database with list of annotations, with document_id and corpus_id as compound primary_key
          */
         foreach ($documentListOfAnnotations as $annotation) {
             $annotationObject = new Annotation;
@@ -345,28 +359,37 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     /**
      * Set the version mapping for each version of a header
-     * @param $id
+     *
+     * @param $fileName
      * @param $type
      */
-    public function setVersionMapping($id,$type){
-        $vid = 1;
-        $object = $this->getModelByType($id,$type);
-        if(null != $object->vid){
-            $object->vid++;
-        }
-        //Log::info("objectvid: ".print_r($object->vid,1));
-        $object->save();
+    public function setVersionMapping($fileName,$type){
+        $object = $this->getModelByFileName($fileName,$type);
 
-        /**
-         * @todo: must update, not insert new
-         */
-        DB::table('versions')->insert(
-            [
-                'id' => $id,
-                'vid' => $object->vid,
-                'type' => $type
-            ]
-        );
+        if(null != $object[0]->vid){
+            $object[0]->vid++;
+        }
+        else{
+            $object[0]->vid = 1;
+        }
+
+        $object[0]->save();
+        $id_vid = DB::table('versions')->select('id', 'vid')->where('id','=',$object[0]->id)->get();
+
+        if(count($id_vid) > 0){
+            DB::table('versions')->where('id',$object[0]->id)->update(
+                ['vid' => $object[0]->vid]
+            );
+        }
+        else{
+            DB::table('versions')->insert(
+                [
+                    'id' => $object[0]->id,
+                    'vid' => $object[0]->vid,
+                    'type' => $type
+                ]
+            );
+        }
     }
 
     public function getModelByType($id,$type){
@@ -380,6 +403,35 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 break;
             case 'annotation':
                 $object = Annotation::find($id);
+                break;
+        }
+        return $object;
+    }
+
+    /**
+     * Fetch a Model by type and filename
+     * @param $fileName
+     * @param $type
+     * @return mixed
+     * @todo: This is very brittle, we need some kind of GUID
+     */
+    public function getModelByFileName($fileName, $type){
+        $object = null;
+        switch ($type){
+            case 'corpus':
+                $object = Corpus::where([
+                    ['file_name', '=',$fileName]
+                ])->get();
+                break;
+            case 'document':
+                $object = Document::where([
+                    ['file_name', '=',$fileName]
+                ])->get();
+                break;
+            case 'annotation':
+                $object = Annotation::where([
+                    ['file_name', '=',$fileName]
+                ])->get();
                 break;
         }
         return $object;

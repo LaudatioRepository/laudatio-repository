@@ -208,7 +208,7 @@ class GitRepoController extends Controller
         $isAdded = $this->GitRepoService->addFilesToRepository($pathWithOutAddedFolder,$file);
         if($isAdded){
             return redirect()->action(
-                'CommitController@commitForm', ['dirname' => $pathWithOutAddedFolder, 'corpus' => $corpus]
+                'CommitController@commitForm', ['dirname' => $path, 'corpus' => $corpus]
             );
 
         }
@@ -222,34 +222,37 @@ class GitRepoController extends Controller
 
         $object = null;
         $returnPath = "";
+        $fileName = substr($dirname, strrpos($dirname,"/")+1);
+        $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
+
+        Log::info("testing for: ".$this->basePath.'/'.$dirname);
 
         if(is_dir($this->basePath.'/'.$dirname)){
             $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$corpusid);
             if($isCommited){
-                $this->laudatioUtils->setVersionMapping($corpusid,$patharray[$last_id]);
+                $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id]);
                 $returnPath = $dirname;
-                $object = $this->laudatioUtils->getModelByType($corpusid,$patharray[$last_id]);
+                $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id]);
             }
         }
         else{
-            $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
+            Log::info("trying to commit: ".$this->basePath."/".$dirname." WITH: ".$commitmessage." FOR CORPUS: ".$corpusid);
             $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$corpusid);
             if($isCommited){
-                $this->laudatioUtils->setVersionMapping($corpusid,$patharray[($last_id-1)]);
+                Log::info($patharray[($last_id-1)]." was commited for  CORPUS ".$corpusid);
+                $this->laudatioUtils->setVersionMapping($fileName,$patharray[($last_id-1)]);
                 $returnPath = $pathWithOutAddedFolder;
-                $object = $this->laudatioUtils->getModelByType($corpusid,$patharray[($last_id-1)]);
+                $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[($last_id-1)]);
             }
         }
 
+        $commitdata = $this->GitRepoService->getCommitData($pathWithOutAddedFolder);
 
-        $fileName = substr($dirname, strrpos($dirname,"/")+1);
-        $commitdata = $this->GitRepoService->getCommitData();
-
-        if($object->file_name == $fileName){
-            $object->gitlab_commit_sha = $commitdata['sha_string'];
-            $object->gitlab_commit_date = $commitdata['date'];
-            $object->gitlab_commit_description = $commitdata['message'];
-            $object->save();
+        if($object[0]->file_name == $fileName){
+            $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
+            $object[0]->gitlab_commit_date = $commitdata['date'];
+            $object[0]->gitlab_commit_description = $commitdata['message'];
+            $object[0]->save();
         }
 
         return redirect()->route('admin.corpora.show',['path' => $returnPath,'corpus' => $corpusid]);

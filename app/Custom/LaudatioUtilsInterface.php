@@ -24,5 +24,6 @@ interface LaudatioUtilsInterface
     public function associatePreparationsToAnnotation($preparations,$annotationId);
 
     public function getModelByType($id,$type);
-    public function setVersionMapping($id,$type);
+    public function getModelByFileName($fileName, $type);
+    public function setVersionMapping($filename, $type);
 }

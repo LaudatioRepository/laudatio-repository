@@ -168,9 +168,9 @@ class GitRepoService implements GitRepoInterface
         return $isCommitted;
     }
 
-    public function getCommitData(){
+    public function getCommitData($path){
         $gitFunction = new GitFunction();
-        return $gitFunction->getCommitData();
+        return $gitFunction->getCommitData($path);
     }
 
 

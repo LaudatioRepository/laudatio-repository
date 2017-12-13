@@ -353,8 +353,9 @@ class GitFunction
         return $isdeleted;
     }
 
-    public function getCommitData(){
-        $process = new Process("git show -s");
+    public function getCommitData($path){
+        Log::info("pathWithOutAddedFolder: ".print_r($path,1));
+        $process = new Process("git show -s",$this->basePath.'/'.$path);
         $process->run();
 
         // executes after the command finishes
@@ -364,6 +365,7 @@ class GitFunction
         }
         else{
             $processOutput = $process->getOutput();
+            Log::info("processOutput: ".print_r($processOutput,1));
             //parse the output
             $stringArray = explode("\n",$processOutput);
 
