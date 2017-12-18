@@ -12,18 +12,21 @@
                                     <input type="checkbox" class="check" id="checkAll"> Check All
                                 </label></th>
                             <th>Name</th>
+                            @if(!$hasdir)
+                                <th>Version</th>
+                            @endif
                             <th>Action</th>
-                            <th>Size</th>
+                            @if(!$hasdir)
+                                <th>Size</th>
+                            @endif
                             <th>Last updated</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach($projects as $project)
-
                                 @if($project["type"] == "dir")
                                     <tr>
                                         <td>
-                                            &nbsp;
                                         </td>
                                         <td class="text-center"><span class="fa fa-folder"></span></td>
                                         <td><a href="{{ route('admin.corpora.show', array('corpus' => $corpus,'path' => $project['path'])) }}">{{$project['basename']}}</a></td>
@@ -36,7 +39,6 @@
                                                 <a href="{{route('gitRepo.addFile.route', array('path' => $project['path'],'corpus' => $corpus->id)) }}"><span class="btn btn-sm btn-danger fa fa-code-fork"></span></a>
                                             @endif
                                         </td>
-                                        <td>&nbsp;</td>
                                         <td>{{$project['lastupdated']}}</td>
                                     </tr>
                                 @else
@@ -46,6 +48,11 @@
                                         </td>
                                         <td class="text-center"><span class="fa fa-file"></span></td>
                                         <td><a href="{{ route('gitRepo.readFile.route', array('path' => $project['path'])) }}"> {{$project['basename']}}</a></td>
+                                        @if(!empty($project["headerObject"]) > 0)
+                                            <td>{{$project["headerObject"]->vid}}</td>
+                                        @else
+                                            <td></td>
+                                        @endif
                                         <td class="text-center">
                                             @if($project["tracked"] == "false" && $pathcount == 4)
                                                 <a href="{{route('gitRepo.addFile.route', array('path' => $project['path'],'corpus' => $corpus->id)) }}"><span class="btn btn-sm btn-danger fa fa-code-fork"></span></a>
@@ -59,7 +66,9 @@
                                             @endif
                                             <a href="{{route('gitRepo.deleteFile.route', array('path' => $project['path'])) }}"><span class=  "btn btn-sm btn-danger fa fa-trash"></span></a>
                                         </td>
-                                        <td>{{$project['filesize']}} KB </td>
+                                        @if ($project['filesize'])
+                                            <td>{{$project['filesize']}}</td>
+                                        @endif
                                         <td>{{$project['lastupdated']}}</td>
                                     </tr>
                                 @endif
@@ -67,7 +76,7 @@
                         </tbody>
                         <tr>
                             <td><a href="#" id="deleteCheckedButton"><span class="btn btn-sm btn-danger fa fa-trash"></span></a>
-                            <td colspan="5">&nbsp;</td>
+                            <td colspan="6">&nbsp;</td>
                         </table>
                         </form>
                     </div>

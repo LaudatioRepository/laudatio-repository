@@ -10,6 +10,7 @@ namespace App\Laudatio\GitLab;
 
 use App\Custom\GitRepoInterface;
 use App\Laudatio\GitLaB\GitFunction;
+use App\Laudatio\Utils\LaudatioUtilService;
 use Illuminate\Http\Request;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use Carbon\Carbon;
@@ -59,6 +60,7 @@ class GitRepoService implements GitRepoInterface
 
     public function getCorpusFiles($flysystem,$path = ""){
         $gitFunction = new GitFunction();
+        $hasDir = false;
         $projects = array();
         //dd($path);
         if($path == ""){
@@ -67,6 +69,12 @@ class GitRepoService implements GitRepoInterface
         else{
             $projects = $flysystem->listContents($path);
         }
+
+
+        $pathArray = explode("/",$path);
+        end($pathArray);
+        $last_id = key($pathArray);
+        $laudatioUtilService = new LaudatioUtilService();
 
         //dd($projects);
         for ($i = 0; $i < count($projects);$i++){
@@ -79,14 +87,20 @@ class GitRepoService implements GitRepoInterface
                 $projects[$i]['tracked'] = "false";
             }
 
-            $projects[$i]['lastupdated'] = Carbon::createFromTimestamp($projects[$i]['timestamp'])->toDateTimeString();
-            /*
-            if($projects[$i]["type"] != "dir"){
-                $projects[$i]['filesize'] = $flysystem->getSize($this->basePath."/".$projects[$i]['path']);
+            $headerObject = $laudatioUtilService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id]);
+            if(count($headerObject) > 0){
+                $projects[$i]['headerObject'] = $headerObject[0];
             }
-            */
 
-            $projects[$i]['filesize'] = 0;
+
+            $projects[$i]['lastupdated'] = Carbon::createFromTimestamp($projects[$i]['timestamp'])->toDateTimeString();
+
+            if($projects[$i]["type"] == "dir"){
+                $hasDir = true;
+            }
+
+
+            $projects[$i]['filesize'] = $this->calculateFileSize(filesize($this->basePath."/".$projects[$i]['path']));
             $hasDiff = $gitFunction->hasDiff($this->basePath."/".$projects[$i]['path']);
 
 
@@ -124,10 +138,21 @@ class GitRepoService implements GitRepoInterface
 
         return array(
             "projects" => $projects,
+            "headertype" => $pathArray[$last_id],
+            "hasdir" => $hasDir,
             "pathcount" => $count,
             "path" => $path,
             "previouspath" => $previouspath,
         );
+    }
+
+    function calculateFileSize($size,$accuracy=2) {
+        $units = array('b','Kb','Mb','Gb');
+        foreach($units as $n=>$u) {
+            $div = pow(1024,$n);
+            if($size > $div) $output = number_format($size/$div,$accuracy).$u;
+        }
+        return $output;
     }
 
 

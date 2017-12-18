@@ -77,9 +77,11 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 if (!isset($tagsArray[$childTagName])) {
                     //only entry with this key
                     //test if tags of this type should always be arrays, no matter the element count
+                    //info("childTagName ".print_r($childTagName,1)." CHILDPROPS: ".print_r($childProperties,1));Log::
                     $tagsArray[$childTagName] =
                         in_array($childTagName, $options['alwaysArray']) || !$options['autoArray']
                             ? array($childProperties) : $childProperties;
+                            //? array($childProperties) : array($childProperties);
                 } elseif (
                     is_array($tagsArray[$childTagName]) && array_keys($tagsArray[$childTagName])
                     === range(0, count($tagsArray[$childTagName]) - 1)
@@ -149,12 +151,17 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      */
     public function setDocumentAttributes($json,$corpusId,$fileName){
         $jsonPath = new JSONPath($json);
-        $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
+        $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
+        if(!$documentTitle){
+            $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
+        }
+
+
         $documentGenre = $jsonPath->find('$.TEI.teiHeader.style')->data();
         $documentSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
         $documentSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text')->data();
 
-        $documentListOfAnnotations = $jsonPath->find('$.TEI.teiHeader.encodingDesc.schemaSpec.elementSpec[*].valList.valItem[*].corresp')->data();
+        $encodingDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc.schemaSpec.elementSpec[*]')->data();
 
         $document = null;
         $documentObject = $this->getModelByFileName($fileName,'document');
@@ -183,14 +190,51 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         /*
          * Populate database with list of annotations, with document_id and corpus_id as compound primary_key
          */
-        foreach ($documentListOfAnnotations as $annotation) {
-            $annotationObject = new Annotation;
-            $annotationObject->annotation_id = $annotation;
-            $annotationObject->corpus_id = $corpusId;
-            $annotationObject->document_id = $document->id;
-            $document->file_name = $fileName;
-            $annotationObject->save();
-        }
+        foreach ($encodingDesc as $annotationJson) {
+
+            $annotationPath = new JSONPath($annotationJson,JSONPath::ALLOW_MAGIC);
+            $annotationGroup = $annotationPath->find('$.ident')->data();
+            $annotations = $annotationPath->find('$.valList.valItem[*]')->data();
+            foreach ($annotations as $annotation) {
+                $annotationValue = "";
+                if(is_array($annotation)){
+                    $annotationValue = $annotation['corresp'];
+                }
+                else{
+                    $annotationValue = $annotation;
+                }
+
+                $annotationsFromDB = Annotation::where(
+                    [
+                        ['annotation_id', '=', $annotationValue],
+                        ['corpus_id', '=', $corpusId],
+                    ]
+                )->get();
+
+                if(count($annotationsFromDB) == 0){
+                    $annotationObject = new Annotation;
+                    $annotationObject->annotation_id = $annotationValue;
+                    $annotationObject->corpus_id = $corpusId;
+                    $annotationObject->annotation_group = $annotationGroup[0];
+                    $annotationObject->save();
+                    DB::table('annotation_documents')->insert(
+                        [
+                            'annotation_id' => $annotationObject->id,
+                            'document_id' => $document->id
+                        ]
+                    );
+                }
+                else{
+                    DB::table('annotation_documents')->insert(
+                        [
+                            'annotation_id' => $annotationsFromDB[0]->id,
+                            'document_id' => $document->id
+                        ]
+                    );
+                }//end if
+            }//end foreach
+
+        }//end foreach
 
         return $document;
     }
@@ -203,7 +247,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @return Annotation|mixed
      */
     public function setAnnotationAttributes($json,$corpusId,$fileName){
-
         $jsonPath = new JSONPath($json);
 
         $annotationId = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.corresp')->data();
@@ -222,8 +265,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
             foreach($annotationsFromDB as $annotationFromDB)
               $annotationFromDB->update([
-                "annotation_size_type" => $annotationSizeType[0],
-                "annotation_size_value" => $annotationSizeValue[0]
+                  "annotation_size_type" => $annotationSizeType[0],
+                  "annotation_size_value" => $annotationSizeValue[0],
+                  "file_name" => $fileName
             ]);
 
             $annotationFromDB->save();
@@ -237,6 +281,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $annotation->annotation_size_type = $annotationSizeType[0];
             $annotation->annotation_size_value = $annotationSizeValue[0];
             $annotation->corpus_id = $corpusId;
+            $annotation->file_name = $fileName;
             $annotation->save();
             return $annotation;
         }
@@ -274,24 +319,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 $preparation->save();
             }
         }
-
-
-        //Log::info("preparationEncodingSteps: ".print_r($preparationEncodingSteps,1));
-
-        /*
-
-        $preparation->update([
-            "preparation_encoding_step" => $preparationEncodingStep[0],
-            "preparation_encoding_style" => $preparationEncodingStyle[0],
-            "preparation_encoding_tool" => $preparationEncodingTool[0],
-            "preparation_encoding_full_name" => $preparationEncodingFullName[0],
-            "preparation_encoding_description" => $preparationEncodingDescription[0],
-            "preparation_encoding_annotation_style" => $preparationEncodingAnnotationStyle[0],
-            "preparation_encoding_segmentation_style" => $preparationEncodingSegmentationStyle[0],
-            "preparation_encoding_segmentation_type" => $preparationEncodingSegmentationType[0],
-            "preparation_encoding_segmentation_description" => $preparationEncodingSegmentationDescription[0]
-        ]);
-        */
     }
 
 
@@ -373,8 +400,14 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $object[0]->vid = 1;
         }
 
+
         $object[0]->save();
-        $id_vid = DB::table('versions')->select('id', 'vid')->where('id','=',$object[0]->id)->get();
+        
+        $id_vid = DB::table('versions')->select('id', 'vid')->where([
+                ['id','=',$object[0]->id],
+                ['type','=',$type],
+        ]
+        )->get();
 
         if(count($id_vid) > 0){
             DB::table('versions')->where('id',$object[0]->id)->update(

@@ -187,6 +187,11 @@ class GitRepoController extends Controller
 
     }
 
+    /**
+     * Perform modification to file in git
+     * @param $path
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function updateFileVersion($path){
         $isLoggedIn = \Auth::check();
         $directoryPath = substr($path,0,strrpos($path,"/"));
@@ -201,6 +206,12 @@ class GitRepoController extends Controller
         }
     }
 
+    /**
+     * Stage headers to git
+     * @param $path
+     * @param $corpus
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function addFiles($path,$corpus){
         $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
         $file = substr($path,strrpos($path,"/")+1);
@@ -214,6 +225,13 @@ class GitRepoController extends Controller
         }
     }
 
+    /**
+     * Commit staged header to GIT
+     * @param string $dirname
+     * @param $commitmessage
+     * @param $corpusid
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function commitFiles($dirname = "", $commitmessage, $corpusid){
         $gitFunction = new  GitFunction();
         $patharray = explode("/",$dirname);
@@ -225,8 +243,6 @@ class GitRepoController extends Controller
         $fileName = substr($dirname, strrpos($dirname,"/")+1);
         $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
 
-        Log::info("testing for: ".$this->basePath.'/'.$dirname);
-
         if(is_dir($this->basePath.'/'.$dirname)){
             $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$corpusid);
             if($isCommited){
@@ -236,10 +252,9 @@ class GitRepoController extends Controller
             }
         }
         else{
-            Log::info("trying to commit: ".$this->basePath."/".$dirname." WITH: ".$commitmessage." FOR CORPUS: ".$corpusid);
+
             $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$corpusid);
             if($isCommited){
-                Log::info($patharray[($last_id-1)]." was commited for  CORPUS ".$corpusid);
                 $this->laudatioUtils->setVersionMapping($fileName,$patharray[($last_id-1)]);
                 $returnPath = $pathWithOutAddedFolder;
                 $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[($last_id-1)]);

@@ -154,9 +154,8 @@ class CorpusController extends Controller
             $role = Role::find($corpusUser->pivot->role_id);
             array_push($user_roles[$corpusUser->id],$role->name);
         }
-        //dd($fileData);
 
-        return view("admin.corpusadmin.show",["corpus" => $corpus, "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
+        return view("admin.corpusadmin.show",["corpus" => $corpus, "hasdir" => $fileData["hasdir"], "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user_roles',$user_roles)
             ->with('user',$user);
