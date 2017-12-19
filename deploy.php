@@ -7,9 +7,9 @@ require 'recipe/laravel.php';
 
 set('repository', 'git@bitbucket.org:guescini-HU/vuelasticsearchjslaudatio.git');
 set('git_tty', true); // [Optional] Allocate tty for git on first deployment
-add('shared_files', ['.env','config/flysystem.php','config/filesystems.php','config/gitlab.php']);
+add('shared_files', ['.env','config/flysystem.php','config/filesystems.php','config/gitlab.php','config/laudatio.php']);
 add('shared_dirs', ['storage']);
-add('writable_dirs', ['releases']);
+add('writable_dirs', ['releases','storage','vendor']);
 set('ssh_type', 'native');
 set('ssh_multiplexing', true);
 set('http_user', 'www-data');
@@ -44,6 +44,7 @@ task('environment', function () {
     run('cp /var/www/html/laravelaudatio/gitlab.php {{release_path}}/config/gitlab.php');
     run('cp /var/www/html/laravelaudatio/laudatio.php {{release_path}}/config/laudatio.php');
     run('cp /var/www/html/laravelaudatio/deployenv {{release_path}}/.env');
+    run('cp /var/www/html/laravelaudatio/Groups.php {{release_path}}/vendor/m4tthumphrey/php-gitlab-api/lib/Gitlab/Api/Groups.php');
 })->desc('Environment setup');
 
 task('makespace', function () {
@@ -59,6 +60,7 @@ before('deploy','makespace');
 desc('Execute artisan config:clear');
 task('clearconfig', function () {
     run('{{bin/php}} {{release_path}}/artisan config:clear');
+    run('{{bin/php}} {{release_path}}/artisan cache:clear');
 });
 
 after('deploy','environment');

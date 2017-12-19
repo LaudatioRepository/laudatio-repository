@@ -47,7 +47,7 @@ return [
 
         'main' => [
             'token' => '5XiSvE9Jd6WmuV3jw7EP',
-            'base_url' => 'https://scm.cms.hu-berlin.de/api/v4/',
+            'base_url' => 'https://scm.cms.hu-berlin.de/api/v3/',
         ],
 
         'alternative' => [

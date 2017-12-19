@@ -8,6 +8,7 @@ use App\CorpusProject;
 use App\User;
 use App\Role;
 use App\Custom\GitRepoInterface;
+use App\Custom\GitLabInterface;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use Response;
 use Log;
@@ -16,9 +17,10 @@ class CorpusController extends Controller
 {
     protected $GitRepoService;
 
-    public function __construct(GitRepoInterface $Gitservice,FlysystemManager $flysystem)
+    public function __construct(GitRepoInterface $Gitservice,GitLabInterface $GitLabService,FlysystemManager $flysystem)
     {
         $this->GitRepoService = $Gitservice;
+        $this->GitLabService = $GitLabService;
         $this->flysystem = $flysystem;
         $this->connection = $this->flysystem->getDefaultConnection();
         $this->basePath = config('laudatio.basePath');
@@ -73,16 +75,33 @@ class CorpusController extends Controller
 
         // Create the directory structure for the Corpus
         $corpusProjectPath = $corpusProject->directory_path;
+        $corpusProjectId = $corpusProject->gitlab_id;
         $corpusPath = null;
         if(request('corpus_name')){
             $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,request('corpus_name'));
         }
 
         if($corpusPath){
+
+            $gitLabResponse = $this->GitLabService->createGitLabProject(
+                request('corpus_name'),
+                array(
+                    'namespace_id' => $corpusProjectId,
+                    'description' => request('corpus_description'),
+                    'visibility' => 'public'
+                )
+
+            );
+            Log::info("gitLabResponse: Corpus ".print_r($gitLabResponse,1));
+
             $corpus = Corpus::create([
                 "name" => request('corpus_name'),
                 "description" => request('corpus_description'),
-                'directory_path' => $corpusPath
+                'directory_path' => $corpusPath,
+                'gitlab_group_id' => $corpusProjectId,
+                'gitlab_id' => $gitLabResponse['id'],
+                'gitlab_web_url' => $gitLabResponse['web_url'],
+                'gitlab_namespace_path' => $gitLabResponse['name_with_namespace']
             ]);
 
             $corpus->corpusprojects()->attach($corpusProject);
@@ -135,9 +154,8 @@ class CorpusController extends Controller
             $role = Role::find($corpusUser->pivot->role_id);
             array_push($user_roles[$corpusUser->id],$role->name);
         }
-        //dd($fileData);
 
-        return view("admin.corpusadmin.show",["corpus" => $corpus, "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
+        return view("admin.corpusadmin.show",["corpus" => $corpus, "hasdir" => $fileData["hasdir"], "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user_roles',$user_roles)
             ->with('user',$user);
@@ -209,6 +227,11 @@ class CorpusController extends Controller
         if(count($corpus->users()) > 0) {
             $corpus->users()->detach();
         }
+
+
+        $gitLabProjectId = $corpus->gitlab_id;
+
+        $this->GitLabService->deleteGitLabProject($gitLabProjectId);
 
         $corpus->delete();
         $corpora = Corpus::latest()->get();

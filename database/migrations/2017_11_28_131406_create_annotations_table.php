@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCorpusesTable extends Migration
+class CreateAnnotationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,15 @@ class CreateCorpusesTable extends Migration
      */
     public function up()
     {
-        Schema::create('corpuses', function (Blueprint $table) {
+        Schema::create('annotations', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('vid')->nullable();
-            $table->string('name');
-            $table->text('description');
-            $table->string('corpus_size_type')->nullable();
-            $table->string('corpus_size_value')->nullable();
-            $table->string('directory_path');
             $table->string('file_name')->nullable();
-            $table->text('gitlab_group_id')->nullable();
-            $table->integer('gitlab_id')->nullable();
-            $table->text('gitlab_web_url')->nullable();
-            $table->text('gitlab_namespace_path')->nullable();
+            $table->string('annotation_id')->nullable();
+            $table->string('annotation_group')->nullable();
+            $table->string('annotation_size_type')->nullable();
+            $table->string('annotation_size_value')->nullable();
+            $table->integer('corpus_id')->nullable();
             $table->string('gitlab_commit_sha')->nullable();
             $table->dateTime('gitlab_commit_date')->nullable();
             $table->text('gitlab_commit_description')->nullable();
@@ -42,6 +38,6 @@ class CreateCorpusesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('corpuses');
+        Schema::dropIfExists('annotations');
     }
 }

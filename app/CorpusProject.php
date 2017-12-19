@@ -11,6 +11,14 @@ class CorpusProject extends Model
         return $this->belongsToMany(Corpus::class);
     }
 
+    /**
+     * Preparations
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function preparations(){
+        return $this->hasMany(Preparation::class);
+    }
+
     public function users() {
         return $this->belongsToMany(User::class)->withPivot('role_id');
     }

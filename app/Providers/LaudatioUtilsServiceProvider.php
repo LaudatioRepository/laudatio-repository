@@ -9,9 +9,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Laudatio\GitLab\GitLabService;
-use Gitlab\Client;
-class GitLabServiceProvider extends ServiceProvider
+use App\Laudatio\Utils\LaudatioUtilService;
+class LaudatioUtilsServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
@@ -31,8 +30,8 @@ class GitLabServiceProvider extends ServiceProvider
     public function register()
     {
         //
-        $this->app->singleton('App\Custom\GitLabInterface', function ($app){
-            return new GitLabService();
+        $this->app->singleton('App\Custom\LaudatioUtilsInterface', function ($app){
+            return new LaudatioUtilService();
         });
     }
 }

@@ -10,6 +10,7 @@ namespace App\Laudatio\GitLab;
 
 use App\Custom\GitRepoInterface;
 use App\Laudatio\GitLaB\GitFunction;
+use App\Laudatio\Utils\LaudatioUtilService;
 use Illuminate\Http\Request;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use Carbon\Carbon;
@@ -48,9 +49,11 @@ class GitRepoService implements GitRepoInterface
             $flysystem->write($dirPath."/TEI-HEADERS/annotation/.info","Annotation header file structure for ".$corpusName);
             $flysystem->createDir($dirPath."/CORPUS-DATA");
 
-            //$this->initiateRepository($dirPath);
+            $this->initiateRepository($dirPath);
             $this->addFilesToRepository($dirPath,"TEI-HEADERS");
-            //$this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
+            $this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
+            $this->copyGitHooks($dirPath);
+            $this->copyScripts($dirPath);
 
         }
 
@@ -59,6 +62,7 @@ class GitRepoService implements GitRepoInterface
 
     public function getCorpusFiles($flysystem,$path = ""){
         $gitFunction = new GitFunction();
+        $hasDir = false;
         $projects = array();
         //dd($path);
         if($path == ""){
@@ -67,6 +71,12 @@ class GitRepoService implements GitRepoInterface
         else{
             $projects = $flysystem->listContents($path);
         }
+
+
+        $pathArray = explode("/",$path);
+        end($pathArray);
+        $last_id = key($pathArray);
+        $laudatioUtilService = new LaudatioUtilService();
 
         //dd($projects);
         for ($i = 0; $i < count($projects);$i++){
@@ -79,14 +89,20 @@ class GitRepoService implements GitRepoInterface
                 $projects[$i]['tracked'] = "false";
             }
 
-            $projects[$i]['lastupdated'] = Carbon::createFromTimestamp($projects[$i]['timestamp'])->toDateTimeString();
-            /*
-            if($projects[$i]["type"] != "dir"){
-                $projects[$i]['filesize'] = $flysystem->getSize($this->basePath."/".$projects[$i]['path']);
+            $headerObject = $laudatioUtilService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id]);
+            if(count($headerObject) > 0){
+                $projects[$i]['headerObject'] = $headerObject[0];
             }
-            */
 
-            $projects[$i]['filesize'] = 0;
+
+            $projects[$i]['lastupdated'] = Carbon::createFromTimestamp($projects[$i]['timestamp'])->toDateTimeString();
+
+            if($projects[$i]["type"] == "dir"){
+                $hasDir = true;
+            }
+
+
+            $projects[$i]['filesize'] = $this->calculateFileSize(filesize($this->basePath."/".$projects[$i]['path']));
             $hasDiff = $gitFunction->hasDiff($this->basePath."/".$projects[$i]['path']);
 
 
@@ -107,25 +123,38 @@ class GitRepoService implements GitRepoInterface
 
         $patharray = explode("/",$path);
         $count = count($patharray);
-
         $projects = $this->filterDottedFiles($projects);
 
         $previouspath = "";
 
+        /*
         if(strpos($path,"show") !== false){
             $previouspath = substr($path,0,strrpos($path,"/"));
         }
         else{
             $previouspath = $path;
         }
+        */
+        $previouspath = substr($path,0,strrpos($path,"/"));
 
 
         return array(
             "projects" => $projects,
+            "headertype" => $pathArray[$last_id],
+            "hasdir" => $hasDir,
             "pathcount" => $count,
             "path" => $path,
             "previouspath" => $previouspath,
         );
+    }
+
+    function calculateFileSize($size,$accuracy=2) {
+        $units = array('b','Kb','Mb','Gb');
+        foreach($units as $n=>$u) {
+            $div = pow(1024,$n);
+            if($size > $div) $output = number_format($size/$div,$accuracy).$u;
+        }
+        return $output;
     }
 
 
@@ -154,6 +183,17 @@ class GitRepoService implements GitRepoInterface
         return $isInitiated;
     }
 
+    public function copyGitHooks($path){
+        $gitFunction = new  GitFunction();
+        return $gitFunction->copyGitHooks($path);
+    }
+
+    public function copyScripts($path){
+        $gitFunction = new  GitFunction();
+        return $gitFunction->copyScripts($path);
+    }
+
+
     public function commitFilesToRepository($path,$commitMessage){
         $isCommitted = false;
         $gitFunction = new  GitFunction();
@@ -164,6 +204,11 @@ class GitRepoService implements GitRepoInterface
             $isCommitted = true;
         }
         return $isCommitted;
+    }
+
+    public function getCommitData($path){
+        $gitFunction = new GitFunction();
+        return $gitFunction->getCommitData($path);
     }
 
 
@@ -197,5 +242,6 @@ class GitRepoService implements GitRepoInterface
         $str = str_replace('%', '-', $str);
         return $str;
     }
+
 
 }

@@ -9,12 +9,13 @@ namespace App\Laudatio\GitLab;
 
 use App\Custom\GitLabInterface;
 use Vinkla\GitLab\Facades\GitLab;
-use Gitlab\Exception\ErrorException;
+
 
 class GitLabService implements GitLabInterface {
+
+
     public function __construct()
     {
-
     }
 
     /**
@@ -38,8 +39,16 @@ class GitLabService implements GitLabInterface {
         return GitLab::api('groups')->remove($groupId);
     }
 
-    public function createGitLabProject($name, $path, $description,$visibility){
+    public function createGitLabProject($name, $groupId, $description = null,$visibility = 'public'){
+        return GitLab::api('projects')->create($name, $groupId, $description, $visibility);
+    }
 
+    public function deleteGitLabProject($projectId){
+        return GitLab::api('projects')->remove($projectId);
+    }
+
+    public function unlinkProjectFromGroup($projectId,$groupId){
+        return $this->delete('projects/'.$this->encodePath($projectId).'/share/'.$this->encodePath($groupId));
     }
 
 }
