@@ -52,6 +52,8 @@ class GitRepoService implements GitRepoInterface
             $this->initiateRepository($dirPath);
             $this->addFilesToRepository($dirPath,"TEI-HEADERS");
             $this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
+            $this->copyGitHooks($dirPath);
+            $this->copyScripts($dirPath);
 
         }
 
@@ -180,6 +182,17 @@ class GitRepoService implements GitRepoInterface
         $isInitiated = $gitFunction->initiateRepository($path);
         return $isInitiated;
     }
+
+    public function copyGitHooks($path){
+        $gitFunction = new  GitFunction();
+        return $gitFunction->copyGitHooks($path);
+    }
+
+    public function copyScripts($path){
+        $gitFunction = new  GitFunction();
+        return $gitFunction->copyScripts($path);
+    }
+
 
     public function commitFilesToRepository($path,$commitMessage){
         $isCommitted = false;

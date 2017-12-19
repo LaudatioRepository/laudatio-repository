@@ -291,6 +291,51 @@ class GitFunction
         return $isInitiated;
     }
 
+    public function copyGitHooks($path){
+        $isCopied = false;
+        /*
+         * cp ../../../scripts/githooks/* .git
+         */
+        $hookProcess = new Process("cp ../../../scripts/githooks/* .git/hooks",$this->basePath."/".$path);
+        $hookProcess->run();
+        // executes after the command finishes
+        if (!$hookProcess->isSuccessful()) {
+            throw new ProcessFailedException($hookProcess);
+        }
+        else{
+            $processOutput = $hookProcess->getOutput();
+            $isCopied = true;
+        }
+
+        return $isCopied;
+    }
+
+    public function copyScripts($path){
+        $isCopied = false;
+
+        $makeDirectoryProcess = new Process("mkdir .git/src",$this->basePath."/".$path);
+        $makeDirectoryProcess->run();
+        if (!$makeDirectoryProcess->isSuccessful()) {
+            throw new ProcessFailedException($makeDirectoryProcess);
+        }
+        else{
+            $scriptProcess = new Process("cp ../../../scripts/src/* .git/src",$this->basePath."/".$path);
+            $scriptProcess->run();
+            // executes after the command finishes
+            if (!$scriptProcess->isSuccessful()) {
+                throw new ProcessFailedException($scriptProcess);
+            }
+            else{
+                $processOutput = $scriptProcess->getOutput();
+                $isCopied = true;
+            }
+        }
+
+
+
+        return $isCopied;
+    }
+
     public function deleteFiles($path){
 
         $isdeleted = false;
