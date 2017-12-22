@@ -90,7 +90,11 @@
                                 <a href="/admin/corpora/{{$corpus->id}}/{{$previouspath}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
                                 <h4>{{$folderName}}</h4>
                                 <br />
-                                @include('admin.corpusadmin.projectList')
+                                @if($folderName == "TEI-HEADERS")
+                                    @include('admin.corpusadmin.projectList')
+                                @else
+                                    @include('admin.corpusadmin.fileList')
+                                @endif
                             </div>
                             <div class="tab-pane fade" id="publications">
                                 <h4>Publications</h4>

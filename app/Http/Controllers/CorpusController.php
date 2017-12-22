@@ -143,7 +143,7 @@ class CorpusController extends Controller
 
         $fileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
         $folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
-
+        //dd($folder);
         $user_roles = array();
         $corpusUsers = $corpus->users()->get();
         foreach ($corpusUsers as $corpusUser){
