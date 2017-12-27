@@ -5,6 +5,8 @@
     "/css/sb-admin.css": "/css/sb-admin.css",
     "/css/admin.css": "/css/admin.css",
     "/js/browseapp.js": "/js/browseapp.js",
+    "/js/adminFileUpload.js": "/js/adminFileUpload.js",
     "/js/sb-admin.js": "/js/sb-admin.js",
-    "/js/metisMenu.js": "/js/metisMenu.js"
+    "/js/metisMenu.js": "/js/metisMenu.js",
+    "/css/adminFileUpload.css": "/css/adminFileUpload.css"
 }
