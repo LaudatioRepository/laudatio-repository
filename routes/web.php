@@ -46,7 +46,9 @@ Route::delete('/admin/corpora/{corpus}',[ 'as' => 'admin.corpora.destroy', 'uses
 
 /** UPLOAD **/
 Route::get('/admin/upload/{dirname?}',['as' => 'gitRepo.upload.get', 'uses' => 'UploadController@uploadForm'])->where('dirname', '.+')->middleware('auth');
+Route::get('/admin/uploadFiles/{dirname?}',['as' => 'gitRepo.uploadFiles.get', 'uses' => 'UploadController@uploadDataForm'])->where('dirname', '.+')->middleware('auth');
 Route::post('/admin/upload',['as' => 'gitRepo.upload.post', 'uses' => 'UploadController@uploadSubmit'])->middleware('auth');
+Route::post('/admin/uploadFiles',['as' => 'gitRepo.uploadFiles.post', 'uses' => 'UploadController@uploadSubmitFiles'])->middleware('auth');
 /** END UPLOAD **/
 
 

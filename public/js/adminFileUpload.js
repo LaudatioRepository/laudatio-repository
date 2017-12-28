@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 100);
+/******/ 	return __webpack_require__(__webpack_require__.s = 113);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -71,7 +71,7 @@
 
 
 var bind = __webpack_require__(7);
-var isBuffer = __webpack_require__(19);
+var isBuffer = __webpack_require__(23);
 
 /*global toString:true*/
 
@@ -511,6 +511,296 @@ module.exports = g;
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+var utils = __webpack_require__(0);
+var normalizeHeaderName = __webpack_require__(25);
+
+var DEFAULT_CONTENT_TYPE = {
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+function setContentTypeIfUnset(headers, value) {
+  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+    headers['Content-Type'] = value;
+  }
+}
+
+function getDefaultAdapter() {
+  var adapter;
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = __webpack_require__(8);
+  } else if (typeof process !== 'undefined') {
+    // For node use HTTP adapter
+    adapter = __webpack_require__(8);
+  }
+  return adapter;
+}
+
+var defaults = {
+  adapter: getDefaultAdapter(),
+
+  transformRequest: [function transformRequest(data, headers) {
+    normalizeHeaderName(headers, 'Content-Type');
+    if (utils.isFormData(data) ||
+      utils.isArrayBuffer(data) ||
+      utils.isBuffer(data) ||
+      utils.isStream(data) ||
+      utils.isFile(data) ||
+      utils.isBlob(data)
+    ) {
+      return data;
+    }
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (utils.isURLSearchParams(data)) {
+      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+      return data.toString();
+    }
+    if (utils.isObject(data)) {
+      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
+      return JSON.stringify(data);
+    }
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    /*eslint no-param-reassign:0*/
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data);
+      } catch (e) { /* Ignore */ }
+    }
+    return data;
+  }],
+
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  }
+};
+
+defaults.headers = {
+  common: {
+    'Accept': 'application/json, text/plain, */*'
+  }
+};
+
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  defaults.headers[method] = {};
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+});
+
+module.exports = defaults;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11324,297 +11614,7 @@ Vue$3.compile = compileToFunctions;
 
 module.exports = Vue$3;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(37).setImmediate))
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {
-
-var utils = __webpack_require__(0);
-var normalizeHeaderName = __webpack_require__(21);
-
-var DEFAULT_CONTENT_TYPE = {
-  'Content-Type': 'application/x-www-form-urlencoded'
-};
-
-function setContentTypeIfUnset(headers, value) {
-  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
-    headers['Content-Type'] = value;
-  }
-}
-
-function getDefaultAdapter() {
-  var adapter;
-  if (typeof XMLHttpRequest !== 'undefined') {
-    // For browsers use XHR adapter
-    adapter = __webpack_require__(8);
-  } else if (typeof process !== 'undefined') {
-    // For node use HTTP adapter
-    adapter = __webpack_require__(8);
-  }
-  return adapter;
-}
-
-var defaults = {
-  adapter: getDefaultAdapter(),
-
-  transformRequest: [function transformRequest(data, headers) {
-    normalizeHeaderName(headers, 'Content-Type');
-    if (utils.isFormData(data) ||
-      utils.isArrayBuffer(data) ||
-      utils.isBuffer(data) ||
-      utils.isStream(data) ||
-      utils.isFile(data) ||
-      utils.isBlob(data)
-    ) {
-      return data;
-    }
-    if (utils.isArrayBufferView(data)) {
-      return data.buffer;
-    }
-    if (utils.isURLSearchParams(data)) {
-      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
-      return data.toString();
-    }
-    if (utils.isObject(data)) {
-      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
-      return JSON.stringify(data);
-    }
-    return data;
-  }],
-
-  transformResponse: [function transformResponse(data) {
-    /*eslint no-param-reassign:0*/
-    if (typeof data === 'string') {
-      try {
-        data = JSON.parse(data);
-      } catch (e) { /* Ignore */ }
-    }
-    return data;
-  }],
-
-  timeout: 0,
-
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-XSRF-TOKEN',
-
-  maxContentLength: -1,
-
-  validateStatus: function validateStatus(status) {
-    return status >= 200 && status < 300;
-  }
-};
-
-defaults.headers = {
-  common: {
-    'Accept': 'application/json, text/plain, */*'
-  }
-};
-
-utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
-  defaults.headers[method] = {};
-});
-
-utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
-});
-
-module.exports = defaults;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5)))
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(41).setImmediate))
 
 /***/ }),
 /* 6 */,
@@ -11643,12 +11643,12 @@ module.exports = function bind(fn, thisArg) {
 
 
 var utils = __webpack_require__(0);
-var settle = __webpack_require__(22);
-var buildURL = __webpack_require__(24);
-var parseHeaders = __webpack_require__(25);
-var isURLSameOrigin = __webpack_require__(26);
+var settle = __webpack_require__(26);
+var buildURL = __webpack_require__(28);
+var parseHeaders = __webpack_require__(29);
+var isURLSameOrigin = __webpack_require__(30);
 var createError = __webpack_require__(9);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(27);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(31);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -11745,7 +11745,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(28);
+      var cookies = __webpack_require__(32);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -11829,7 +11829,7 @@ module.exports = function xhrAdapter(config) {
 "use strict";
 
 
-var enhanceError = __webpack_require__(23);
+var enhanceError = __webpack_require__(27);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -18677,10 +18677,315 @@ module.exports = Cancel;
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(14)(module), __webpack_require__(2)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)(module), __webpack_require__(2)))
 
 /***/ }),
-/* 13 */
+/* 13 */,
+/* 14 */,
+/* 15 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+  Modified by Evan You @yyx990803
+*/
+
+var hasDocument = typeof document !== 'undefined'
+
+if (typeof DEBUG !== 'undefined' && DEBUG) {
+  if (!hasDocument) {
+    throw new Error(
+    'vue-style-loader cannot be used in a non-browser environment. ' +
+    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
+  ) }
+}
+
+var listToStyles = __webpack_require__(46)
+
+/*
+type StyleObject = {
+  id: number;
+  parts: Array<StyleObjectPart>
+}
+
+type StyleObjectPart = {
+  css: string;
+  media: string;
+  sourceMap: ?string
+}
+*/
+
+var stylesInDom = {/*
+  [id: number]: {
+    id: number,
+    refs: number,
+    parts: Array<(obj?: StyleObjectPart) => void>
+  }
+*/}
+
+var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
+var singletonElement = null
+var singletonCounter = 0
+var isProduction = false
+var noop = function () {}
+
+// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+// tags it will allow on a page
+var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\b/.test(navigator.userAgent.toLowerCase())
+
+module.exports = function (parentId, list, _isProduction) {
+  isProduction = _isProduction
+
+  var styles = listToStyles(parentId, list)
+  addStylesToDom(styles)
+
+  return function update (newList) {
+    var mayRemove = []
+    for (var i = 0; i < styles.length; i++) {
+      var item = styles[i]
+      var domStyle = stylesInDom[item.id]
+      domStyle.refs--
+      mayRemove.push(domStyle)
+    }
+    if (newList) {
+      styles = listToStyles(parentId, newList)
+      addStylesToDom(styles)
+    } else {
+      styles = []
+    }
+    for (var i = 0; i < mayRemove.length; i++) {
+      var domStyle = mayRemove[i]
+      if (domStyle.refs === 0) {
+        for (var j = 0; j < domStyle.parts.length; j++) {
+          domStyle.parts[j]()
+        }
+        delete stylesInDom[domStyle.id]
+      }
+    }
+  }
+}
+
+function addStylesToDom (styles /* Array<StyleObject> */) {
+  for (var i = 0; i < styles.length; i++) {
+    var item = styles[i]
+    var domStyle = stylesInDom[item.id]
+    if (domStyle) {
+      domStyle.refs++
+      for (var j = 0; j < domStyle.parts.length; j++) {
+        domStyle.parts[j](item.parts[j])
+      }
+      for (; j < item.parts.length; j++) {
+        domStyle.parts.push(addStyle(item.parts[j]))
+      }
+      if (domStyle.parts.length > item.parts.length) {
+        domStyle.parts.length = item.parts.length
+      }
+    } else {
+      var parts = []
+      for (var j = 0; j < item.parts.length; j++) {
+        parts.push(addStyle(item.parts[j]))
+      }
+      stylesInDom[item.id] = { id: item.id, refs: 1, parts: parts }
+    }
+  }
+}
+
+function createStyleElement () {
+  var styleElement = document.createElement('style')
+  styleElement.type = 'text/css'
+  head.appendChild(styleElement)
+  return styleElement
+}
+
+function addStyle (obj /* StyleObjectPart */) {
+  var update, remove
+  var styleElement = document.querySelector('style[data-vue-ssr-id~="' + obj.id + '"]')
+
+  if (styleElement) {
+    if (isProduction) {
+      // has SSR styles and in production mode.
+      // simply do nothing.
+      return noop
+    } else {
+      // has SSR styles but in dev mode.
+      // for some reason Chrome can't handle source map in server-rendered
+      // style tags - source maps in <style> only works if the style tag is
+      // created and inserted dynamically. So we remove the server rendered
+      // styles and inject new ones.
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  if (isOldIE) {
+    // use singleton mode for IE9.
+    var styleIndex = singletonCounter++
+    styleElement = singletonElement || (singletonElement = createStyleElement())
+    update = applyToSingletonTag.bind(null, styleElement, styleIndex, false)
+    remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true)
+  } else {
+    // use multi-style-tag mode in all other cases
+    styleElement = createStyleElement()
+    update = applyToTag.bind(null, styleElement)
+    remove = function () {
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  update(obj)
+
+  return function updateStyle (newObj /* StyleObjectPart */) {
+    if (newObj) {
+      if (newObj.css === obj.css &&
+          newObj.media === obj.media &&
+          newObj.sourceMap === obj.sourceMap) {
+        return
+      }
+      update(obj = newObj)
+    } else {
+      remove()
+    }
+  }
+}
+
+var replaceText = (function () {
+  var textStore = []
+
+  return function (index, replacement) {
+    textStore[index] = replacement
+    return textStore.filter(Boolean).join('\n')
+  }
+})()
+
+function applyToSingletonTag (styleElement, index, remove, obj) {
+  var css = remove ? '' : obj.css
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = replaceText(index, css)
+  } else {
+    var cssNode = document.createTextNode(css)
+    var childNodes = styleElement.childNodes
+    if (childNodes[index]) styleElement.removeChild(childNodes[index])
+    if (childNodes.length) {
+      styleElement.insertBefore(cssNode, childNodes[index])
+    } else {
+      styleElement.appendChild(cssNode)
+    }
+  }
+}
+
+function applyToTag (styleElement, obj) {
+  var css = obj.css
+  var media = obj.media
+  var sourceMap = obj.sourceMap
+
+  if (media) {
+    styleElement.setAttribute('media', media)
+  }
+
+  if (sourceMap) {
+    // https://developer.chrome.com/devtools/docs/javascript-debugging
+    // this makes source maps inside style tags work properly in Chrome
+    css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */'
+    // http://stackoverflow.com/a/26603875
+    css += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + ' */'
+  }
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = css
+  } else {
+    while (styleElement.firstChild) {
+      styleElement.removeChild(styleElement.firstChild)
+    }
+    styleElement.appendChild(document.createTextNode(css))
+  }
+}
+
+
+/***/ }),
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -18693,9 +18998,9 @@ window._ = __webpack_require__(12);
  */
 
 try {
-  window.$ = window.jQuery = __webpack_require__(15);
+  window.$ = window.jQuery = __webpack_require__(19);
 
-  __webpack_require__(16);
+  __webpack_require__(20);
 } catch (e) {}
 
 /**
@@ -18704,7 +19009,7 @@ try {
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = __webpack_require__(17);
+window.axios = __webpack_require__(21);
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -18738,7 +19043,7 @@ if (token) {
 // });
 
 /***/ }),
-/* 14 */
+/* 18 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -18766,7 +19071,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 15 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -29026,7 +29331,7 @@ return jQuery;
 
 
 /***/ }),
-/* 16 */
+/* 20 */
 /***/ (function(module, exports) {
 
 /*!
@@ -31409,13 +31714,13 @@ if (typeof jQuery === 'undefined') {
 
 
 /***/ }),
-/* 17 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(18);
+module.exports = __webpack_require__(22);
 
 /***/ }),
-/* 18 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31423,8 +31728,8 @@ module.exports = __webpack_require__(18);
 
 var utils = __webpack_require__(0);
 var bind = __webpack_require__(7);
-var Axios = __webpack_require__(20);
-var defaults = __webpack_require__(4);
+var Axios = __webpack_require__(24);
+var defaults = __webpack_require__(3);
 
 /**
  * Create an instance of Axios
@@ -31458,14 +31763,14 @@ axios.create = function create(instanceConfig) {
 
 // Expose Cancel & CancelToken
 axios.Cancel = __webpack_require__(11);
-axios.CancelToken = __webpack_require__(34);
+axios.CancelToken = __webpack_require__(38);
 axios.isCancel = __webpack_require__(10);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(35);
+axios.spread = __webpack_require__(39);
 
 module.exports = axios;
 
@@ -31474,7 +31779,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 19 */
+/* 23 */
 /***/ (function(module, exports) {
 
 /*!
@@ -31501,18 +31806,18 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 20 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(4);
+var defaults = __webpack_require__(3);
 var utils = __webpack_require__(0);
-var InterceptorManager = __webpack_require__(29);
-var dispatchRequest = __webpack_require__(30);
-var isAbsoluteURL = __webpack_require__(32);
-var combineURLs = __webpack_require__(33);
+var InterceptorManager = __webpack_require__(33);
+var dispatchRequest = __webpack_require__(34);
+var isAbsoluteURL = __webpack_require__(36);
+var combineURLs = __webpack_require__(37);
 
 /**
  * Create a new instance of Axios
@@ -31594,7 +31899,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 21 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31613,7 +31918,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 22 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31646,7 +31951,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 23 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31674,7 +31979,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 24 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31749,7 +32054,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 25 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31793,7 +32098,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 26 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31868,7 +32173,7 @@ module.exports = (
 
 
 /***/ }),
-/* 27 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31911,7 +32216,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 28 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -31971,7 +32276,7 @@ module.exports = (
 
 
 /***/ }),
-/* 29 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32030,16 +32335,16 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 30 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(0);
-var transformData = __webpack_require__(31);
+var transformData = __webpack_require__(35);
 var isCancel = __webpack_require__(10);
-var defaults = __webpack_require__(4);
+var defaults = __webpack_require__(3);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -32116,7 +32421,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32143,7 +32448,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 32 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32164,7 +32469,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 33 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32185,7 +32490,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 34 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32249,7 +32554,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 35 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -32283,8 +32588,51 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 36 */,
-/* 37 */
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Created by rolfguescini on 28.06.17.
+ */
+Vue = __webpack_require__(5);
+
+Vue.filter('arrayToString', function (array) {
+    var string = '';
+    if (array) if (array.isArray && array.length == 1) {
+        string = array[0].toString();
+    } else {
+        string = array.toString();
+    }
+    return string;
+});
+
+Vue.filter('addHash', function (string) {
+    return "#".concat(string);
+});
+
+Vue.filter('lastElement', function (collection) {
+    return collection[collection.length - 1];
+});
+
+Vue.filter('formatSize', function (size) {
+    if (size > 1024 * 1024 * 1024 * 1024) {
+        return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB';
+    } else if (size > 1024 * 1024 * 1024) {
+        return (size / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+    } else if (size > 1024 * 1024) {
+        return (size / 1024 / 1024).toFixed(2) + ' MB';
+    } else if (size > 1024) {
+        return (size / 1024).toFixed(2) + ' KB';
+    }
+    return size.toString() + ' B';
+});
+
+Vue.filter('toLocale', function (to) {
+    return '/' + i18n.locale + to;
+});
+
+/***/ }),
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var apply = Function.prototype.apply;
@@ -32337,13 +32685,13 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(38);
+__webpack_require__(42);
 exports.setImmediate = setImmediate;
 exports.clearImmediate = clearImmediate;
 
 
 /***/ }),
-/* 38 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -32533,10 +32881,10 @@ exports.clearImmediate = clearImmediate;
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(5)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(4)))
 
 /***/ }),
-/* 39 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -33064,7 +33412,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = __webpack_require__(40);
+exports.isBuffer = __webpack_require__(44);
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -33108,7 +33456,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = __webpack_require__(41);
+exports.inherits = __webpack_require__(45);
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -33126,10 +33474,10 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(5)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(4)))
 
 /***/ }),
-/* 40 */
+/* 44 */
 /***/ (function(module, exports) {
 
 module.exports = function isBuffer(arg) {
@@ -33140,7 +33488,7 @@ module.exports = function isBuffer(arg) {
 }
 
 /***/ }),
-/* 41 */
+/* 45 */
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -33169,317 +33517,7 @@ if (typeof Object.create === 'function') {
 
 
 /***/ }),
-/* 42 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
-
-/***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-  MIT License http://www.opensource.org/licenses/mit-license.php
-  Author Tobias Koppers @sokra
-  Modified by Evan You @yyx990803
-*/
-
-var hasDocument = typeof document !== 'undefined'
-
-if (typeof DEBUG !== 'undefined' && DEBUG) {
-  if (!hasDocument) {
-    throw new Error(
-    'vue-style-loader cannot be used in a non-browser environment. ' +
-    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
-  ) }
-}
-
-var listToStyles = __webpack_require__(51)
-
-/*
-type StyleObject = {
-  id: number;
-  parts: Array<StyleObjectPart>
-}
-
-type StyleObjectPart = {
-  css: string;
-  media: string;
-  sourceMap: ?string
-}
-*/
-
-var stylesInDom = {/*
-  [id: number]: {
-    id: number,
-    refs: number,
-    parts: Array<(obj?: StyleObjectPart) => void>
-  }
-*/}
-
-var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
-var singletonElement = null
-var singletonCounter = 0
-var isProduction = false
-var noop = function () {}
-
-// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-// tags it will allow on a page
-var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\b/.test(navigator.userAgent.toLowerCase())
-
-module.exports = function (parentId, list, _isProduction) {
-  isProduction = _isProduction
-
-  var styles = listToStyles(parentId, list)
-  addStylesToDom(styles)
-
-  return function update (newList) {
-    var mayRemove = []
-    for (var i = 0; i < styles.length; i++) {
-      var item = styles[i]
-      var domStyle = stylesInDom[item.id]
-      domStyle.refs--
-      mayRemove.push(domStyle)
-    }
-    if (newList) {
-      styles = listToStyles(parentId, newList)
-      addStylesToDom(styles)
-    } else {
-      styles = []
-    }
-    for (var i = 0; i < mayRemove.length; i++) {
-      var domStyle = mayRemove[i]
-      if (domStyle.refs === 0) {
-        for (var j = 0; j < domStyle.parts.length; j++) {
-          domStyle.parts[j]()
-        }
-        delete stylesInDom[domStyle.id]
-      }
-    }
-  }
-}
-
-function addStylesToDom (styles /* Array<StyleObject> */) {
-  for (var i = 0; i < styles.length; i++) {
-    var item = styles[i]
-    var domStyle = stylesInDom[item.id]
-    if (domStyle) {
-      domStyle.refs++
-      for (var j = 0; j < domStyle.parts.length; j++) {
-        domStyle.parts[j](item.parts[j])
-      }
-      for (; j < item.parts.length; j++) {
-        domStyle.parts.push(addStyle(item.parts[j]))
-      }
-      if (domStyle.parts.length > item.parts.length) {
-        domStyle.parts.length = item.parts.length
-      }
-    } else {
-      var parts = []
-      for (var j = 0; j < item.parts.length; j++) {
-        parts.push(addStyle(item.parts[j]))
-      }
-      stylesInDom[item.id] = { id: item.id, refs: 1, parts: parts }
-    }
-  }
-}
-
-function createStyleElement () {
-  var styleElement = document.createElement('style')
-  styleElement.type = 'text/css'
-  head.appendChild(styleElement)
-  return styleElement
-}
-
-function addStyle (obj /* StyleObjectPart */) {
-  var update, remove
-  var styleElement = document.querySelector('style[data-vue-ssr-id~="' + obj.id + '"]')
-
-  if (styleElement) {
-    if (isProduction) {
-      // has SSR styles and in production mode.
-      // simply do nothing.
-      return noop
-    } else {
-      // has SSR styles but in dev mode.
-      // for some reason Chrome can't handle source map in server-rendered
-      // style tags - source maps in <style> only works if the style tag is
-      // created and inserted dynamically. So we remove the server rendered
-      // styles and inject new ones.
-      styleElement.parentNode.removeChild(styleElement)
-    }
-  }
-
-  if (isOldIE) {
-    // use singleton mode for IE9.
-    var styleIndex = singletonCounter++
-    styleElement = singletonElement || (singletonElement = createStyleElement())
-    update = applyToSingletonTag.bind(null, styleElement, styleIndex, false)
-    remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true)
-  } else {
-    // use multi-style-tag mode in all other cases
-    styleElement = createStyleElement()
-    update = applyToTag.bind(null, styleElement)
-    remove = function () {
-      styleElement.parentNode.removeChild(styleElement)
-    }
-  }
-
-  update(obj)
-
-  return function updateStyle (newObj /* StyleObjectPart */) {
-    if (newObj) {
-      if (newObj.css === obj.css &&
-          newObj.media === obj.media &&
-          newObj.sourceMap === obj.sourceMap) {
-        return
-      }
-      update(obj = newObj)
-    } else {
-      remove()
-    }
-  }
-}
-
-var replaceText = (function () {
-  var textStore = []
-
-  return function (index, replacement) {
-    textStore[index] = replacement
-    return textStore.filter(Boolean).join('\n')
-  }
-})()
-
-function applyToSingletonTag (styleElement, index, remove, obj) {
-  var css = remove ? '' : obj.css
-
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = replaceText(index, css)
-  } else {
-    var cssNode = document.createTextNode(css)
-    var childNodes = styleElement.childNodes
-    if (childNodes[index]) styleElement.removeChild(childNodes[index])
-    if (childNodes.length) {
-      styleElement.insertBefore(cssNode, childNodes[index])
-    } else {
-      styleElement.appendChild(cssNode)
-    }
-  }
-}
-
-function applyToTag (styleElement, obj) {
-  var css = obj.css
-  var media = obj.media
-  var sourceMap = obj.sourceMap
-
-  if (media) {
-    styleElement.setAttribute('media', media)
-  }
-
-  if (sourceMap) {
-    // https://developer.chrome.com/devtools/docs/javascript-debugging
-    // this makes source maps inside style tags work properly in Chrome
-    css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */'
-    // http://stackoverflow.com/a/26603875
-    css += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + ' */'
-  }
-
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = css
-  } else {
-    while (styleElement.firstChild) {
-      styleElement.removeChild(styleElement.firstChild)
-    }
-    styleElement.appendChild(document.createTextNode(css))
-  }
-}
-
-
-/***/ }),
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */
+/* 46 */
 /***/ (function(module, exports) {
 
 /**
@@ -33512,6 +33550,11 @@ module.exports = function listToStyles (parentId, list) {
 
 
 /***/ }),
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
 /* 52 */,
 /* 53 */,
 /* 54 */,
@@ -33560,20 +33603,29 @@ module.exports = function listToStyles (parentId, list) {
 /* 97 */,
 /* 98 */,
 /* 99 */,
-/* 100 */
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
+/* 105 */,
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(101);
+module.exports = __webpack_require__(114);
 
 
 /***/ }),
-/* 101 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/* 114 */
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_upload_component_src__ = __webpack_require__(140);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_upload_component_src___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue_upload_component_src__);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -33581,13 +33633,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-__webpack_require__(13);
+__webpack_require__(17);
+__webpack_require__(40);
 __webpack_require__(12);
-window.Vue = __webpack_require__(3);
-var util = __webpack_require__(39);
-var VueUploadComponent = __webpack_require__(139);
-Vue.component('file-upload', VueUploadComponent);
+window.Vue = __webpack_require__(5);
+var util = __webpack_require__(43);
 
+Vue.component('full_upload', __webpack_require__(115));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -33603,9 +33655,6 @@ var app = new Vue({
         return {
             files: []
         };
-    },
-    components: {
-        FileUpload: VueUploadComponent
     },
     methods: {
         /**
@@ -33649,44 +33698,757 @@ var app = new Vue({
     } });
 
 /***/ }),
-/* 102 */,
-/* 103 */,
-/* 104 */,
-/* 105 */,
-/* 106 */,
-/* 107 */,
-/* 108 */,
-/* 109 */,
-/* 110 */,
-/* 111 */,
-/* 112 */,
-/* 113 */,
-/* 114 */,
-/* 115 */,
-/* 116 */,
-/* 117 */,
-/* 118 */,
-/* 119 */,
-/* 120 */,
-/* 121 */,
-/* 122 */,
-/* 123 */,
-/* 124 */,
-/* 125 */,
-/* 126 */,
-/* 127 */,
-/* 128 */,
-/* 129 */,
-/* 130 */,
-/* 131 */,
-/* 132 */,
-/* 133 */,
-/* 134 */,
-/* 135 */,
-/* 136 */,
-/* 137 */,
-/* 138 */,
-/* 139 */
+/* 115 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(116)
+}
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(118)
+/* template */
+var __vue_template__ = __webpack_require__(120)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/FullUpload.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-532fcae7", Component.options)
+  } else {
+    hotAPI.reload("data-v-532fcae7", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 116 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(117);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(16)("b200fb14", content, false);
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-532fcae7\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0&bustCache!./FullUpload.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-532fcae7\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0&bustCache!./FullUpload.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 117 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(15)(undefined);
+// imports
+
+
+// module
+exports.push([module.i, "\n.example-full .btn-group .dropdown-menu {\n    display: block;\n    visibility: hidden;\n    -webkit-transition: all .2s;\n    transition: all .2s\n}\n.example-full .btn-group:hover > .dropdown-menu {\n    visibility: visible;\n}\n.example-full label.dropdown-item {\n    margin-bottom: 0;\n}\n.example-full .btn-group .dropdown-toggle {\n    margin-right: .6rem\n}\n.example-full .filename {\n    margin-bottom: .3rem\n}\n.example-full .btn-is-option {\n    margin-top: 0.25rem;\n}\n.example-full .example-foorer {\n    padding: .5rem 0;\n    border-top: 1px solid #e9ecef;\n    border-bottom: 1px solid #e9ecef;\n}\n.example-full .edit-image img {\n    max-width: 100%;\n}\n.example-full .edit-image-tool {\n    margin-top: .6rem;\n}\n.example-full .edit-image-tool .btn-group{\n    margin-right: .6rem;\n}\n.example-full .footer-status {\n    padding-top: .4rem;\n}\n.example-full .drop-active {\n    top: 0;\n    bottom: 0;\n    right: 0;\n    left: 0;\n    position: fixed;\n    z-index: 9999;\n    opacity: .6;\n    text-align: center;\n    background: #000;\n}\n.example-full .drop-active h3 {\n    margin: -.5em 0 0;\n    position: absolute;\n    top: 50%;\n    left: 0;\n    right: 0;\n    -webkit-transform: translateY(-50%);\n    transform: translateY(-50%);\n    font-size: 40px;\n    color: #fff;\n    padding: 0;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 118 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_upload_component__ = __webpack_require__(119);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_upload_component___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue_upload_component__);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+//import Cropper from 'cropperjs'
+//import ImageCompressor from '@xkeshi/image-compressor'
+
+var util = __webpack_require__(43);
+/* harmony default export */ __webpack_exports__["default"] = ({
+    components: {
+        FileUpload: __WEBPACK_IMPORTED_MODULE_0_vue_upload_component___default.a
+    },
+
+    data: function data() {
+        return {
+            files: [],
+            accept: '',
+            extensions: '',
+            // extensions: ['gif', 'jpg', 'jpeg','png', 'webp'],
+            // extensions: /\.(gif|jpe?g|png|webp)$/i,
+            //minSize: 1024,
+            minSize: 0,
+            //size: 1024 * 1024 * 10,
+            size: 0,
+            multiple: true,
+            directory: false,
+            drop: true,
+            dropDirectory: true,
+            addIndex: false,
+            thread: 3,
+            name: 'file',
+            postAction: '/admin/uploadFiles',
+            putAction: '',
+            headers: {
+                'X-Csrf-Token': window.Laravel.csrfToken
+            },
+            data: {
+                '_csrf_token': window.Laravel.csrfToken,
+                'directorypath': window.Laravel.directorypath,
+                'corpusid': window.Laravel.corpusid
+            },
+
+            autoCompress: 1024 * 1024,
+            uploadAuto: false,
+            isOption: false,
+
+            addData: {
+                show: false,
+                name: '',
+                type: '',
+                content: ''
+            },
+
+            editFile: {
+                show: false,
+                name: ''
+            }
+        };
+    },
+
+    watch: {
+        'editFile.show': function editFileShow(newValue, oldValue) {
+            // 关闭了 自动删除 error
+            if (!newValue && oldValue) {
+                this.$refs.upload.update(this.editFile.id, { error: this.editFile.error || '' });
+            }
+
+            if (newValue) {
+                this.$nextTick(function () {
+                    if (!this.$refs.editImage) {
+                        return;
+                    }
+                    var cropper = new Cropper(this.$refs.editImage, {
+                        autoCrop: false
+                    });
+                    this.editFile = _extends({}, this.editFile, {
+                        cropper: cropper
+                    });
+                });
+            }
+        },
+        'addData.show': function addDataShow(show) {
+            if (show) {
+                this.addData.name = '';
+                this.addData.type = '';
+                this.addData.content = '';
+            }
+        }
+    },
+
+    methods: {
+        inputFilter: function inputFilter(newFile, oldFile, prevent) {
+            var _this = this;
+
+            if (newFile && !oldFile) {
+                // Before adding a file
+                // 添加文件前
+
+                // Filter system files or hide files
+                // 过滤系统文件 和隐藏文件
+                if (/(\/|^)(Thumbs\.db|desktop\.ini|\..+)$/.test(newFile.name)) {
+                    return prevent();
+                }
+
+                // Filter php html js file
+                // 过滤 php html js 文件
+                if (/\.(php5?|html?|jsx?)$/i.test(newFile.name)) {
+                    return prevent();
+                }
+
+                // Automatic compression
+                // 自动压缩
+                if (newFile.file && newFile.type.substr(0, 6) === 'image/' && this.autoCompress > 0 && this.autoCompress < newFile.size) {
+                    newFile.error = 'compressing';
+                    var imageCompressor = new ImageCompressor(null, {
+                        convertSize: Infinity,
+                        maxWidth: 512,
+                        maxHeight: 512
+                    });
+                    imageCompressor.compress(newFile.file).then(function (file) {
+                        _this.$refs.upload.update(newFile, { error: '', file: file, size: file.size, type: file.type });
+                    }).catch(function (err) {
+                        _this.$refs.upload.update(newFile, { error: err.message || 'compress' });
+                    });
+                }
+            }
+
+            if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
+
+                // Create a blob field
+                // 创建 blob 字段
+                newFile.blob = '';
+                var URL = window.URL || window.webkitURL;
+                if (URL && URL.createObjectURL) {
+                    newFile.blob = URL.createObjectURL(newFile.file);
+                }
+
+                // Thumbnails
+                // 缩略图
+                newFile.thumb = '';
+                if (newFile.blob && newFile.type.substr(0, 6) === 'image/') {
+                    newFile.thumb = newFile.blob;
+                }
+            }
+        },
+
+
+        // add, update, remove File Event
+        inputFile: function inputFile(newFile, oldFile) {
+            if (newFile && oldFile) {
+                // update
+
+                if (newFile.active && !oldFile.active) {
+                    // beforeSend
+
+                    // min size
+                    if (newFile.size >= 0 && this.minSize > 0 && newFile.size < this.minSize) {
+                        this.$refs.upload.update(newFile, { error: 'size' });
+                    }
+                }
+
+                if (newFile.progress !== oldFile.progress) {
+                    // progress
+                }
+
+                if (newFile.error && !oldFile.error) {
+                    // error
+                }
+
+                if (newFile.success && !oldFile.success) {
+                    // success
+                }
+            }
+
+            if (!newFile && oldFile) {
+                // remove
+                if (oldFile.success && oldFile.response.id) {
+                    // $.ajax({
+                    //   type: 'DELETE',
+                    //   url: '/upload/delete?id=' + oldFile.response.id,
+                    // })
+                }
+            }
+
+            // Automatically activate upload
+            if (Boolean(newFile) !== Boolean(oldFile) || oldFile.error !== newFile.error) {
+                if (this.uploadAuto && !this.$refs.upload.active) {
+                    this.$refs.upload.active = true;
+                }
+            }
+        },
+        alert: function (_alert) {
+            function alert(_x) {
+                return _alert.apply(this, arguments);
+            }
+
+            alert.toString = function () {
+                return _alert.toString();
+            };
+
+            return alert;
+        }(function (message) {
+            alert(message);
+        }),
+        onEditFileShow: function onEditFileShow(file) {
+            this.editFile = _extends({}, file, { show: true });
+            this.$refs.upload.update(file, { error: 'edit' });
+        },
+        onEditorFile: function onEditorFile() {
+            if (!this.$refs.upload.features.html5) {
+                this.alert('Your browser does not support');
+                this.editFile.show = false;
+                return;
+            }
+
+            var data = {
+                name: this.editFile.name
+            };
+            if (this.editFile.cropper) {
+                var binStr = atob(this.editFile.cropper.getCroppedCanvas().toDataURL(this.editFile.type).split(',')[1]);
+                var arr = new Uint8Array(binStr.length);
+                for (var i = 0; i < binStr.length; i++) {
+                    arr[i] = binStr.charCodeAt(i);
+                }
+                data.file = new File([arr], data.name, { type: this.editFile.type });
+                data.size = data.file.size;
+            }
+            this.$refs.upload.update(this.editFile.id, data);
+            this.editFile.error = '';
+            this.editFile.show = false;
+        },
+
+
+        // add folader
+        onAddFoalder: function onAddFoalder() {
+            var _this2 = this;
+
+            if (!this.$refs.upload.features.directory) {
+                this.alert('Your browser does not support');
+                return;
+            }
+
+            var input = this.$refs.upload.$el.querySelector('input');
+            input.directory = true;
+            input.webkitdirectory = true;
+            this.directory = true;
+
+            input.onclick = null;
+            input.click();
+            input.onclick = function (e) {
+                _this2.directory = false;
+                input.directory = false;
+                input.webkitdirectory = false;
+            };
+        },
+        onAddData: function onAddData() {
+            this.addData.show = false;
+            if (!this.$refs.upload.features.html5) {
+                this.alert('Your browser does not support');
+                return;
+            }
+
+            var file = new window.File([this.addData.content], this.addData.name, {
+                type: this.addData.type
+            });
+            this.$refs.upload.add(file);
+        }
+    }
+});
+
+/***/ }),
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -34866,6 +35628,7 @@ var FileUpload = { render: function render() {
         try {
           document.removeEventListener('dragenter', this.onDragenter, false);
           document.removeEventListener('dragleave', this.onDragleave, false);
+          document.removeEventListener('drop', this.onDocumentDrop, false);
           this.dropElement.removeEventListener('dragover', this.onDragover, false);
           this.dropElement.removeEventListener('drop', this.onDrop, false);
         } catch (e) {}
@@ -34884,6 +35647,7 @@ var FileUpload = { render: function render() {
       if (this.dropElement) {
         document.addEventListener('dragenter', this.onDragenter, false);
         document.addEventListener('dragleave', this.onDragleave, false);
+        document.addEventListener('drop', this.onDocumentDrop, false);
         this.dropElement.addEventListener('dragover', this.onDragover, false);
         this.dropElement.addEventListener('drop', this.onDrop, false);
       }
@@ -34903,9 +35667,11 @@ var FileUpload = { render: function render() {
     onDragover: function onDragover(e) {
       e.preventDefault();
     },
+    onDocumentDrop: function onDocumentDrop() {
+      this.dropActive = false;
+    },
     onDrop: function onDrop(e) {
       e.preventDefault();
-      this.dropActive = false;
       this.addDataTransfer(e.dataTransfer);
     }
   }
@@ -34926,1449 +35692,915 @@ return src;
 
 
 /***/ }),
-/* 140 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(141)
-
-
-/***/ }),
-/* 141 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(142)
-}
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = __webpack_require__(144)
-/* template */
-var __vue_template__ = __webpack_require__(145)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "node_modules/vue-upload-component/src/FileUpload.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-586c6b30", Component.options)
-  } else {
-    hotAPI.reload("data-v-586c6b30", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 142 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(143);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(43)("df79d33e", content, false);
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../css-loader/index.js!../../vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-586c6b30\",\"scoped\":false,\"hasInlineConfig\":true}!../../vue-loader/lib/selector.js?type=styles&index=0&bustCache!./FileUpload.vue", function() {
-     var newContent = require("!!../../css-loader/index.js!../../vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-586c6b30\",\"scoped\":false,\"hasInlineConfig\":true}!../../vue-loader/lib/selector.js?type=styles&index=0&bustCache!./FileUpload.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 143 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(42)(undefined);
-// imports
-
-
-// module
-exports.push([module.i, "\n.file-uploads {\n  overflow: hidden;\n  position: relative;\n  text-align: center;\n  display: inline-block;\n}\n.file-uploads.file-uploads-html4 input[type=\"file\"] {\n  opacity: 0;\n  font-size: 20em;\n  z-index: 1;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n}\n.file-uploads.file-uploads-html5 input[type=\"file\"] {\n  overflow: hidden;\n  position: fixed;\n  width: 1px;\n  height: 1px;\n  z-index: -1;\n  opacity: 0;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 144 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__InputFile_vue__ = __webpack_require__(146);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__InputFile_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__InputFile_vue__);
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  components: {
-    InputFile: __WEBPACK_IMPORTED_MODULE_0__InputFile_vue___default.a
-  },
-  props: {
-    inputId: {
-      type: String
-    },
-
-    name: {
-      type: String,
-      default: 'file'
-    },
-
-    accept: {
-      type: String
-    },
-
-    multiple: {
-      type: Boolean
-    },
-
-    maximum: {
-      type: Number,
-      default: function _default() {
-        return this.multiple ? 0 : 1;
-      }
-    },
-
-    addIndex: {
-      type: [Boolean, Number]
-    },
-
-    directory: {
-      type: Boolean
-    },
-
-    postAction: {
-      type: String
-    },
-
-    putAction: {
-      type: String
-    },
-
-    headers: {
-      type: Object,
-      default: Object
-    },
-
-    data: {
-      type: Object,
-      default: Object
-    },
-
-    timeout: {
-      type: Number,
-      default: 0
-    },
-
-    drop: {
-      default: false
-    },
-
-    dropDirectory: {
-      type: Boolean,
-      default: true
-    },
-
-    size: {
-      type: Number,
-      default: 0
-    },
-
-    extensions: {
-      default: Array
-    },
-
-    value: {
-      type: Array,
-      default: Array
-    },
-
-    thread: {
-      type: Number,
-      default: 1
-    }
-  },
-
-  data: function data() {
-    return {
-      files: this.value,
-      features: {
-        html5: true,
-        directory: false,
-        drag: false
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "example-full" }, [
+    _c("h1", { staticClass: "example-title", attrs: { id: "example-title" } }, [
+      _vm._v("Upload Corpus Files")
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.$refs.upload && _vm.$refs.upload.dropActive,
+            expression: "$refs.upload && $refs.upload.dropActive"
+          }
+        ],
+        staticClass: "drop-active"
       },
-
-      active: false,
-      dropActive: false,
-
-      uploading: 0,
-
-      destroy: false
-    };
-  },
-
-
-  /**
-   * mounted
-   * @return {[type]} [description]
-   */
-  mounted: function mounted() {
-    var input = document.createElement('input');
-    input.type = 'file';
-    input.multiple = true;
-
-    // html5 特征
-    if (window.FormData && input.files) {
-      // 上传目录特征
-      if (typeof input.webkitdirectory === 'boolean' || typeof input.directory === 'boolean') {
-        this.features.directory = true;
-      }
-
-      // 拖拽特征
-      if (this.features.html5 && typeof input.ondrop !== 'undefined') {
-        this.features.drop = true;
-      }
-    } else {
-      this.features.html5 = false;
-    }
-
-    // files 定位缓存
-    this.maps = {};
-
-    this.$nextTick(function () {
-
-      // 更新下父级
-      if (this.$parent) {
-        this.$parent.$forceUpdate();
-      }
-
-      // 拖拽渲染
-      this.watchDrop(this.drop);
-    });
-  },
-
-
-  /**
-   * beforeDestroy
-   * @return {[type]} [description]
-   */
-  beforeDestroy: function beforeDestroy() {
-    // 已销毁
-    this.destroy = true;
-
-    // 设置成不激活
-    this.active = false;
-  },
-
-
-  computed: {
-    /**
-     * uploading 正在上传的线程
-     * @return {[type]} [description]
-     */
-
-    /**
-     * uploaded 文件列表是否全部已上传
-     * @return {[type]} [description]
-     */
-    uploaded: function uploaded() {
-      var file = void 0;
-      for (var i = 0; i < this.files.length; i++) {
-        file = this.files[i];
-        if (file.fileObject && !file.error && !file.success) {
-          return false;
-        }
-      }
-      return true;
-    },
-    className: function className() {
-      return ['file-uploads', this.features.html5 ? 'file-uploads-html5' : 'file-uploads-html4', this.features.directory && this.directory ? 'file-uploads-directory' : undefined, this.features.drop && this.drop ? 'file-uploads-drop' : undefined];
-    }
-  },
-
-  watch: {
-    active: function active(_active) {
-      this.watchActive(_active);
-    },
-    dropActive: function dropActive() {
-      if (this.$parent) {
-        this.$parent.$forceUpdate();
-      }
-    },
-    drop: function drop(value) {
-      this.watchDrop(value);
-    },
-    value: function value(files) {
-      if (this.files === files) {
-        return;
-      }
-      this.files = files;
-
-      var oldMaps = this.maps;
-
-      // 重写 maps 缓存
-      this.maps = {};
-      for (var i = 0; i < this.files.length; i++) {
-        var file = this.files[i];
-        this.maps[file.id] = file;
-      }
-
-      // add, update
-      for (var key in this.maps) {
-        var newFile = this.maps[key];
-        var oldFile = oldMaps[key];
-        if (newFile !== oldFile) {
-          this.emitFile(newFile, oldFile);
-        }
-      }
-
-      // delete
-      for (var _key in oldMaps) {
-        if (!this.maps[_key]) {
-          this.emitFile(undefined, oldMaps[_key]);
-        }
-      }
-    }
-  },
-
-  methods: {
-
-    // 清空
-    clear: function clear() {
-      if (this.files.length) {
-        var files = this.files;
-        this.files = [];
-
-        // 定位
-        this.maps = {};
-
-        // 事件
-        this.emitInput();
-        for (var i = 0; i < files.length; i++) {
-          this.emitFile(undefined, files[i]);
-        }
-      }
-      return true;
-    },
-
-
-    // 选择
-    get: function get(id) {
-      if (!id) {
-        return false;
-      }
-
-      if ((typeof id === 'undefined' ? 'undefined' : _typeof(id)) === 'object') {
-        return this.maps[id.id] || false;
-      }
-
-      return this.maps[id] || false;
-    },
-
-
-    // 添加
-    add: function add(_files) {
-      var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.addIndex;
-
-      var files = _files;
-      var isArray = files instanceof Array;
-
-      // 不是数组整理成数组
-      if (!isArray) {
-        files = [files];
-      }
-
-      // 遍历规范对象
-      var addFiles = [];
-      for (var i = 0; i < files.length; i++) {
-        var file = files[i];
-        if (this.features.html5 && file instanceof Blob) {
-          file = {
-            file: file,
-            size: file.size,
-            name: file.webkitRelativePath || file.relativePath || file.name || 'unknown',
-            type: file.type
-          };
-        }
-        var fileObject = false;
-        if (file.fileObject === false) {
-          // false
-        } else if (file.fileObject) {
-          fileObject = true;
-        } else if (typeof Element !== 'undefined' && file.el instanceof Element) {
-          fileObject = true;
-        } else if (typeof Blob !== 'undefined' && file.file instanceof Blob) {
-          fileObject = true;
-        }
-        if (fileObject) {
-          file = _extends({
-            fileObject: true,
-            size: -1,
-            name: 'Filename',
-            type: '',
-            active: false,
-            error: '',
-            success: false,
-            putAction: this.putAction,
-            postAction: this.postAction,
-            timeout: this.timeout
-          }, file, {
-            response: {},
-
-            progress: '0.00', // 只读
-            speed: 0 // 只读
-            // xhr: false,                // 只读
-            // iframe: false,             // 只读
-          });
-
-          file.data = _extends({}, this.data, file.data ? file.data : {});
-
-          file.headers = _extends({}, this.headers, file.headers ? file.headers : {});
-        }
-
-        // 必须包含 id
-        if (!file.id) {
-          file.id = Math.random().toString(36).substr(2);
-        }
-
-        if (this.emitFilter(file, undefined)) {
-          continue;
-        }
-
-        // 最大数量限制
-        if (this.maximum > 1 && addFiles.length + this.files.length >= this.maximum) {
-          break;
-        }
-
-        addFiles.push(file);
-
-        // 最大数量限制
-        if (this.maximum === 1) {
-          break;
-        }
-      }
-
-      // 没有文件
-      if (!addFiles.length) {
-        return false;
-      }
-
-      // 如果是 1 清空
-      if (this.maximum === 1) {
-        this.clear();
-      }
-
-      // 添加进去 files
-      var newFiles = void 0;
-      if (index === true || index === 0) {
-        newFiles = addFiles.concat(this.files);
-      } else if (index) {
-        newFiles = addFiles.concat([]);
-        newFiles.splice(index, 0, addFiles);
-      } else {
-        newFiles = this.files.concat(addFiles);
-      }
-
-      this.files = newFiles;
-
-      // 定位
-      for (var _i = 0; _i < addFiles.length; _i++) {
-        var _file2 = addFiles[_i];
-        this.maps[_file2.id] = _file2;
-      }
-
-      // 事件
-      this.emitInput();
-      for (var _i2 = 0; _i2 < addFiles.length; _i2++) {
-        this.emitFile(addFiles[_i2], undefined);
-      }
-
-      return isArray ? addFiles : addFiles[0];
-    },
-
-
-    // 添加表单文件
-    addInputFile: function addInputFile(el) {
-      var files = [];
-      if (el.files) {
-        for (var i = 0; i < el.files.length; i++) {
-          var file = el.files[i];
-          files.push({
-            size: file.size,
-            name: file.webkitRelativePath || file.relativePath || file.name,
-            type: file.type,
-            file: file,
-            el: el
-          });
-        }
-      } else {
-        files.push({
-          name: el.value.replace(/^.*?([^\/\\\r\n]+)$/, '$1'),
-          el: el
-        });
-      }
-      return this.add(files);
-    },
-
-
-    // 添加 DataTransfer
-    addDataTransfer: function addDataTransfer(dataTransfer) {
-      var _this = this;
-
-      var files = [];
-      if (dataTransfer.items && dataTransfer.items.length) {
-        var items = [];
-        for (var i = 0; i < dataTransfer.items.length; i++) {
-          var item = dataTransfer.items[i];
-          if (item.getAsEntry) {
-            item = item.getAsEntry() || item.getAsFile();
-          } else if (item.webkitGetAsEntry) {
-            item = item.webkitGetAsEntry() || item.getAsFile();
-          } else {
-            item = item.getAsFile();
+      [_c("h3", [_vm._v("Drop files to upload")])]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: !_vm.isOption,
+            expression: "!isOption"
           }
-          if (item) {
-            items.push(item);
-          }
-        }
-
-        return new Promise(function (resolve, reject) {
-          var forEach = function forEach(i) {
-            var item = items[i];
-            // 结束 文件数量大于 最大数量
-            if (!item || _this.maximum > 0 && files.length >= _this.maximum) {
-              return resolve(_this.add(files));
-            }
-            _this.getEntry(item).then(function (results) {
-              files.push.apply(files, _toConsumableArray(results));
-              forEach(i + 1);
-            });
-          };
-          forEach(0);
-        });
-      }
-
-      if (dataTransfer.files.length) {
-        for (var _i3 = 0; _i3 < dataTransfer.files.length; _i3++) {
-          files.push(dataTransfer.files[_i3]);
-          if (this.maximum > 0 && files.length >= this.maximum) {
-            break;
-          }
-        }
-        return Promise.resolve(this.add(files));
-      }
-
-      return Promise.resolve([]);
-    },
-
-
-    // 获得 entry
-    getEntry: function getEntry(entry) {
-      var _this2 = this;
-
-      var path = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-
-      return new Promise(function (resolve, reject) {
-        if (entry.isFile) {
-          entry.file(function (file) {
-            resolve([{
-              size: file.size,
-              name: path + file.name,
-              type: file.type,
-              file: file
-            }]);
-          });
-        } else if (entry.isDirectory && _this2.dropDirectory) {
-          var files = [];
-          var dirReader = entry.createReader();
-          var readEntries = function readEntries() {
-            dirReader.readEntries(function (entries) {
-              var forEach = function forEach(i) {
-                if (!entries[i] && i === 0 || _this2.maximum > 0 && files.length >= _this2.maximum) {
-                  return resolve(files);
-                }
-                if (!entries[i]) {
-                  return readEntries();
-                }
-                _this2.getEntry(entries[i], path + entry.name + '/').then(function (results) {
-                  files.push.apply(files, _toConsumableArray(results));
-                  forEach(i + 1);
-                });
-              };
-              forEach(0);
-            });
-          };
-          readEntries();
-        } else {
-          resolve([]);
-        }
-      });
-    },
-    replace: function replace(id1, id2) {
-      var file1 = this.get(id1);
-      var file2 = this.get(id2);
-      if (!file1 || !file2 || file1 === file2) {
-        return false;
-      }
-      var files = this.files.concat([]);
-      var index1 = files.indexOf(file1);
-      var index2 = files.indexOf(file2);
-      if (index1 === -1 || index2 === -1) {
-        return false;
-      }
-      files[index1] = file2;
-      files[index2] = file1;
-      this.files = files;
-      this.emitInput();
-      return true;
-    },
-
-
-    // 移除
-    remove: function remove(id) {
-      var file = this.get(id);
-      if (file) {
-        if (this.emitFilter(undefined, file)) {
-          return false;
-        }
-        var files = this.files.concat([]);
-        var index = files.indexOf(file);
-        if (index === -1) {
-          console.error('remove', file);
-          return false;
-        }
-        files.splice(index, 1);
-        this.files = files;
-
-        // 定位
-        delete this.maps[file.id];
-
-        // 事件
-        this.emitInput();
-        this.emitFile(undefined, file);
-      }
-      return file;
-    },
-
-
-    // 更新
-    update: function update(id, data) {
-      var file = this.get(id);
-      if (file) {
-        var newFile = _extends({}, file, data);
-        // 停用必须加上错误
-        if (file.fileObject && file.active && !newFile.active && !newFile.error && !newFile.success) {
-          newFile.error = 'abort';
-        }
-
-        if (this.emitFilter(newFile, file)) {
-          return false;
-        }
-
-        var files = this.files.concat([]);
-        var index = files.indexOf(file);
-        if (index === -1) {
-          console.error('update', file);
-          return false;
-        }
-        files.splice(index, 1, newFile);
-        this.files = files;
-
-        // 删除  旧定位 写入 新定位 （已便支持修改id)
-        delete this.maps[file.id];
-        this.maps[newFile.id] = newFile;
-
-        // 事件
-        this.emitInput();
-        this.emitFile(newFile, file);
-        return newFile;
-      }
-      return false;
-    },
-
-
-    // 预处理 事件 过滤器
-    emitFilter: function emitFilter(newFile, oldFile) {
-      var isPrevent = false;
-      this.$emit('input-filter', newFile, oldFile, function () {
-        isPrevent = true;
-        return isPrevent;
-      });
-      return isPrevent;
-    },
-
-
-    // 处理后 事件 分发
-    emitFile: function emitFile(newFile, oldFile) {
-      this.$emit('input-file', newFile, oldFile);
-      if (newFile && newFile.fileObject && newFile.active && (!oldFile || !oldFile.active)) {
-        this.uploading++;
-        // 激活
-        this.$nextTick(function () {
-          var _this3 = this;
-
-          setTimeout(function () {
-            _this3.upload(newFile).then(function () {
-              // eslint-disable-next-line
-              newFile = _this3.get(newFile);
-              if (newFile && newFile.fileObject) {
-                _this3.update(newFile, {
-                  active: false,
-                  success: !newFile.error
-                });
-              }
-            }).catch(function (e) {
-              _this3.update(newFile, {
-                active: false,
-                success: false,
-                error: e.code || e.error || e.message || e
-              });
-            });
-          }, parseInt(Math.random() * 50 + 50, 10));
-        });
-      } else if ((!newFile || !newFile.fileObject || !newFile.active) && oldFile && oldFile.fileObject && oldFile.active) {
-        // 停止
-        this.uploading--;
-      }
-
-      // 自动延续激活
-      if (this.active && (Boolean(newFile) !== Boolean(oldFile) || newFile.active !== oldFile.active)) {
-        this.watchActive(true);
-      }
-    },
-    emitInput: function emitInput() {
-      this.$emit('input', this.files);
-    },
-
-
-    // 上传
-    upload: function upload(id) {
-      var file = this.get(id);
-
-      // 被删除
-      if (!file) {
-        return Promise.reject('not_exists');
-      }
-
-      // 不是文件对象
-      if (!file.fileObject) {
-        return Promise.reject('file_object');
-      }
-
-      // 有错误直接响应
-      if (file.error) {
-        return Promise.reject(file.error);
-      }
-
-      // 已完成直接响应
-      if (file.success) {
-        return Promise.resolve(file);
-      }
-
-      // 后缀
-      var extensions = this.extensions;
-      if (extensions && (extensions.length || typeof extensions.length === 'undefined')) {
-        if ((typeof extensions === 'undefined' ? 'undefined' : _typeof(extensions)) !== 'object' || !(extensions instanceof RegExp)) {
-          if (typeof extensions === 'string') {
-            extensions = extensions.split(',').map(function (value) {
-              return value.trim();
-            }).filter(function (value) {
-              return value;
-            });
-          }
-          extensions = new RegExp('\\.(' + extensions.join('|').replace(/\./g, '\\.') + ')$', 'i');
-        }
-        if (file.name.search(extensions) === -1) {
-          return Promise.reject('extension');
-        }
-      }
-
-      // 大小
-      if (this.size > 0 && file.size >= 0 && file.size > this.size) {
-        return Promise.reject('size');
-      }
-
-      if (this.features.html5 && file.putAction) {
-        return this.uploadPut(file);
-      } else if (this.features.html5) {
-        return this.uploadHtml5(file);
-      } else {
-        return this.uploadHtml4(file);
-      }
-    },
-    uploadPut: function uploadPut(file) {
-      var querys = [];
-      var value = void 0;
-      for (var key in file.data) {
-        value = file.data[key];
-        if (value !== null && value !== undefined) {
-          querys.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-        }
-      }
-      var queryString = querys.length ? (file.putAction.indexOf('?') === -1 ? '?' : '&') + querys.join('&') : '';
-      var xhr = new XMLHttpRequest();
-      xhr.open('PUT', file.putAction + queryString);
-      return this.uploadXhr(xhr, file, file.file);
-    },
-    uploadHtml5: function uploadHtml5(file) {
-      var form = new window.FormData();
-      var value = void 0;
-      for (var key in file.data) {
-        value = file.data[key];
-        if (value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && typeof value.toString !== 'function') {
-          if (value instanceof File) {
-            form.append(key, value, value.name);
-          } else {
-            form.append(key, JSON.stringify(value));
-          }
-        } else if (value !== null && value !== undefined) {
-          form.append(key, value);
-        }
-      }
-      form.append(this.name, file.file, file.file.filename || file.name);
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', file.postAction);
-      return this.uploadXhr(xhr, file, form);
-    },
-    uploadXhr: function uploadXhr(xhr, _file, body) {
-      var _this4 = this;
-
-      var file = _file;
-      var speedTime = 0;
-      var speedLoaded = 0;
-
-      // 进度条
-      xhr.upload.onprogress = function (e) {
-        // 还未开始上传 已删除 未激活
-        file = _this4.get(file);
-        if (!e.lengthComputable || !file || !file.fileObject || !file.active) {
-          return;
-        }
-
-        // 进度 速度 每秒更新一次
-        var speedTime2 = Math.round(Date.now() / 1000);
-        if (speedTime2 === speedTime) {
-          return;
-        }
-        speedTime = speedTime2;
-
-        file = _this4.update(file, {
-          progress: (e.loaded / e.total * 100).toFixed(2),
-          speed: e.loaded - speedLoaded
-        });
-        speedLoaded = e.loaded;
-      };
-
-      // 检查激活状态
-      var interval = setInterval(function () {
-        file = _this4.get(file);
-        if (file && file.fileObject && !file.success && !file.error && file.active) {
-          return;
-        }
-
-        if (interval) {
-          clearInterval(interval);
-          interval = false;
-        }
-
-        try {
-          xhr.abort();
-          xhr.timeout = 1;
-        } catch (e) {}
-      }, 100);
-
-      return new Promise(function (resolve, reject) {
-        var complete = void 0;
-        var fn = function fn(e) {
-          // 已经处理过了
-          if (complete) {
-            return;
-          }
-          complete = true;
-          if (interval) {
-            clearInterval(interval);
-            interval = false;
-          }
-
-          file = _this4.get(file);
-
-          // 不存在直接响应
-          if (!file) {
-            return reject('not_exists');
-          }
-
-          // 不是文件对象
-          if (!file.fileObject) {
-            return reject('file_object');
-          }
-
-          // 有错误自动响应
-          if (file.error) {
-            return reject(file.error);
-          }
-
-          // 未激活
-          if (!file.active) {
-            return reject('abort');
-          }
-
-          // 已完成 直接相应
-          if (file.success) {
-            return resolve(file);
-          }
-
-          var data = {};
-
-          switch (e.type) {
-            case 'timeout':
-            case 'abort':
-              data.error = e.type;
-              break;
-            case 'error':
-              if (!xhr.status) {
-                data.error = 'network';
-              } else if (xhr.status >= 500) {
-                data.error = 'server';
-              } else if (xhr.status >= 400) {
-                data.error = 'denied';
-              }
-              break;
-            default:
-              if (xhr.status >= 500) {
-                data.error = 'server';
-              } else if (xhr.status >= 400) {
-                data.error = 'denied';
-              } else {
-                data.progress = '100.00';
-              }
-          }
-
-          if (xhr.responseText) {
-            var contentType = xhr.getResponseHeader('Content-Type');
-            if (contentType && contentType.indexOf('/json') !== -1) {
-              data.response = JSON.parse(xhr.responseText);
-            } else {
-              data.response = xhr.responseText;
-            }
-          }
-
-          // 更新
-          file = _this4.update(file, data);
-
-          // 相应错误
-          if (file.error) {
-            return reject(file.error);
-          }
-
-          // 响应
-          return resolve(file);
-        };
-
-        // 事件
-        xhr.onload = fn;
-        xhr.onerror = fn;
-        xhr.onabort = fn;
-        xhr.ontimeout = fn;
-
-        // 超时
-        if (file.timeout) {
-          xhr.timeout = file.timeout;
-        }
-
-        // headers
-        for (var key in file.headers) {
-          xhr.setRequestHeader(key, file.headers[key]);
-        }
-
-        // 更新 xhr
-        file = _this4.update(file, { xhr: xhr });
-
-        // 开始上传
-        xhr.send(body);
-      });
-    },
-    uploadHtml4: function uploadHtml4(_file) {
-      var _this5 = this;
-
-      var file = _file;
-      var onKeydown = function onKeydown(e) {
-        if (e.keyCode === 27) {
-          e.preventDefault();
-        }
-      };
-
-      var iframe = document.createElement('iframe');
-      iframe.id = 'upload-iframe-' + file.id;
-      iframe.name = 'upload-iframe-' + file.id;
-      iframe.src = 'about:blank';
-      iframe.setAttribute('style', 'width:1px;height:1px;top:-999em;position:absolute; margin-top:-999em;');
-
-      var form = document.createElement('form');
-
-      form.action = file.postAction;
-
-      form.name = 'upload-form-' + file.id;
-
-      form.setAttribute('method', 'POST');
-      form.setAttribute('target', 'upload-iframe-' + file.id);
-      form.setAttribute('enctype', 'multipart/form-data');
-
-      var value = void 0;
-      var input = void 0;
-      for (var key in file.data) {
-        value = file.data[key];
-        if (value && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && typeof value.toString !== 'function') {
-          value = JSON.stringify(value);
-        }
-        if (value !== null && value !== undefined) {
-          input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = value;
-          form.appendChild(input);
-        }
-      }
-      form.appendChild(file.el);
-
-      document.body.appendChild(iframe).appendChild(form);
-
-      var getResponseData = function getResponseData() {
-        var doc = void 0;
-        try {
-          if (iframe.contentWindow) {
-            doc = iframe.contentWindow.document;
-          }
-        } catch (err) {}
-        if (!doc) {
-          try {
-            doc = iframe.contentDocument ? iframe.contentDocument : iframe.document;
-          } catch (err) {
-            doc = iframe.document;
-          }
-        }
-        if (doc && doc.body) {
-          return doc.body.innerHTML;
-        }
-        return null;
-      };
-
-      return new Promise(function (resolve, reject) {
-        setTimeout(function () {
-          file = _this5.update(file, { iframe: iframe });
-
-          // 不存在
-          if (!file) {
-            return reject('not_exists');
-          }
-
-          // 定时检查
-          var interval = setInterval(function () {
-            file = _this5.get(file);
-            if (file && file.fileObject && !file.success && !file.error && file.active) {
-              return;
-            }
-
-            if (interval) {
-              clearInterval(interval);
-              interval = false;
-            }
-
-            iframe.onabort({ type: file ? 'abort' : 'not_exists' });
-          }, 100);
-
-          var complete = void 0;
-          var fn = function fn(e) {
-            // 已经处理过了
-            if (complete) {
-              return;
-            }
-            complete = true;
-
-            if (interval) {
-              clearInterval(interval);
-              interval = false;
-            }
-
-            // 关闭 esc 事件
-            document.body.removeEventListener('keydown', onKeydown);
-
-            file = _this5.get(file);
-
-            // 不存在直接响应
-            if (!file) {
-              return reject('not_exists');
-            }
-
-            // 不是文件对象
-            if (!file.fileObject) {
-              return reject('file_object');
-            }
-
-            // 有错误自动响应
-            if (file.error) {
-              return reject(file.error);
-            }
-
-            // 未激活
-            if (!file.active) {
-              return reject('abort');
-            }
-
-            // 已完成 直接相应
-            if (file.success) {
-              return resolve(file);
-            }
-
-            var response = getResponseData();
-            var data = {};
-            switch (e.type) {
-              case 'abort':
-                data.error = 'abort';
-                break;
-              case 'error':
-                if (file.error) {
-                  data.error = file.error;
-                } else if (response === null) {
-                  data.error = 'network';
-                } else {
-                  data.error = 'denied';
-                }
-                break;
-              default:
-                if (file.error) {
-                  data.error = file.error;
-                } else if (data === null) {
-                  data.error = 'network';
-                } else {
-                  data.progress = '100.00';
-                }
-            }
-
-            if (response !== null) {
-              if (response && response.substr(0, 1) === '{' && response.substr(response.length - 1, 1) === '}') {
-                try {
-                  response = JSON.parse(response);
-                } catch (err) {}
-              }
-              data.response = response;
-            }
-
-            // 更新
-            file = _this5.update(file, data);
-
-            if (file.error) {
-              return reject(file.error);
-            }
-
-            // 响应
-            return resolve(file);
-          };
-
-          // 添加事件
-          iframe.onload = fn;
-          iframe.onerror = fn;
-          iframe.onabort = fn;
-
-          // 禁止 esc 键
-          document.body.addEventListener('keydown', onKeydown);
-
-          // 提交
-          form.submit();
-        }, 50);
-      }).then(function (res) {
-        iframe.parentNode && iframe.parentNode.removeChild(iframe);
-        return res;
-      }).catch(function (res) {
-        iframe.parentNode && iframe.parentNode.removeChild(iframe);
-        return res;
-      });
-    },
-    watchActive: function watchActive(active) {
-      var file = void 0;
-      var index = 0;
-      while (file = this.files[index]) {
-        index++;
-        if (!file.fileObject) {
-          // 不是文件对象
-        } else if (active && !this.destroy) {
-          if (this.uploading >= this.thread || this.uploading && !this.features.html5) {
-            break;
-          }
-          if (!file.active && !file.error && !file.success) {
-            this.update(file, { active: true });
-          }
-        } else {
-          if (file.active) {
-            this.update(file, { active: false });
-          }
-        }
-      }
-      if (this.uploading === 0) {
-        this.active = false;
-      }
-    },
-    watchDrop: function watchDrop(_el) {
-      var el = _el;
-      if (!this.features.drop) {
-        return;
-      }
-
-      // 移除挂载
-      if (this.dropElement) {
-        try {
-          document.removeEventListener('dragenter', this.onDragenter, false);
-          document.removeEventListener('dragleave', this.onDragleave, false);
-          this.dropElement.removeEventListener('dragover', this.onDragover, false);
-          this.dropElement.removeEventListener('drop', this.onDrop, false);
-        } catch (e) {}
-      }
-
-      if (!el) {
-        el = false;
-      } else if (typeof el === 'string') {
-        el = document.querySelector(el) || this.$root.$el.querySelector(el);
-      } else if (el === true) {
-        el = this.$parent.$el;
-      }
-
-      this.dropElement = el;
-
-      if (this.dropElement) {
-        document.addEventListener('dragenter', this.onDragenter, false);
-        document.addEventListener('dragleave', this.onDragleave, false);
-        this.dropElement.addEventListener('dragover', this.onDragover, false);
-        this.dropElement.addEventListener('drop', this.onDrop, false);
-      }
-    },
-    onDragenter: function onDragenter(e) {
-      e.preventDefault();
-      if (!this.dropActive) {
-        this.dropActive = true;
-      }
-    },
-    onDragleave: function onDragleave(e) {
-      e.preventDefault();
-      if (e.target.nodeName === 'HTML' || e.screenX === 0 && e.screenY === 0 && !e.fromElement && e.offsetX <= 0) {
-        this.dropActive = false;
-      }
-    },
-    onDragover: function onDragover(e) {
-      e.preventDefault();
-    },
-    onDrop: function onDrop(e) {
-      e.preventDefault();
-      this.dropActive = false;
-      this.addDataTransfer(e.dataTransfer);
-    }
-  }
-});
-
-/***/ }),
-/* 145 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "label",
-    { class: _vm.className },
-    [_vm._t("default"), _vm._v(" "), _c("input-file")],
-    2
-  )
+        ],
+        staticClass: "upload"
+      },
+      [
+        _c("div", { staticClass: "table-responsive" }, [
+          _c("table", { staticClass: "table table-hover" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c(
+              "tbody",
+              [
+                !_vm.files.length
+                  ? _c("tr", [
+                      _c("td", { attrs: { colspan: "7" } }, [
+                        _c("div", { staticClass: "text-center p-5" }, [
+                          _vm._m(1),
+                          _vm._v(" "),
+                          _c(
+                            "label",
+                            {
+                              staticClass: "btn btn-lg btn-primary",
+                              attrs: { for: _vm.name }
+                            },
+                            [_vm._v("Select Files")]
+                          )
+                        ])
+                      ])
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm._l(_vm.files, function(file, index) {
+                  return _c("tr", { key: file.id }, [
+                    _c("td", [_vm._v(_vm._s(index))]),
+                    _vm._v(" "),
+                    _c("td", [
+                      file.thumb
+                        ? _c("img", {
+                            attrs: {
+                              src: file.thumb,
+                              width: "40",
+                              height: "auto"
+                            }
+                          })
+                        : _c("span", [_vm._v("No Image")])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("div", { staticClass: "filename" }, [
+                        _vm._v(
+                          "\n                            " +
+                            _vm._s(file.name) +
+                            "\n                        "
+                        )
+                      ]),
+                      _vm._v(" "),
+                      file.active || file.progress !== "0.00"
+                        ? _c("div", { staticClass: "progress" }, [
+                            _c(
+                              "div",
+                              {
+                                class: {
+                                  "progress-bar": true,
+                                  "progress-bar-striped": true,
+                                  "bg-danger": file.error,
+                                  "progress-bar-animated": file.active
+                                },
+                                style: { width: file.progress + "%" },
+                                attrs: { role: "progressbar" }
+                              },
+                              [_vm._v(_vm._s(file.progress) + "%")]
+                            )
+                          ])
+                        : _vm._e()
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(_vm._f("formatSize")(file.size)))]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm._v(_vm._s(_vm._f("formatSize")(file.speed)))
+                    ]),
+                    _vm._v(" "),
+                    file.error
+                      ? _c("td", [_vm._v(_vm._s(file.error))])
+                      : file.success
+                        ? _c("td", [_vm._v("success")])
+                        : file.active ? _c("td", [_vm._v("active")]) : _c("td"),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("div", { staticClass: "btn-group" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "btn btn-secondary btn-sm dropdown-toggle",
+                            attrs: { type: "button" }
+                          },
+                          [
+                            _vm._v(
+                              "\n                                Action\n                            "
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "dropdown-menu" }, [
+                          _c(
+                            "a",
+                            {
+                              class: {
+                                "dropdown-item": true,
+                                disabled:
+                                  file.active ||
+                                  file.success ||
+                                  file.error === "compressing"
+                              },
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  file.active ||
+                                  file.success ||
+                                  file.error === "compressing"
+                                    ? false
+                                    : _vm.onEditFileShow(file)
+                                }
+                              }
+                            },
+                            [_vm._v("Edit")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              class: {
+                                "dropdown-item": true,
+                                disabled: !file.active
+                              },
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  file.active
+                                    ? _vm.$refs.upload.update(file, {
+                                        error: "cancel"
+                                      })
+                                    : false
+                                }
+                              }
+                            },
+                            [_vm._v("Cancel")]
+                          ),
+                          _vm._v(" "),
+                          file.active
+                            ? _c(
+                                "a",
+                                {
+                                  staticClass: "dropdown-item",
+                                  attrs: { href: "#" },
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      _vm.$refs.upload.update(file, {
+                                        active: false
+                                      })
+                                    }
+                                  }
+                                },
+                                [_vm._v("Abort")]
+                              )
+                            : file.error &&
+                              file.error !== "compressing" &&
+                              _vm.$refs.upload.features.html5
+                              ? _c(
+                                  "a",
+                                  {
+                                    staticClass: "dropdown-item",
+                                    attrs: { href: "#" },
+                                    on: {
+                                      click: function($event) {
+                                        $event.preventDefault()
+                                        _vm.$refs.upload.update(file, {
+                                          active: true,
+                                          error: "",
+                                          progress: "0.00"
+                                        })
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("Retry upload")]
+                                )
+                              : _c(
+                                  "a",
+                                  {
+                                    class: {
+                                      "dropdown-item": true,
+                                      disabled:
+                                        file.success ||
+                                        file.error === "compressing"
+                                    },
+                                    attrs: { href: "#" },
+                                    on: {
+                                      click: function($event) {
+                                        $event.preventDefault()
+                                        file.success ||
+                                        file.error === "compressing"
+                                          ? false
+                                          : _vm.$refs.upload.update(file, {
+                                              active: true
+                                            })
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("Upload")]
+                                ),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "dropdown-divider" }),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              staticClass: "dropdown-item",
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  _vm.$refs.upload.remove(file)
+                                }
+                              }
+                            },
+                            [_vm._v("Remove")]
+                          )
+                        ])
+                      ])
+                    ])
+                  ])
+                })
+              ],
+              2
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "example-foorer" }, [
+          _c("div", { staticClass: "footer-status float-right" }, [
+            _vm._v(
+              "\n                Drop: " +
+                _vm._s(_vm.$refs.upload ? _vm.$refs.upload.drop : false) +
+                ",\n                Active: " +
+                _vm._s(_vm.$refs.upload ? _vm.$refs.upload.active : false) +
+                ",\n                Uploaded: " +
+                _vm._s(_vm.$refs.upload ? _vm.$refs.upload.uploaded : true) +
+                ",\n                Drop active: " +
+                _vm._s(_vm.$refs.upload ? _vm.$refs.upload.dropActive : false) +
+                "\n            "
+            )
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "btn-group" },
+            [
+              _c(
+                "file-upload",
+                {
+                  ref: "upload",
+                  staticClass: "btn btn-primary dropdown-toggle",
+                  attrs: {
+                    "post-action": _vm.postAction,
+                    "put-action": _vm.putAction,
+                    extensions: _vm.extensions,
+                    accept: _vm.accept,
+                    multiple: _vm.multiple,
+                    directory: _vm.directory,
+                    size: _vm.size || 0,
+                    thread:
+                      _vm.thread < 1 ? 1 : _vm.thread > 5 ? 5 : _vm.thread,
+                    headers: _vm.headers,
+                    data: _vm.data,
+                    drop: _vm.drop,
+                    "drop-directory": _vm.dropDirectory,
+                    "add-index": _vm.addIndex
+                  },
+                  on: {
+                    "input-filter": _vm.inputFilter,
+                    "input-file": _vm.inputFile
+                  },
+                  model: {
+                    value: _vm.files,
+                    callback: function($$v) {
+                      _vm.files = $$v
+                    },
+                    expression: "files"
+                  }
+                },
+                [
+                  _c("i", { staticClass: "fa fa-plus" }),
+                  _vm._v("\n                    Select\n                ")
+                ]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "dropdown-menu" }, [
+                _c(
+                  "label",
+                  { staticClass: "dropdown-item", attrs: { for: _vm.name } },
+                  [_vm._v("Add files")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: { click: _vm.onAddFoalder }
+                  },
+                  [_vm._v("Add folder")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        _vm.addData.show = true
+                      }
+                    }
+                  },
+                  [_vm._v("Add data")]
+                )
+              ])
+            ],
+            1
+          ),
+          _vm._v(" "),
+          !_vm.$refs.upload || !_vm.$refs.upload.active
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-success",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      _vm.$refs.upload.active = true
+                    }
+                  }
+                },
+                [
+                  _c("i", {
+                    staticClass: "fa fa-arrow-up",
+                    attrs: { "aria-hidden": "true" }
+                  }),
+                  _vm._v("\n                Start Upload\n            ")
+                ]
+              )
+            : _c(
+                "button",
+                {
+                  staticClass: "btn btn-danger",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      _vm.$refs.upload.active = false
+                    }
+                  }
+                },
+                [
+                  _c("i", {
+                    staticClass: "fa fa-stop",
+                    attrs: { "aria-hidden": "true" }
+                  }),
+                  _vm._v("\n                Stop Upload\n            ")
+                ]
+              )
+        ])
+      ]
+    ),
+    _vm._v(" "),
+    _c("div", {
+      class: { "modal-backdrop": true, fade: true, show: _vm.addData.show }
+    }),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        class: { modal: true, fade: true, show: _vm.addData.show },
+        attrs: { id: "modal-add-data", tabindex: "-1", role: "dialog" }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "modal-dialog", attrs: { role: "document" } },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _c("div", { staticClass: "modal-header" }, [
+                _c("h5", { staticClass: "modal-title" }, [_vm._v("Add data")]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "close",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        _vm.addData.show = false
+                      }
+                    }
+                  },
+                  [_c("span", [_vm._v("×")])]
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      _vm.onAddData($event)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "modal-body" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "name" } }, [
+                        _vm._v("Name:")
+                      ]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.addData.name,
+                            expression: "addData.name"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          required: "",
+                          id: "name",
+                          placeholder: "Please enter a file name"
+                        },
+                        domProps: { value: _vm.addData.name },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.addData, "name", $event.target.value)
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _vm._m(2)
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "type" } }, [
+                        _vm._v("Type:")
+                      ]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.addData.type,
+                            expression: "addData.type"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          required: "",
+                          id: "type",
+                          placeholder: "Please enter the MIME type"
+                        },
+                        domProps: { value: _vm.addData.type },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.addData, "type", $event.target.value)
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _vm._m(3)
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "content" } }, [
+                        _vm._v("Content:")
+                      ]),
+                      _vm._v(" "),
+                      _c("textarea", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.addData.content,
+                            expression: "addData.content"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          required: "",
+                          id: "content",
+                          rows: "3",
+                          placeholder: "Please enter the file contents"
+                        },
+                        domProps: { value: _vm.addData.content },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.addData,
+                              "content",
+                              $event.target.value
+                            )
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "modal-footer" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-secondary",
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            _vm.addData.show = false
+                          }
+                        }
+                      },
+                      [_vm._v("Close")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("Save")]
+                    )
+                  ])
+                ]
+              )
+            ])
+          ]
+        )
+      ]
+    ),
+    _vm._v(" "),
+    _c("div", {
+      class: { "modal-backdrop": true, fade: true, show: _vm.editFile.show }
+    }),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        class: { modal: true, fade: true, show: _vm.editFile.show },
+        attrs: { id: "modal-edit-file", tabindex: "-1", role: "dialog" }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _c("div", { staticClass: "modal-header" }, [
+                _c("h5", { staticClass: "modal-title" }, [_vm._v("Edit file")]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "close",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        _vm.editFile.show = false
+                      }
+                    }
+                  },
+                  [_c("span", [_vm._v("×")])]
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      _vm.onEditorFile($event)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "modal-body" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "name" } }, [
+                        _vm._v("Name:")
+                      ]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.editFile.name,
+                            expression: "editFile.name"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          required: "",
+                          id: "name",
+                          placeholder: "Please enter a file name"
+                        },
+                        domProps: { value: _vm.editFile.name },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.editFile, "name", $event.target.value)
+                          }
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _vm.editFile.show &&
+                    _vm.editFile.blob &&
+                    _vm.editFile.type &&
+                    _vm.editFile.type.substr(0, 6) === "image/"
+                      ? _c("div", { staticClass: "form-group" }, [
+                          _c("label", [_vm._v("Image: ")]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "edit-image" }, [
+                            _c("img", {
+                              ref: "editImage",
+                              attrs: { src: _vm.editFile.blob }
+                            })
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "edit-image-tool" }, [
+                            _c(
+                              "div",
+                              {
+                                staticClass: "btn-group",
+                                attrs: { role: "group" }
+                              },
+                              [
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-primary",
+                                    attrs: {
+                                      type: "button",
+                                      title: "cropper.rotate(-90)"
+                                    },
+                                    on: {
+                                      click: function($event) {
+                                        _vm.editFile.cropper.rotate(-90)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fa fa-undo",
+                                      attrs: { "aria-hidden": "true" }
+                                    })
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-primary",
+                                    attrs: {
+                                      type: "button",
+                                      title: "cropper.rotate(90)"
+                                    },
+                                    on: {
+                                      click: function($event) {
+                                        _vm.editFile.cropper.rotate(90)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fa fa-repeat",
+                                      attrs: { "aria-hidden": "true" }
+                                    })
+                                  ]
+                                )
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              {
+                                staticClass: "btn-group",
+                                attrs: { role: "group" }
+                              },
+                              [
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-primary",
+                                    attrs: {
+                                      type: "button",
+                                      title: "cropper.crop()"
+                                    },
+                                    on: {
+                                      click: function($event) {
+                                        _vm.editFile.cropper.crop()
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fa fa-check",
+                                      attrs: { "aria-hidden": "true" }
+                                    })
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-primary",
+                                    attrs: {
+                                      type: "button",
+                                      title: "cropper.clear()"
+                                    },
+                                    on: {
+                                      click: function($event) {
+                                        _vm.editFile.cropper.clear()
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fa fa-remove",
+                                      attrs: { "aria-hidden": "true" }
+                                    })
+                                  ]
+                                )
+                              ]
+                            )
+                          ])
+                        ])
+                      : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "modal-footer" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-secondary",
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            _vm.editFile.show = false
+                          }
+                        }
+                      },
+                      [_vm._v("Close")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("Save")]
+                    )
+                  ])
+                ]
+              )
+            ])
+          ]
+        )
+      ]
+    )
+  ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { attrs: { colspan: "2" } }, [
+          _c("label", [
+            _c("input", {
+              staticClass: "check",
+              attrs: { type: "checkbox", id: "checkAll" }
+            }),
+            _vm._v(" Check All\n                    ")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Name")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Version")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Action")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Size")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Last updated")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("h4", [
+      _vm._v("Drop files anywhere to upload"),
+      _c("br"),
+      _vm._v("or")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("small", { staticClass: "form-text text-muted" }, [
+      _vm._v("Such as "),
+      _c("code", [_vm._v("filename.txt")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("small", { staticClass: "form-text text-muted" }, [
+      _vm._v("Such as "),
+      _c("code", [_vm._v("text/plain")])
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-586c6b30", module.exports)
-  }
-}
-
-/***/ }),
-/* 146 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = __webpack_require__(147)
-/* template */
-var __vue_template__ = __webpack_require__(148)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "node_modules/vue-upload-component/src/InputFile.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-10764deb", Component.options)
-  } else {
-    hotAPI.reload("data-v-10764deb", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 147 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  methods: {
-    change: function change(e) {
-      this.$destroy();
-      this.$parent.addInputFile(e.target);
-      // eslint-disable-next-line
-      new this.constructor({
-        parent: this.$parent,
-        el: this.$el
-      });
-    }
-  }
-});
-
-/***/ }),
-/* 148 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("input", {
-    attrs: {
-      type: "file",
-      name: _vm.$parent.name,
-      id: _vm.$parent.inputId || _vm.$parent.name,
-      accept: _vm.$parent.accept,
-      webkitdirectory: _vm.$parent.directory && _vm.$parent.features.directory,
-      directory: _vm.$parent.directory && _vm.$parent.features.directory,
-      multiple: _vm.$parent.multiple && _vm.$parent.features.html5
-    },
-    on: { change: _vm.change }
-  })
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-10764deb", module.exports)
+    require("vue-hot-reload-api")      .rerender("data-v-532fcae7", module.exports)
   }
 }
 

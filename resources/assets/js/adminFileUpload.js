@@ -6,12 +6,12 @@
  */
 
 require('./bootstrap');
+require('./filters');
 require('lodash');
 window.Vue = require('vue');
-const util = require('util')
-const VueUploadComponent = require('vue-upload-component')
-Vue.component('file-upload', VueUploadComponent);
-import FileUpload from 'vue-upload-component/src';
+const util = require('util');
+
+Vue.component('full_upload', require('./components/FullUpload.vue'));
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -28,9 +28,6 @@ const app = new Vue({
         return {
             files: []
         }
-    },
-    components: {
-        FileUpload: VueUploadComponent
     },
     methods: {
         /**

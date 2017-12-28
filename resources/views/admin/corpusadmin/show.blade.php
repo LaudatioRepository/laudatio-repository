@@ -92,8 +92,10 @@
                                 <br />
                                 @if($folderName == "TEI-HEADERS")
                                     @include('admin.corpusadmin.projectList')
-                                @else
+                                @elseif($folderName == "CORPUS-DATA")
                                     @include('admin.corpusadmin.fileList')
+                                @else
+                                    @include('admin.corpusadmin.projectList')
                                 @endif
                             </div>
                             <div class="tab-pane fade" id="publications">

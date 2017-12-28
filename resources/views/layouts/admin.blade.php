@@ -15,7 +15,6 @@
     <!-- Custom CSS -->
     <link href="{{ asset('css/sb-admin.css') }}" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/adminFileUpload.css') }}" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -57,7 +56,6 @@
 
 <!-- Bootstrap Core JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="{{ asset('js/adminFileUpload.js') }}"></script>
 <script src="{{ asset('js/metisMenu.js') }}"></script>
 <script src="{{ asset('js/sb-admin.js') }}"></script>
 </body>

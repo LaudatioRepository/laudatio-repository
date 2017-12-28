@@ -149,7 +149,8 @@ class GitRepoService implements GitRepoInterface
     }
 
     function calculateFileSize($size,$accuracy=2) {
-        $units = array('b','Kb','Mb','Gb');
+        $output = 0;
+        $units = array(' Bytes',' KB',' Mb',' Gb');
         foreach($units as $n=>$u) {
             $div = pow(1024,$n);
             if($size > $div) $output = number_format($size/$div,$accuracy).$u;

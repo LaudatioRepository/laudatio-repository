@@ -39,6 +39,19 @@ class UploadController extends Controller
             ->with('user',\Auth::user());
     }
 
+    public function uploadDataForm($dirname = "")
+    {
+        $isLoggedIn = \Auth::check();
+
+        $dirArray = explode("/",$dirname);
+        $corpusPath = $dirArray[1];
+        $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
+
+        return view('gitLab.uploadDataform',["dirname" => $dirname,"corpusid" => $corpus[0]->id])
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',\Auth::user());
+    }
+
     public function uploadSubmit(UploadRequest $request)
     {
         $updated = false;
@@ -87,6 +100,48 @@ class UploadController extends Controller
             }
 
         }
+        return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
+    }
+
+    public function uploadSubmitFiles(UploadRequest $request)
+    {
+        $updated = false;
+        $dirPath = $request->directorypath;;
+        $corpusId = $request->corpusid;
+        $file = $request->file;
+        $fileName = $file->getClientOriginalName();
+
+        //Log::info("DIRP: ".print_r($dirPath,1));
+        //Log::info("corpusId: ".print_r($corpusId,1));
+        //Log::info("filename: ".print_r($fileName,1));
+
+        $filePath = $dirPath.'/'.$fileName;
+
+        if(is_dir($filePath)){
+            //Log::info("WE HAVe A DIRECTORY: ".print_r($filePath,1));
+
+        }
+        else{
+            //Log::info("filePath: ".print_r($filePath,1));
+            $exists = $this->flysystem->has($filePath);
+            if(!$exists){
+                $stream = fopen($file->getRealPath(), 'r+');
+                $this->flysystem->writeStream($filePath, $stream);
+            }
+            else{
+                $stream = fopen($file->getRealPath(), 'r+');
+                $this->flysystem->updateStream($filePath, $stream);
+                $updated = true;
+            }
+        }
+
+
+
+        if (is_resource($stream)) {
+            fclose($stream);
+        }
+
+
         return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
     }
 }
