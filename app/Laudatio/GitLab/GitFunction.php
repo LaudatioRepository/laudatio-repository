@@ -331,10 +331,84 @@ class GitFunction
             }
         }
 
-
-
         return $isCopied;
     }
+
+    /**
+     * @param $dirPath
+     * @param $fileDataArray
+     * @return string
+     */
+    public function writeFiles($dirPath, $fileDataArray,$flySystem,$fileTempPath,$theFilePath){
+
+        foreach($fileDataArray as $fileData) {
+            $pathsArray = explode("/", $fileData);
+            $fileInDirectory = array_pop($pathsArray);
+            $createdDirectoryPath = array();
+            if($this->isDottedFile($fileInDirectory) === false){
+                foreach ($pathsArray as $path) {
+                    $created = "";
+                    if (count($createdDirectoryPath) ==  0) {
+                        $singlePath = $dirPath."/".$path;
+
+                        if(!file_exists($this->basePath."/".$singlePath)){
+                            $created = $this->makeDirectory($dirPath, $path);
+                        }
+                        else{
+                            array_push($createdDirectoryPath,$path);
+                        }
+                    } else {
+                        $combinedPath = $dirPath."/".implode("/", $createdDirectoryPath);
+                        if(!file_exists($this->basePath."/".$combinedPath."/".$path)){
+                            $created = $this->makeDirectory($combinedPath, $path);
+                        }
+                        else{
+                            array_push($createdDirectoryPath,$path);
+                        }
+                    }
+
+
+                    if ($created != "") {
+                        array_push($createdDirectoryPath,$created);
+                    }
+                }
+            }
+        }
+
+        //write file if exists
+        $fileArray = explode("/", $theFilePath);
+        $fileInDirectory = array_pop($fileArray);
+        $savePath = implode("/",$fileArray);
+
+        if(file_exists($this->basePath."/".$dirPath."/".$savePath)){
+            $existingFile = $flySystem->has($dirPath."/".$savePath."/".$fileInDirectory);
+            if(!$existingFile){
+                $stream = fopen($fileTempPath, 'r+');
+                $flySystem->writeStream($dirPath."/".$savePath."/".$fileInDirectory, $stream);
+            }
+            else{
+                $stream = fopen($fileTempPath, 'r+');
+                $flySystem->updateStream($dirPath."/".$savePath."/".$fileInDirectory, $stream);
+            }
+        }
+
+        return $createdDirectoryPath;
+    }
+
+    public function makeDirectory($path,$directory){
+        //Log::info("makeDirectory: ".$path."/".$directory);
+        $createdDirectoryPath = "";
+        $makeDirectoryProcess = new Process("mkdir $directory",$this->basePath."/".$path);
+        $makeDirectoryProcess->run();
+        if (!$makeDirectoryProcess->isSuccessful()) {
+            throw new ProcessFailedException($makeDirectoryProcess);
+        }
+        else{
+            $createdDirectoryPath = $directory;
+        }
+        return $createdDirectoryPath;
+    }
+
 
     public function deleteFiles($path){
 
@@ -431,5 +505,9 @@ class GitFunction
 
         }
         return $commitData;
+    }
+
+    public function isDottedFile($file){
+        return strpos($file,".") == 0;
     }
 }

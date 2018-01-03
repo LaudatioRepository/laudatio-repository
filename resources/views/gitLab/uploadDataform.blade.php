@@ -23,7 +23,8 @@
         window.Laravel = <?php echo json_encode([
             'csrfToken' => csrf_token(),
             'directorypath' => $dirname,
-            'corpusid' => $corpusid
+            'corpusid' => $corpusid,
+            'filedata' => []
         ]); ?>
     </script>
 @stop

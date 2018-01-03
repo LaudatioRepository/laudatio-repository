@@ -26,4 +26,5 @@ interface LaudatioUtilsInterface
     public function getModelByType($id,$type);
     public function getModelByFileName($fileName, $type);
     public function setVersionMapping($filename, $type);
+    public function getDirectoryPath($paths,$fileName);
 }

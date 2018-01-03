@@ -19,13 +19,13 @@
                         </label></th>
                         <th>Name</th>
 
-                        <th>Version</th>
-
-                        <th>Action</th>
-
                         <th>Size</th>
 
-                        <th>Last updated</th>
+                        <th>Uploaded</th>
+
+                        <th>Status</th>
+
+                        <th>&nbsp;</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -112,7 +112,7 @@
                     </file-upload>
                     <div class="dropdown-menu">
                         <label class="dropdown-item" :for="name">Add files</label>
-                        <a class="dropdown-item" href="#" @click="onAddFoalder">Add folder</a>
+                        <a class="dropdown-item" href="#" @click="onAddFolder">Add folder</a>
                         <a class="dropdown-item" href="#" @click.prevent="addData.show = true">Add data</a>
                     </div>
                 </div>
@@ -394,7 +394,7 @@
             return {
                 files: [],
                 accept: '',
-                extensions: '',
+                extensions: [],
                 // extensions: ['gif', 'jpg', 'jpeg','png', 'webp'],
                 // extensions: /\.(gif|jpe?g|png|webp)$/i,
                 //minSize: 1024,
@@ -406,7 +406,7 @@
                 drop: true,
                 dropDirectory: true,
                 addIndex: false,
-                thread: 3,
+                thread: 1,
                 name: 'file',
                 postAction: '/admin/uploadFiles',
                 putAction: '',
@@ -416,7 +416,8 @@
                 data: {
                     '_csrf_token': window.Laravel.csrfToken,
                     'directorypath': window.Laravel.directorypath,
-                    'corpusid': window.Laravel.corpusid
+                    'corpusid': window.Laravel.corpusid,
+                    'filedata':  window.Laravel.filedata
                 },
 
                 autoCompress: 1024 * 1024,
@@ -474,7 +475,8 @@
                 if (newFile && !oldFile) {
                     // Before adding a file
                     // 添加文件前
-
+                    window.Laravel.filedata.push(newFile.name)
+                    //window.Laravel.filedata = newFile.name;
                     // Filter system files or hide files
                     // 过滤系统文件 和隐藏文件
                     if (/(\/|^)(Thumbs\.db|desktop\.ini|\..+)$/.test(newFile.name)) {
@@ -530,7 +532,6 @@
             inputFile(newFile, oldFile) {
                 if (newFile && oldFile) {
                     // update
-
                     if (newFile.active && !oldFile.active) {
                         // beforeSend
 
@@ -609,7 +610,7 @@
             },
 
             // add folader
-            onAddFoalder() {
+            onAddFolder() {
                 if (!this.$refs.upload.features.directory) {
                     this.alert('Your browser does not support')
                     return

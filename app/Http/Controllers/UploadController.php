@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UploadRequest;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use DB;
+use Illuminate\Http\Request;
 use App\Custom\LaudatioUtilsInterface;
+use App\Laudatio\GitLaB\GitFunction;
 use Log;
 
 class UploadController extends Controller
@@ -61,7 +63,6 @@ class UploadController extends Controller
 
         foreach ($request->formats as $format) {
             $fileName = $format->getClientOriginalName();
-
             $filePath = $dirPath.'/'.$fileName;
             $exists = $this->flysystem->has($filePath);
             if(!$exists){
@@ -103,45 +104,21 @@ class UploadController extends Controller
         return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
     }
 
-    public function uploadSubmitFiles(UploadRequest $request)
+    public function uploadSubmitFiles(Request $request)
     {
         $updated = false;
         $dirPath = $request->directorypath;;
         $corpusId = $request->corpusid;
+        $fileData = $request->filedata;
         $file = $request->file;
         $fileName = $file->getClientOriginalName();
+        $paths = explode(",",$fileData);
 
-        //Log::info("DIRP: ".print_r($dirPath,1));
-        //Log::info("corpusId: ".print_r($corpusId,1));
-        //Log::info("filename: ".print_r($fileName,1));
+        $directoryPath = $this->laudatioUtilsService->getDirectoryPath($paths,$fileName);
 
-        $filePath = $dirPath.'/'.$fileName;
-
-        if(is_dir($filePath)){
-            //Log::info("WE HAVe A DIRECTORY: ".print_r($filePath,1));
-
-        }
-        else{
-            //Log::info("filePath: ".print_r($filePath,1));
-            $exists = $this->flysystem->has($filePath);
-            if(!$exists){
-                $stream = fopen($file->getRealPath(), 'r+');
-                $this->flysystem->writeStream($filePath, $stream);
-            }
-            else{
-                $stream = fopen($file->getRealPath(), 'r+');
-                $this->flysystem->updateStream($filePath, $stream);
-                $updated = true;
-            }
-        }
-
-
-
-        if (is_resource($stream)) {
-            fclose($stream);
-        }
-
-
+        $gitFunction = new GitFunction();
+        $createdPaths = $gitFunction->writeFiles($dirPath,$paths, $this->flysystem,$file->getRealPath(),$directoryPath);
+        //Log::info("createdPaths is called: ".print_r($createdPaths,1));
         return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
     }
 }

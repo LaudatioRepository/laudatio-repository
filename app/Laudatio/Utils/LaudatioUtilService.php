@@ -469,4 +469,15 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         }
         return $object;
     }
+
+    public function getDirectoryPath($paths,$fileName){
+        $directoryPath = "";
+        foreach ($paths as $path) {
+            if (strpos($path,$fileName) !== false){
+                $directoryPath = $path;
+                break;
+            }
+        }
+        return $directoryPath;
+    }
 }
