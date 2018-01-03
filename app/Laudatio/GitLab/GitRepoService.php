@@ -34,6 +34,7 @@ class GitRepoService implements GitRepoInterface
         return $path;
     }
 
+
     public function createCorpusFileStructure($flysystem,$corpusProjectPath,$corpusName){
         $corpusPath = $this->normalizeString($corpusName);
         $dirPath = $corpusProjectPath.'/'.$corpusPath;

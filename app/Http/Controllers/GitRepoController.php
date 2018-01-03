@@ -184,7 +184,36 @@ class GitRepoController extends Controller
 
         return Response::json($response);
 
+    }
 
+    /**
+     * @param Request $request
+     * API Method
+     */
+    public function createFormatFolder(Request $request){
+        $input =$request ->all();
+        $msg = "";
+        if ($request->ajax()){
+            $msg .= "<p>Created the following format folder:  </p>";
+            $formatName = $input['formatName'];
+            $path = $input['path'];
+            $gitFunction = new GitFunction();
+            $created = $gitFunction->makeDirectory($path,$formatName);
+            Log::info("GOT BACK FROM CREATEDIR: ".print_r($created,1));
+            $msg .= "<ul>";
+            if($created){
+                $msg .= "<li>".$created."</li>";
+            }
+            $msg .= "</ul>";
+        }
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $msg,
+        );
+
+
+        return Response::json($response);
     }
 
     /**

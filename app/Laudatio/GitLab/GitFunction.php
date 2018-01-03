@@ -396,7 +396,6 @@ class GitFunction
     }
 
     public function makeDirectory($path,$directory){
-        //Log::info("makeDirectory: ".$path."/".$directory);
         $createdDirectoryPath = "";
         $makeDirectoryProcess = new Process("mkdir $directory",$this->basePath."/".$path);
         $makeDirectoryProcess->run();

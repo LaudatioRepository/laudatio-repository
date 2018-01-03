@@ -76,15 +76,18 @@
                             @endforeach
                             </tbody>
                             <tr>
-                                <td><a href="#" id="deleteCheckedButton"><span class="btn btn-sm btn-danger fa fa-trash"></span></a>
-                                <td colspan="6">&nbsp;</td>
+                                <td><a href="#" id="deleteCheckedButton"><span class="btn btn-sm btn-danger fa fa-trash"></span></a></td>
+                                <td colspan="6"></td>
+                            </tr>
                         </table>
                     </form>
                 </div>
             </div>
         </div>
     @endif
-
+        @if($folderName == "CORPUS-DATA")
+            <span class="btn btn-sm btn-primary fa fa-file-code-o" data-toggle="modal" data-target="#myModal"> Add new format</span>
+        @endif
         <span class="pull-right"><a href="{{route('gitRepo.uploadFiles.get',array('dirname' => $path)) }}" ><i class="fa fa-upload fa-3x" aria-hidden="true"></i></a></span>
 
 </div>
