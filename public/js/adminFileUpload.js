@@ -34265,6 +34265,9 @@ var util = __webpack_require__(14);
                 this.addData.type = '';
                 this.addData.content = '';
             }
+        },
+        'uploaded': function uploaded(value) {
+            alert("§: " + value);
         }
     },
 

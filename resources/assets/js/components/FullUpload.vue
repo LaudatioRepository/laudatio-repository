@@ -417,7 +417,7 @@
                     '_csrf_token': window.Laravel.csrfToken,
                     'directorypath': window.Laravel.directorypath,
                     'corpusid': window.Laravel.corpusid,
-                    'filedata':  window.Laravel.filedata
+                    'filedata':  window.Laravel.filedata,
                 },
 
                 autoCompress: 1024 * 1024,
@@ -468,6 +468,10 @@
                     this.addData.content = ''
                 }
             },
+
+            'uploaded' (value){
+                alert("§: "+value)
+            }
         },
 
         methods: {

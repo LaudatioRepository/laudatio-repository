@@ -154,6 +154,18 @@ class GitRepoController extends Controller
         return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
     }
 
+    public function deleteUntrackedFile($path){
+        $directoryPath = substr($path,0,strrpos($path,"/"));
+        $dirArray = explode("/",$directoryPath);
+        $corpusPath = $dirArray[1];
+        $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
+        $result = $this->GitRepoService->deleteUntrackedFile($this->flysystem,$path);
+        if($result) {
+            session()->flash('message', $path.' was sucessfully deleted!');
+        }
+        return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
+    }
+
     /**
      * @param Request $request
      * API method
@@ -262,6 +274,10 @@ class GitRepoController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function commitFiles($dirname = "", $commitmessage, $corpusid){
+        $isHeader = false;
+        if(strpos($dirname,'TEI-HEADER') !== false){
+            $isHeader = true;
+        }
         $gitFunction = new  GitFunction();
         $patharray = explode("/",$dirname);
         end($patharray);
@@ -275,29 +291,38 @@ class GitRepoController extends Controller
         if(is_dir($this->basePath.'/'.$dirname)){
             $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$corpusid);
             if($isCommited){
-                $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id]);
+                if($isHeader){
+                    $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id]);
+                    $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id]);
+                }
+
                 $returnPath = $dirname;
-                $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id]);
             }
         }
         else{
 
             $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$corpusid);
             if($isCommited){
-                $this->laudatioUtils->setVersionMapping($fileName,$patharray[($last_id-1)]);
+                if($isHeader){
+                    $this->laudatioUtils->setVersionMapping($fileName,$patharray[($last_id-1)]);
+                    $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[($last_id-1)]);
+                }
+
                 $returnPath = $pathWithOutAddedFolder;
-                $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[($last_id-1)]);
             }
         }
 
         $commitdata = $this->GitRepoService->getCommitData($pathWithOutAddedFolder);
 
-        if($object[0]->file_name == $fileName){
-            $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
-            $object[0]->gitlab_commit_date = $commitdata['date'];
-            $object[0]->gitlab_commit_description = $commitdata['message'];
-            $object[0]->save();
+        if($isHeader){
+            if($object[0]->file_name == $fileName){
+                $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
+                $object[0]->gitlab_commit_date = $commitdata['date'];
+                $object[0]->gitlab_commit_description = $commitdata['message'];
+                $object[0]->save();
+            }
         }
+
 
         return redirect()->route('admin.corpora.show',['path' => $returnPath,'corpus' => $corpusid]);
     }

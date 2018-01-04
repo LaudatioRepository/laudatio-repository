@@ -739,6 +739,7 @@
                 } else {
                     return this.uploadHtml4(file)
                 }
+
             },
 
             uploadPut(file) {

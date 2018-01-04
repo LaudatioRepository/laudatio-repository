@@ -172,6 +172,16 @@ class GitRepoService implements GitRepoInterface
         return $result;
     }
 
+    public function deleteUntrackedFile($flysystem,$path){
+
+        $result = null;
+        if($flysystem->has($path)){
+            $gitFunction = new  GitFunction();
+            $result = $gitFunction->deleteUntrackedFiles($path);
+        }
+        return $result;
+    }
+
 
     public function addFilesToRepository($path,$file){
         $gitFunction = new  GitFunction();

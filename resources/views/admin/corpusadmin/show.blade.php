@@ -158,7 +158,7 @@
             postData.token = token;
             postData.formatName = $("#format_name").val()
             postData.path = path;
-    
+
             $.ajax({
                 url: '/api/adminapi/createFormat',
                 type:"POST",
