@@ -66,7 +66,7 @@ class CorpusController extends Controller
     public function store(Request $request)
     {
         $this->validate(request(), [
-            'corpus_name' => 'required',
+            //'corpus_name' => 'required',
             'corpus_description' => 'required',
             'corpusProjectId' => 'required'
         ]);
@@ -80,11 +80,21 @@ class CorpusController extends Controller
         if(request('corpus_name')){
             $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,request('corpus_name'));
         }
+        else{
+            $corpusPath = "Untitled".$corpusProjectId;
+        }
 
         if($corpusPath){
-
+            $corpus = Corpus::create([
+                "name" => "Untitled",
+                "description" => request('corpus_description'),
+                'directory_path' => $corpusPath
+            ]);
+            $corpus->corpusprojects()->attach($corpusProject);
+            /*
             $gitLabResponse = $this->GitLabService->createGitLabProject(
-                request('corpus_name'),
+                //request('corpus_name'),
+                "Untitled",
                 array(
                     'namespace_id' => $corpusProjectId,
                     'description' => request('corpus_description'),
@@ -105,6 +115,7 @@ class CorpusController extends Controller
             ]);
 
             $corpus->corpusprojects()->attach($corpusProject);
+            */
         }
 
         return redirect()->route('admin.corpora.index');
@@ -203,7 +214,8 @@ class CorpusController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-
+        Log::info(print_r($corpus,1));
+        //dd($corpus);
         return view('admin.corpusadmin.delete', compact('corpus'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);

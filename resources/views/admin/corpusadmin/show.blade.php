@@ -7,7 +7,7 @@
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <button type="button" class="btn btn-danger btn-circle btn-xl pull-right">
-                            <a href="/admin/corpora/{{$corpus->id}}/delete"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></a>
+                            <a href="{{ route('admin.corpora.delete', array('corpus' => $corpus->id)) }}"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></a>
                         </button>
 
                         <button type="button" class="btn btn-primary btn-circle btn-xl pull-right">
