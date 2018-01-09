@@ -170,7 +170,7 @@ class CorpusController extends Controller
         }
 
 
-        return view("admin.corpusadmin.show",["corpus" => $corpus, "hasdir" => $fileData["hasdir"], "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
+        return view("admin.corpusadmin.show",["corpus" => $corpus, "corpusproject_directory_path" => $corpusProject_directory_path, "hasdir" => $fileData["hasdir"], "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user_roles',$user_roles)
             ->with('user',$user);
@@ -214,13 +214,15 @@ class CorpusController extends Controller
      * @param Corpus $corpus
      * @return $this
      */
-    public function delete(Corpus $corpus)
+    public function delete(Corpus $corpus, $corpusproject_directory_path)
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-        Log::info(print_r($corpus,1));
-        //dd($corpus);
+
+        $corpusProject = CorpusProject::where('directory_path', '=', $corpusproject_directory_path)->get();
+
         return view('admin.corpusadmin.delete', compact('corpus'))
+            ->with('projectId', $corpusProject[0]->id)
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -231,7 +233,7 @@ class CorpusController extends Controller
      * @param Corpus $corpus
      * @return $this
      */
-    public function destroy(Request $request, Corpus $corpus)
+    public function destroy(Request $request, Corpus $corpus, $projectId)
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
@@ -250,6 +252,12 @@ class CorpusController extends Controller
         $this->GitLabService->deleteGitLabProject($gitLabProjectId);
 
         $corpus->delete();
+
+        $corpusProject = CorpusProject::find($projectId);
+        $corpusPath = $corpusProject->directory_path.'/'.$corpus->directory_path;
+        Log::info("DEL: Copruspath: ".$corpusPath);
+        $this->GitRepoService->deleteCorpusFileStructure($this->flysystem,$corpusPath);
+
         $corpora = Corpus::latest()->get();
 
         return view('admin.corpusadmin.index', compact('corpora'))

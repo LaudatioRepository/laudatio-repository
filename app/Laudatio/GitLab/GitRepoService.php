@@ -14,6 +14,9 @@ use App\Laudatio\Utils\LaudatioUtilService;
 use Illuminate\Http\Request;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use Carbon\Carbon;
+use Log;
+use App\Corpus;
+use App\CorpusProject;
 
 class GitRepoService implements GitRepoInterface
 {
@@ -59,6 +62,25 @@ class GitRepoService implements GitRepoInterface
         }
 
         return $corpusPath;
+    }
+
+    /**
+     * Delete a corpus file structure on the disk
+     * @param $flysystem
+     * @param $path
+     * @return bool|null
+     */
+    public function deleteCorpusFileStructure($flysystem, $path){
+        $deleted = false;
+        $trackedResult = $this->deleteFile($flysystem,$path);
+        Log::info("trackedResult: ".print_r($trackedResult,1));
+        if(!$trackedResult){
+            $deleted = $this->deleteUntrackedFile($flysystem,$path);
+        }
+        else{
+            $deleted = $trackedResult;
+        }
+        return $deleted;
     }
 
     public function getCorpusFiles($flysystem,$path = ""){

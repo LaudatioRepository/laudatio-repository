@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="content">
-        <form action="/admin/corpora/{{$corpus->id}}" method="post">
+        <form action="/admin/corpora/{{$corpus->id}}/{{$projectId}}" method="post">
             {{ csrf_field() }}
             {{ method_field('DELETE') }}
             <div class="col-lg-12">

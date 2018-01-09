@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 interface GitRepoInterface {
     public function createProjectFileStructure($flysystem,$projectName);
     public function createCorpusFileStructure($flysystem,$corpusProjectPath,$corpusName);
+    public function deleteCorpusFileStructure($flysystem, $path);
     public function getCorpusFiles($flysystem,$path = "");
     public function addFilesToRepository($path,$file);
     public function deleteFile($flysystem, $path);
