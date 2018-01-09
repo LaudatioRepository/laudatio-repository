@@ -87,16 +87,21 @@
                                 </span>
                             </div>
                             <div class="tab-pane  in active" id="headers">
-                                <a href="/admin/corpora/{{$corpus->id}}/{{$previouspath}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
-                                <h4>{{$folderName}}</h4>
-                                <br />
-                                @if($folderName == "TEI-HEADERS")
-                                    @include('admin.corpusadmin.projectList')
-                                @elseif(strpos($path,"CORPUS-DATA") !== false)
-                                    @include('admin.corpusadmin.fileList')
+                                @if ($hasdir == false && strpos($path,"Untitled") !== false)
+                                    <a href="{{route('gitRepo.upload.get',array('dirname' => $path)) }}" style="display: block; margin-top: 20px"><button type="button" class="btn btn-primary btn-lg center-block">Upload a Corpus Header <i class="fa fa-upload fa-3x" aria-hidden="true"></i></button></a>
                                 @else
-                                    @include('admin.corpusadmin.projectList')
+                                    <a href="/admin/corpora/{{$corpus->id}}/{{$previouspath}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
+                                    <h4>{{$folderName}}</h4>
+                                    <br />
+                                    @if($folderName == "TEI-HEADERS")
+                                        @include('admin.corpusadmin.projectList')
+                                    @elseif(strpos($path,"CORPUS-DATA") !== false)
+                                        @include('admin.corpusadmin.fileList')
+                                    @else
+                                        @include('admin.corpusadmin.projectList')
+                                    @endif
                                 @endif
+
                             </div>
                             <div class="tab-pane fade" id="publications">
                                 <h4>Publications</h4>

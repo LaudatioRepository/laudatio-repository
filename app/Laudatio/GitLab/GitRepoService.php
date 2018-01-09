@@ -252,6 +252,7 @@ class GitRepoService implements GitRepoInterface
         $str = str_replace(' ', '-', $str);
         $str = rawurlencode($str);
         $str = str_replace('%', '-', $str);
+        $str = str_replace('.', '-', $str);
         return $str;
     }
 

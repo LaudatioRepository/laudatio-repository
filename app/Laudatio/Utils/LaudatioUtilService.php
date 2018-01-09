@@ -117,11 +117,10 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     /**
      * Populate Corpus  object with attributes from the Corpus Header
      * @param $json
-     * @param $corpusId
-     * @param $fileName
+     * @param $params
      * @return mixed|static
      */
-    public function setCorpusAttributes($json,$corpusId,$fileName){
+    public function setCorpusAttributes($json,$params){
         $jsonPath = new JSONPath($json,JSONPath::ALLOW_MAGIC);
 
         $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
@@ -129,14 +128,18 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $corpusSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
         $corpusSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text')->data();
 
-        $corpus = Corpus::find($corpusId);
+        $corpus = Corpus::find($params['corpusId']);
         $corpus->update([
             "name" => $corpusTitle[0],
             "description" => $corpusDesc[0],
             "corpus_size_type" => $corpusSizeType[0],
             "corpus_size_value" => $corpusSizeValue[0],
-            "file_name" => $fileName
-
+            'gitlab_group_id' => $params['gitlab_group_id'],
+            'directory_path' => $params['corpus_path'],
+            'gitlab_id' => $params['gitlab_id'],
+            'gitlab_web_url' => $params['gitlab_web_url'],
+            'gitlab_namespace_path' => $params['gitlab_name_with_namespace'],
+            "file_name" => $params['fileName']
         ]);
 
         return $corpus;

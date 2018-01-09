@@ -77,13 +77,15 @@ class CorpusController extends Controller
         $corpusProjectPath = $corpusProject->directory_path;
         $corpusProjectId = $corpusProject->gitlab_id;
         $corpusPath = null;
+        /**
         if(request('corpus_name')){
             $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,request('corpus_name'));
         }
         else{
-            $corpusPath = "Untitled".$corpusProjectId;
-        }
 
+        }
+         * */
+        $corpusPath = "Untitled".$corpusProjectId;
         if($corpusPath){
             $corpus = Corpus::create([
                 "name" => "Untitled",
@@ -149,22 +151,24 @@ class CorpusController extends Controller
             $corpusPath = $path;
         }
 
-        //$corpusPath = substr($corpusPath,0,strrpos($corpusPath,"/"));
+        $fileData = array();
+        $folder = "";
+        if(strpos("Untitled",$corpusPath) === false){
+            $fileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
+            $folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
+            //dd($fileData);
+            $user_roles = array();
+            $corpusUsers = $corpus->users()->get();
+            foreach ($corpusUsers as $corpusUser){
+                if(!isset($user_roles[$corpusUser->id])){
+                    $user_roles[$corpusUser->id] = array();
+                }
 
-
-        $fileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
-        $folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
-        //dd($fileData);
-        $user_roles = array();
-        $corpusUsers = $corpus->users()->get();
-        foreach ($corpusUsers as $corpusUser){
-            if(!isset($user_roles[$corpusUser->id])){
-                $user_roles[$corpusUser->id] = array();
+                $role = Role::find($corpusUser->pivot->role_id);
+                array_push($user_roles[$corpusUser->id],$role->name);
             }
-
-            $role = Role::find($corpusUser->pivot->role_id);
-            array_push($user_roles[$corpusUser->id],$role->name);
         }
+
 
         return view("admin.corpusadmin.show",["corpus" => $corpus, "hasdir" => $fileData["hasdir"], "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
             ->with('isLoggedIn', $isLoggedIn)
