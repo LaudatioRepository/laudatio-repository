@@ -152,7 +152,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $fileName
      * @return Document
      */
-    public function setDocumentAttributes($json,$corpusId,$fileName){
+    public function setDocumentAttributes($json,$corpusId,$fileName,$isDir){
         $jsonPath = new JSONPath($json);
         $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
         if(!$documentTitle){
@@ -167,7 +167,8 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $encodingDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc.schemaSpec.elementSpec[*]')->data();
 
         $document = null;
-        $documentObject = $this->getModelByFileName($fileName,'document');
+        $documentObject = $this->getModelByFileName($fileName,'document',$isDir);
+        $corpus = Corpus::find($corpusId);
         if(count($documentObject) > 0){
             $document = $documentObject[0];
             $document->title = $documentTitle[0];
@@ -185,6 +186,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $document->document_size_type = $documentSizeType[0];
             $document->document_size_value = $documentSizeValue[0];
             $document->corpus_id = $corpusId;
+            $document->directory_path = $corpus->directory_path;
             $document->file_name = $fileName;
             $document->save();
         }
@@ -218,6 +220,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                     $annotationObject = new Annotation;
                     $annotationObject->annotation_id = $annotationValue;
                     $annotationObject->corpus_id = $corpusId;
+                    $annotationObject->directory_path = $corpus->directory_path;
                     $annotationObject->annotation_group = $annotationGroup[0];
                     $annotationObject->save();
                     DB::table('annotation_documents')->insert(
@@ -249,7 +252,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $fileName
      * @return Annotation|mixed
      */
-    public function setAnnotationAttributes($json,$corpusId,$fileName){
+    public function setAnnotationAttributes($json,$corpusId,$fileName,$isDir){
         $jsonPath = new JSONPath($json);
 
         $annotationId = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.corresp')->data();
@@ -290,7 +293,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         }
     }
 
-    public function setPreparationAttributes($json,$annotationId,$corpusId){
+    public function setPreparationAttributes($json,$annotationId,$corpusId,$isDir){
         $jsonPath = new JSONPath($json);
 
         $preparationFromDB = Preparation::where([
@@ -393,39 +396,51 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $fileName
      * @param $type
      */
-    public function setVersionMapping($fileName,$type){
-        $object = $this->getModelByFileName($fileName,$type);
-
-        if(null != $object[0]->vid){
-            $object[0]->vid++;
+    public function setVersionMapping($fileName,$type, $isDir){
+        $object = null;
+        if($isDir){
+            Log::info("setVersionMapping: is dir: ".$fileName);
+            $object = $this->getModelByFileName($fileName,$type,$isDir);
         }
         else{
-            $object[0]->vid = 1;
+            Log::info("setVersionMapping: is NOT dir: ".$fileName);
+            $object = $this->getModelByFileName($fileName,$type, $isDir);
         }
 
+        if(count($object) > 0){
+            Log::info("filename: ".$fileName." TYPE: ".$type." OBJECT: ".print_r($object,1));
+            if(null != $object[0]->vid){
+                $object[0]->vid++;
+            }
+            else{
+                $object[0]->vid = 1;
+            }
 
-        $object[0]->save();
-        
-        $id_vid = DB::table('versions')->select('id', 'vid')->where([
-                ['id','=',$object[0]->id],
-                ['type','=',$type],
-        ]
-        )->get();
 
-        if(count($id_vid) > 0){
-            DB::table('versions')->where('id',$object[0]->id)->update(
-                ['vid' => $object[0]->vid]
-            );
-        }
-        else{
-            DB::table('versions')->insert(
-                [
-                    'id' => $object[0]->id,
-                    'vid' => $object[0]->vid,
-                    'type' => $type
+            $object[0]->save();
+
+            $id_vid = DB::table('versions')->select('id', 'vid')->where([
+                    ['id','=',$object[0]->id],
+                    ['type','=',$type],
                 ]
-            );
+            )->get();
+
+            if(count($id_vid) > 0){
+                DB::table('versions')->where('id',$object[0]->id)->update(
+                    ['vid' => $object[0]->vid]
+                );
+            }
+            else{
+                DB::table('versions')->insert(
+                    [
+                        'id' => $object[0]->id,
+                        'vid' => $object[0]->vid,
+                        'type' => $type
+                    ]
+                );
+            }
         }
+
     }
 
     public function getModelByType($id,$type){
@@ -451,23 +466,47 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @return mixed
      * @todo: This is very brittle, we need some kind of GUID
      */
-    public function getModelByFileName($fileName, $type){
+    public function getModelByFileName($fileName, $type, $isDir){
         $object = null;
         switch ($type){
             case 'corpus':
-                $object = Corpus::where([
-                    ['file_name', '=',$fileName]
-                ])->get();
+                if($isDir){
+                    $object = Corpus::where([
+                        ['directory_path', '=',$fileName]
+                    ])->get();
+                    Log::info("getModelByFileName: is dir: ".$fileName." OBJECT: ".print_r($object, 1));
+                }
+                else{
+                    $object = Corpus::where([
+                        ['file_name', '=',$fileName]
+                    ])->get();
+                }
                 break;
             case 'document':
-                $object = Document::where([
-                    ['file_name', '=',$fileName]
-                ])->get();
+                if($isDir){
+                    $object = Document::where([
+                        ['directory_path', '=',$fileName]
+                    ])->get();
+                }
+                else{
+                    $object = Document::where([
+                        ['file_name', '=',$fileName]
+                    ])->get();
+                }
+
                 break;
             case 'annotation':
-                $object = Annotation::where([
-                    ['file_name', '=',$fileName]
-                ])->get();
+                if($isDir){
+                    $object = Annotation::where([
+                        ['directory_path', '=',$fileName]
+                    ])->get();
+                }
+                else{
+                    $object = Annotation::where([
+                        ['file_name', '=',$fileName]
+                    ])->get();
+                }
+
                 break;
         }
         return $object;

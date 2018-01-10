@@ -112,7 +112,7 @@ class GitRepoService implements GitRepoInterface
                 $projects[$i]['tracked'] = "false";
             }
 
-            $headerObject = $laudatioUtilService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id]);
+            $headerObject = $laudatioUtilService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id],false);
             if(count($headerObject) > 0){
                 $projects[$i]['headerObject'] = $headerObject[0];
             }

@@ -185,8 +185,7 @@ class GitFunction
     public function addUntracked($pathWithOutAddedFolder, $folder = ""){
         $isAdded = false;
         $status = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
-        Log::info("pathWithOutAddedFolder: ".print_r($pathWithOutAddedFolder,1));
-        Log::info("folder: ".print_r($folder,1));
+
         if($folder == ""){
             if($this->isUntracked($status)){
                 $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder);
@@ -197,7 +196,6 @@ class GitFunction
             }
         }
         else {
-            Log::info("NOT TRACKED ".$this->basePath."/".$pathWithOutAddedFolder);
             if(!$this->isTracked($this->basePath."/".$pathWithOutAddedFolder."/".$folder)){
 
                 if (is_dir($folder)) {
@@ -514,7 +512,6 @@ class GitFunction
     }
 
     public function getCommitData($path){
-        Log::info("pathWithOutAddedFolder: ".print_r($path,1));
         $process = new Process("git show -s",$this->basePath.'/'.$path);
         $process->run();
 
@@ -525,7 +522,7 @@ class GitFunction
         }
         else{
             $processOutput = $process->getOutput();
-            Log::info("processOutput: ".print_r($processOutput,1));
+
             //parse the output
             $stringArray = explode("\n",$processOutput);
 

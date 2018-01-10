@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Corpus;
 use App\CorpusProject;
 use App\Http\Requests\UploadRequest;
 use GrahamCampbell\Flysystem\FlysystemManager;
@@ -77,27 +78,31 @@ class UploadController extends Controller
     {
         $updated = false;
         $dirPath = $request->directorypath;;
+        $dirPathArray = explode("/",$dirPath);
+        Log::info("dirPathArray: ".print_r($dirPathArray,1));
+        end($dirPathArray);
+        $last_id=key($dirPathArray);
+        Log::info("dirPathArray[LAST]: ".print_r($dirPathArray[$last_id],1));
+
         $corpusId = $request->corpusid;
         $isCorpusHeader = $request->isCorpusHeader;
         $corpusProjectPath = $request->corpusProjectPath;
         $corpusProject = DB::table('corpus_projects')->where('directory_path',$corpusProjectPath)->get();
         $corpusProjectId = $corpusProject[0]->gitlab_id;
+        $filePath = "";
 
         foreach ($request->formats as $format) {
 
-
             $fileName = $format->getClientOriginalName();
             $xmlpath = $format->getRealPath();
-
+            $corpus = Corpus::find($corpusId);
             if(!empty($xmlpath)){
-                $dirPathArray = explode("/",$dirPath);
-                end($dirPathArray);
-                $last_id=key($dirPathArray);
                 $xmlNode = simplexml_load_file($xmlpath);
                 $json = $this->laudatioUtilsService->parseXMLToJson($xmlNode, array());
-
                 $jsonPath = new JSONPath($json,JSONPath::ALLOW_MAGIC);
+
                 $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
+
                 if($isCorpusHeader){
                     if($corpusTitle[0]){
 
@@ -110,7 +115,7 @@ class UploadController extends Controller
                             ));
 
                         $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpusTitle[0]);
-                        Log::info("corpusPath".$corpusPath);
+
                         $params = array(
                             'corpusId' => $corpusId,
                             'corpus_path' => $corpusPath,
@@ -122,35 +127,41 @@ class UploadController extends Controller
                         );
 
                         $corpus = $this->laudatioUtilsService->setCorpusAttributes($json,$params);
-                        //Log::info("gitLabResponse: Corpus ".print_r($gitLabResponse,1));
-
                         $filePath = $corpusProjectPath.'/'.$corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
-
-                        $exists = $this->flysystem->has($filePath);
-                       if(!$exists){
-                           $stream = fopen($format->getRealPath(), 'r+');
-                           $this->flysystem->writeStream($filePath, $stream);
-                       }
-                       else{
-                           $stream = fopen($format->getRealPath(), 'r+');
-                           $this->flysystem->updateStream($filePath, $stream);
-                           $updated = true;
-                       }
-
-                       if (is_resource($stream)) {
-                           fclose($stream);
-                       }
-
 
                     }
                 }
+                else if($dirPathArray[$last_id] == 'document'){
+                    $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId,$fileName,false);
+                    $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/document/'.$fileName;
+                }
+                else if($dirPathArray[$last_id] == 'annotation'){
+                    $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId,$fileName,false);
+                    $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/annotation/'.$fileName;
+                    $preparationSteps = $this->laudatioUtilsService->setPreparationAttributes($json,$annotation->id,$corpusId,false);
+                }
             }
-            else if($dirPathArray[$last_id] == 'document'){
-                $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId,$fileName);
+
+            if(!$isCorpusHeader){
+                $filePath = $dirPath."/".$fileName;
             }
-            else if($dirPathArray[$last_id] == 'annotation'){
-                $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId,$fileName);
-                $preparationSteps = $this->laudatioUtilsService->setPreparationAttributes($json,$annotation->id,$corpusId);
+
+            /*
+             * Move the uploaded file to the correct path
+             */
+            $exists = $this->flysystem->has($filePath);
+            if(!$exists){
+                $stream = fopen($format->getRealPath(), 'r+');
+                $this->flysystem->writeStream($filePath, $stream);
+            }
+            else{
+                $stream = fopen($format->getRealPath(), 'r+');
+                $this->flysystem->updateStream($filePath, $stream);
+                $updated = true;
+            }
+
+            if (is_resource($stream)) {
+                fclose($stream);
             }
 
 

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\App; // you probably have this aliased already
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\CreateCorpusRequest;
 use App\Custom\LaudatioUtilsInterface;
+use App\Corpus;
 use DB;
 use Response;
 use Log;
@@ -290,10 +291,14 @@ class GitRepoController extends Controller
 
         if(is_dir($this->basePath.'/'.$dirname)){
             $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$corpusid);
+            $dirArray = explode("/",$dirname);
+            $fileName = $dirArray[1];
             if($isCommited){
                 if($isHeader){
-                    $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id]);
-                    $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id]);
+                    $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id], true);
+                    //Log::info("got object: ".print_r($object,1));
+                    $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id],true);
+                    $fileName = $object[0]->directory_path;
                 }
 
                 $returnPath = $dirname;
@@ -304,8 +309,8 @@ class GitRepoController extends Controller
             $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$corpusid);
             if($isCommited){
                 if($isHeader){
-                    $this->laudatioUtils->setVersionMapping($fileName,$patharray[($last_id-1)]);
-                    $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[($last_id-1)]);
+                    $this->laudatioUtils->setVersionMapping($fileName,$patharray[($last_id-1)],false);
+                    $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[($last_id-1)], false);
                 }
 
                 $returnPath = $pathWithOutAddedFolder;
@@ -315,12 +320,23 @@ class GitRepoController extends Controller
         $commitdata = $this->GitRepoService->getCommitData($pathWithOutAddedFolder);
 
         if($isHeader){
-            if($object[0]->file_name == $fileName){
-                $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
-                $object[0]->gitlab_commit_date = $commitdata['date'];
-                $object[0]->gitlab_commit_description = $commitdata['message'];
-                $object[0]->save();
+            if(is_dir($this->basePath.'/'.$dirname)){
+                if($object[0]->directory_path == $fileName){
+                    $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
+                    $object[0]->gitlab_commit_date = $commitdata['date'];
+                    $object[0]->gitlab_commit_description = $commitdata['message'];
+                    $object[0]->save();
+                }
             }
+            else{
+                if($object[0]->file_name == $fileName){
+                    $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
+                    $object[0]->gitlab_commit_date = $commitdata['date'];
+                    $object[0]->gitlab_commit_description = $commitdata['message'];
+                    $object[0]->save();
+                }
+            }
+
         }
 
 
