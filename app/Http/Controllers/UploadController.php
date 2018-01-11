@@ -79,10 +79,8 @@ class UploadController extends Controller
         $updated = false;
         $dirPath = $request->directorypath;;
         $dirPathArray = explode("/",$dirPath);
-        Log::info("dirPathArray: ".print_r($dirPathArray,1));
         end($dirPathArray);
         $last_id=key($dirPathArray);
-        Log::info("dirPathArray[LAST]: ".print_r($dirPathArray[$last_id],1));
 
         $corpusId = $request->corpusid;
         $isCorpusHeader = $request->isCorpusHeader;
@@ -166,7 +164,7 @@ class UploadController extends Controller
 
 
         }
-        return redirect()->route('admin.corpora.show',['path' => $corpusProjectPath."/".$corpus->directory_path,'corpus' => $corpusId]);
+        return redirect()->route('admin.corpora.show',['path' => $corpusProjectPath."/".$corpus->directory_path.'/TEI-HEADERS','corpus' => $corpusId]);
     }
 
     public function uploadSubmitFiles(Request $request)

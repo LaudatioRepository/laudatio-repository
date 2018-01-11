@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Corpus;
 use App\Document;
 use Illuminate\Http\Request;
 
@@ -80,6 +81,23 @@ class DocumentController extends Controller
      */
     public function destroy(Document $document)
     {
-        //
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+
+        if(count($document->corpus()) > 0) {
+            $document->corpus()->detach();
+        }
+
+        if(count($document->annotations()) > 0) {
+            $document->annotations()->detach();
+        }
+
+        $document->delete();
+
+        $corpora = Corpus::latest()->get();
+
+        return view('admin.corpusadmin.index', compact('corpora'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 }

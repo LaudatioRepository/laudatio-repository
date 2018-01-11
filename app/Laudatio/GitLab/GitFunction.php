@@ -185,10 +185,11 @@ class GitFunction
     public function addUntracked($pathWithOutAddedFolder, $folder = ""){
         $isAdded = false;
         $status = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
-
+        Log::info("addUntracked: ".print_r($status,1));
         if($folder == ""){
             if($this->isUntracked($status)){
                 $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder);
+                Log::info("addUntracked: addResult".print_r($addResult,1));
                 $addStatus = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
                 if($this->isAdded($addStatus)){
                     $isAdded = true;
@@ -249,7 +250,6 @@ class GitFunction
             $processOutput = $process->getOutput();
             if($this->isCommitted($commitmessage,$processOutput)){
                 $isCommitted = true;
-                //$status = $this->getStatus($this->basePath."/".$path);
             }
         }
 
@@ -547,5 +547,22 @@ class GitFunction
 
     public function isDottedFile($file){
         return strpos($file,".") == 0;
+    }
+
+    public function getListOfStagedFiles($path){
+        $listOfFiles = array();
+        $process = new Process("git status --porcelain | sed s/^...//",$path);
+        $process->run();
+
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            $listOfFiles = explode("\n", $processOutput);
+        }
+        return array_filter($listOfFiles);
     }
 }

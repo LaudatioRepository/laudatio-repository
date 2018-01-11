@@ -42,8 +42,8 @@ class Annotation extends Model
      * Documents
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function document(){
-        return $this->belongsTo(Document::class);
+    public function documents(){
+        return $this->belongsToMany(Document::class);
     }
 
     /**

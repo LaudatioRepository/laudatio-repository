@@ -223,20 +223,11 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                     $annotationObject->directory_path = $corpus->directory_path;
                     $annotationObject->annotation_group = $annotationGroup[0];
                     $annotationObject->save();
-                    DB::table('annotation_documents')->insert(
-                        [
-                            'annotation_id' => $annotationObject->id,
-                            'document_id' => $document->id
-                        ]
-                    );
+                    $annotationObject->documents()->attach($document);
                 }
                 else{
-                    DB::table('annotation_documents')->insert(
-                        [
-                            'annotation_id' => $annotationsFromDB[0]->id,
-                            'document_id' => $document->id
-                        ]
-                    );
+                    $annotationObject = $annotationsFromDB[0];
+                    $annotationObject->documents()->attach($document);
                 }//end if
             }//end foreach
 
@@ -308,7 +299,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         else{
 
             $preparationEncodingSteps = $jsonPath->find('$.TEI.teiHeader.encodingDesc[*]')->data();
-            Log::info("preparationEncodingSteps: ".print_r($preparationEncodingSteps,1));
             foreach ($preparationEncodingSteps as $preparationEncodingStep) {
                 $preparation = new Preparation;
                 $preparation->preparation_encoding_step = $preparationEncodingStep['style'];
@@ -399,16 +389,13 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     public function setVersionMapping($fileName,$type, $isDir){
         $object = null;
         if($isDir){
-            Log::info("setVersionMapping: is dir: ".$fileName);
             $object = $this->getModelByFileName($fileName,$type,$isDir);
         }
         else{
-            Log::info("setVersionMapping: is NOT dir: ".$fileName);
             $object = $this->getModelByFileName($fileName,$type, $isDir);
         }
 
         if(count($object) > 0){
-            Log::info("filename: ".$fileName." TYPE: ".$type." OBJECT: ".print_r($object,1));
             if(null != $object[0]->vid){
                 $object[0]->vid++;
             }
@@ -474,7 +461,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                     $object = Corpus::where([
                         ['directory_path', '=',$fileName]
                     ])->get();
-                    Log::info("getModelByFileName: is dir: ".$fileName." OBJECT: ".print_r($object, 1));
                 }
                 else{
                     $object = Corpus::where([

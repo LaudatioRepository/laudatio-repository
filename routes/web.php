@@ -13,8 +13,8 @@ Route::get('/admin', ['as' => 'admin', 'uses' => 'IndexController@admin'])->midd
 
 /** CORPUS PROJECTS  **/
 Route::get('/admin/corpusprojects',[ 'as' => 'admin.corpusProject.index', 'uses' => 'CorpusProjectController@index'])->middleware('auth');
-Route::get('/admin/corpusprojects/create',[ 'as' => 'admin.corpusProject.create.', 'uses' => 'CorpusProjectController@create'])->middleware('auth');
-Route::get('/admin/corpusprojects/{corpusproject}',[ 'as' => 'admin.corpusProject.show.', 'uses' => 'CorpusProjectController@show'])->middleware('auth');
+Route::get('/admin/corpusprojects/create',[ 'as' => 'admin.corpusProject.create', 'uses' => 'CorpusProjectController@create'])->middleware('auth');
+Route::get('/admin/corpusprojects/{corpusproject}',[ 'as' => 'admin.corpusProject.show', 'uses' => 'CorpusProjectController@show'])->middleware('auth');
 Route::post('/admin/corpusprojects',[ 'as' => 'admin.corpusProject.store.', 'uses' => 'CorpusProjectController@store'])->middleware('auth');
 Route::get('/admin/corpusprojects/{corpusproject}/edit',[ 'as' => 'admin.corpusProject.edit', 'uses' => 'CorpusProjectController@edit'])->middleware('auth');
 Route::get('/admin/corpusprojects/{corpusproject}/delete',[ 'as' => 'admin.corpusProject.delete', 'uses' => 'CorpusProjectController@delete'])->middleware('auth');

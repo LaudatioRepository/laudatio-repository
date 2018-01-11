@@ -12,6 +12,8 @@ use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\CreateCorpusRequest;
 use App\Custom\LaudatioUtilsInterface;
 use App\Corpus;
+use App\Document;
+use App\Annotation;
 use DB;
 use Response;
 use Log;
@@ -145,14 +147,95 @@ class GitRepoController extends Controller
 
     public function deleteFile($path){
         $directoryPath = substr($path,0,strrpos($path,"/"));
-        $dirArray = explode("/",$directoryPath);
+        $dirArray = explode("/",$path);
         $corpusPath = $dirArray[1];
-        $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
+
+        $corpusId = 0;
+
+        if($dirArray[3] == 'corpus'){
+            $headerObject = DB::table('corpuses')->where('file_name',$dirArray[4])->get();
+
+            $corpus = Corpus::find($headerObject[0]->id);
+            $corpusId = $corpus->id;
+
+
+            if(count($corpus->documents) > 0){
+
+
+                foreach ($corpus->documents as $document){
+                    $documentPath = $dirArray[0]."/".$dirArray[1]."/".$dirArray[2]."/document/".$document->file_name;
+                    Log::info("documentPath: ".print_r($documentPath,1 ));
+                    $documentResult = $this->GitRepoService->deleteFile($this->flysystem,$documentPath);
+                    $document->annotations()->delete();
+                }
+                $corpus->documents()->delete();
+            }
+            Log::info("annotation: ".print_r($corpus->annotations,1 ));
+            if(count($corpus->annotations) > 0){
+                Log::info("annotation: ".print_r($annotation,1 ));
+                foreach ($corpus->annotations() as $annotation){
+
+                    Log::info("annotationPath: ".print_r($annotationPath,1 ));
+
+                    if($annotation->file_name){
+                        $annotationPath = $dirArray[0]."/".$dirArray[1]."/".$dirArray[2]."/annotation/".$annotation->file_name;
+
+                        $annotationResult = $this->GitRepoService->deleteFile($this->flysystem,$annotationPath);
+                        if(count($annotation->documents()) > 0) {
+                            $annotation->documents()->detach();
+                        }
+
+                        if(count($annotation->preparations) > 0) {
+                            $annotation->preparations()->delete();
+                        }
+
+                    }
+
+                }
+
+                $corpus->annotations()->delete();
+            }
+
+            $corpus->delete();
+           // Log::info("Dingdong: ".print_r($corpus->annotations(),1 ));
+        }
+        else if($dirArray[3] == 'document'){
+            $headerObject = DB::table('documents')->where('file_name',$dirArray[4])->get();
+            $doc = Document::find($headerObject[0]->id);
+            $corpusId = $doc->corpus_id;
+            //dd($doc->annotations());
+            if(count($doc->annotations()) > 0) {
+                $doc->annotations()->detach();
+            }
+
+            $doc->delete();
+        }
+        else if($dirArray[3] == 'annotation'){
+            $headerObject = DB::table('annotations')->where('file_name',$dirArray[4])->get();
+            $anno = Annotation::find($headerObject[0]->id);
+            $corpusId = $anno->corpus_id;
+            if(count($anno->documents()) > 0) {
+                $anno->documents()->detach();
+            }
+            $anno->preparations()->delete();
+            $anno->delete();
+        }
+
         $result = $this->GitRepoService->deleteFile($this->flysystem,$path);
+
+
+
         if($result) {
             session()->flash('message', $path.' was sucessfully deleted!');
         }
-        return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
+        if($dirArray[3] == 'corpus'){
+            $projectObject = DB::table('corpus_projects')->where('directory_path',$dirArray[0])->get();
+            return redirect()->route('admin.corpusProject.show',['corpusproject' => $projectObject[0]->id]);
+        }
+        else{
+            return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpusId]);
+        }
+
     }
 
     public function deleteUntrackedFile($path){
@@ -212,7 +295,7 @@ class GitRepoController extends Controller
             $path = $input['path'];
             $gitFunction = new GitFunction();
             $created = $gitFunction->makeDirectory($path,$formatName);
-            Log::info("GOT BACK FROM CREATEDIR: ".print_r($created,1));
+
             $msg .= "<ul>";
             if($created){
                 $msg .= "<li>".$created."</li>";
@@ -257,7 +340,6 @@ class GitRepoController extends Controller
     public function addFiles($path,$corpus){
         $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
         $file = substr($path,strrpos($path,"/")+1);
-
         $isAdded = $this->GitRepoService->addFilesToRepository($pathWithOutAddedFolder,$file);
         if($isAdded){
             return redirect()->action(
@@ -290,15 +372,31 @@ class GitRepoController extends Controller
         $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
 
         if(is_dir($this->basePath.'/'.$dirname)){
+            $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$dirname);
+
             $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$corpusid);
-            $dirArray = explode("/",$dirname);
-            $fileName = $dirArray[1];
+
             if($isCommited){
                 if($isHeader){
-                    $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id], true);
-                    //Log::info("got object: ".print_r($object,1));
-                    $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id],true);
-                    $fileName = $object[0]->directory_path;
+                    foreach ($stagedFiles as $stagedFile){
+                        //dd($stagedFile);
+                        $dirArray = explode("/",trim($stagedFile));
+                        $fileName = $dirArray[2];
+
+                        if(is_dir($this->basePath.'/'.$dirname.'/'.$fileName)){
+                            $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id], true);
+                            $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id],true);
+                            $fileName = $object[0]->directory_path;
+                        }
+                        else{
+                            $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id], false);
+                            $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id],false);
+                            $fileName = $object[0]->directory_path;
+                        }
+
+
+                    }
+
                 }
 
                 $returnPath = $dirname;

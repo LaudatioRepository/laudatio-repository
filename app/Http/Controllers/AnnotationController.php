@@ -80,6 +80,20 @@ class AnnotationController extends Controller
      */
     public function destroy(Annotation $annotation)
     {
-        //
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+
+
+        if(count($annotation->documents()) > 0) {
+            $annotation->documents()->detach();
+        }
+
+        $annotation->delete();
+
+        $corpora = Corpus::latest()->get();
+
+        return view('admin.corpusadmin.index', compact('corpora'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 }
