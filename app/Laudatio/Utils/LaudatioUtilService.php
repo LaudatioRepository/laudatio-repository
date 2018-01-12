@@ -300,6 +300,20 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         else{
 
             $preparationEncodingSteps = $jsonPath->find('$.TEI.teiHeader.encodingDesc[*]')->data();
+            Log::info("preparationEncodingSteps[0]: ".print_r($preparationEncodingSteps,1 ));
+
+            if(!is_array($preparationEncodingSteps[0])){
+                $preparationEncodingSteps = array(
+                    array(
+                        'n' => $preparationEncodingSteps[0],
+                        'style' => $preparationEncodingSteps[1],
+                        'appInfo' => $preparationEncodingSteps[2],
+                        'editorialDecl' => $preparationEncodingSteps[3],
+                        'projectDesc' => $preparationEncodingSteps[4],
+                    )
+
+                );
+            }
             Log::info("preparationEncodingSteps: ".print_r($preparationEncodingSteps,1 ));
             foreach ($preparationEncodingSteps as $preparationEncodingStep) {
                 $preparation = new Preparation;
@@ -310,8 +324,19 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 $preparation->preparation_encoding_description = $preparationEncodingStep['appInfo']['application']['p'];
                 $preparation->preparation_encoding_annotation_style = $preparationEncodingStep['appInfo']['application']['style'];
                 $preparation->preparation_encoding_segmentation_style = $preparationEncodingStep['editorialDecl']['segmentation']['style'];
-                $preparation->preparation_encoding_segmentation_type = $preparationEncodingStep['editorialDecl']['segmentation']['corresp'];
-                $preparation->preparation_encoding_segmentation_description= $preparationEncodingStep['editorialDecl']['segmentation']['p'];
+                if(isset($preparationEncodingStep['editorialDecl']['segmentation']['corresp'])){
+                    $preparation->preparation_encoding_segmentation_type = $preparationEncodingStep['editorialDecl']['segmentation']['corresp'];
+                }
+                else{
+                    $preparation->preparation_encoding_segmentation_type = "NA";
+                }
+                if(isset($preparationEncodingStep['editorialDecl']['segmentation']['p'])){
+                    $preparation->preparation_encoding_segmentation_description = $preparationEncodingStep['editorialDecl']['segmentation']['p'];
+                }
+                else{
+                    $preparation->preparation_encoding_segmentation_description = "NA";
+                }
+
                 $preparation->annotation_id = $annotationId;
                 $preparation->corpus_id = $corpusId;
                 $preparation->save();

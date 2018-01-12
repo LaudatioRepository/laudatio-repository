@@ -210,7 +210,6 @@ class GitRepoController extends Controller
             $headerObject = DB::table('documents')->where('file_name',$dirArray[4])->get();
             $doc = Document::find($headerObject[0]->id);
             $corpusId = $doc->corpus_id;
-            //dd($doc->annotations());
             if(count($doc->annotations()) > 0) {
                 $doc->annotations()->detach();
             }
@@ -387,6 +386,7 @@ class GitRepoController extends Controller
                 if($isHeader){
                     foreach ($stagedFiles as $stagedFile){
                         //dd($stagedFile);
+                        Log::info("stagedFile: ".print_r($stagedFile,1));
                         $dirArray = explode("/",trim($stagedFile));
                         $fileName = $dirArray[2];
 
@@ -398,6 +398,7 @@ class GitRepoController extends Controller
                         else{
                             $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id], false);
                             $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id],false);
+                            Log::info("object: ".print_r($object,1));
                             $fileName = $object[0]->directory_path;
                         }
 
