@@ -181,7 +181,6 @@ class UploadController extends Controller
 
         $gitFunction = new GitFunction();
         $createdPaths = $gitFunction->writeFiles($dirPath,$paths, $this->flysystem,$file->getRealPath(),$directoryPath);
-        Log::info("RETURNING TO: ".$dirPath." WITH CORPUSID: ".$corpusId);
         return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\App; // you probably have this aliased already
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\CreateCorpusRequest;
 use App\Custom\LaudatioUtilsInterface;
+use App\Custom\GitLabInterface;
 use App\Corpus;
 use App\Document;
 use App\Annotation;
@@ -25,14 +26,17 @@ class GitRepoController extends Controller
     protected $basePath;
     protected $GitRepoService;
     protected $laudatioUtils;
+    protected $GitLabService;
 
-    public function __construct(GitRepoInterface $Gitservice, FlysystemManager $flysystem, LaudatioUtilsInterface $laudatioUtils)
+    public function __construct(GitRepoInterface $Gitservice, FlysystemManager $flysystem, LaudatioUtilsInterface $laudatioUtils,GitLabInterface $GitLabService)
     {
         $this->flysystem = $flysystem;
         $this->connection = $this->flysystem->getDefaultConnection();
         $this->basePath = config('laudatio.basePath');
         $this->GitRepoService = $Gitservice;
         $this->laudatioUtils = $laudatioUtils;
+        $this->GitLabService = $GitLabService;
+
     }
 
     public function listProjects($path = ""){
@@ -164,37 +168,40 @@ class GitRepoController extends Controller
 
                 foreach ($corpus->documents as $document){
                     $documentPath = $dirArray[0]."/".$dirArray[1]."/".$dirArray[2]."/document/".$document->file_name;
-                    Log::info("documentPath: ".print_r($documentPath,1 ));
                     $documentResult = $this->GitRepoService->deleteFile($this->flysystem,$documentPath);
+
+                    if(count($document->annotations) > 0){
+                        foreach ($document->annotations as $annotation){
+                            if($dirArray[4]){
+                                if($annotation->file_name != ""){
+                                    $annotationPath = $dirArray[0]."/".$dirArray[1]."/".$dirArray[2]."/annotation/".$annotation->file_name;
+                                    $annotationResult = $this->GitRepoService->deleteFile($this->flysystem,$annotationPath);
+                                }
+
+                                if(count($annotation->documents()) > 0) {
+                                    $annotation->documents()->detach();
+                                }
+
+                                if(count($annotation->preparations) > 0) {
+                                    $annotation->preparations()->delete();
+                                }
+
+                            }
+
+                        }
+                    }
+
                     $document->annotations()->delete();
                 }
                 $corpus->documents()->delete();
             }
-            Log::info("annotation: ".print_r($corpus->annotations,1 ));
+
             if(count($corpus->annotations) > 0){
-
-                foreach ($corpus->annotations() as $annotation){
-                    Log::info("annotation: ".print_r($annotation,1 ));
-
-
-                    if($dirArray[4]){
-                        $annotationPath = $dirArray[0]."/".$dirArray[1]."/".$dirArray[2]."/annotation/".$dirArray[4];
-                        Log::info("annotationPath: ".print_r($annotationPath,1 ));
-                        $annotationResult = $this->GitRepoService->deleteFile($this->flysystem,$annotationPath);
-                        if(count($annotation->documents()) > 0) {
-                            $annotation->documents()->detach();
-                        }
-
-                        if(count($annotation->preparations) > 0) {
-                            $annotation->preparations()->delete();
-                        }
-
-                    }
-
-                }
-
                 $corpus->annotations()->delete();
             }
+
+            $gitLabProjectId = $corpus->gitlab_id;
+            $this->GitLabService->deleteGitLabProject($gitLabProjectId);
 
             $corpus->delete();
            // Log::info("Dingdong: ".print_r($corpus->annotations(),1 ));

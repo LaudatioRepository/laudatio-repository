@@ -34,7 +34,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $defaults = array(
             'namespaceSeparator' => ':',//you may want this to be something other than a colon
             'attributePrefix' => '',   //to distinguish between attributes and nodes with the same name
-            'alwaysArray' => array('encodingDesc'),   //array of xml tag names which should always become arrays
+            'alwaysArray' => array(),   //array of xml tag names which should always become arrays
             'autoArray' => true,        //only create arrays for tags which appear more than once
             'textContent' => 'text',       //key used for the text content of elements
             'autoText' => true,         //skip textContent key if node has no attributes or child nodes
@@ -195,6 +195,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         /*
          * Populate database with list of annotations, with document_id and corpus_id as compound primary_key
          */
+        Log::info("encodingDesc: ".print_r($encodingDesc,1));
         foreach ($encodingDesc as $annotationJson) {
 
             $annotationPath = new JSONPath($annotationJson,JSONPath::ALLOW_MAGIC);
@@ -299,6 +300,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         else{
 
             $preparationEncodingSteps = $jsonPath->find('$.TEI.teiHeader.encodingDesc[*]')->data();
+            Log::info("preparationEncodingSteps: ".print_r($preparationEncodingSteps,1 ));
             foreach ($preparationEncodingSteps as $preparationEncodingStep) {
                 $preparation = new Preparation;
                 $preparation->preparation_encoding_step = $preparationEncodingStep['style'];
