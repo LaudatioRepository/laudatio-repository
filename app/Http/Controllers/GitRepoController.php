@@ -172,14 +172,14 @@ class GitRepoController extends Controller
             }
             Log::info("annotation: ".print_r($corpus->annotations,1 ));
             if(count($corpus->annotations) > 0){
-                Log::info("annotation: ".print_r($annotation,1 ));
+
                 foreach ($corpus->annotations() as $annotation){
+                    Log::info("annotation: ".print_r($annotation,1 ));
 
-                    Log::info("annotationPath: ".print_r($annotationPath,1 ));
 
-                    if($annotation->file_name){
-                        $annotationPath = $dirArray[0]."/".$dirArray[1]."/".$dirArray[2]."/annotation/".$annotation->file_name;
-
+                    if($dirArray[4]){
+                        $annotationPath = $dirArray[0]."/".$dirArray[1]."/".$dirArray[2]."/annotation/".$dirArray[4];
+                        Log::info("annotationPath: ".print_r($annotationPath,1 ));
                         $annotationResult = $this->GitRepoService->deleteFile($this->flysystem,$annotationPath);
                         if(count($annotation->documents()) > 0) {
                             $annotation->documents()->detach();

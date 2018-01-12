@@ -34,7 +34,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $defaults = array(
             'namespaceSeparator' => ':',//you may want this to be something other than a colon
             'attributePrefix' => '',   //to distinguish between attributes and nodes with the same name
-            'alwaysArray' => array(),   //array of xml tag names which should always become arrays
+            'alwaysArray' => array('encodingDesc'),   //array of xml tag names which should always become arrays
             'autoArray' => true,        //only create arrays for tags which appear more than once
             'textContent' => 'text',       //key used for the text content of elements
             'autoText' => true,         //skip textContent key if node has no attributes or child nodes
@@ -286,7 +286,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     public function setPreparationAttributes($json,$annotationId,$corpusId,$isDir){
         $jsonPath = new JSONPath($json);
-
+        //Log::info("jsonPath: ".print_r($jsonPath,1));
         $preparationFromDB = Preparation::where([
             ['annotation_id', '=', $annotationId],
             ['corpus_id', '=', $corpusId],
