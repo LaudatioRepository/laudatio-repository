@@ -185,8 +185,6 @@ class GitFunction
     public function addUntracked($pathWithOutAddedFolder, $folder = ""){
         $isAdded = false;
         $status = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
-        Log::info("pathWithOutAddedFolder: ".print_r($pathWithOutAddedFolder,1));
-        Log::info("folder: ".print_r($folder,1));
         if($folder == ""){
             if($this->isUntracked($status)){
                 $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder);
@@ -197,7 +195,6 @@ class GitFunction
             }
         }
         else {
-            Log::info("NOT TRACKED ".$this->basePath."/".$pathWithOutAddedFolder);
             if(!$this->isTracked($this->basePath."/".$pathWithOutAddedFolder."/".$folder)){
 
                 if (is_dir($folder)) {
@@ -251,7 +248,6 @@ class GitFunction
             $processOutput = $process->getOutput();
             if($this->isCommitted($commitmessage,$processOutput)){
                 $isCommitted = true;
-                //$status = $this->getStatus($this->basePath."/".$path);
             }
         }
 
@@ -331,10 +327,83 @@ class GitFunction
             }
         }
 
-
-
         return $isCopied;
     }
+
+    /**
+     * @param $dirPath
+     * @param $fileDataArray
+     * @return string
+     */
+    public function writeFiles($dirPath, $fileDataArray,$flySystem,$fileTempPath,$theFilePath){
+
+        foreach($fileDataArray as $fileData) {
+            $pathsArray = explode("/", $fileData);
+            $fileInDirectory = array_pop($pathsArray);
+            $createdDirectoryPath = array();
+            if($this->isDottedFile($fileInDirectory) === false){
+                foreach ($pathsArray as $path) {
+                    $created = "";
+                    if (count($createdDirectoryPath) ==  0) {
+                        $singlePath = $dirPath."/".$path;
+
+                        if(!file_exists($this->basePath."/".$singlePath)){
+                            $created = $this->makeDirectory($dirPath, $path);
+                        }
+                        else{
+                            array_push($createdDirectoryPath,$path);
+                        }
+                    } else {
+                        $combinedPath = $dirPath."/".implode("/", $createdDirectoryPath);
+                        if(!file_exists($this->basePath."/".$combinedPath."/".$path)){
+                            $created = $this->makeDirectory($combinedPath, $path);
+                        }
+                        else{
+                            array_push($createdDirectoryPath,$path);
+                        }
+                    }
+
+
+                    if ($created != "") {
+                        array_push($createdDirectoryPath,$created);
+                    }
+                }
+            }
+        }
+
+        //write file if exists
+        $fileArray = explode("/", $theFilePath);
+        $fileInDirectory = array_pop($fileArray);
+        $savePath = implode("/",$fileArray);
+
+        if(file_exists($this->basePath."/".$dirPath."/".$savePath)){
+            $existingFile = $flySystem->has($dirPath."/".$savePath."/".$fileInDirectory);
+            if(!$existingFile){
+                $stream = fopen($fileTempPath, 'r+');
+                $flySystem->writeStream($dirPath."/".$savePath."/".$fileInDirectory, $stream);
+            }
+            else{
+                $stream = fopen($fileTempPath, 'r+');
+                $flySystem->updateStream($dirPath."/".$savePath."/".$fileInDirectory, $stream);
+            }
+        }
+
+        return $createdDirectoryPath;
+    }
+
+    public function makeDirectory($path,$directory){
+        $createdDirectoryPath = "";
+        $makeDirectoryProcess = new Process("mkdir $directory",$this->basePath."/".$path);
+        $makeDirectoryProcess->run();
+        if (!$makeDirectoryProcess->isSuccessful()) {
+            throw new ProcessFailedException($makeDirectoryProcess);
+        }
+        else{
+            $createdDirectoryPath = $directory;
+        }
+        return $createdDirectoryPath;
+    }
+
 
     public function deleteFiles($path){
 
@@ -398,8 +467,49 @@ class GitFunction
         return $isdeleted;
     }
 
+
+    public function deleteUntrackedFiles($path){
+
+        $isdeleted = false;
+        $isFile = false;
+        $pathWithOutAddedFolder = "";
+        $folder = "";
+        $cwdPath = "";
+
+
+        if(!is_dir($this->basePath.'/'.$path)){
+            $isFile = true;
+        }
+
+        if(strpos($path,"/") !== false){
+            $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
+            $folder = substr($path,strrpos($path,"/")+1);
+            $cwdPath = $this->basePath."/".$pathWithOutAddedFolder;
+        }
+        else{
+            $cwdPath = $this->basePath;
+            $folder = $path;
+        }
+
+        $process = null;
+        $folder = str_replace(" ","\\ ",$folder);
+
+        $process = new Process("rm -rf $folder",$cwdPath);
+        $process->run();
+
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $isdeleted = true;
+        }
+
+        return $isdeleted;
+    }
+
     public function getCommitData($path){
-        Log::info("pathWithOutAddedFolder: ".print_r($path,1));
         $process = new Process("git show -s",$this->basePath.'/'.$path);
         $process->run();
 
@@ -410,7 +520,7 @@ class GitFunction
         }
         else{
             $processOutput = $process->getOutput();
-            Log::info("processOutput: ".print_r($processOutput,1));
+
             //parse the output
             $stringArray = explode("\n",$processOutput);
 
@@ -431,5 +541,26 @@ class GitFunction
 
         }
         return $commitData;
+    }
+
+    public function isDottedFile($file){
+        return strpos($file,".") == 0;
+    }
+
+    public function getListOfStagedFiles($path){
+        $listOfFiles = array();
+        $process = new Process("git status --porcelain | sed s/^...//",$path);
+        $process->run();
+
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            $listOfFiles = explode("\n", $processOutput);
+        }
+        return array_filter($listOfFiles);
     }
 }

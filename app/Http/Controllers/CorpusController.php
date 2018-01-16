@@ -66,7 +66,7 @@ class CorpusController extends Controller
     public function store(Request $request)
     {
         $this->validate(request(), [
-            'corpus_name' => 'required',
+            //'corpus_name' => 'required',
             'corpus_description' => 'required',
             'corpusProjectId' => 'required'
         ]);
@@ -77,14 +77,26 @@ class CorpusController extends Controller
         $corpusProjectPath = $corpusProject->directory_path;
         $corpusProjectId = $corpusProject->gitlab_id;
         $corpusPath = null;
+        /**
         if(request('corpus_name')){
             $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,request('corpus_name'));
         }
+        else{
 
+        }
+         * */
+        $corpusPath = "Untitled".$corpusProjectId;
         if($corpusPath){
-
+            $corpus = Corpus::create([
+                "name" => "Untitled",
+                "description" => request('corpus_description'),
+                'directory_path' => $corpusPath
+            ]);
+            $corpus->corpusprojects()->attach($corpusProject);
+            /*
             $gitLabResponse = $this->GitLabService->createGitLabProject(
-                request('corpus_name'),
+                //request('corpus_name'),
+                "Untitled",
                 array(
                     'namespace_id' => $corpusProjectId,
                     'description' => request('corpus_description'),
@@ -105,6 +117,7 @@ class CorpusController extends Controller
             ]);
 
             $corpus->corpusprojects()->attach($corpusProject);
+            */
         }
 
         return redirect()->route('admin.corpora.index');
@@ -138,24 +151,26 @@ class CorpusController extends Controller
             $corpusPath = $path;
         }
 
-        //$corpusPath = substr($corpusPath,0,strrpos($corpusPath,"/"));
+        $fileData = array();
+        $folder = "";
+        if(strpos("Untitled",$corpusPath) === false){
+            $fileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
+            $folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
+            //dd($fileData);
+            $user_roles = array();
+            $corpusUsers = $corpus->users()->get();
+            foreach ($corpusUsers as $corpusUser){
+                if(!isset($user_roles[$corpusUser->id])){
+                    $user_roles[$corpusUser->id] = array();
+                }
 
-
-        $fileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
-        $folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
-
-        $user_roles = array();
-        $corpusUsers = $corpus->users()->get();
-        foreach ($corpusUsers as $corpusUser){
-            if(!isset($user_roles[$corpusUser->id])){
-                $user_roles[$corpusUser->id] = array();
+                $role = Role::find($corpusUser->pivot->role_id);
+                array_push($user_roles[$corpusUser->id],$role->name);
             }
-
-            $role = Role::find($corpusUser->pivot->role_id);
-            array_push($user_roles[$corpusUser->id],$role->name);
         }
 
-        return view("admin.corpusadmin.show",["corpus" => $corpus, "hasdir" => $fileData["hasdir"], "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
+
+        return view("admin.corpusadmin.show",["corpus" => $corpus, "corpusproject_directory_path" => $corpusProject_directory_path, "hasdir" => $fileData["hasdir"], "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user_roles',$user_roles)
             ->with('user',$user);
@@ -199,12 +214,15 @@ class CorpusController extends Controller
      * @param Corpus $corpus
      * @return $this
      */
-    public function delete(Corpus $corpus)
+    public function delete(Corpus $corpus, $corpusproject_directory_path)
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
 
+        $corpusProject = CorpusProject::where('directory_path', '=', $corpusproject_directory_path)->get();
+
         return view('admin.corpusadmin.delete', compact('corpus'))
+            ->with('projectId', $corpusProject[0]->id)
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -215,7 +233,7 @@ class CorpusController extends Controller
      * @param Corpus $corpus
      * @return $this
      */
-    public function destroy(Request $request, Corpus $corpus)
+    public function destroy(Request $request, Corpus $corpus, $projectId)
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
@@ -234,6 +252,12 @@ class CorpusController extends Controller
         $this->GitLabService->deleteGitLabProject($gitLabProjectId);
 
         $corpus->delete();
+
+        $corpusProject = CorpusProject::find($projectId);
+        $corpusPath = $corpusProject->directory_path.'/'.$corpus->directory_path;
+        Log::info("DEL: Copruspath: ".$corpusPath);
+        $this->GitRepoService->deleteCorpusFileStructure($this->flysystem,$corpusPath);
+
         $corpora = Corpus::latest()->get();
 
         return view('admin.corpusadmin.index', compact('corpora'))

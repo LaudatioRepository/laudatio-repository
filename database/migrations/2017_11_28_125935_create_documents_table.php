@@ -22,6 +22,7 @@ class CreateDocumentsTable extends Migration
             $table->string('document_size_type')->nullable();
             $table->string('document_size_value')->nullable();
             $table->integer('corpus_id')->nullable();
+            $table->string('directory_path')->nullable();
             $table->string('gitlab_commit_sha')->nullable();
             $table->dateTime('gitlab_commit_date')->nullable();
             $table->text('gitlab_commit_description')->nullable();

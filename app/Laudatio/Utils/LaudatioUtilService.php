@@ -117,27 +117,33 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     /**
      * Populate Corpus  object with attributes from the Corpus Header
      * @param $json
-     * @param $corpusId
-     * @param $fileName
+     * @param $params
      * @return mixed|static
      */
-    public function setCorpusAttributes($json,$corpusId,$fileName){
+    public function setCorpusAttributes($json,$params){
         $jsonPath = new JSONPath($json,JSONPath::ALLOW_MAGIC);
 
         $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
         $corpusDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
         $corpusSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
         $corpusSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text')->data();
-
-        $corpus = Corpus::find($corpusId);
+        Log::info("params ".print_r($params,1 ));
+        $corpus = Corpus::find($params['corpusId']);
         $corpus->update([
             "name" => $corpusTitle[0],
             "description" => $corpusDesc[0],
             "corpus_size_type" => $corpusSizeType[0],
             "corpus_size_value" => $corpusSizeValue[0],
-            "file_name" => $fileName
-
+            'gitlab_group_id' => $params['gitlab_group_id'],
+            'directory_path' => $params['corpus_path'],
+            'gitlab_id' => $params['gitlab_id'],
+            'gitlab_web_url' => $params['gitlab_web_url'],
+            'gitlab_namespace_path' => $params['gitlab_name_with_namespace'],
+            "file_name" => $params['fileName']
         ]);
+
+        Log::info("corpus updated ".print_r($corpus,1 ));
+
 
         return $corpus;
     }
@@ -149,7 +155,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $fileName
      * @return Document
      */
-    public function setDocumentAttributes($json,$corpusId,$fileName){
+    public function setDocumentAttributes($json,$corpusId,$fileName,$isDir){
         $jsonPath = new JSONPath($json);
         $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
         if(!$documentTitle){
@@ -164,7 +170,8 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $encodingDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc.schemaSpec.elementSpec[*]')->data();
 
         $document = null;
-        $documentObject = $this->getModelByFileName($fileName,'document');
+        $documentObject = $this->getModelByFileName($fileName,'document',$isDir);
+        $corpus = Corpus::find($corpusId);
         if(count($documentObject) > 0){
             $document = $documentObject[0];
             $document->title = $documentTitle[0];
@@ -182,6 +189,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $document->document_size_type = $documentSizeType[0];
             $document->document_size_value = $documentSizeValue[0];
             $document->corpus_id = $corpusId;
+            $document->directory_path = $corpus->directory_path;
             $document->file_name = $fileName;
             $document->save();
         }
@@ -190,6 +198,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         /*
          * Populate database with list of annotations, with document_id and corpus_id as compound primary_key
          */
+        Log::info("encodingDesc: ".print_r($encodingDesc,1));
         foreach ($encodingDesc as $annotationJson) {
 
             $annotationPath = new JSONPath($annotationJson,JSONPath::ALLOW_MAGIC);
@@ -215,22 +224,14 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                     $annotationObject = new Annotation;
                     $annotationObject->annotation_id = $annotationValue;
                     $annotationObject->corpus_id = $corpusId;
+                    $annotationObject->directory_path = $corpus->directory_path;
                     $annotationObject->annotation_group = $annotationGroup[0];
                     $annotationObject->save();
-                    DB::table('annotation_documents')->insert(
-                        [
-                            'annotation_id' => $annotationObject->id,
-                            'document_id' => $document->id
-                        ]
-                    );
+                    $annotationObject->documents()->attach($document);
                 }
                 else{
-                    DB::table('annotation_documents')->insert(
-                        [
-                            'annotation_id' => $annotationsFromDB[0]->id,
-                            'document_id' => $document->id
-                        ]
-                    );
+                    $annotationObject = $annotationsFromDB[0];
+                    $annotationObject->documents()->attach($document);
                 }//end if
             }//end foreach
 
@@ -246,7 +247,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $fileName
      * @return Annotation|mixed
      */
-    public function setAnnotationAttributes($json,$corpusId,$fileName){
+    public function setAnnotationAttributes($json,$corpusId,$fileName,$isDir){
         $jsonPath = new JSONPath($json);
 
         $annotationId = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.corresp')->data();
@@ -287,9 +288,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         }
     }
 
-    public function setPreparationAttributes($json,$annotationId,$corpusId){
+    public function setPreparationAttributes($json,$annotationId,$corpusId,$isDir){
         $jsonPath = new JSONPath($json);
-
+        //Log::info("jsonPath: ".print_r($jsonPath,1));
         $preparationFromDB = Preparation::where([
             ['annotation_id', '=', $annotationId],
             ['corpus_id', '=', $corpusId],
@@ -302,7 +303,21 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         else{
 
             $preparationEncodingSteps = $jsonPath->find('$.TEI.teiHeader.encodingDesc[*]')->data();
-            Log::info("preparationEncodingSteps: ".print_r($preparationEncodingSteps,1));
+            Log::info("preparationEncodingSteps[0]: ".print_r($preparationEncodingSteps,1 ));
+
+            if(!is_array($preparationEncodingSteps[0])){
+                $preparationEncodingSteps = array(
+                    array(
+                        'n' => $preparationEncodingSteps[0],
+                        'style' => $preparationEncodingSteps[1],
+                        'appInfo' => $preparationEncodingSteps[2],
+                        'editorialDecl' => $preparationEncodingSteps[3],
+                        'projectDesc' => $preparationEncodingSteps[4],
+                    )
+
+                );
+            }
+            Log::info("preparationEncodingSteps: ".print_r($preparationEncodingSteps,1 ));
             foreach ($preparationEncodingSteps as $preparationEncodingStep) {
                 $preparation = new Preparation;
                 $preparation->preparation_encoding_step = $preparationEncodingStep['style'];
@@ -312,8 +327,19 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 $preparation->preparation_encoding_description = $preparationEncodingStep['appInfo']['application']['p'];
                 $preparation->preparation_encoding_annotation_style = $preparationEncodingStep['appInfo']['application']['style'];
                 $preparation->preparation_encoding_segmentation_style = $preparationEncodingStep['editorialDecl']['segmentation']['style'];
-                $preparation->preparation_encoding_segmentation_type = $preparationEncodingStep['editorialDecl']['segmentation']['corresp'];
-                $preparation->preparation_encoding_segmentation_description= $preparationEncodingStep['editorialDecl']['segmentation']['p'];
+                if(isset($preparationEncodingStep['editorialDecl']['segmentation']['corresp'])){
+                    $preparation->preparation_encoding_segmentation_type = $preparationEncodingStep['editorialDecl']['segmentation']['corresp'];
+                }
+                else{
+                    $preparation->preparation_encoding_segmentation_type = "NA";
+                }
+                if(isset($preparationEncodingStep['editorialDecl']['segmentation']['p'])){
+                    $preparation->preparation_encoding_segmentation_description = $preparationEncodingStep['editorialDecl']['segmentation']['p'];
+                }
+                else{
+                    $preparation->preparation_encoding_segmentation_description = "NA";
+                }
+
                 $preparation->annotation_id = $annotationId;
                 $preparation->corpus_id = $corpusId;
                 $preparation->save();
@@ -390,39 +416,48 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $fileName
      * @param $type
      */
-    public function setVersionMapping($fileName,$type){
-        $object = $this->getModelByFileName($fileName,$type);
-
-        if(null != $object[0]->vid){
-            $object[0]->vid++;
+    public function setVersionMapping($fileName,$type, $isDir){
+        $object = null;
+        if($isDir){
+            $object = $this->getModelByFileName($fileName,$type,$isDir);
         }
         else{
-            $object[0]->vid = 1;
+            $object = $this->getModelByFileName($fileName,$type, $isDir);
         }
 
+        if(count($object) > 0){
+            if(null != $object[0]->vid){
+                $object[0]->vid++;
+            }
+            else{
+                $object[0]->vid = 1;
+            }
 
-        $object[0]->save();
-        
-        $id_vid = DB::table('versions')->select('id', 'vid')->where([
-                ['id','=',$object[0]->id],
-                ['type','=',$type],
-        ]
-        )->get();
 
-        if(count($id_vid) > 0){
-            DB::table('versions')->where('id',$object[0]->id)->update(
-                ['vid' => $object[0]->vid]
-            );
-        }
-        else{
-            DB::table('versions')->insert(
-                [
-                    'id' => $object[0]->id,
-                    'vid' => $object[0]->vid,
-                    'type' => $type
+            $object[0]->save();
+
+            $id_vid = DB::table('versions')->select('id', 'vid')->where([
+                    ['id','=',$object[0]->id],
+                    ['type','=',$type],
                 ]
-            );
+            )->get();
+
+            if(count($id_vid) > 0){
+                DB::table('versions')->where('id',$object[0]->id)->update(
+                    ['vid' => $object[0]->vid]
+                );
+            }
+            else{
+                DB::table('versions')->insert(
+                    [
+                        'id' => $object[0]->id,
+                        'vid' => $object[0]->vid,
+                        'type' => $type
+                    ]
+                );
+            }
         }
+
     }
 
     public function getModelByType($id,$type){
@@ -448,25 +483,59 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @return mixed
      * @todo: This is very brittle, we need some kind of GUID
      */
-    public function getModelByFileName($fileName, $type){
+    public function getModelByFileName($fileName, $type, $isDir){
         $object = null;
         switch ($type){
             case 'corpus':
-                $object = Corpus::where([
-                    ['file_name', '=',$fileName]
-                ])->get();
+                if($isDir){
+                    $object = Corpus::where([
+                        ['directory_path', '=',$fileName]
+                    ])->get();
+                }
+                else{
+                    $object = Corpus::where([
+                        ['file_name', '=',$fileName]
+                    ])->get();
+                }
                 break;
             case 'document':
-                $object = Document::where([
-                    ['file_name', '=',$fileName]
-                ])->get();
+                if($isDir){
+                    $object = Document::where([
+                        ['directory_path', '=',$fileName]
+                    ])->get();
+                }
+                else{
+                    $object = Document::where([
+                        ['file_name', '=',$fileName]
+                    ])->get();
+                }
+
                 break;
             case 'annotation':
-                $object = Annotation::where([
-                    ['file_name', '=',$fileName]
-                ])->get();
+                if($isDir){
+                    $object = Annotation::where([
+                        ['directory_path', '=',$fileName]
+                    ])->get();
+                }
+                else{
+                    $object = Annotation::where([
+                        ['file_name', '=',$fileName]
+                    ])->get();
+                }
+
                 break;
         }
         return $object;
+    }
+
+    public function getDirectoryPath($paths,$fileName){
+        $directoryPath = "";
+        foreach ($paths as $path) {
+            if (strpos($path,$fileName) !== false){
+                $directoryPath = $path;
+                break;
+            }
+        }
+        return $directoryPath;
     }
 }

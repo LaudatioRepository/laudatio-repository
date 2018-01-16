@@ -5,10 +5,10 @@
         <h1>Create a new Corpus</h1>
         <form action="/admin/corpora" method="post">
             {{ csrf_field() }}
-            <div class="form-group>">
+            <!--div class="form-group>">
                 <label for="corpus_name">Corpus Name</label>
                 <input type="text" name="corpus_name" id="corpus_name" class="form-control" />
-            </div>
+            </div-->
             <br /><br />
             <div class="form-group>">
                 <label for="corpus_description">Corpus Description</label>

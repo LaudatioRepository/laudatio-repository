@@ -14,6 +14,9 @@ use App\Laudatio\Utils\LaudatioUtilService;
 use Illuminate\Http\Request;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use Carbon\Carbon;
+use Log;
+use App\Corpus;
+use App\CorpusProject;
 
 class GitRepoService implements GitRepoInterface
 {
@@ -33,6 +36,7 @@ class GitRepoService implements GitRepoInterface
 
         return $path;
     }
+
 
     public function createCorpusFileStructure($flysystem,$corpusProjectPath,$corpusName){
         $corpusPath = $this->normalizeString($corpusName);
@@ -58,6 +62,25 @@ class GitRepoService implements GitRepoInterface
         }
 
         return $corpusPath;
+    }
+
+    /**
+     * Delete a corpus file structure on the disk
+     * @param $flysystem
+     * @param $path
+     * @return bool|null
+     */
+    public function deleteCorpusFileStructure($flysystem, $path){
+        $deleted = false;
+        $trackedResult = $this->deleteFile($flysystem,$path);
+        Log::info("trackedResult: ".print_r($trackedResult,1));
+        if(!$trackedResult){
+            $deleted = $this->deleteUntrackedFile($flysystem,$path);
+        }
+        else{
+            $deleted = $trackedResult;
+        }
+        return $deleted;
     }
 
     public function getCorpusFiles($flysystem,$path = ""){
@@ -89,7 +112,7 @@ class GitRepoService implements GitRepoInterface
                 $projects[$i]['tracked'] = "false";
             }
 
-            $headerObject = $laudatioUtilService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id]);
+            $headerObject = $laudatioUtilService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id],false);
             if(count($headerObject) > 0){
                 $projects[$i]['headerObject'] = $headerObject[0];
             }
@@ -149,7 +172,8 @@ class GitRepoService implements GitRepoInterface
     }
 
     function calculateFileSize($size,$accuracy=2) {
-        $units = array('b','Kb','Mb','Gb');
+        $output = 0;
+        $units = array(' Bytes',' KB',' Mb',' Gb');
         foreach($units as $n=>$u) {
             $div = pow(1024,$n);
             if($size > $div) $output = number_format($size/$div,$accuracy).$u;
@@ -166,6 +190,16 @@ class GitRepoService implements GitRepoInterface
             if($isTracked){
                 $result = $gitFunction->deleteFiles($path);
             }
+        }
+        return $result;
+    }
+
+    public function deleteUntrackedFile($flysystem,$path){
+
+        $result = null;
+        if($flysystem->has($path)){
+            $gitFunction = new  GitFunction();
+            $result = $gitFunction->deleteUntrackedFiles($path);
         }
         return $result;
     }
@@ -240,6 +274,7 @@ class GitRepoService implements GitRepoInterface
         $str = str_replace(' ', '-', $str);
         $str = rawurlencode($str);
         $str = str_replace('%', '-', $str);
+        $str = str_replace('.', '-', $str);
         return $str;
     }
 

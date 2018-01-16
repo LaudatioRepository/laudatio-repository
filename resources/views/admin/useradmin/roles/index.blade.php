@@ -38,13 +38,13 @@
                                 </div>
                             @endforeach
                         </div>
+                        <a href="/admin/roles/create"><i class="pull-right fa fa-plus-square fa-2x" aria-hidden="true"></i></a>
                     </div>
                     <!-- .panel-body -->
                 </div>
                 <!-- /.panel -->
             </div>
         </div>
-
 
 
 

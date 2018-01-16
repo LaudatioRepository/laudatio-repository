@@ -27,7 +27,7 @@ class Document extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function annotations(){
-        return $this->hasMany(Annotation::class);
+        return $this->belongsToMany(Annotation::class);
     }
 
     /**

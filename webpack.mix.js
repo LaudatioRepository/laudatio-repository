@@ -14,6 +14,12 @@ const { mix } = require('laravel-mix');
 mix.js('resources/assets/js/app.js', 'public/js')
    .sass('resources/assets/sass/app.scss', 'public/css');
 
+mix.js('node_modules/cropperjs/src/js/cropper.js', 'public/js');
+mix.copy('node_modules/cropperjs/src/css/cropper.css', 'public/css/cropper.css');
+
+mix.js('resources/assets/js/adminFileUpload.js', 'public/js')
+    .sass('resources/assets/sass/adminFileUpload.scss', 'public/css');
+
 mix.js('resources/assets/js/browseapp.js', 'public/js')
     .sass('resources/assets/sass/browseapp.scss', 'public/css');
 
