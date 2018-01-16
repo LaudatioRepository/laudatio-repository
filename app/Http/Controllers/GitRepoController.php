@@ -396,7 +396,9 @@ class GitRepoController extends Controller
                             $fileName = $object[0]->directory_path;
                         }
                         else{
-                            $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id], false);
+                            Log::info("fileName ".$fileName);
+                            Log::info("patharray ".print_r($patharray,1 ));
+                            $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id-1  ], false);
                             $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id],false);
                             Log::info("object: ".print_r($object,1));
                             $fileName = $object[0]->directory_path;

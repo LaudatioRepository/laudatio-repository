@@ -127,7 +127,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $corpusDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
         $corpusSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
         $corpusSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text')->data();
-
+        Log::info("params ".print_r($params,1 ));
         $corpus = Corpus::find($params['corpusId']);
         $corpus->update([
             "name" => $corpusTitle[0],
@@ -141,6 +141,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             'gitlab_namespace_path' => $params['gitlab_name_with_namespace'],
             "file_name" => $params['fileName']
         ]);
+
+        Log::info("corpus updated ".print_r($corpus,1 ));
+
 
         return $corpus;
     }

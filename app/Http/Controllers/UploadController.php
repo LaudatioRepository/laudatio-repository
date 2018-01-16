@@ -163,6 +163,25 @@ class UploadController extends Controller
             }
 
 
+            $commitPath = "";
+            if(!$isCorpusHeader){
+                $commitPath = $dirPath;
+            }
+            else{
+                $commitPath = $corpusProjectPath.'/'.$corpusPath.'/TEI-HEADERS/corpus/';
+            }
+            // Git Add the file(s)
+            \App::call('App\Http\Controllers\GitRepoController@addFiles',[
+                'path' => $commitPath,
+                'corpus' => $corpusId
+            ]);
+
+            //git commit The files
+            \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
+                'dirname' => $commitPath,
+                'commitmessage' => "Adding files for ".$fileName,
+                'corpus' => $corpusId
+            ]);
         }
         return redirect()->route('admin.corpora.show',['path' => $corpusProjectPath."/".$corpus->directory_path.'/TEI-HEADERS','corpus' => $corpusId]);
     }
