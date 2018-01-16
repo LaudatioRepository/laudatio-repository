@@ -168,7 +168,7 @@ class UploadController extends Controller
                 $commitPath = $dirPath;
             }
             else{
-                $commitPath = $corpusProjectPath.'/'.$corpusPath.'/TEI-HEADERS/corpus/';
+                $commitPath = $corpusProjectPath.'/'.$corpusPath.'/TEI-HEADERS/corpus';
             }
             // Git Add the file(s)
             \App::call('App\Http\Controllers\GitRepoController@addFiles',[

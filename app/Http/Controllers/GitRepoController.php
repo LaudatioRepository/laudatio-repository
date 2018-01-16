@@ -385,8 +385,6 @@ class GitRepoController extends Controller
             if($isCommited){
                 if($isHeader){
                     foreach ($stagedFiles as $stagedFile){
-                        //dd($stagedFile);
-                        Log::info("stagedFile: ".print_r($stagedFile,1));
                         $dirArray = explode("/",trim($stagedFile));
                         $fileName = $dirArray[2];
 
@@ -396,11 +394,8 @@ class GitRepoController extends Controller
                             $fileName = $object[0]->directory_path;
                         }
                         else{
-                            Log::info("fileName ".$fileName);
-                            Log::info("patharray ".print_r($patharray,1 ));
-                            $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id-1  ], false);
+                            $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id], false);
                             $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id],false);
-                            Log::info("object: ".print_r($object,1));
                             $fileName = $object[0]->directory_path;
                         }
 
