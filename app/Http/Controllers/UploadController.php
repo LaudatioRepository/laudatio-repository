@@ -52,9 +52,10 @@ class UploadController extends Controller
 
         $corpusProjectPath = "";
         $corpusProjectPivot = DB::table('corpus_corpus_project')->where('corpus_id',$corpus[0]->id)->get();
-
-        $corpusProject = CorpusProject::find($corpusProjectPivot[0]->corpus_project_id);
-        $corpusProjectPath = $corpusProject->directory_path;
+        if(count($corpusProjectPivot) > 0) {
+            $corpusProject = CorpusProject::find($corpusProjectPivot[0]->corpus_project_id);
+            $corpusProjectPath = $corpusProject->directory_path;
+        }
 
         return view('gitLab.uploadform',["dirname" => $dirname,"corpusid" => $corpus[0]->id, "isCorpusHeader" => $isCorpusHeader,"corpusProjectPath" => $corpusProjectPath])
             ->with('isLoggedIn', $isLoggedIn)
