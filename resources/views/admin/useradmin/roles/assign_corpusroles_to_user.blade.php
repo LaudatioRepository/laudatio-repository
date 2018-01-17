@@ -175,6 +175,7 @@
             postData.corpus_id =  $('#corpus_id').val();
             var list_lefts = $('.list-left ul');
             $(list_lefts).each(function () {
+                console.log($(this).data('roleid'));
                 var roleid = $(this).data('roleid');
                 $(this).children('li.list-group-item.active').each(function () {
                     if(typeof postData.role_users[roleid] == 'undefined'){
@@ -184,7 +185,7 @@
                 });
 
             })
-            //console.log(role_users);
+            console.log(postData.role_users);
 
 
             $.ajax({

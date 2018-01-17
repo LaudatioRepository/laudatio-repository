@@ -72,12 +72,12 @@
                                 <div class="panel-group" id="accordion">
                                     @if(count($corpusproject->users) > 0)
                                         <ul class="list-group">
-                                            @foreach($corpusproject->users as $user)
+                                            @foreach($user_roles as $user_id => $userObject)
                                             <li class="list-group-item">
 
-                                                {{ $user->name }}
-                                                @if(count($user_roles[$user->id]) > 0)
-                                                    @foreach($user_roles[$user->id] as $user_role)
+                                                {{ $userObject['user_name'] }}
+                                                @if(count($userObject['roles']) > 0)
+                                                    @foreach($userObject['roles'] as $user_role)
                                                         <span class="badge badge-default">{{$user_role}}</span>
                                                     @endforeach
                                                 @else

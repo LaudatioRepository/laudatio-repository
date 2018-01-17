@@ -328,23 +328,32 @@ class CorpusController extends Controller
         if ($request->ajax()){
             $msg .= "<p>Assigned the following roles to user </p>";
             $role_users = $input['role_users'];
+            Log::info("ROLEUSERS: ".print_r($role_users,1));
             $corpus = Corpus::find($input['corpus_id']);
+            Log::info("CORPUS: ".print_r($corpus->name,1)." ID: ".$corpus->id);
             $msg .= "<ul>";
+
+
             foreach($role_users as $roleId => $user_data) {
                 $role = Role::find($roleId);
                 if($role){
                     $msg .= "<li>".$role->name."<ul>";
+                    Log::info("ROLE: ".print_r($role->name,1)." ID: ".$roleId);
                     foreach($user_data as $userId) {
                         $user = User::find($userId);
+                        Log::info("user: ".print_r($user->name,1)." ID: ".$userId);
+
                         if($user) {
                             $msg .= "<li>".$user->name."</li>";
                             $corpus->users()->save($user,['role_id' => $roleId]);
 
                         }
+
                     }
                     $msg .= "</ul></li>";
                 }
-            }
+            }//end foreach
+
             $msg .= "</ul>";
         }
 

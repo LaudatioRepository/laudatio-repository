@@ -113,12 +113,14 @@ class CorpusProjectController extends Controller
         $corpusProjectUsers = $corpusproject->users()->get();
         foreach ($corpusProjectUsers as $corpusProjectUser){
             if(!isset($user_roles[$corpusProjectUser->id])){
-                $user_roles[$corpusProjectUser->id] = array();
+                $user_roles[$corpusProjectUser->id]['roles'] = array();
             }
+            $user_roles[$corpusProjectUser->id]['user_name'] = $corpusProjectUser->name;
 
             $role = Role::find($corpusProjectUser->pivot->role_id);
-            array_push($user_roles[$corpusProjectUser->id],$role->name);
+            array_push($user_roles[$corpusProjectUser->id]['roles'],$role->name);
         }
+
 
         return view('admin.corpusprojectadmin.show', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
