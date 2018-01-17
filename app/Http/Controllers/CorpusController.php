@@ -204,8 +204,33 @@ class CorpusController extends Controller
             "description" => request('corpus_description')
         ]);
 
-        return view('admin.corpusadmin.show', compact('corpus'))
+        $corpusProjects = $corpus->corpusprojects()->get();
+        $corpusproject = null;
+        $corpusProject_directory_path = '';
+
+        if(count($corpusProjects) == 1) {
+            $corpusproject = $corpusProjects->first();
+            $corpusProject_directory_path = $corpusproject->directory_path;
+        }
+        else{
+            // what to do when we can assign corpora to many projects?
+        }
+
+        $corpusProjectUsers = $corpusProjects->first()->users()->get();
+        foreach ($corpusProjectUsers as $corpusProjectUser){
+            if(!isset($user_roles[$corpusProjectUser->id])){
+                $user_roles[$corpusProjectUser->id]['roles'] = array();
+            }
+            $user_roles[$corpusProjectUser->id]['user_name'] = $corpusProjectUser->name;
+
+            $role = Role::find($corpusProjectUser->pivot->role_id);
+            array_push($user_roles[$corpusProjectUser->id]['roles'],$role->name);
+        }
+
+
+        return view('admin.corpusprojectadmin.show', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('user_roles',$user_roles)
             ->with('user',$user);
     }
 
