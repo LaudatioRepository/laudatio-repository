@@ -102,7 +102,8 @@
     </div>
     <!-- /.row -->
     <div class="row">
-        <div class="col-lg-8">
+            <div class="col-lg-8">
+
             <div class="panel panel-default">
                 <div class="panel-heading">
                     Welcome {{$user->name}}
@@ -132,8 +133,9 @@
                 </div>
                 <!-- /.panel-body -->
             </div>
+
             <!-- /.panel -->
-            <div class="panel panel-default">
+            <!--div class="panel panel-default">
                 <!--div class="panel-heading">
                     <i class="fa fa-bar-chart-o fa-fw"></i> Bar Chart Example
                     <div class="pull-right">
@@ -427,7 +429,7 @@
             <!-- /.panel -->
 
             <!-- /.panel -->
-            <!--div class="chat-panel panel panel-default">
+            <!ivclass="chat-panel panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-comments fa-fw"></i> Chat
                     <div class="btn-group pull-right">
@@ -465,7 +467,7 @@
                     </div>
                 </div>
                 <!-- /.panel-heading -->
-                <!--div class="panel-body">
+                <div class="panel-body">
                     <ul class="chat">
                         <li class="left clearfix">
                                     <span class="chat-img pull-left">
@@ -529,9 +531,9 @@
                             </div>
                         </li>
                     </ul>
-                </div-->
+                </div>
                 <!-- /.panel-body -->
-                <!--div class="panel-footer">
+                <div class="panel-footer">
                     <div class="input-group">
                         <input id="btn-input" type="text" class="form-control input-sm" placeholder="Type your message here..." />
                         <span class="input-group-btn">
@@ -540,9 +542,9 @@
                                     </button>
                                 </span>
                     </div>
-                </div-->
+                </div>
                 <!-- /.panel-footer -->
-            </div>
+            </div-->
             <!-- /.panel .chat-panel -->
         </div>
         <!-- /.col-lg-4 -->

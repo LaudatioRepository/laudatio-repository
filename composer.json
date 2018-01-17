@@ -18,6 +18,7 @@
         "league/flysystem": "^1.0",
         "ongr/elasticsearch-dsl": "^5.0",
         "socialiteproviders/gitlab": "^3.0",
+        "spatie/laravel-permission": "^2.7",
         "vinkla/gitlab": "^2.6"
     },
     "require-dev": {

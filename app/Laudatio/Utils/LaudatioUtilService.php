@@ -303,7 +303,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         else{
 
             $preparationEncodingSteps = $jsonPath->find('$.TEI.teiHeader.encodingDesc[*]')->data();
-            Log::info("preparationEncodingSteps[0]: ".print_r($preparationEncodingSteps,1 ));
 
             if(!is_array($preparationEncodingSteps[0])){
                 $preparationEncodingSteps = array(
@@ -317,7 +316,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
                 );
             }
-            Log::info("preparationEncodingSteps: ".print_r($preparationEncodingSteps,1 ));
+
             foreach ($preparationEncodingSteps as $preparationEncodingStep) {
                 $preparation = new Preparation;
                 $preparation->preparation_encoding_step = $preparationEncodingStep['style'];
