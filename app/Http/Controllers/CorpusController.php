@@ -216,6 +216,7 @@ class CorpusController extends Controller
             // what to do when we can assign corpora to many projects?
         }
 
+        $user_roles = array();
         $corpusProjectUsers = $corpusProjects->first()->users()->get();
         foreach ($corpusProjectUsers as $corpusProjectUser){
             if(!isset($user_roles[$corpusProjectUser->id])){
