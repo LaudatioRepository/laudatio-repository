@@ -105,15 +105,19 @@ class UploadController extends Controller
                 if($isCorpusHeader){
                     if($corpusTitle[0]){
 
+
+                        $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpusTitle[0]);
+                        //dd($corpusPath);
                         $gitLabResponse = $this->GitLabService->createGitLabProject(
                             $corpusTitle[0],
                             array(
                                 'namespace_id' => $corpusProjectId,
+                                'path' => $corpusPath,
                                 'description' => request('corpus_description'),
                                 'visibility' => 'public'
                             ));
 
-                        $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpusTitle[0]);
+
 
                         $params = array(
                             'corpusId' => $corpusId,

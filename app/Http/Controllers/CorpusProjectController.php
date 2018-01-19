@@ -81,7 +81,7 @@ class CorpusProjectController extends Controller
                 request('corpusproject_name'),
                 $filePath,
                 request('corpusproject_description'),
-                'internal'
+                'public'
                 );
 
             Log::info("gitLabResponse: CorpusProject ".print_r($gitLabResponse,1));

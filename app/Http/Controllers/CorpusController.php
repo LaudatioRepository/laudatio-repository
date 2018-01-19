@@ -165,7 +165,10 @@ class CorpusController extends Controller
                 }
 
                 $role = Role::find($corpusUser->pivot->role_id);
-                array_push($user_roles[$corpusUser->id],$role->name);
+                if($role){
+                    array_push($user_roles[$corpusUser->id],$role->name);
+                }
+
             }
         }
 
