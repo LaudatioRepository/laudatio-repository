@@ -63,7 +63,7 @@ class UploadController extends Controller
         }
         */
 
-        return view('gitLab.uploadform',["dirname" => $dirname,"corpusid" => $corpus[0]->id, "isCorpusHeader" => $isCorpusHeader,"corpusProjectPath" => $corpusProjectPath])
+        return view('gitLab.uploadform',["dirname" => $dirname,"corpusid" => $corpus[0]->id, "isCorpusHeader" => $isCorpusHeader,"corpusProjectPath" => $dirArray[0]])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',\Auth::user());
     }
