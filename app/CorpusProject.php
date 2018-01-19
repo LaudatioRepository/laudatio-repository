@@ -8,7 +8,7 @@ class CorpusProject extends Model
      * Get the corpora for a Corpus Project
      */
     public function corpora(){
-        return $this->belongsToMany(Corpus::class);
+        return $this->belongsToMany(Corpus::class, "corpus_corpus_project", "corpus_id", "corpus_project_id");
     }
 
     /**

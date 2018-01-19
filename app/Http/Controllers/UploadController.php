@@ -42,20 +42,26 @@ class UploadController extends Controller
         $isLoggedIn = \Auth::check();
 
         $dirArray = explode("/",$dirname);
+        $corpusProjectPath = $dirArray[0];
         $corpusPath = $dirArray[1];
-        $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
+        $corpusProjectDB = DB::table('corpus_projects')->where('directory_path',$corpusProjectPath)->get();
+        $corpusDB = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
+        $corpus = Corpus::with('corpusprojects')->where('id', $corpusDB[0]->id)->get();
+
+
 
         $isCorpusHeader = false;
         if($corpus[0]->name == "Untitled" && null == $corpus[0]->file_name){
             $isCorpusHeader = true;
         }
 
-        $corpusProjectPath = "";
+        /*
         $corpusProjectPivot = DB::table('corpus_corpus_project')->where('corpus_id',$corpus[0]->id)->get();
         if(count($corpusProjectPivot) > 0) {
             $corpusProject = CorpusProject::find($corpusProjectPivot[0]->corpus_project_id);
             $corpusProjectPath = $corpusProject->directory_path;
         }
+        */
 
         return view('gitLab.uploadform',["dirname" => $dirname,"corpusid" => $corpus[0]->id, "isCorpusHeader" => $isCorpusHeader,"corpusProjectPath" => $corpusProjectPath])
             ->with('isLoggedIn', $isLoggedIn)
@@ -171,6 +177,7 @@ class UploadController extends Controller
             $commitPath = "";
             if(!$isCorpusHeader){
                 $commitPath = $dirPath;
+                $corpusPath = $dirPathArray[1];
             }
             else{
                 $commitPath = $corpusProjectPath.'/'.$corpusPath.'/TEI-HEADERS/corpus';
@@ -188,7 +195,8 @@ class UploadController extends Controller
                 'corpus' => $corpusId
             ]);
         }
-        return redirect()->route('admin.corpora.show',['path' => $corpusProjectPath."/".$corpus->directory_path.'/TEI-HEADERS','corpus' => $corpusId]);
+
+        return redirect()->route('admin.corpora.show',['path' => $corpusProjectPath."/".$corpusPath.'/TEI-HEADERS','corpus' => $corpusId]);
     }
 
     public function uploadSubmitFiles(Request $request)
