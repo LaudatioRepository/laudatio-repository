@@ -18,8 +18,26 @@
                     <div class="panel-body">
 
                         <ul class="nav nav-tabs">
-                            <li class="active"><a href="#headers" data-toggle="tab">Metadata Headers</a></li>
-                            <li><a href="#description" data-toggle="tab">Description</a></li>
+
+                            @if($fileData["folderType"] == "")
+                                <li class="active"><a href="#description"  data-toggle="tab">Description</a></li>
+                            @else
+                                <li><a href="#description"  data-toggle="tab">Description</a></li>
+                            @endif
+
+                            @if($fileData["folderType"] == "TEI-HEADERS")
+                                <li class="active"><a href="#headers" data-toggle="tab">Metadata Headers</a></li>
+                            @else
+                                <li><a href="#headers" data-toggle="tab">Metadata Headers</a></li>
+                            @endif
+
+                            @if($fileData["folderType"] == "CORPUS-DATA")
+                                <li class="active"><a href="#files" data-toggle="tab">Corpus Files</a></li>
+                            @else
+                                <li><a href="#files" data-toggle="tab">Corpus Files</a></li>
+                            @endif
+
+
                             <li><a href="#corpusprojects" data-toggle="tab">Corpus projects</a></li>
                             <li><a href="#collaborators" data-toggle="tab">Collaborators</a></li>
                             <li><a href="#publications" data-toggle="tab">Publications</a></li>
@@ -27,7 +45,11 @@
                         </ul>
 
                         <div class="tab-content">
-                            <div class="tab-pane fade" id="description">
+                            @if($fileData["folderType"] == "")
+                                <div class="tab-pane in active" id="description">
+                            @else
+                                <div class="tab-pane fade" id="description">
+                            @endif
                                 <br />
                                 <p>{{$corpus->description}}</p>
                             </div>
@@ -86,22 +108,41 @@
                                     Add collaborators to the corpus project
                                 </span>
                             </div>
-                            <div class="tab-pane  in active" id="headers">
-                                @if ($hasdir == false && strpos($path,"Untitled") !== false)
-                                    <a href="{{route('gitRepo.upload.get',array('dirname' => $path)) }}" style="display: block; margin-top: 20px"><button type="button" class="btn btn-primary btn-lg center-block">Upload a Corpus Header <i class="fa fa-upload fa-3x" aria-hidden="true"></i></button></a>
-                                @else
-                                    <a href="/admin/corpora/{{$corpus->id}}/{{$previouspath}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
-                                    <h4>{{$folderName}}</h4>
-                                    <br />
-                                    @if($folderName == "TEI-HEADERS")
-                                        @include('admin.corpusadmin.projectList')
-                                    @elseif(strpos($path,"CORPUS-DATA") !== false)
-                                        @include('admin.corpusadmin.fileList')
-                                    @else
-                                        @include('admin.corpusadmin.projectList')
+                            @if($fileData["folderType"] == "TEI-HEADERS")
+                                <div class="tab-pane in active" id="headers">
+                                    @if($fileData["headerData"])
+                                        @if ($fileData["headerData"]["hasdir"] == false && strpos($fileData["headerData"]["path"],"Untitled") !== false)
+                                            <a href="{{route('gitRepo.upload.get',array('dirname' => $fileData["headerData"]["path"])) }}" style="display: block; margin-top: 20px"><button type="button" class="btn btn-primary btn-lg center-block">Upload a Corpus Header <i class="fa fa-upload fa-3x" aria-hidden="true"></i></button></a>
+                                        @else
+                                            <a href="/admin/corpora/{{$corpus->id}}/{{$fileData["headerData"]["previouspath"]}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
+                                            <h4>Corpus Headers</h4>
+                                            <br />
+                                            @include('admin.corpusadmin.projectList')
+                                        @endif
                                     @endif
-                                @endif
+                                </div>
+                            @else
+                                <div class="tab-pane fade" id="headers">
+                                    @if($fileData["headerData"])
+                                        @if ($fileData["headerData"]["hasdir"] == false && strpos($fileData["headerData"]["path"],"Untitled") !== false)
+                                            <a href="{{route('gitRepo.upload.get',array('dirname' => $fileData["headerData"]["path"])) }}" style="display: block; margin-top: 20px"><button type="button" class="btn btn-primary btn-lg center-block">Upload a Corpus Header <i class="fa fa-upload fa-3x" aria-hidden="true"></i></button></a>
+                                        @else
+                                            <a href="/admin/corpora/{{$corpus->id}}/{{$fileData["headerData"]["previouspath"]}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
+                                            <h4>Corpus Headers</h4>
+                                            <br />
+                                            @include('admin.corpusadmin.projectList')
+                                        @endif
+                                    @endif
+                                </div>
+                            @endif
 
+                            @if($fileData["folderType"] == "CORPUS-DATA")
+                                <div class="tab-pane  in active" id="files">
+                            @else
+                                <div class="tab-pane fade" id="files">
+                            @endif
+                                <h4>Corpus Files</h4>
+                                @include('admin.corpusadmin.fileList')
                             </div>
                             <div class="tab-pane fade" id="publications">
                                 <h4>Publications</h4>
@@ -157,7 +198,7 @@
 
             var url = window.location.pathname;
             var urlArray = url.split("/");
-            var path = urlArray.splice(4).join("/")
+            var path = urlArray.splice(4).join("/")+"/CORPUS-DATA"
 
             var postData = {}
             postData.token = token;
@@ -178,7 +219,7 @@
                     var flashMessage = '<div id="flash-message" class="alert alert-success"> '+data.msg+' </div>';
                     $('#page-wrapper').append(flashMessage);
                     $('#myModal').modal('hide');
-                    location.reload();
+                    location.href = window.location.pathname+"/CORPUS-DATA"
                 },error:function(){
                     console.log("error!!!!");
                 }

@@ -150,14 +150,58 @@ class CorpusController extends Controller
         else{
             $corpusPath = $path;
         }
+        //dd($corpusPath);
 
-        $fileData = array();
+        $corpusBasePath = "";//substr($corpusPath,0,strrpos($corpusPath,"/"));
+        //dd($corpusPath);
+
+        $fileData = array(
+            "corpusData" => array(
+                'path' => $corpusPath.'/CORPUS-DATA',
+                'hasdir' => false
+            ),
+            "corpusDataFolder" => "",
+            "headerData" => array(
+                'path' => $corpusPath.'/TEI-HEADERS',
+                'hasdir' => false
+            ),
+            "headerDataFolder" => "",
+            "folderType" => ""
+        );
         $folder = "";
-        if(strpos("Untitled",$corpusPath) === false){
-            $fileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
-            $folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
+        $folderType = "";
+        $user_roles = array();
+        if(strpos($corpusPath,"Untitled") === false){
+            $pathArray = explode("/",$corpusPath);
+            $corpusBasePath = $pathArray[0]."/".$pathArray[1];
+            if(strpos($corpusPath,"CORPUS-DATA") !== false && strpos($corpusPath,"TEI-HEADERS") === false){
+                $corpusData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
+                $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusBasePath.'/TEI-HEADERS');
+                $folderType = "CORPUS-DATA";
+
+            }
+            else if(strpos($corpusPath,"TEI-HEADERS") !== false && strpos($corpusPath,"CORPUS-DATA") === false){
+                $corpusData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusBasePath.'/CORPUS-DATA');
+                $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
+                $folderType = "TEI-HEADERS";
+            }
+            else{
+                $corpusData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath.'/CORPUS-DATA');
+                $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath.'/TEI-HEADERS');
+            }
+
+            $corpusDataFolder = substr($corpusData['path'],strrpos($corpusData['path'],"/")+1);
+            $headerDataFolder = substr($headerData['path'],strrpos($headerData['path'],"/")+1);
+            $fileData = array(
+                "corpusData" => $corpusData,
+                "corpusDataFolder" => $corpusDataFolder,
+                "headerData" => $headerData,
+                "headerDataFolder" => $headerDataFolder,
+                "folderType" => $folderType
+            );
+            //$folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
             //dd($fileData);
-            $user_roles = array();
+
             $corpusUsers = $corpus->users()->get();
             foreach ($corpusUsers as $corpusUser){
                 if(!isset($user_roles[$corpusUser->id])){
@@ -165,12 +209,15 @@ class CorpusController extends Controller
                 }
 
                 $role = Role::find($corpusUser->pivot->role_id);
-                array_push($user_roles[$corpusUser->id],$role->name);
+                if($role){
+                    array_push($user_roles[$corpusUser->id],$role->name);
+                }
+
             }
         }
+        //dd($fileData);
 
-
-        return view("admin.corpusadmin.show",["corpus" => $corpus, "corpusproject_directory_path" => $corpusProject_directory_path, "hasdir" => $fileData["hasdir"], "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
+        return view("admin.corpusadmin.show",["corpus" => $corpus, "corpusproject_directory_path" => $corpusProject_directory_path, "fileData" => $fileData])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user_roles',$user_roles)
             ->with('user',$user);
@@ -204,8 +251,34 @@ class CorpusController extends Controller
             "description" => request('corpus_description')
         ]);
 
-        return view('admin.corpusadmin.show', compact('corpus'))
+        $corpusProjects = $corpus->corpusprojects()->get();
+        $corpusproject = null;
+        $corpusProject_directory_path = '';
+
+        if(count($corpusProjects) == 1) {
+            $corpusproject = $corpusProjects->first();
+            $corpusProject_directory_path = $corpusproject->directory_path;
+        }
+        else{
+            // what to do when we can assign corpora to many projects?
+        }
+
+        $user_roles = array();
+        $corpusProjectUsers = $corpusProjects->first()->users()->get();
+        foreach ($corpusProjectUsers as $corpusProjectUser){
+            if(!isset($user_roles[$corpusProjectUser->id])){
+                $user_roles[$corpusProjectUser->id]['roles'] = array();
+            }
+            $user_roles[$corpusProjectUser->id]['user_name'] = $corpusProjectUser->name;
+
+            $role = Role::find($corpusProjectUser->pivot->role_id);
+            array_push($user_roles[$corpusProjectUser->id]['roles'],$role->name);
+        }
+
+
+        return view('admin.corpusprojectadmin.show', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('user_roles',$user_roles)
             ->with('user',$user);
     }
 
@@ -328,23 +401,32 @@ class CorpusController extends Controller
         if ($request->ajax()){
             $msg .= "<p>Assigned the following roles to user </p>";
             $role_users = $input['role_users'];
+            Log::info("ROLEUSERS: ".print_r($role_users,1));
             $corpus = Corpus::find($input['corpus_id']);
+            Log::info("CORPUS: ".print_r($corpus->name,1)." ID: ".$corpus->id);
             $msg .= "<ul>";
+
+
             foreach($role_users as $roleId => $user_data) {
                 $role = Role::find($roleId);
                 if($role){
                     $msg .= "<li>".$role->name."<ul>";
+                    Log::info("ROLE: ".print_r($role->name,1)." ID: ".$roleId);
                     foreach($user_data as $userId) {
                         $user = User::find($userId);
+                        Log::info("user: ".print_r($user->name,1)." ID: ".$userId);
+
                         if($user) {
                             $msg .= "<li>".$user->name."</li>";
                             $corpus->users()->save($user,['role_id' => $roleId]);
 
                         }
+
                     }
                     $msg .= "</ul></li>";
                 }
-            }
+            }//end foreach
+
             $msg .= "</ul>";
         }
 

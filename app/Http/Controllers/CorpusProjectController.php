@@ -81,7 +81,7 @@ class CorpusProjectController extends Controller
                 request('corpusproject_name'),
                 $filePath,
                 request('corpusproject_description'),
-                'internal'
+                'public'
                 );
 
             Log::info("gitLabResponse: CorpusProject ".print_r($gitLabResponse,1));
@@ -111,18 +111,23 @@ class CorpusProjectController extends Controller
 
         $user_roles = array();
         $corpusProjectUsers = $corpusproject->users()->get();
+        $corpora = $corpusproject->corpora()->get();
+
         foreach ($corpusProjectUsers as $corpusProjectUser){
             if(!isset($user_roles[$corpusProjectUser->id])){
-                $user_roles[$corpusProjectUser->id] = array();
+                $user_roles[$corpusProjectUser->id]['roles'] = array();
             }
+            $user_roles[$corpusProjectUser->id]['user_name'] = $corpusProjectUser->name;
 
             $role = Role::find($corpusProjectUser->pivot->role_id);
-            array_push($user_roles[$corpusProjectUser->id],$role->name);
+            array_push($user_roles[$corpusProjectUser->id]['roles'],$role->name);
         }
+
 
         return view('admin.corpusprojectadmin.show', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user_roles',$user_roles)
+            ->with('corpora',$corpora)
             ->with('user',$user);
     }
 

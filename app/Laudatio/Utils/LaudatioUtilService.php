@@ -77,7 +77,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 if (!isset($tagsArray[$childTagName])) {
                     //only entry with this key
                     //test if tags of this type should always be arrays, no matter the element count
-                    //info("childTagName ".print_r($childTagName,1)." CHILDPROPS: ".print_r($childProperties,1));Log::
+
                     $tagsArray[$childTagName] =
                         in_array($childTagName, $options['alwaysArray']) || !$options['autoArray']
                             ? array($childProperties) : $childProperties;
@@ -127,7 +127,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $corpusDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
         $corpusSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
         $corpusSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text')->data();
-        Log::info("params ".print_r($params,1 ));
+
         $corpus = Corpus::find($params['corpusId']);
         $corpus->update([
             "name" => $corpusTitle[0],
@@ -141,8 +141,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             'gitlab_namespace_path' => $params['gitlab_name_with_namespace'],
             "file_name" => $params['fileName']
         ]);
-
-        Log::info("corpus updated ".print_r($corpus,1 ));
 
 
         return $corpus;
@@ -198,7 +196,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         /*
          * Populate database with list of annotations, with document_id and corpus_id as compound primary_key
          */
-        Log::info("encodingDesc: ".print_r($encodingDesc,1));
+
         foreach ($encodingDesc as $annotationJson) {
 
             $annotationPath = new JSONPath($annotationJson,JSONPath::ALLOW_MAGIC);
@@ -303,7 +301,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         else{
 
             $preparationEncodingSteps = $jsonPath->find('$.TEI.teiHeader.encodingDesc[*]')->data();
-            Log::info("preparationEncodingSteps[0]: ".print_r($preparationEncodingSteps,1 ));
 
             if(!is_array($preparationEncodingSteps[0])){
                 $preparationEncodingSteps = array(
@@ -317,7 +314,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
                 );
             }
-            Log::info("preparationEncodingSteps: ".print_r($preparationEncodingSteps,1 ));
+
             foreach ($preparationEncodingSteps as $preparationEncodingStep) {
                 $preparation = new Preparation;
                 $preparation->preparation_encoding_step = $preparationEncodingStep['style'];

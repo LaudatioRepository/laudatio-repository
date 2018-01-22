@@ -88,6 +88,7 @@ class GitRepoService implements GitRepoInterface
         $hasDir = false;
         $projects = array();
         //dd($path);
+        Log::info("PATH: ".print_r($path,1));
         if($path == ""){
             $projects = $flysystem->listContents();
         }
@@ -142,7 +143,6 @@ class GitRepoService implements GitRepoInterface
             }
 
         }
-
 
         $patharray = explode("/",$path);
         $count = count($patharray);

@@ -47,12 +47,12 @@ return [
 
         'main' => [
             'token' => '5XiSvE9Jd6WmuV3jw7EP',
-            'base_url' => 'https://scm.cms.hu-berlin.de/api/v3/',
+            'url' => 'https://scm.cms.hu-berlin.de/api/v3/',
         ],
 
         'alternative' => [
             'token' => 'your-token',
-            'base_url' => 'http://git.yourdomain.com/api/v3/',
+            'url' => 'http://git.yourdomain.com/api/v3/',
         ],
 
     ],

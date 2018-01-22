@@ -29,7 +29,7 @@ class GitLabService implements GitLabInterface {
         return GitLab::api('groups')->show($groupId);
     }
 
-    public function createGitLabGroup($name, $path, $description = null, $visibility = 'internal'){
+    public function createGitLabGroup($name, $path, $description = null, $visibility = 'public'){
         return GitLab::api('groups')->create($name, $path, $description,$visibility);
     }
     public function updateGitLabGroup($groupId,$params){
