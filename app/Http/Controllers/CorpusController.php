@@ -150,14 +150,58 @@ class CorpusController extends Controller
         else{
             $corpusPath = $path;
         }
+        //dd($corpusPath);
 
-        $fileData = array();
+        $corpusBasePath = "";//substr($corpusPath,0,strrpos($corpusPath,"/"));
+        //dd($corpusPath);
+
+        $fileData = array(
+            "corpusData" => array(
+                'path' => $corpusPath.'/CORPUS-DATA',
+                'hasdir' => false
+            ),
+            "corpusDataFolder" => "",
+            "headerData" => array(
+                'path' => $corpusPath.'/TEI-HEADERS',
+                'hasdir' => false
+            ),
+            "headerDataFolder" => "",
+            "folderType" => ""
+        );
         $folder = "";
-        if(strpos("Untitled",$corpusPath) === false){
-            $fileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
-            $folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
+        $folderType = "";
+        $user_roles = array();
+        if(strpos($corpusPath,"Untitled") === false){
+            $pathArray = explode("/",$corpusPath);
+            $corpusBasePath = $pathArray[0]."/".$pathArray[1];
+            if(strpos($corpusPath,"CORPUS-DATA") !== false && strpos($corpusPath,"TEI-HEADERS") === false){
+                $corpusData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
+                $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusBasePath.'/TEI-HEADERS');
+                $folderType = "CORPUS-DATA";
+
+            }
+            else if(strpos($corpusPath,"TEI-HEADERS") !== false && strpos($corpusPath,"CORPUS-DATA") === false){
+                $corpusData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusBasePath.'/CORPUS-DATA');
+                $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
+                $folderType = "TEI-HEADERS";
+            }
+            else{
+                $corpusData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath.'/CORPUS-DATA');
+                $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath.'/TEI-HEADERS');
+            }
+
+            $corpusDataFolder = substr($corpusData['path'],strrpos($corpusData['path'],"/")+1);
+            $headerDataFolder = substr($headerData['path'],strrpos($headerData['path'],"/")+1);
+            $fileData = array(
+                "corpusData" => $corpusData,
+                "corpusDataFolder" => $corpusDataFolder,
+                "headerData" => $headerData,
+                "headerDataFolder" => $headerDataFolder,
+                "folderType" => $folderType
+            );
+            //$folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
             //dd($fileData);
-            $user_roles = array();
+
             $corpusUsers = $corpus->users()->get();
             foreach ($corpusUsers as $corpusUser){
                 if(!isset($user_roles[$corpusUser->id])){
@@ -171,9 +215,9 @@ class CorpusController extends Controller
 
             }
         }
+        //dd($fileData);
 
-
-        return view("admin.corpusadmin.show",["corpus" => $corpus, "corpusproject_directory_path" => $corpusProject_directory_path, "hasdir" => $fileData["hasdir"], "projects" => $fileData['projects'], "pathcount" => $fileData['pathcount'],"path" => $fileData['path'],"previouspath" => $fileData['previouspath'], "folderName" => $folder])
+        return view("admin.corpusadmin.show",["corpus" => $corpus, "corpusproject_directory_path" => $corpusProject_directory_path, "fileData" => $fileData])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user_roles',$user_roles)
             ->with('user',$user);

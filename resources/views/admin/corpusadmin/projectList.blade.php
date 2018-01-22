@@ -1,6 +1,6 @@
 
 <div class="container-fluid archives">
-    @if(!empty($projects))
+    @if(!empty($fileData["headerData"]['projects']))
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">
@@ -12,18 +12,18 @@
                                     <input type="checkbox" class="check" id="checkAll"> Check All
                                 </label></th>
                             <th>Name</th>
-                            @if(!$hasdir)
+                            @if(!$fileData["headerData"]["hasdir"])
                                 <th>Version</th>
                             @endif
                             <th>Action</th>
-                            @if(!$hasdir)
+                            @if(!$fileData["headerData"]["hasdir"])
                                 <th>Size</th>
                             @endif
                             <th>Last updated</th>
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach($projects as $project)
+                        @foreach($fileData["headerData"]['projects'] as $project)
                                 @if($project["type"] == "dir")
                                     <tr>
                                         <td>
@@ -31,7 +31,7 @@
                                         <td class="text-center"><span class="fa fa-folder"></span></td>
                                         <td><a href="{{ route('admin.corpora.show', array('corpus' => $corpus,'path' => $project['path'])) }}">{{$project['basename']}}</a></td>
                                         <td class="text-center">
-                                            @if($pathcount == 3 || $pathcount == 1)
+                                            @if($fileData["headerData"]["pathcount"] == 3 || $fileData["headerData"]["pathcount"] == 1)
 
 
                                                 @if($project["tracked"] != "false")
@@ -42,7 +42,7 @@
 
                                             @endif
 
-                                            @if($project["tracked"] == "false" && $project["foldercount"] > 0 && $pathcount == 3)
+                                            @if($project["tracked"] == "false" && $project["foldercount"] > 0 && $fileData["headerData"]["pathcount"] == 3)
                                                 <a href="{{route('gitRepo.addFile.route', array('path' => $project['path'],'corpus' => $corpus->id)) }}"><span class="btn btn-sm btn-danger fa fa-code-fork"></span></a>
                                             @endif
                                         </td>
@@ -61,7 +61,7 @@
                                             <td></td>
                                         @endif
                                         <td class="text-center">
-                                            @if($project["tracked"] == "false" && $pathcount == 4)
+                                            @if($project["tracked"] == "false" && $fileData["headerData"]["pathcount"] == 4)
                                                 <a href="{{route('gitRepo.addFile.route', array('path' => $project['path'],'corpus' => $corpus->id)) }}"><span class="btn btn-sm btn-danger fa fa-code-fork"></span></a>
                                             @endif
                                             @if (isset($project['diffFiles']) && count($project['diffFiles']) > 0 )
@@ -95,7 +95,7 @@
                 </div>
             </div>
     @endif
-        @if($pathcount == 4)
-            <span class="pull-right"><a href="{{route('gitRepo.upload.get',array('dirname' => $path)) }}" ><i class="fa fa-upload fa-3x" aria-hidden="true"></i></a></span>
+        @if($fileData["headerData"]["pathcount"] == 4)
+            <span class="pull-right"><a href="{{route('gitRepo.upload.get',array('dirname' => $fileData["headerData"]["path"])) }}" ><i class="fa fa-upload fa-3x" aria-hidden="true"></i></a></span>
         @endif
 </div>

@@ -386,20 +386,20 @@ class GitRepoController extends Controller
                 if($isHeader){
                     foreach ($stagedFiles as $stagedFile){
                         $dirArray = explode("/",trim($stagedFile));
-                        $fileName = $dirArray[2];
+                        if(count($dirArray) > 1){
+                            $fileName = $dirArray[2];
 
-                        if(is_dir($this->basePath.'/'.$dirname.'/'.$fileName)){
-                            $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id], true);
-                            $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id],true);
-                            $fileName = $object[0]->directory_path;
+                            if(is_dir($this->basePath.'/'.$dirname.'/'.$fileName)){
+                                $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id], true);
+                                $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id],true);
+                                $fileName = $object[0]->directory_path;
+                            }
+                            else{
+                                $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id], false);
+                                $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id],false);
+                                $fileName = $object[0]->directory_path;
+                            }
                         }
-                        else{
-                            $object = $this->laudatioUtils->getModelByFileName($fileName,$patharray[$last_id], false);
-                            $this->laudatioUtils->setVersionMapping($fileName,$patharray[$last_id],false);
-                            $fileName = $object[0]->directory_path;
-                        }
-
-
                     }
 
                 }

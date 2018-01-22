@@ -55,14 +55,6 @@ class UploadController extends Controller
             $isCorpusHeader = true;
         }
 
-        /*
-        $corpusProjectPivot = DB::table('corpus_corpus_project')->where('corpus_id',$corpus[0]->id)->get();
-        if(count($corpusProjectPivot) > 0) {
-            $corpusProject = CorpusProject::find($corpusProjectPivot[0]->corpus_project_id);
-            $corpusProjectPath = $corpusProject->directory_path;
-        }
-        */
-
         return view('gitLab.uploadform',["dirname" => $dirname,"corpusid" => $corpus[0]->id, "isCorpusHeader" => $isCorpusHeader,"corpusProjectPath" => $dirArray[0]])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',\Auth::user());
@@ -196,7 +188,12 @@ class UploadController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.corpora.show',['path' => $corpusProjectPath."/".$corpusPath.'/TEI-HEADERS','corpus' => $corpusId]);
+        if($isCorpusHeader) {
+            return redirect()->route('admin.corpora.show', ['path' => $corpusProjectPath . "/" . $corpusPath . '/TEI-HEADERS', 'corpus' => $corpusId]);
+        }
+        else{
+            return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
+        }
     }
 
     public function uploadSubmitFiles(Request $request)

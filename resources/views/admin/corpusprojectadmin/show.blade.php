@@ -36,7 +36,7 @@
                             <div class="tab-pane fade" id="corpora">
                                 <br />
                                 <div class="panel-group" id="accordion">
-                                    @foreach($corpusproject->corpora as $corpus)
+                                    @foreach($corpora as $corpus)
                                         <div class="panel panel-default">
                                             <div class="panel-heading">
                                         <span class="panel-title">
@@ -46,7 +46,7 @@
                                         </span>
                                                 <span class="pull-right">Created at: {{$corpus->created_at->toFormattedDateString()}}
                                                     <button type="button" class="btn btn-success btn-circle">
-                                                <a href="/admin/corpora/{{$corpus->id}}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+                                                <a href="/admin/corpora/{{$corpus->id}}/{{$corpusproject->directory_path}}/{{$corpus->directory_path}}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
                                             </button>
                                         </span>
                                             </div>
