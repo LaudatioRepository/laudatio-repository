@@ -57,6 +57,7 @@ class CorpusController extends Controller
             ->with('user',$user);
     }
 
+
     /**
      * Store a newly created resource in storage.
      *
@@ -64,6 +65,44 @@ class CorpusController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
+    {
+        $this->validate(request(), [
+            //'corpus_name' => 'required',
+            'corpus_description' => 'required',
+            'corpusProjectId' => 'required'
+        ]);
+
+
+        $corpusProject = CorpusProject::find(request('corpusProjectId'));
+        $corpusProjectPath = $corpusProject->directory_path;
+        $corpusProjectId = $corpusProject->gitlab_id;
+
+        // Create the directory structure for the Corpus
+        $corpusProjectPath = $corpusProject->directory_path;
+        $corpus_name = "Untitled_".$corpusProjectId;
+        $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus_name);
+
+
+        if($corpusPath){
+            $corpus = Corpus::create([
+                "name" => $corpus_name,
+                "description" => request('corpus_description'),
+                'directory_path' => $corpusPath
+            ]);
+
+            $corpus->corpusprojects()->attach($corpusProject);
+        }
+
+        return redirect()->route('admin.corpora.index');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store_untitled(Request $request)
     {
         $this->validate(request(), [
             //'corpus_name' => 'required',
@@ -150,10 +189,9 @@ class CorpusController extends Controller
         else{
             $corpusPath = $path;
         }
-        //dd($corpusPath);
 
         $corpusBasePath = "";//substr($corpusPath,0,strrpos($corpusPath,"/"));
-        //dd($corpusPath);
+
 
         $fileData = array(
             "corpusData" => array(
@@ -199,8 +237,7 @@ class CorpusController extends Controller
                 "headerDataFolder" => $headerDataFolder,
                 "folderType" => $folderType
             );
-            //$folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
-            //dd($fileData);
+
 
             $corpusUsers = $corpus->users()->get();
             foreach ($corpusUsers as $corpusUser){

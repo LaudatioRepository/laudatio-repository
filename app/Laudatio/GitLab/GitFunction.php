@@ -404,6 +404,19 @@ class GitFunction
         return $createdDirectoryPath;
     }
 
+    public function renameFile($path,$oldname,$newname){
+        $renamedPath = "";
+        $makeDirectoryProcess = new Process("mv $oldname $newname",$this->basePath."/".$path);
+        $makeDirectoryProcess->run();
+        if (!$makeDirectoryProcess->isSuccessful()) {
+            throw new ProcessFailedException($makeDirectoryProcess);
+        }
+        else{
+            $renamedPath = $path."/".$newname;
+        }
+        return $renamedPath;
+    }
+
 
     public function deleteFiles($path){
 

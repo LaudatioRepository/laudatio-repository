@@ -54,11 +54,27 @@ class GitRepoService implements GitRepoInterface
             $flysystem->createDir($dirPath."/CORPUS-DATA");
 
             $this->initiateRepository($dirPath);
-            $this->addFilesToRepository($dirPath,"TEI-HEADERS");
-            $this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
+            //$this->addFilesToRepository($dirPath,"TEI-HEADERS");
+            //$this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
             $this->copyGitHooks($dirPath);
             $this->copyScripts($dirPath);
 
+        }
+
+        return $corpusPath;
+    }
+
+    public function updateCorpusFileStructure($flysystem,$corpusProjectPath,$oldCorpusPath,$corpusName){
+        $corpusPath = "";
+        $normalizedCorpusName = $this->normalizeString($corpusName);
+        $oldDirPath = $corpusProjectPath.'/'.$oldCorpusPath;
+
+        if($flysystem->has($oldDirPath)){
+            $gitFunction = new GitFunction();
+            $corpusPath = $gitFunction->renameFile($corpusProjectPath,$oldCorpusPath,$normalizedCorpusName);
+            $this->initiateRepository($corpusPath);
+            $this->addFilesToRepository($corpusPath,"TEI-HEADERS");
+            $this->commitFilesToRepository($this->basePath.'/'.$corpusPath,"Created initial corpus file structure for $normalizedCorpusName");
         }
 
         return $corpusPath;
