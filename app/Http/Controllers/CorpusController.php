@@ -174,7 +174,7 @@ class CorpusController extends Controller
         $corpusProjects = $corpus->corpusprojects()->get();
         $corpusProject_directory_path = '';
 
-        
+
         if(count($corpusProjects) == 1) {
             $corpusProject_directory_path = $corpusProjects->first()->directory_path;
         }
@@ -351,6 +351,11 @@ class CorpusController extends Controller
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
 
+
+        $gitLabProjectId = $corpus->gitlab_id;
+        $gitLabProjectId = $corpus->gitlab_id;
+        $corpusProject = CorpusProject::find($projectId);
+
         if(count($corpus->corpusprojects()) > 0) {
             $corpus->corpusprojects()->detach();
         }
@@ -360,17 +365,36 @@ class CorpusController extends Controller
         }
 
 
-        $gitLabProjectId = $corpus->gitlab_id;
+        if(count($corpus->documents) > 0){
+            foreach ($corpus->documents as $document){
+
+                if(count($document->annotations) > 0){
+                    foreach ($document->annotations as $annotation){
+                            if(count($annotation->documents()) > 0) {
+                                $annotation->documents()->detach();
+                            }
+                            if(count($annotation->preparations) > 0) {
+                                $annotation->preparations()->delete();
+                            }
+                    }//end for annotations
+                    $document->annotations()->delete();
+                }//end if annotations
+            }
+            $corpus->documents()->delete();
+        }
+
+        if(count($corpus->annotations) > 0){
+            $corpus->annotations()->delete();
+        }
 
         $this->GitLabService->deleteGitLabProject($gitLabProjectId);
-
         $corpus->delete();
 
-        $corpusProject = CorpusProject::find($projectId);
         $corpusPath = $corpusProject->directory_path.'/'.$corpus->directory_path;
         Log::info("DEL: Copruspath: ".$corpusPath);
         $this->GitRepoService->deleteCorpusFileStructure($this->flysystem,$corpusPath);
 
+        $corpora = array();
         $corpora = Corpus::latest()->get();
 
         return view('admin.corpusadmin.index', compact('corpora'))

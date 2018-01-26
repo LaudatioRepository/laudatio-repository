@@ -482,7 +482,7 @@ class GitFunction
     }
 
 
-    public function deleteUntrackedFiles($path){
+    public function deleteUntrackedFiles($path,$isProject = false,$isCorpus = false){
 
         $isdeleted = false;
         $isFile = false;
@@ -490,7 +490,7 @@ class GitFunction
         $folder = "";
         $cwdPath = "";
 
-
+        Log::info("PATH: ".$path." isproject: ".$isProject." ISCORP: ".$isCorpus);
         if(!is_dir($this->basePath.'/'.$path)){
             $isFile = true;
         }
@@ -524,25 +524,44 @@ class GitFunction
         else{
             //we are deleting contents of a folder
             $dirArray = explode("/",$path);
-            $type = $dirArray[3];
-            $objects = null;
-            switch ($type) {
-                case 'corpus':
-                    $objects = DB::table('corpuses')->where('directory_path',$dirArray[1])->get();
-                    break;
-                case 'document':
-                    $objects = DB::table('documents')->where('directory_path',$dirArray[1])->get();
-                    break;
-                case 'annotation':
-                    $objects = DB::table('annotations')->where('directory_path',$dirArray[1])->get();
-                    break;
-            }
-            foreach ($objects->toArray() as $object){
-                if($object->file_name){
-                    $process = new Process("rm -rf $object->file_name",$this->basePath."/".$path);
-                    $process->run();
+            //dd($dirArray);
+            if(!$isCorpus && !$isProject){
+                $type = $dirArray[3];
+                $objects = null;
+                switch ($type) {
+                    case 'corpus':
+                        $objects = DB::table('corpuses')->where('directory_path',$dirArray[1])->get();
+                        break;
+                    case 'document':
+                        $objects = DB::table('documents')->where('directory_path',$dirArray[1])->get();
+                        break;
+                    case 'annotation':
+                        $objects = DB::table('annotations')->where('directory_path',$dirArray[1])->get();
+                        break;
+                }
+                foreach ($objects->toArray() as $object){
+                    if($object->file_name){
+                        $process = new Process("rm -rf $object->file_name",$this->basePath."/".$path);
+                        $process->run();
+                    }
                 }
             }
+            else{
+                $pathForDeletion = "";
+                if($isProject){
+                    $process = new Process("rm -rf $dirArray[0]",$this->basePath);
+                    $process->run();
+                }
+                else if($isCorpus){
+                    $pathForDeletion = $this->basePath."/".$dirArray[0];
+                    $process = new Process("rm -rf *",$pathForDeletion);
+                    $process->run();
+                }
+
+
+            }
+
+
             $isdeleted = true;
         }
 

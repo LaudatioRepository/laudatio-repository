@@ -219,6 +219,8 @@ class CorpusProjectController extends Controller
         $corpusproject->delete();
         $CorpusProjects = CorpusProject::latest()->get();
 
+        $this->GitRepoService->deleteProjectFileStructure($this->flysystem,$corpusproject->directory_path);
+
         return view('admin.corpusprojectadmin.index', compact('CorpusProjects'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);

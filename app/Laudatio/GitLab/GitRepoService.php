@@ -106,7 +106,21 @@ class GitRepoService implements GitRepoInterface
         $trackedResult = $this->deleteFile($flysystem,$path);
 
         if(!$trackedResult){
-            $deleted = $this->deleteUntrackedFile($flysystem,$path);
+            $deleted = $this->deleteUntrackedFile($flysystem,$path,false,true);
+        }
+        else{
+            $deleted = $trackedResult;
+        }
+        return $deleted;
+    }
+
+
+    public function deleteProjectFileStructure($flysystem, $path){
+        $deleted = false;
+        $trackedResult = $this->deleteFile($flysystem,$path);
+
+        if(!$trackedResult){
+            $deleted = $this->deleteUntrackedFile($flysystem,$path,true,false);
         }
         else{
             $deleted = $trackedResult;
@@ -225,12 +239,12 @@ class GitRepoService implements GitRepoInterface
         return $result;
     }
 
-    public function deleteUntrackedFile($flysystem,$path){
+    public function deleteUntrackedFile($flysystem,$path,$isProject = false,$isCorpus = false){
 
         $result = null;
         if($flysystem->has($path)){
             $gitFunction = new  GitFunction();
-            $result = $gitFunction->deleteUntrackedFiles($path);
+            $result = $gitFunction->deleteUntrackedFiles($path,$isProject,$isCorpus);
         }
         return $result;
     }
