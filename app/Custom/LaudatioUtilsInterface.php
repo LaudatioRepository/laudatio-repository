@@ -25,6 +25,10 @@ interface LaudatioUtilsInterface
 
     public function getModelByType($id,$type);
     public function getModelByFileName($fileName, $type, $isDir);
+    public function deleteModels($path);
+    public function deleteModel($type,$id);
+    public function updateDirectoryPaths($directory_path,$corpusId);
     public function setVersionMapping($filename, $type,$isDir);
+
     public function getDirectoryPath($paths,$fileName);
 }

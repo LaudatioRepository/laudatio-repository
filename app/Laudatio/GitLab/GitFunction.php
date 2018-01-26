@@ -9,6 +9,7 @@
 namespace App\Laudatio\GitLaB;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use DB;
 use Log;
 
 class GitFunction
@@ -494,28 +495,54 @@ class GitFunction
             $isFile = true;
         }
 
-        if(strpos($path,"/") !== false){
-            $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
-            $folder = substr($path,strrpos($path,"/")+1);
-            $cwdPath = $this->basePath."/".$pathWithOutAddedFolder;
+        if($isFile){
+            if(strpos($path,"/") !== false){
+                $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
+                $folder = substr($path,strrpos($path,"/")+1);
+                $cwdPath = $this->basePath."/".$pathWithOutAddedFolder;
+            }
+            else{
+                $cwdPath = $this->basePath;
+                $folder = $path;
+            }
+
+            $process = null;
+            $folder = str_replace(" ","\\ ",$folder);
+
+            $process = new Process("rm -rf $folder",$cwdPath);
+            $process->run();
+
+
+            // executes after the command finishes
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+            else{
+                $isdeleted = true;
+            }
         }
         else{
-            $cwdPath = $this->basePath;
-            $folder = $path;
-        }
-
-        $process = null;
-        $folder = str_replace(" ","\\ ",$folder);
-
-        $process = new Process("rm -rf $folder",$cwdPath);
-        $process->run();
-
-
-        // executes after the command finishes
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-        else{
+            //we are deleting contents of a folder
+            $dirArray = explode("/",$path);
+            $type = $dirArray[3];
+            $objects = null;
+            switch ($type) {
+                case 'corpus':
+                    $objects = DB::table('corpuses')->where('directory_path',$dirArray[1])->get();
+                    break;
+                case 'document':
+                    $objects = DB::table('documents')->where('directory_path',$dirArray[1])->get();
+                    break;
+                case 'annotation':
+                    $objects = DB::table('annotations')->where('directory_path',$dirArray[1])->get();
+                    break;
+            }
+            foreach ($objects->toArray() as $object){
+                if($object->file_name){
+                    $process = new Process("rm -rf $object->file_name",$this->basePath."/".$path);
+                    $process->run();
+                }
+            }
             $isdeleted = true;
         }
 

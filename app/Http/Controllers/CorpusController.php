@@ -174,6 +174,7 @@ class CorpusController extends Controller
         $corpusProjects = $corpus->corpusprojects()->get();
         $corpusProject_directory_path = '';
 
+        
         if(count($corpusProjects) == 1) {
             $corpusProject_directory_path = $corpusProjects->first()->directory_path;
         }
@@ -291,7 +292,6 @@ class CorpusController extends Controller
         $corpusProjects = $corpus->corpusprojects()->get();
         $corpusproject = null;
         $corpusProject_directory_path = '';
-
         if(count($corpusProjects) == 1) {
             $corpusproject = $corpusProjects->first();
             $corpusProject_directory_path = $corpusproject->directory_path;
@@ -299,6 +299,8 @@ class CorpusController extends Controller
         else{
             // what to do when we can assign corpora to many projects?
         }
+
+        $corpora = $corpusproject->corpora()->get();
 
         $user_roles = array();
         $corpusProjectUsers = $corpusProjects->first()->users()->get();
@@ -315,6 +317,7 @@ class CorpusController extends Controller
 
         return view('admin.corpusprojectadmin.show', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('corpora',$corpora)
             ->with('user_roles',$user_roles)
             ->with('user',$user);
     }

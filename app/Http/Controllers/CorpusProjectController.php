@@ -168,6 +168,7 @@ class CorpusProjectController extends Controller
         );
         $this->GitLabService->updateGitLabGroup($corpusproject->gitlab_id,$params);
         $corpora = $corpusproject->corpora()->get();
+        dd($corpora);
         return view('admin.corpusprojectadmin.show', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('corpora',$corpora)

@@ -178,6 +178,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $document->document_size_value = $documentSizeValue[0];
             $document->corpus_id = $corpusId;
             $document->file_name = $fileName;
+            $document->directory_path = $corpus->directory_path;
             $document->save();
         }
         else{
@@ -260,12 +261,15 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         )->get();
 
 
+        $corpus = Corpus::find($corpusId);
+
         if(count($annotationsFromDB) > 0){
 
             foreach($annotationsFromDB as $annotationFromDB)
               $annotationFromDB->update([
                   "annotation_size_type" => $annotationSizeType[0],
                   "annotation_size_value" => $annotationSizeValue[0],
+                  "directory_path" => $corpus->directory_path,
                   "file_name" => $fileName
             ]);
 
@@ -281,6 +285,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $annotation->annotation_size_value = $annotationSizeValue[0];
             $annotation->corpus_id = $corpusId;
             $annotation->file_name = $fileName;
+            $annotation->directory_path = $corpus->directory_path;
             $annotation->save();
             return $annotation;
         }
@@ -457,6 +462,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     }
 
+
     public function getModelByType($id,$type){
         $object = null;
         switch ($type){
@@ -523,6 +529,56 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 break;
         }
         return $object;
+    }
+
+    public function deleteModels($path){
+        $dirArray = explode("/",$path);
+        $type = $dirArray[3];
+        $objects = null;
+        switch ($type) {
+            case 'corpus':
+                $objects = DB::table('corpuses')->where('directory_path',$dirArray[1])->get();
+                break;
+            case 'document':
+                $objects = DB::table('documents')->where('directory_path',$dirArray[1])->get();
+                break;
+            case 'annotation':
+                $objects = DB::table('annotations')->where('directory_path',$dirArray[1])->get();
+                break;
+        }
+        foreach ($objects->toArray() as $object){
+            $this->deleteModel($type, $object->id);
+        }
+    }
+
+    public function deleteModel($type,$id){
+        $object = null;
+        switch ($type) {
+            case 'corpus':
+                $object = Corpus::find($id);
+                break;
+            case 'document':
+                $object = Document::find($id);
+                if(count($object->annotations()) > 0) {
+                    $object->annotations()->detach();
+                }
+
+                $object->delete();
+                break;
+            case 'annotation':
+                $object = Annotation::find($id);
+                if(count($object->documents()) > 0) {
+                    $object->documents()->detach();
+                }
+                $object->preparations()->delete();
+                $object->delete();
+                break;
+        }
+    }
+
+    public function updateDirectoryPaths($directory_path,$corpusId){
+        DB::update("update documents set directory_path = ? where corpus_id = ?", [$directory_path,$corpusId]);
+        DB::update("update annotations set directory_path = ? where corpus_id = ?", [$directory_path,$corpusId]);
     }
 
     public function getDirectoryPath($paths,$fileName){

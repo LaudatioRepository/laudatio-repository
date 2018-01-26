@@ -93,9 +93,18 @@ class UploadController extends Controller
         if(strpos($dirPathArray[1],"untitled") === false){
             $isUntitled = false;
         }
-        foreach ($request->formats as $format) {
 
+        foreach ($request->formats as $format) {
+            $isUpdate = false;
             $fileName = $format->getClientOriginalName();
+            $pathContents = $this->flysystem->listContents($dirPath, false);
+            foreach ($pathContents as $object) {
+                if($object['basename'] == $fileName){
+                    $isUpdate = true;
+                    break;
+                }
+            }
+
             $xmlpath = $format->getRealPath();
             $corpus = Corpus::find($corpusId);
             if(!empty($xmlpath)){
@@ -112,6 +121,10 @@ class UploadController extends Controller
                         $corpusPath = $this->GitRepoService->updateCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus->directory_path,$corpusTitle[0]);
                         $gitLabCorpusPath = substr($corpusPath,strrpos($corpusPath,"/")+1);
                         //dd($gitLabCorpusPath);
+                        if($isUntitled){
+                            $this->laudatioUtilsService->updateDirectoryPaths($gitLabCorpusPath,$corpusId);
+
+                        }
 
                         $gitLabResponse = $this->GitLabService->createGitLabProject(
                             $corpusTitle[0],
@@ -135,6 +148,7 @@ class UploadController extends Controller
                         );
 
                         $corpus = $this->laudatioUtilsService->setCorpusAttributes($json,$params);
+
                         $filePath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
                         $isUntitled = false;
                     }
@@ -182,18 +196,22 @@ class UploadController extends Controller
                 else{
                     $commitPath = $corpusProjectPath.'/'.$gitLabCorpusPath.'/TEI-HEADERS/corpus';
                 }
+
                 // Git Add the file(s)
                 \App::call('App\Http\Controllers\GitRepoController@addFiles',[
                     'path' => $commitPath,
                     'corpus' => $corpusId
                 ]);
 
-                //git commit The files
-                \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
-                    'dirname' => $commitPath,
-                    'commitmessage' => "Adding files for ".$fileName,
-                    'corpus' => $corpusId
-                ]);
+                if(!$isUpdate){
+                    //git commit The files
+                    \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
+                        'dirname' => $commitPath,
+                        'commitmessage' => "Adding files for ".$fileName,
+                        'corpus' => $corpusId
+                    ]);
+                }
+
             }
 
         }

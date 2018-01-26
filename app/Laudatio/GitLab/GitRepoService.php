@@ -10,7 +10,7 @@ namespace App\Laudatio\GitLab;
 
 use App\Custom\GitRepoInterface;
 use App\Laudatio\GitLaB\GitFunction;
-use App\Laudatio\Utils\LaudatioUtilService;
+use App\Custom\LaudatioUtilsInterface;
 use Illuminate\Http\Request;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use Carbon\Carbon;
@@ -21,10 +21,12 @@ use App\CorpusProject;
 class GitRepoService implements GitRepoInterface
 {
     protected $basePath;
+    protected $laudatioUtilsService;
 
-    public function __construct()
+    public function __construct(LaudatioUtilsInterface $laudatioUtilsService)
     {
         $this->basePath = config('laudatio.basePath');
+        $this->laudatioUtilsService = $laudatioUtilsService;
     }
 
     public function createProjectFileStructure($flysystem,$projectName){
@@ -53,11 +55,11 @@ class GitRepoService implements GitRepoInterface
             $flysystem->write($dirPath."/TEI-HEADERS/annotation/.info","Annotation header file structure for ".$corpusName);
             $flysystem->createDir($dirPath."/CORPUS-DATA");
 
-            $this->initiateRepository($dirPath);
+            //$this->initiateRepository($dirPath);
             //$this->addFilesToRepository($dirPath,"TEI-HEADERS");
             //$this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
-            $this->copyGitHooks($dirPath);
-            $this->copyScripts($dirPath);
+            //$this->copyGitHooks($dirPath);
+            //$this->copyScripts($dirPath);
 
         }
 
@@ -73,8 +75,21 @@ class GitRepoService implements GitRepoInterface
             $gitFunction = new GitFunction();
             $corpusPath = $gitFunction->renameFile($corpusProjectPath,$oldCorpusPath,$normalizedCorpusName);
             $this->initiateRepository($corpusPath);
+            $this->copyGitHooks($corpusPath);
+            $this->copyScripts($corpusPath);
             $this->addFilesToRepository($corpusPath,"TEI-HEADERS");
+            $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$corpusPath);
             $this->commitFilesToRepository($this->basePath.'/'.$corpusPath,"Created initial corpus file structure for $normalizedCorpusName");
+            foreach ($stagedFiles as $stagedFile){
+                $dirArray = explode("/",trim($stagedFile));
+
+                if(count($dirArray) > 1){
+                    $fileName = $dirArray[2];
+                    $this->laudatioUtilsService->setVersionMapping($fileName,$dirArray[1],false);
+                }
+            }
+
+
         }
 
         return $corpusPath;
@@ -89,7 +104,7 @@ class GitRepoService implements GitRepoInterface
     public function deleteCorpusFileStructure($flysystem, $path){
         $deleted = false;
         $trackedResult = $this->deleteFile($flysystem,$path);
-        Log::info("trackedResult: ".print_r($trackedResult,1));
+
         if(!$trackedResult){
             $deleted = $this->deleteUntrackedFile($flysystem,$path);
         }
@@ -103,8 +118,8 @@ class GitRepoService implements GitRepoInterface
         $gitFunction = new GitFunction();
         $hasDir = false;
         $projects = array();
-        //dd($path);
-        Log::info("PATH: ".print_r($path,1));
+
+
         if($path == ""){
             $projects = $flysystem->listContents();
         }
@@ -116,7 +131,7 @@ class GitRepoService implements GitRepoInterface
         $pathArray = explode("/",$path);
         end($pathArray);
         $last_id = key($pathArray);
-        $laudatioUtilService = new LaudatioUtilService();
+
 
         //dd($projects);
         for ($i = 0; $i < count($projects);$i++){
@@ -129,7 +144,7 @@ class GitRepoService implements GitRepoInterface
                 $projects[$i]['tracked'] = "false";
             }
 
-            $headerObject = $laudatioUtilService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id],false);
+            $headerObject = $this->laudatioUtilsService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id],false);
             if(count($headerObject) > 0){
                 $projects[$i]['headerObject'] = $headerObject[0];
             }

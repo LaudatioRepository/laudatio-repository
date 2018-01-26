@@ -43,7 +43,7 @@
                                             @endif
 
                                             @if($project["tracked"] == "false" && $project["foldercount"] > 0 && $fileData["headerData"]["pathcount"] == 3)
-                                                <!--a href="{{route('gitRepo.addFile.route', array('path' => $project['path'],'corpus' => $corpus->id)) }}"><span class="btn btn-sm btn-danger fa fa-code-fork"></span></a-->
+                                                <a href="{{route('gitRepo.addFile.route', array('path' => $project['path'],'corpus' => $corpus->id)) }}"><span class="btn btn-sm btn-danger fa fa-code-fork"></span></a>
                                             @endif
                                         </td>
                                         <td>{{$project['lastupdated']}}</td>
