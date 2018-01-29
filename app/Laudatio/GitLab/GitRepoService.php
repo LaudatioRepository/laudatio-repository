@@ -66,6 +66,10 @@ class GitRepoService implements GitRepoInterface
         return $corpusPath;
     }
 
+    public function hasCorpusFileStructure($flysystem , $corpusProjectPath, $corpusPath){
+        return $flysystem->has($this->basePath."/".$corpusProjectPath."/".$corpusPath);
+    }
+
     public function updateCorpusFileStructure($flysystem,$corpusProjectPath,$oldCorpusPath,$corpusName){
         $corpusPath = "";
         $normalizedCorpusName = $this->normalizeString($corpusName);
@@ -88,10 +92,7 @@ class GitRepoService implements GitRepoInterface
                     $this->laudatioUtilsService->setVersionMapping($fileName,$dirArray[1],false);
                 }
             }
-
-
         }
-
         return $corpusPath;
     }
 

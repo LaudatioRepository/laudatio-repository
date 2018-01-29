@@ -139,6 +139,9 @@ class GitFunction
         return $fileHasDiff;
     }
 
+    public function fileExists($path){
+        return file_exists($this->basePath."/".$path);
+    }
 
     public function isAdded($status){
         return (strpos($status,"Changes to be committed") !== false || strpos($status,"\"use git add\" and/or \"git commit -a\"") !== false);
@@ -473,6 +476,7 @@ class GitFunction
                 $commitstatus = $this->getStatus($cwdPath);
 
                 if($this->isCleanWorkingTree($commitstatus)){
+                    clearstatcache(TRUE);
                     $isdeleted = true;
                 }
             }

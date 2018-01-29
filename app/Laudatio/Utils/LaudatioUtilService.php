@@ -146,6 +146,12 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpus;
     }
 
+    public function updateCorpusAttributes($params, $corpusId){
+        $corpus = Corpus::find($corpusId);
+        $corpus->update($params);
+        return $corpus;
+    }
+
     /**
      * Populate Document object with attributes fom the Document header
      * @param $json
@@ -236,6 +242,12 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
         }//end foreach
 
+        return $document;
+    }
+
+    public function updateDocumentAttributes($params,$documentId){
+        $document = Document::find($documentId);
+        $document->update($params);
         return $document;
     }
 
@@ -347,6 +359,12 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 $preparation->save();
             }
         }
+    }
+
+    public function updateAnnotationAttributes($params,$annotationId){
+        $annotation = annotaion::find($annotationId);
+        $annotation->update($params);
+        return $annotation;
     }
 
 

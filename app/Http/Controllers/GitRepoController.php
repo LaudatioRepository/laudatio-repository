@@ -148,8 +148,108 @@ class GitRepoController extends Controller
             ->with('user',\Auth::user());
     }
 
-
     public function deleteFile($path){
+        $directoryPath = substr($path,0,strrpos($path,"/"));
+        $dirArray = explode("/",$path);
+        $corpusPath = $dirArray[1];
+
+        if($dirArray[3] == 'corpus') {
+            $headerObject = DB::table('corpuses')->where('file_name', $dirArray[4])->get();
+            $corpus = Corpus::find($headerObject[0]->id);
+            $corpusId = $corpus->id;
+            $params = array(
+                "name" => "Untitled_".$corpus->gitlab_group_id,
+                "file_name" => "",
+            );
+            $this->laudatioUtils->updateCorpusAttributes($params,$corpusId);
+
+        }
+        else if($dirArray[3] == 'document'){
+
+
+            if(count($dirArray) > 4){
+                $headerObject = DB::table('documents')->where('file_name', $dirArray[4])->get();
+                $document = Document::find($headerObject[0]->id);
+                $corpusId = $document->corpus_id;
+                if(count($document->annotations()) > 0) {
+                    $document->annotations()->detach();
+                }
+
+                $document->delete();
+            }
+            else{
+                //we are deleting contents of a folder
+                $documents = DB::table('documents')->where('directory_path',$dirArray[1])->get();
+                foreach ($documents->toArray() as $document){
+                    if($document->file_name){
+
+                        $docu = Document::find($document->id);
+                        $corpusId = $docu->corpus_id;
+                        if(count($docu->annotations()) > 0) {
+                            $docu->annotations()->detach();
+                        }
+
+                        $docu->delete();
+                        $result = $this->GitRepoService->deleteFile($this->flysystem,$path."/".$document->file_name);
+
+                    }
+                }
+            }
+        }
+        else if($dirArray[3] == 'annotation'){
+            if(count($dirArray) > 4){
+                $headerObject = DB::table('annotations')->where('file_name',$dirArray[4])->get();
+                $annotation = Annotation::find($headerObject[0]->id);
+                $corpusId = $annotation->corpus_id;
+                if(count($annotation->documents()) > 0) {
+                    $annotation->documents()->detach();
+                }
+                $annotation->preparations()->delete();
+                $annotation->delete();
+            }
+            else{
+                //we are deleting contents of a folder
+                $annotations = DB::table('annotations')->where('directory_path',$dirArray[1])->get();
+                foreach ($annotations->toArray() as $item){
+                    if($item->file_name){
+
+                        $annotation = Annotation::find($item->id);
+
+                        $corpusId = $annotation->corpus_id;
+                        if(count($annotation->documents()) > 0) {
+                            $annotation->documents()->detach();
+                        }
+                        $annotation->preparations()->delete();
+                        $annotation->delete();
+                        $result = $this->GitRepoService->deleteFile($this->flysystem,$path."/".$annotation->file_name);
+
+                    }
+                }
+
+            }
+        }
+
+        $corpusId = 0;
+        $result = "";
+
+        if(count($dirArray) > 4){
+            $result = $this->GitRepoService->deleteFile($this->flysystem,$path);
+        }
+
+
+
+        if($result) {
+            session()->flash('message', $path.' was sucessfully deleted!');
+        }
+        if($dirArray[3] == 'corpus'){
+            $projectObject = DB::table('corpus_projects')->where('directory_path',$dirArray[0])->get();
+            return redirect()->route('admin.corpusProject.show',['corpusproject' => $projectObject[0]->id]);
+        }
+        else{
+            return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpusId]);
+        }
+    }
+    public function deleteFile2($path){
         $directoryPath = substr($path,0,strrpos($path,"/"));
         $dirArray = explode("/",$path);
         $corpusPath = $dirArray[1];
@@ -396,6 +496,7 @@ class GitRepoController extends Controller
         $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
         $file = substr($path,strrpos($path,"/")+1);
         $isAdded = $this->GitRepoService->addFilesToRepository($pathWithOutAddedFolder,$file);
+
         if($isAdded){
             return redirect()->action(
                 'CommitController@commitForm', ['dirname' => $path, 'corpus' => $corpus]
@@ -462,7 +563,6 @@ class GitRepoController extends Controller
             }
         }
         else{
-
             $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$corpusid);
             if($isCommited){
                 if($isHeader){
