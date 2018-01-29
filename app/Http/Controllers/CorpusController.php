@@ -351,8 +351,6 @@ class CorpusController extends Controller
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
 
-
-        $gitLabProjectId = $corpus->gitlab_id;
         $gitLabProjectId = $corpus->gitlab_id;
         $corpusProject = CorpusProject::find($projectId);
 
@@ -387,7 +385,10 @@ class CorpusController extends Controller
             $corpus->annotations()->delete();
         }
 
-        $this->GitLabService->deleteGitLabProject($gitLabProjectId);
+        if($gitLabProjectId != ""){
+            $this->GitLabService->deleteGitLabProject($gitLabProjectId);
+        }
+
         $corpus->delete();
 
         $corpusPath = $corpusProject->directory_path.'/'.$corpus->directory_path;
