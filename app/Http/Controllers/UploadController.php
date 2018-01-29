@@ -218,6 +218,8 @@ class UploadController extends Controller
                     $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/'.$fileName;
                 }
 
+                //Log::info("addPath: ".$addPath." EXISTS: ".$exists);
+                //Log::info("commitPath: ".$commitPath." EXISTS: ".$exists);
                 // Git Add the file(s)
                 \App::call('App\Http\Controllers\GitRepoController@addFiles',[
                     'path' => $addPath,

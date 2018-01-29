@@ -161,27 +161,33 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      */
     public function setDocumentAttributes($json,$corpusId,$fileName,$isDir){
         $jsonPath = new JSONPath($json);
+
         $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
         if(!$documentTitle){
             $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
         }
 
-
         $documentGenre = $jsonPath->find('$.TEI.teiHeader.style')->data();
-        $documentSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
-        $documentSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text')->data();
+
+
+        $documentSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc[?(@.extent)].extent.type')->data();
+
+
+        $documentSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc[?(@.extent)].extent.text')->data();
 
         $encodingDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc.schemaSpec.elementSpec[*]')->data();
+
 
         $document = null;
         $documentObject = $this->getModelByFileName($fileName,'document',$isDir);
         $corpus = Corpus::find($corpusId);
+
         if(count($documentObject) > 0){
             $document = $documentObject[0];
             $document->title = $documentTitle[0];
-            $document->document_genre = $documentGenre[0];
-            $document->document_size_type = $documentSizeType[0];
-            $document->document_size_value = $documentSizeValue[0];
+            $document->document_genre = count($documentGenre) > 0 ? $documentGenre[0] : "";
+            $document->document_size_type = count($documentSizeType) > 0 ? $documentSizeType[0]: "";
+            $document->document_size_value = count($documentSizeValue) > 0 ? $documentSizeValue[0]: 0;
             $document->corpus_id = $corpusId;
             $document->file_name = $fileName;
             $document->directory_path = $corpus->directory_path;
@@ -190,9 +196,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         else{
             $document = new Document;
             $document->title = $documentTitle[0];
-            $document->document_genre = $documentGenre[0];
-            $document->document_size_type = $documentSizeType[0];
-            $document->document_size_value = $documentSizeValue[0];
+            $document->document_genre = count($documentGenre) > 0 ? $documentGenre[0] : "";
+            $document->document_size_type = count($documentSizeType) > 0 ? $documentSizeType[0]: "";
+            $document->document_size_value = count($documentSizeValue) > 0 ? $documentSizeValue[0]: 0;
             $document->corpus_id = $corpusId;
             $document->directory_path = $corpus->directory_path;
             $document->file_name = $fileName;
@@ -305,7 +311,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     public function setPreparationAttributes($json,$annotationId,$corpusId,$isDir){
         $jsonPath = new JSONPath($json);
-        //Log::info("jsonPath: ".print_r($jsonPath,1));
         $preparationFromDB = Preparation::where([
             ['annotation_id', '=', $annotationId],
             ['corpus_id', '=', $corpusId],
@@ -325,8 +330,8 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                         'n' => $preparationEncodingSteps[0],
                         'style' => $preparationEncodingSteps[1],
                         'appInfo' => $preparationEncodingSteps[2],
-                        'editorialDecl' => $preparationEncodingSteps[3],
-                        'projectDesc' => $preparationEncodingSteps[4],
+                        'editorialDecl' => isset($preparationEncodingSteps[3]) ? $preparationEncodingSteps[3] : "",
+                        'projectDesc' => isset($preparationEncodingSteps[4]) ? $preparationEncodingSteps[4] : "",
                     )
 
                 );
@@ -340,7 +345,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 $preparation->preparation_encoding_full_name = $preparationEncodingStep['appInfo']['application']['label'];
                 $preparation->preparation_encoding_description = $preparationEncodingStep['appInfo']['application']['p'];
                 $preparation->preparation_encoding_annotation_style = $preparationEncodingStep['appInfo']['application']['style'];
-                $preparation->preparation_encoding_segmentation_style = $preparationEncodingStep['editorialDecl']['segmentation']['style'];
+                $preparation->preparation_encoding_segmentation_style = isset($preparationEncodingStep['editorialDecl']['segmentation']) ? $preparationEncodingStep['editorialDecl']['segmentation']['style'] : "";
                 if(isset($preparationEncodingStep['editorialDecl']['segmentation']['corresp'])){
                     $preparation->preparation_encoding_segmentation_type = $preparationEncodingStep['editorialDecl']['segmentation']['corresp'];
                 }
