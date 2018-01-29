@@ -79,7 +79,8 @@ class CorpusController extends Controller
 
         // Create the directory structure for the Corpus
         $corpusProjectPath = $corpusProject->directory_path;
-        $corpus_name = "Untitled_".$corpusProjectId;
+        $corpusCount = count($corpusProject->corpora()->get());
+        $corpus_name = "Untitled_".$corpusProjectId."_".($corpusCount++);
         $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus_name);
 
 
@@ -124,6 +125,7 @@ class CorpusController extends Controller
 
         }
          * */
+
         $corpusPath = "Untitled".$corpusProjectId;
         if($corpusPath){
             $corpus = Corpus::create([
@@ -392,7 +394,6 @@ class CorpusController extends Controller
         $corpus->delete();
 
         $corpusPath = $corpusProject->directory_path.'/'.$corpus->directory_path;
-        Log::info("DEL: Copruspath: ".$corpusPath);
         $this->GitRepoService->deleteCorpusFileStructure($this->flysystem,$corpusPath);
 
         $corpora = array();
