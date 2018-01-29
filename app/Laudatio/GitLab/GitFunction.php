@@ -494,7 +494,6 @@ class GitFunction
         $folder = "";
         $cwdPath = "";
 
-        Log::info("PATH: ".$path." isproject: ".$isProject." ISCORP: ".$isCorpus);
         if(!is_dir($this->basePath.'/'.$path)){
             $isFile = true;
         }

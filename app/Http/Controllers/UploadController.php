@@ -118,17 +118,17 @@ class UploadController extends Controller
                 $json = $this->laudatioUtilsService->parseXMLToJson($xmlNode, array());
                 $jsonPath = new JSONPath($json,JSONPath::ALLOW_MAGIC);
 
-                $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
-                //dd($corpusTitle);
+                //dd($corpusProjectPath);
                 if($dirPathArray[$last_id] == 'corpus'){
+                    $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
                     if($corpusTitle[0]){
-
                         if($isUntitled){
                             $corpusPath = $this->GitRepoService->updateCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus->directory_path,$corpusTitle[0]);
+                            //dd($corpusPath);
                             $gitLabCorpusPath = substr($corpusPath,strrpos($corpusPath,"/")+1);
                             $this->laudatioUtilsService->updateDirectoryPaths($gitLabCorpusPath,$corpusId);
                             $gitLabResponse = $this->GitLabService->createGitLabProject(
-                                $corpusTitle[0],
+                                $this->GitRepoService->normalizeTitle($corpusTitle[0]),
                                 array(
                                     'namespace_id' => $corpusProjectId,
                                     'path' => $gitLabCorpusPath,
@@ -161,7 +161,7 @@ class UploadController extends Controller
 
 
                         $isUntitled = false;
-                        $filePath = $corpusProjectPath."/".$corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                        $filePath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
 
                     }
                 }
@@ -184,7 +184,8 @@ class UploadController extends Controller
             /*
              * Move the uploaded file to the correct path
              */
-            //dd($filePath);
+
+
             $gitFunction = new GitFunction();
 
             $exists = $gitFunction->fileExists($filePath);
@@ -214,12 +215,11 @@ class UploadController extends Controller
                     $corpusPath = $dirPathArray[1];
                 }
                 else{
-                    $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/';
-                    $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/'.$fileName;
+                    $addPath = $corpusPath.'/TEI-HEADERS/corpus/';
+                    $commitPath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
                 }
 
-                //Log::info("addPath: ".$addPath." EXISTS: ".$exists);
-                //Log::info("commitPath: ".$commitPath." EXISTS: ".$exists);
+
                 // Git Add the file(s)
                 \App::call('App\Http\Controllers\GitRepoController@addFiles',[
                     'path' => $addPath,

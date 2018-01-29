@@ -186,7 +186,7 @@
                 });
 
             })
-            console.log(postData.role_users);
+
 
             if(Object.keys(postData.role_users).length > 0){
                 $.ajax({

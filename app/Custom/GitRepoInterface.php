@@ -23,5 +23,6 @@ interface GitRepoInterface {
     /** HELPERS  **/
     public function filterDottedFiles($array);
     public function normalizeString ($str = '');
+    public function normalizeTitle ($str = '');
     public function getCommitData($path);
 }

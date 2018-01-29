@@ -47,7 +47,7 @@ class CorpusController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(CorpusProject $corpusproject)
+    public function create_old(CorpusProject $corpusproject)
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
@@ -57,6 +57,37 @@ class CorpusController extends Controller
             ->with('user',$user);
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create(CorpusProject $corpusproject)
+    {
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        $corpusProjectPath = $corpusproject->directory_path;
+        $corpusProjectId = $corpusproject->gitlab_id;
+
+        // Create the directory structure for the Corpus
+        $corpusProjectPath = $corpusproject->directory_path;
+        $corpusCount = count($corpusproject->corpora()->get());
+        $corpus_name = "Untitled_".$corpusProjectId."_".($corpusCount++);
+        $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus_name);
+
+
+        if($corpusPath){
+            $corpus = Corpus::create([
+                "name" => $corpus_name,
+                "description" => "",
+                'directory_path' => $corpusPath
+            ]);
+
+            $corpus->corpusprojects()->attach($corpusproject);
+        }
+
+        return redirect()->route('admin.corpora.index');
+    }
 
     /**
      * Store a newly created resource in storage.
