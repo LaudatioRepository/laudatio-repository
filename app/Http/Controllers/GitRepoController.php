@@ -478,7 +478,8 @@ class GitRepoController extends Controller
             $formatName = $input['formatName'];
             $path = $input['path'];
             $gitFunction = new GitFunction();
-            $created = $gitFunction->makeDirectory($path,$formatName);
+            //$created = $gitFunction->makeDirectory($path,$formatName);
+            $created = $this->flysystem->createDir($path."/".$formatName);
 
             $msg .= "<ul>";
             if($created){
