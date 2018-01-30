@@ -7,6 +7,7 @@ Route::get('/auth/{social}/callback',['as' => 'auth.social.callback', 'uses' => 
 
 Route::get('/', ['uses' => 'IndexController@index']);
 Route::get('/admin', ['as' => 'admin', 'uses' => 'IndexController@admin'])->middleware('auth');
+Route::get('/dashboard', ['as' => 'admin', 'uses' => 'DashboardController@index'])->middleware('auth');
 
 
 
