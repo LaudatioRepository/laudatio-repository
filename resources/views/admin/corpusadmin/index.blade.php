@@ -21,7 +21,7 @@
                                         </span>
                                         <span class="pull-right">Created at: {{$corpus->created_at->toFormattedDateString()}}
                                             <button type="button" class="btn btn-success btn-circle">
-                                                <a href="/admin/corpora/{{$corpus->id}}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+                                                <a href="/admin/corpora/{{$corpus->id}}/{{$corpusProjects[$corpus->id]}}/{{$corpus->directory_path}}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
                                             </button>
                                         </span>
                                     </div>
