@@ -217,6 +217,77 @@ class GitRepoService implements GitRepoInterface
         );
     }
 
+    public function getCorpusDataFiles($flysystem,$path = ""){
+        $gitFunction = new GitFunction();
+        $hasDir = false;
+        $projects = array();
+
+
+        if($path == ""){
+            $projects = $flysystem->listContents();
+        }
+        else{
+            $projects = $flysystem->listContents($path);
+        }
+
+
+        $pathArray = explode("/",$path);
+        end($pathArray);
+        $last_id = key($pathArray);
+
+
+        //dd($projects);
+        for ($i = 0; $i < count($projects);$i++){
+            $foldercount = count($flysystem->listContents($projects[$i]['path']));
+            $projects[$i]['foldercount'] = $foldercount;
+
+            if($gitFunction->isTracked($this->basePath."/".$projects[$i]['path'])){
+                $projects[$i]['tracked'] = "true";
+            }
+            else{
+                $projects[$i]['tracked'] = "false";
+            }
+
+
+            $projects[$i]['lastupdated'] = Carbon::createFromTimestamp($projects[$i]['timestamp'])->toDateTimeString();
+
+            if($projects[$i]["type"] == "dir"){
+                $hasDir = true;
+            }
+
+            $projects[$i]['filesize'] = $this->calculateFileSize(filesize($this->basePath."/".$projects[$i]['path']));
+            $hasDiff = $gitFunction->hasDiff($this->basePath."/".$projects[$i]['path']);
+
+
+            if($hasDiff){
+                $projects[$i]['hasDiff'] = "true";
+            }
+            else{
+                $projects[$i]['hasDiff'] = "false";
+            }
+
+            if($projects[$i]['hasDiff'] == "true"){
+                $projects[$i]['diffFiles'] = array();
+                array_push($projects[$i]['diffFiles'],$hasDiff);
+            }
+
+        }
+
+        $patharray = explode("/",$path);
+        $count = count($patharray);
+        $projects = $this->filterDottedFiles($projects);
+        $previouspath = substr($path,0,strrpos($path,"/"));
+
+
+        return array(
+            "projects" => $projects,
+            "hasdir" => $hasDir,
+            "pathcount" => $count,
+            "path" => $path,
+            "previouspath" => $previouspath,
+        );
+    }
+
     function calculateFileSize($size,$accuracy=2) {
         $output = 0;
         $units = array(' Bytes',' KB',' Mb',' Gb');
@@ -246,6 +317,16 @@ class GitRepoService implements GitRepoInterface
         if($flysystem->has($path)){
             $gitFunction = new  GitFunction();
             $result = $gitFunction->deleteUntrackedFiles($path,$isProject,$isCorpus);
+        }
+        return $result;
+    }
+
+    public function deleteUntrackedDataFile($flysystem,$path){
+
+        $result = null;
+        if($flysystem->has($path)){
+            $gitFunction = new  GitFunction();
+            $result = $gitFunction->deleteUntrackedDataFiles($path);
         }
         return $result;
     }

@@ -247,18 +247,18 @@ class CorpusController extends Controller
             $pathArray = explode("/",$corpusPath);
             $corpusBasePath = $pathArray[0]."/".$pathArray[1];
             if(strpos($corpusPath,"CORPUS-DATA") !== false && strpos($corpusPath,"TEI-HEADERS") === false){
-                $corpusData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
+                $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath);
                 $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusBasePath.'/TEI-HEADERS');
                 $folderType = "CORPUS-DATA";
 
             }
             else if(strpos($corpusPath,"TEI-HEADERS") !== false && strpos($corpusPath,"CORPUS-DATA") === false){
-                $corpusData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusBasePath.'/CORPUS-DATA');
+                $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusBasePath.'/CORPUS-DATA');
                 $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
                 $folderType = "TEI-HEADERS";
             }
             else{
-                $corpusData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath.'/CORPUS-DATA');
+                $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath.'/CORPUS-DATA');
                 $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath.'/TEI-HEADERS');
             }
 

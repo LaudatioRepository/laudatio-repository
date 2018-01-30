@@ -485,6 +485,47 @@ class GitFunction
         return $isdeleted;
     }
 
+    public function deleteUntrackedDataFiles($path){
+        $isFile = false;
+        $isDeleted = false;
+        if(!is_dir($this->basePath.'/'.$path)){
+            $isFile = true;
+        }
+
+
+        if(strpos($path,"/") !== false){
+            $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
+            $folder = substr($path,strrpos($path,"/")+1);
+            $cwdPath = $this->basePath."/".$pathWithOutAddedFolder;
+        }
+        else{
+            $cwdPath = $this->basePath;
+            $folder = $path;
+        }
+
+        Log::info("FOLDER: ".print_r($folder, 1));
+        Log::info("cwdPath: ".print_r($cwdPath, 1));
+        $process = null;
+        if($isFile){
+            $process = new Process("rm $folder",$cwdPath);
+        }
+        else{
+            $process = new Process("rm -rf *",$cwdPath);
+        }
+
+        $process->run();
+
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $isDeleted = true;
+        }
+
+        return $isDeleted;
+    }
 
     public function deleteUntrackedFiles($path,$isProject = false,$isCorpus = false){
 

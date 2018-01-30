@@ -77,7 +77,9 @@ Route::get('/schema/{path?}',[ 'as' => 'gitRepo.route.schema', 'uses' => 'GitRep
 
 Route::get('/viewFile/{path}',[ 'as' => 'gitRepo.readFile.route', 'uses' => 'GitRepoController@readFile'])->where('path', '.+')->middleware('auth');
 Route::get('/admin/deleteFile/{path}',[ 'as' => 'gitRepo.deleteFile.route', 'uses' => 'GitRepoController@deleteFile'])->where('path', '.+')->middleware('auth');
+Route::get('/admin/deleteDataFile/{path}',[ 'as' => 'gitRepo.deleteDataFile.route', 'uses' => 'GitRepoController@deleteDataFile'])->where('path', '.+')->middleware('auth');
 Route::get('/admin/deleteUntrackedFile/{path}',[ 'as' => 'gitRepo.deleteUntrackedFile.route', 'uses' => 'GitRepoController@deleteUntrackedFile'])->where('path', '.+')->middleware('auth');
+Route::get('/admin/deleteUntrackedDataFile/{path}',[ 'as' => 'gitRepo.deleteUntrackedDataFile.route', 'uses' => 'GitRepoController@deleteUntrackedDataFile'])->where('path', '.+')->middleware('auth');
 Route::get('/updateFile/{path}',[ 'as' => 'gitRepo.updateFile.route', 'uses' => 'GitRepoController@updateFileVersion'])->where('path', '.+')->middleware('auth');
 
 

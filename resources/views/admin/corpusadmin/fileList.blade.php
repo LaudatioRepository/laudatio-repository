@@ -35,9 +35,9 @@
                                             <td class="text-center">
                                                 @if($fileData["corpusData"]["pathcount"] == 3 || $fileData["corpusData"]["pathcount"] == 1 || $fileData["corpusData"]["pathcount"] == 4)
                                                     @if($project["tracked"] != "false")
-                                                        <a href="{{route('gitRepo.deleteFile.route', array('path' => $project['path'])) }}"><span class="btn btn-sm btn-danger fa fa-trash"></span></a>
+                                                        <a href="{{route('gitRepo.deleteDataFile.route', array('path' => $project['path'])) }}"><span class="btn btn-sm btn-danger fa fa-trash"></span></a>
                                                     @else
-                                                        <a href="{{route('gitRepo.deleteUntrackedFile.route', array('path' => $project['path'])) }}"><span class="btn btn-sm btn-danger fa fa-trash"></span></a>
+                                                        <a href="{{route('gitRepo.deleteUntrackedDataFile.route', array('path' => $project['path'])) }}"><span class="btn btn-sm btn-danger fa fa-trash"></span></a>
                                                     @endif
 
                                                 @endif
@@ -74,9 +74,9 @@
 
 
                                                     @if($project["tracked"] != "false")
-                                                        <a href="{{route('gitRepo.deleteFile.route', array('path' => $project['path'])) }}"><span class=  "btn btn-sm btn-danger fa fa-trash"></span></a>
+                                                        <a href="{{route('gitRepo.deleteDataFile.route', array('path' => $project['path'])) }}"><span class=  "btn btn-sm btn-danger fa fa-trash"></span></a>
                                                     @else
-                                                        <a href="{{route('gitRepo.deleteUntrackedFile.route', array('path' => $project['path'])) }}"><span class="btn btn-sm btn-danger fa fa-trash"></span></a>
+                                                        <a href="{{route('gitRepo.deleteUntrackedDataFile.route', array('path' => $project['path'])) }}"><span class="btn btn-sm btn-danger fa fa-trash"></span></a>
                                                     @endif
 
                                             </td>

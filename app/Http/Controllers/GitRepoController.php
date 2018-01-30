@@ -249,6 +249,21 @@ class GitRepoController extends Controller
             return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpusId]);
         }
     }
+
+    public function deleteDataFile($path){
+        $directoryPath = substr($path,0,strrpos($path,"/"));
+        $dirArray = explode("/",$directoryPath);
+        $corpusPath = $dirArray[1];
+        $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
+        $result = $this->GitRepoService->deleteFile($this->flysystem,$path);
+        if($result) {
+            session()->flash('message', $path.' was sucessfully deleted!');
+        }
+        return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
+    }
+
+
+
     public function deleteFile2($path){
         $directoryPath = substr($path,0,strrpos($path,"/"));
         $dirArray = explode("/",$path);
@@ -399,6 +414,20 @@ class GitRepoController extends Controller
         $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
         $result = $this->GitRepoService->deleteUntrackedFile($this->flysystem,$path);
         $this->laudatioUtils->deleteModels($path);
+        if($result) {
+            session()->flash('message', $path.' was sucessfully deleted!');
+        }
+        return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
+    }
+
+
+
+    public function deleteUntrackedDataFile($path){
+        $directoryPath = substr($path,0,strrpos($path,"/"));
+        $dirArray = explode("/",$directoryPath);
+        $corpusPath = $dirArray[1];
+        $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
+        $result = $this->GitRepoService->deleteUntrackedDataFile($this->flysystem,$path);
         if($result) {
             session()->flash('message', $path.' was sucessfully deleted!');
         }
