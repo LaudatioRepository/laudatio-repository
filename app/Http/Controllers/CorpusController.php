@@ -438,8 +438,16 @@ class CorpusController extends Controller
         $corpora = array();
         $corpora = Corpus::latest()->get();
 
+        $corpusProjects = array();
+
+        foreach ($corpora as $corpus){
+            $corpusProjectsTemp = $corpus->corpusprojects()->get();
+            $corpusProjects[$corpus->id] = $corpusProjectsTemp[0]->directory_path;
+        }
+
         return view('admin.corpusadmin.index', compact('corpora'))
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('corpusProjects', $corpusProjects)
             ->with('user',$user);
     }
 

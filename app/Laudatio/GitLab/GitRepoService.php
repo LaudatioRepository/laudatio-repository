@@ -86,10 +86,11 @@ class GitRepoService implements GitRepoInterface
             $this->commitFilesToRepository($this->basePath.'/'.$corpusPath,"Created initial corpus file structure for $normalizedCorpusName");
             foreach ($stagedFiles as $stagedFile){
                 $dirArray = explode("/",trim($stagedFile));
-
-                if(count($dirArray) > 1){
-                    $fileName = $dirArray[2];
-                    $this->laudatioUtilsService->setVersionMapping($fileName,$dirArray[1],false);
+                if($dirArray[0] != "CORPUS-DATA"){
+                    if(count($dirArray) > 1){
+                        $fileName = $dirArray[2];
+                        $this->laudatioUtilsService->setVersionMapping($fileName,$dirArray[1],false);
+                    }
                 }
             }
         }
