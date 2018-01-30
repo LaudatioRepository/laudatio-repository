@@ -181,30 +181,38 @@
                         postData.role_users[roleid] = []
                     }
                     postData.role_users[roleid].push($(this).data('userid'));
+                    $(this).remove();
                 });
 
             })
-            //console.log(role_users);
 
 
-            $.ajax({
-                url: "/api/adminapi/userrolesbyproject",
-                type:"POST",
-                data: postData,
-                async: true,
-                statusCode: {
-                    500: function () {
-                        alert("server down");
+            if(Object.keys(postData.role_users).length > 0){
+                $.ajax({
+                    url: "/api/adminapi/userrolesbyproject",
+                    type:"POST",
+                    data: postData,
+                    async: true,
+                    statusCode: {
+                        500: function () {
+                            alert("server down");
+                        }
+                    },
+                    success:function(data){
+                        console.log(data);
+                        var flashMessage = '<div id="flash-message" class="alert alert-success"> '+data.msg+' </div>';
+                        $('#page-wrapper').append(flashMessage);
+                    },error:function(){
+                        console.log("error!!!!");
                     }
-                },
-                success:function(data){
-                    console.log(data);
-                    var flashMessage = '<div id="flash-message" class="alert alert-success"> '+data.msg+' </div>';
-                    $('#page-wrapper').append(flashMessage);
-                },error:function(){
-                    console.log("error!!!!");
-                }
-            }); //end of ajax
+                }); //end of ajax
+            }
+            else{
+                var flashMessage = '<div id="flash-message" class="alert alert-success"> Error: you must choose users to assign </div>';
+                $('#page-wrapper').append(flashMessage);
+            }
+
+
 
 
         });

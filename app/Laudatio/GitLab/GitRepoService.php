@@ -10,7 +10,7 @@ namespace App\Laudatio\GitLab;
 
 use App\Custom\GitRepoInterface;
 use App\Laudatio\GitLaB\GitFunction;
-use App\Laudatio\Utils\LaudatioUtilService;
+use App\Custom\LaudatioUtilsInterface;
 use Illuminate\Http\Request;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use Carbon\Carbon;
@@ -21,10 +21,12 @@ use App\CorpusProject;
 class GitRepoService implements GitRepoInterface
 {
     protected $basePath;
+    protected $laudatioUtilsService;
 
-    public function __construct()
+    public function __construct(LaudatioUtilsInterface $laudatioUtilsService)
     {
         $this->basePath = config('laudatio.basePath');
+        $this->laudatioUtilsService = $laudatioUtilsService;
     }
 
     public function createProjectFileStructure($flysystem,$projectName){
@@ -53,14 +55,45 @@ class GitRepoService implements GitRepoInterface
             $flysystem->write($dirPath."/TEI-HEADERS/annotation/.info","Annotation header file structure for ".$corpusName);
             $flysystem->createDir($dirPath."/CORPUS-DATA");
 
-            $this->initiateRepository($dirPath);
-            $this->addFilesToRepository($dirPath,"TEI-HEADERS");
-            $this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
-            $this->copyGitHooks($dirPath);
-            $this->copyScripts($dirPath);
+            //$this->initiateRepository($dirPath);
+            //$this->addFilesToRepository($dirPath,"TEI-HEADERS");
+            //$this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
+            //$this->copyGitHooks($dirPath);
+            //$this->copyScripts($dirPath);
 
         }
 
+        return $corpusPath;
+    }
+
+    public function hasCorpusFileStructure($flysystem , $corpusProjectPath, $corpusPath){
+        return $flysystem->has($this->basePath."/".$corpusProjectPath."/".$corpusPath);
+    }
+
+    public function updateCorpusFileStructure($flysystem,$corpusProjectPath,$oldCorpusPath,$corpusName){
+        $corpusPath = "";
+        $normalizedCorpusName = $this->normalizeString($corpusName);
+        $oldDirPath = $corpusProjectPath.'/'.$oldCorpusPath;
+
+        if($flysystem->has($oldDirPath)){
+            $gitFunction = new GitFunction();
+            $corpusPath = $gitFunction->renameFile($corpusProjectPath,$oldCorpusPath,$normalizedCorpusName);
+            $this->initiateRepository($corpusPath);
+            $this->copyGitHooks($corpusPath);
+            $this->copyScripts($corpusPath);
+            $this->addFilesToRepository($corpusPath,"TEI-HEADERS");
+            $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$corpusPath);
+            $this->commitFilesToRepository($this->basePath.'/'.$corpusPath,"Created initial corpus file structure for $normalizedCorpusName");
+            foreach ($stagedFiles as $stagedFile){
+                $dirArray = explode("/",trim($stagedFile));
+                if($dirArray[0] != "CORPUS-DATA"){
+                    if(count($dirArray) > 1){
+                        $fileName = $dirArray[2];
+                        $this->laudatioUtilsService->setVersionMapping($fileName,$dirArray[1],false);
+                    }
+                }
+            }
+        }
         return $corpusPath;
     }
 
@@ -73,9 +106,23 @@ class GitRepoService implements GitRepoInterface
     public function deleteCorpusFileStructure($flysystem, $path){
         $deleted = false;
         $trackedResult = $this->deleteFile($flysystem,$path);
-        Log::info("trackedResult: ".print_r($trackedResult,1));
+
         if(!$trackedResult){
-            $deleted = $this->deleteUntrackedFile($flysystem,$path);
+            $deleted = $this->deleteUntrackedFile($flysystem,$path,false,true);
+        }
+        else{
+            $deleted = $trackedResult;
+        }
+        return $deleted;
+    }
+
+
+    public function deleteProjectFileStructure($flysystem, $path){
+        $deleted = false;
+        $trackedResult = $this->deleteFile($flysystem,$path);
+
+        if(!$trackedResult){
+            $deleted = $this->deleteUntrackedFile($flysystem,$path,true,false);
         }
         else{
             $deleted = $trackedResult;
@@ -87,8 +134,8 @@ class GitRepoService implements GitRepoInterface
         $gitFunction = new GitFunction();
         $hasDir = false;
         $projects = array();
-        //dd($path);
-        Log::info("PATH: ".print_r($path,1));
+
+
         if($path == ""){
             $projects = $flysystem->listContents();
         }
@@ -100,7 +147,7 @@ class GitRepoService implements GitRepoInterface
         $pathArray = explode("/",$path);
         end($pathArray);
         $last_id = key($pathArray);
-        $laudatioUtilService = new LaudatioUtilService();
+
 
         //dd($projects);
         for ($i = 0; $i < count($projects);$i++){
@@ -113,7 +160,7 @@ class GitRepoService implements GitRepoInterface
                 $projects[$i]['tracked'] = "false";
             }
 
-            $headerObject = $laudatioUtilService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id],false);
+            $headerObject = $this->laudatioUtilsService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id],false);
             if(count($headerObject) > 0){
                 $projects[$i]['headerObject'] = $headerObject[0];
             }
@@ -171,6 +218,77 @@ class GitRepoService implements GitRepoInterface
         );
     }
 
+    public function getCorpusDataFiles($flysystem,$path = ""){
+        $gitFunction = new GitFunction();
+        $hasDir = false;
+        $projects = array();
+
+
+        if($path == ""){
+            $projects = $flysystem->listContents();
+        }
+        else{
+            $projects = $flysystem->listContents($path);
+        }
+
+
+        $pathArray = explode("/",$path);
+        end($pathArray);
+        $last_id = key($pathArray);
+
+
+        //dd($projects);
+        for ($i = 0; $i < count($projects);$i++){
+            $foldercount = count($flysystem->listContents($projects[$i]['path']));
+            $projects[$i]['foldercount'] = $foldercount;
+
+            if($gitFunction->isTracked($this->basePath."/".$projects[$i]['path'])){
+                $projects[$i]['tracked'] = "true";
+            }
+            else{
+                $projects[$i]['tracked'] = "false";
+            }
+
+
+            $projects[$i]['lastupdated'] = Carbon::createFromTimestamp($projects[$i]['timestamp'])->toDateTimeString();
+
+            if($projects[$i]["type"] == "dir"){
+                $hasDir = true;
+            }
+
+            $projects[$i]['filesize'] = $this->calculateFileSize(filesize($this->basePath."/".$projects[$i]['path']));
+            $hasDiff = $gitFunction->hasDiff($this->basePath."/".$projects[$i]['path']);
+
+
+            if($hasDiff){
+                $projects[$i]['hasDiff'] = "true";
+            }
+            else{
+                $projects[$i]['hasDiff'] = "false";
+            }
+
+            if($projects[$i]['hasDiff'] == "true"){
+                $projects[$i]['diffFiles'] = array();
+                array_push($projects[$i]['diffFiles'],$hasDiff);
+            }
+
+        }
+
+        $patharray = explode("/",$path);
+        $count = count($patharray);
+        $projects = $this->filterDottedFiles($projects);
+        $previouspath = substr($path,0,strrpos($path,"/"));
+
+
+        return array(
+            "projects" => $projects,
+            "hasdir" => $hasDir,
+            "pathcount" => $count,
+            "path" => $path,
+            "previouspath" => $previouspath,
+        );
+    }
+
     function calculateFileSize($size,$accuracy=2) {
         $output = 0;
         $units = array(' Bytes',' KB',' Mb',' Gb');
@@ -194,12 +312,22 @@ class GitRepoService implements GitRepoInterface
         return $result;
     }
 
-    public function deleteUntrackedFile($flysystem,$path){
+    public function deleteUntrackedFile($flysystem,$path,$isProject = false,$isCorpus = false){
 
         $result = null;
         if($flysystem->has($path)){
             $gitFunction = new  GitFunction();
-            $result = $gitFunction->deleteUntrackedFiles($path);
+            $result = $gitFunction->deleteUntrackedFiles($path,$isProject,$isCorpus);
+        }
+        return $result;
+    }
+
+    public function deleteUntrackedDataFile($flysystem,$path){
+
+        $result = null;
+        if($flysystem->has($path)){
+            $gitFunction = new  GitFunction();
+            $result = $gitFunction->deleteUntrackedDataFiles($path);
         }
         return $result;
     }
@@ -275,6 +403,17 @@ class GitRepoService implements GitRepoInterface
         $str = rawurlencode($str);
         $str = str_replace('%', '-', $str);
         $str = str_replace('.', '-', $str);
+        return $str;
+    }
+
+    public function normalizeTitle ($str = '')
+    {
+        $str = strip_tags($str);
+        $str = preg_replace('/[\r\n\t ]+/', ' ', $str);
+        $str = preg_replace('/[\"\*\/\:\<\>\?\'\|]+/', ' ', $str);
+        $str = html_entity_decode( $str, ENT_QUOTES, "utf-8" );
+        $str = htmlentities($str, ENT_QUOTES, "utf-8");
+        $str = preg_replace("/(&)([a-z])([a-z]+;)/i", '$2', $str);
         return $str;
     }
 

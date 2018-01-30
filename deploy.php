@@ -8,7 +8,7 @@ require 'recipe/laravel.php';
 set('repository', 'git@bitbucket.org:guescini-HU/vuelasticsearchjslaudatio.git');
 set('git_tty', true); // [Optional] Allocate tty for git on first deployment
 add('shared_files', ['.env','config/flysystem.php','config/filesystems.php','config/gitlab.php','config/laudatio.php']);
-add('shared_dirs', ['storage']);
+add('shared_dirs', ['storage', 'vendor']);
 add('writable_dirs', ['releases','storage','vendor']);
 set('ssh_type', 'native');
 set('ssh_multiplexing', true);
@@ -33,7 +33,7 @@ host('depot1-6.cms.hu-berlin.de')
     ->user('root')
     ->identityFile('/Users/rolfguescini/.ssh/deploy', '/Users/rolfguescini/.ssh/deploy', '')
     ->set('deploy_path', '/var/www/html/laravelaudatio')
-    ->set('branch', 'corpusfiles')
+    ->set('branch', 'nonsequenceduploads')
     ->user('rolfguescini');
 
 
@@ -44,7 +44,7 @@ task('environment', function () {
     run('cp /var/www/html/laravelaudatio/gitlab.php {{release_path}}/config/gitlab.php');
     run('cp /var/www/html/laravelaudatio/laudatio.php {{release_path}}/config/laudatio.php');
     run('cp /var/www/html/laravelaudatio/deployenv {{release_path}}/.env');
-    run('cp /var/www/html/laravelaudatio/Groups.php {{release_path}}/vendor/m4tthumphrey/php-gitlab-api/lib/Gitlab/Api/Groups.php');
+    //run('cp /var/www/html/laravelaudatio/Groups.php {{release_path}}/vendor/m4tthumphrey/php-gitlab-api/lib/Gitlab/Api/Groups.php');
 })->desc('Environment setup');
 
 task('makespace', function () {

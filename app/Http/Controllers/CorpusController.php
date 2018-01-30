@@ -37,8 +37,31 @@ class CorpusController extends Controller
         $user = \Auth::user();
         $corpora = Corpus::latest()->get();
 
+        $corpusProjects = array();
+
+        foreach ($corpora as $corpus){
+            $corpusProjectsTemp = $corpus->corpusprojects()->get();
+            $corpusProjects[$corpus->id] = $corpusProjectsTemp[0]->directory_path;
+        }
+
         return view('admin.corpusadmin.index', compact('corpora'))
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('corpusProjects', $corpusProjects)
+            ->with('user',$user);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create_old(CorpusProject $corpusproject)
+    {
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        return view('admin.corpusadmin.create')
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('corpusProjectId',$corpusproject->id)
             ->with('user',$user);
     }
 
@@ -51,10 +74,27 @@ class CorpusController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-        return view('admin.corpusadmin.create')
-            ->with('isLoggedIn', $isLoggedIn)
-            ->with('corpusProjectId',$corpusproject->id)
-            ->with('user',$user);
+        $corpusProjectPath = $corpusproject->directory_path;
+        $corpusProjectId = $corpusproject->gitlab_id;
+
+        // Create the directory structure for the Corpus
+        $corpusProjectPath = $corpusproject->directory_path;
+        $corpusCount = count($corpusproject->corpora()->get());
+        $corpus_name = "Untitled_".$corpusProjectId."_".($corpusCount++);
+        $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus_name);
+
+
+        if($corpusPath){
+            $corpus = Corpus::create([
+                "name" => $corpus_name,
+                "description" => "",
+                'directory_path' => $corpusPath
+            ]);
+
+            $corpus->corpusprojects()->attach($corpusproject);
+        }
+
+        return redirect()->route('admin.corpora.index');
     }
 
     /**
@@ -64,6 +104,45 @@ class CorpusController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
+    {
+        $this->validate(request(), [
+            //'corpus_name' => 'required',
+            'corpus_description' => 'required',
+            'corpusProjectId' => 'required'
+        ]);
+
+
+        $corpusProject = CorpusProject::find(request('corpusProjectId'));
+        $corpusProjectPath = $corpusProject->directory_path;
+        $corpusProjectId = $corpusProject->gitlab_id;
+
+        // Create the directory structure for the Corpus
+        $corpusProjectPath = $corpusProject->directory_path;
+        $corpusCount = count($corpusProject->corpora()->get());
+        $corpus_name = "Untitled_".$corpusProjectId."_".($corpusCount++);
+        $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus_name);
+
+
+        if($corpusPath){
+            $corpus = Corpus::create([
+                "name" => $corpus_name,
+                "description" => request('corpus_description'),
+                'directory_path' => $corpusPath
+            ]);
+
+            $corpus->corpusprojects()->attach($corpusProject);
+        }
+
+        return redirect()->route('admin.corpora.index');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store_untitled(Request $request)
     {
         $this->validate(request(), [
             //'corpus_name' => 'required',
@@ -85,6 +164,7 @@ class CorpusController extends Controller
 
         }
          * */
+
         $corpusPath = "Untitled".$corpusProjectId;
         if($corpusPath){
             $corpus = Corpus::create([
@@ -135,6 +215,7 @@ class CorpusController extends Controller
         $corpusProjects = $corpus->corpusprojects()->get();
         $corpusProject_directory_path = '';
 
+
         if(count($corpusProjects) == 1) {
             $corpusProject_directory_path = $corpusProjects->first()->directory_path;
         }
@@ -150,10 +231,9 @@ class CorpusController extends Controller
         else{
             $corpusPath = $path;
         }
-        //dd($corpusPath);
 
         $corpusBasePath = "";//substr($corpusPath,0,strrpos($corpusPath,"/"));
-        //dd($corpusPath);
+
 
         $fileData = array(
             "corpusData" => array(
@@ -175,18 +255,18 @@ class CorpusController extends Controller
             $pathArray = explode("/",$corpusPath);
             $corpusBasePath = $pathArray[0]."/".$pathArray[1];
             if(strpos($corpusPath,"CORPUS-DATA") !== false && strpos($corpusPath,"TEI-HEADERS") === false){
-                $corpusData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
+                $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath);
                 $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusBasePath.'/TEI-HEADERS');
                 $folderType = "CORPUS-DATA";
 
             }
             else if(strpos($corpusPath,"TEI-HEADERS") !== false && strpos($corpusPath,"CORPUS-DATA") === false){
-                $corpusData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusBasePath.'/CORPUS-DATA');
+                $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusBasePath.'/CORPUS-DATA');
                 $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
                 $folderType = "TEI-HEADERS";
             }
             else{
-                $corpusData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath.'/CORPUS-DATA');
+                $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath.'/CORPUS-DATA');
                 $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath.'/TEI-HEADERS');
             }
 
@@ -199,8 +279,7 @@ class CorpusController extends Controller
                 "headerDataFolder" => $headerDataFolder,
                 "folderType" => $folderType
             );
-            //$folder = substr($fileData['path'],strrpos($fileData['path'],"/")+1);
-            //dd($fileData);
+
 
             $corpusUsers = $corpus->users()->get();
             foreach ($corpusUsers as $corpusUser){
@@ -254,7 +333,6 @@ class CorpusController extends Controller
         $corpusProjects = $corpus->corpusprojects()->get();
         $corpusproject = null;
         $corpusProject_directory_path = '';
-
         if(count($corpusProjects) == 1) {
             $corpusproject = $corpusProjects->first();
             $corpusProject_directory_path = $corpusproject->directory_path;
@@ -262,6 +340,8 @@ class CorpusController extends Controller
         else{
             // what to do when we can assign corpora to many projects?
         }
+
+        $corpora = $corpusproject->corpora()->get();
 
         $user_roles = array();
         $corpusProjectUsers = $corpusProjects->first()->users()->get();
@@ -278,6 +358,7 @@ class CorpusController extends Controller
 
         return view('admin.corpusprojectadmin.show', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('corpora',$corpora)
             ->with('user_roles',$user_roles)
             ->with('user',$user);
     }
@@ -311,6 +392,9 @@ class CorpusController extends Controller
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
 
+        $gitLabProjectId = $corpus->gitlab_id;
+        $corpusProject = CorpusProject::find($projectId);
+
         if(count($corpus->corpusprojects()) > 0) {
             $corpus->corpusprojects()->detach();
         }
@@ -320,21 +404,50 @@ class CorpusController extends Controller
         }
 
 
-        $gitLabProjectId = $corpus->gitlab_id;
+        if(count($corpus->documents) > 0){
+            foreach ($corpus->documents as $document){
 
-        $this->GitLabService->deleteGitLabProject($gitLabProjectId);
+                if(count($document->annotations) > 0){
+                    foreach ($document->annotations as $annotation){
+                            if(count($annotation->documents()) > 0) {
+                                $annotation->documents()->detach();
+                            }
+                            if(count($annotation->preparations) > 0) {
+                                $annotation->preparations()->delete();
+                            }
+                    }//end for annotations
+                    $document->annotations()->delete();
+                }//end if annotations
+            }
+            $corpus->documents()->delete();
+        }
+
+        if(count($corpus->annotations) > 0){
+            $corpus->annotations()->delete();
+        }
+
+        if($gitLabProjectId != ""){
+            $this->GitLabService->deleteGitLabProject($gitLabProjectId);
+        }
 
         $corpus->delete();
 
-        $corpusProject = CorpusProject::find($projectId);
         $corpusPath = $corpusProject->directory_path.'/'.$corpus->directory_path;
-        Log::info("DEL: Copruspath: ".$corpusPath);
         $this->GitRepoService->deleteCorpusFileStructure($this->flysystem,$corpusPath);
 
+        $corpora = array();
         $corpora = Corpus::latest()->get();
+
+        $corpusProjects = array();
+
+        foreach ($corpora as $corpus){
+            $corpusProjectsTemp = $corpus->corpusprojects()->get();
+            $corpusProjects[$corpus->id] = $corpusProjectsTemp[0]->directory_path;
+        }
 
         return view('admin.corpusadmin.index', compact('corpora'))
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('corpusProjects', $corpusProjects)
             ->with('user',$user);
     }
 

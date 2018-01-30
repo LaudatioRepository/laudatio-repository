@@ -14,8 +14,11 @@ interface LaudatioUtilsInterface
     public function parseXMLToJson($xml, $options);
 
     public function setCorpusAttributes($json,$params);
+    public function updateCorpusAttributes($params,$corpusId);
     public function setDocumentAttributes($json,$corpusId,$fileName,$isDir);
+    public function updateDocumentAttributes($params,$documentId);
     public function setAnnotationAttributes($json,$corpusId,$fileName,$isDir);
+    public function updateAnnotationAttributes($params,$annotationId);
     public function setPreparationAttributes($json,$annotationId,$corpusId,$isDir);
 
     public function associateDocumentsToCorpus($documents,$corpusId);
@@ -25,6 +28,10 @@ interface LaudatioUtilsInterface
 
     public function getModelByType($id,$type);
     public function getModelByFileName($fileName, $type, $isDir);
+    public function deleteModels($path);
+    public function deleteModel($type,$id);
+    public function updateDirectoryPaths($directory_path,$corpusId);
     public function setVersionMapping($filename, $type,$isDir);
+
     public function getDirectoryPath($paths,$fileName);
 }

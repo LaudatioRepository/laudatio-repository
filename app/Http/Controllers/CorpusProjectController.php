@@ -167,9 +167,11 @@ class CorpusProjectController extends Controller
             'visibility' => 'internal'
         );
         $this->GitLabService->updateGitLabGroup($corpusproject->gitlab_id,$params);
-
+        $corpora = $corpusproject->corpora()->get();
+        dd($corpora);
         return view('admin.corpusprojectadmin.show', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('corpora',$corpora)
             ->with('user',$user);
     }
 
@@ -216,6 +218,8 @@ class CorpusProjectController extends Controller
 
         $corpusproject->delete();
         $CorpusProjects = CorpusProject::latest()->get();
+
+        $this->GitRepoService->deleteProjectFileStructure($this->flysystem,$corpusproject->directory_path);
 
         return view('admin.corpusprojectadmin.index', compact('CorpusProjects'))
             ->with('isLoggedIn', $isLoggedIn)

@@ -26,15 +26,15 @@
                             @endif
 
                             @if($fileData["folderType"] == "TEI-HEADERS")
-                                <li class="active"><a href="#headers" data-toggle="tab">Metadata Headers</a></li>
+                                <li class="active"><a href="#headers" data-toggle="tab" id="metadataheader">Metadata Headers</a></li>
                             @else
-                                <li><a href="#headers" data-toggle="tab">Metadata Headers</a></li>
+                                <li><a href="#headers" data-toggle="tab" id="metadataheader">Metadata Headers</a></li>
                             @endif
 
                             @if($fileData["folderType"] == "CORPUS-DATA")
-                                <li class="active"><a href="#files" data-toggle="tab">Corpus Files</a></li>
+                                <li class="active"><a href="#files" data-toggle="tab" id="corpusfiles">Corpus Files</a></li>
                             @else
-                                <li><a href="#files" data-toggle="tab">Corpus Files</a></li>
+                                <li><a href="#files" data-toggle="tab" id="corpusfiles">Corpus Files</a></li>
                             @endif
 
 
@@ -122,7 +122,7 @@
                                     @endif
                                 </div>
                             @else
-                                <div class="tab-pane fade" id="headers">
+                                <div class="tab-pane fade" id="datafiles">
                                     @if($fileData["headerData"])
                                         @if ($fileData["headerData"]["hasdir"] == false && strpos($fileData["headerData"]["path"],"Untitled") !== false)
                                             <a href="{{route('gitRepo.upload.get',array('dirname' => $fileData["headerData"]["path"])) }}" style="display: block; margin-top: 20px"><button type="button" class="btn btn-primary btn-lg center-block">Upload a Corpus Header <i class="fa fa-upload fa-3x" aria-hidden="true"></i></button></a>
@@ -141,6 +141,9 @@
                             @else
                                 <div class="tab-pane fade" id="files">
                             @endif
+                                    @if($fileData["corpusData"]["pathcount"] > 3)
+                                        <a href="/admin/corpora/{{$corpus->id}}/{{$fileData["corpusData"]["previouspath"]}}#files" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
+                                    @endif
                                 <h4>Corpus Files</h4>
                                 @include('admin.corpusadmin.fileList')
                             </div>
@@ -188,6 +191,28 @@
             $(".check").prop('checked', $(this).prop('checked'));
         });
 
+
+        $("#metadataheader").click(function () {
+            var url = window.location.pathname;
+            var urlArray = url.split("/");
+            var cleanedArray = urlArray.filter(urlArray => urlArray);
+            var path =  cleanedArray[0]+"/"+cleanedArray[1]+"/"+cleanedArray[2]+"/"+cleanedArray[3]+"/"+cleanedArray[4]+"/TEI-HEADERS"
+            console.log(path);
+            var newUri = window.location.origin+"/"+path+"#headers";
+            history.pushState({}, null, newUri);
+            location.reload();
+        });
+
+        $("#corpusfiles").click(function () {
+            var url = window.location.pathname;
+            var urlArray = url.split("/");
+            var cleanedArray = urlArray.filter(urlArray => urlArray);
+            var path =  cleanedArray[0]+"/"+cleanedArray[1]+"/"+cleanedArray[2]+"/"+cleanedArray[3]+"/"+cleanedArray[4]+"/CORPUS-DATA"
+            console.log(cleanedArray);
+            var newUri = window.location.origin+"/"+path+"#files";
+            history.pushState({}, null, newUri);
+        });
+
         $("#saveFormatButton").click(function() {
             var token = $('#_token').val();
             $.ajaxSetup({
@@ -198,12 +223,16 @@
 
             var url = window.location.pathname;
             var urlArray = url.split("/");
-            var path = urlArray.splice(4).join("/")+"/CORPUS-DATA"
+            var cleanedArray = urlArray.filter(urlArray => urlArray);
 
+            var path = cleanedArray[3]+"/"+cleanedArray[4]+"/CORPUS-DATA"
+            console.log(window.location.origin);
+            var redirectPath =  window.location.origin+"/"+cleanedArray[0]+"/"+cleanedArray[1]+"/"+cleanedArray[2]+"/"+cleanedArray[3]+"/"+cleanedArray[4]+"/CORPUS-DATA"
             var postData = {}
             postData.token = token;
             postData.formatName = $("#format_name").val()
             postData.path = path;
+
 
             $.ajax({
                 url: '/api/adminapi/createFormat',
@@ -219,12 +248,13 @@
                     var flashMessage = '<div id="flash-message" class="alert alert-success"> '+data.msg+' </div>';
                     $('#page-wrapper').append(flashMessage);
                     $('#myModal').modal('hide');
-                    location.href = window.location.pathname+"/CORPUS-DATA"
+                    history.pushState({}, null, redirectPath);
+                    location.reload();
+                    //location.href = redirectPath;
                 },error:function(){
                     console.log("error!!!!");
                 }
             }); //end of ajax
-
         });
 
         $("#deleteCheckedButton").click(function() {
@@ -249,10 +279,6 @@
                 }
             });
 
-
-
-            console.log(postData.filesForDeletion);
-            console.log(deletedRows);
             $.ajax({
                 url: '/api/adminapi/deletemultiple',
                 type:"POST",

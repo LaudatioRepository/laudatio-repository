@@ -9,6 +9,7 @@
 namespace App\Laudatio\GitLaB;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use DB;
 use Log;
 
 class GitFunction
@@ -138,6 +139,9 @@ class GitFunction
         return $fileHasDiff;
     }
 
+    public function fileExists($path){
+        return file_exists($this->basePath."/".$path);
+    }
 
     public function isAdded($status){
         return (strpos($status,"Changes to be committed") !== false || strpos($status,"\"use git add\" and/or \"git commit -a\"") !== false);
@@ -404,6 +408,19 @@ class GitFunction
         return $createdDirectoryPath;
     }
 
+    public function renameFile($path,$oldname,$newname){
+        $renamedPath = "";
+        $makeDirectoryProcess = new Process("mv $oldname $newname",$this->basePath."/".$path);
+        $makeDirectoryProcess->run();
+        if (!$makeDirectoryProcess->isSuccessful()) {
+            throw new ProcessFailedException($makeDirectoryProcess);
+        }
+        else{
+            $renamedPath = $path."/".$newname;
+        }
+        return $renamedPath;
+    }
+
 
     public function deleteFiles($path){
 
@@ -459,6 +476,7 @@ class GitFunction
                 $commitstatus = $this->getStatus($cwdPath);
 
                 if($this->isCleanWorkingTree($commitstatus)){
+                    clearstatcache(TRUE);
                     $isdeleted = true;
                 }
             }
@@ -467,19 +485,13 @@ class GitFunction
         return $isdeleted;
     }
 
-
-    public function deleteUntrackedFiles($path){
-
-        $isdeleted = false;
+    public function deleteUntrackedDataFiles($path){
         $isFile = false;
-        $pathWithOutAddedFolder = "";
-        $folder = "";
-        $cwdPath = "";
-
-
+        $isDeleted = false;
         if(!is_dir($this->basePath.'/'.$path)){
             $isFile = true;
         }
+
 
         if(strpos($path,"/") !== false){
             $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
@@ -491,10 +503,16 @@ class GitFunction
             $folder = $path;
         }
 
+        Log::info("FOLDER: ".print_r($folder, 1));
+        Log::info("cwdPath: ".print_r($cwdPath, 1));
         $process = null;
-        $folder = str_replace(" ","\\ ",$folder);
+        if($isFile){
+            $process = new Process("rm $folder",$cwdPath);
+        }
+        else{
+            $process = new Process("rm -rf *",$cwdPath);
+        }
 
-        $process = new Process("rm -rf $folder",$cwdPath);
         $process->run();
 
 
@@ -503,6 +521,91 @@ class GitFunction
             throw new ProcessFailedException($process);
         }
         else{
+            $isDeleted = true;
+        }
+
+        return $isDeleted;
+    }
+
+    public function deleteUntrackedFiles($path,$isProject = false,$isCorpus = false){
+
+        $isdeleted = false;
+        $isFile = false;
+        $pathWithOutAddedFolder = "";
+        $folder = "";
+        $cwdPath = "";
+
+        if(!is_dir($this->basePath.'/'.$path)){
+            $isFile = true;
+        }
+
+        if($isFile){
+            if(strpos($path,"/") !== false){
+                $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
+                $folder = substr($path,strrpos($path,"/")+1);
+                $cwdPath = $this->basePath."/".$pathWithOutAddedFolder;
+            }
+            else{
+                $cwdPath = $this->basePath;
+                $folder = $path;
+            }
+
+            $process = null;
+            $folder = str_replace(" ","\\ ",$folder);
+
+            $process = new Process("rm -rf $folder",$cwdPath);
+            $process->run();
+
+
+            // executes after the command finishes
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+            else{
+                $isdeleted = true;
+            }
+        }
+        else{
+            //we are deleting contents of a folder
+            $dirArray = explode("/",$path);
+            //dd($dirArray);
+            if(!$isCorpus && !$isProject){
+                $type = $dirArray[3];
+                $objects = null;
+                switch ($type) {
+                    case 'corpus':
+                        $objects = DB::table('corpuses')->where('directory_path',$dirArray[1])->get();
+                        break;
+                    case 'document':
+                        $objects = DB::table('documents')->where('directory_path',$dirArray[1])->get();
+                        break;
+                    case 'annotation':
+                        $objects = DB::table('annotations')->where('directory_path',$dirArray[1])->get();
+                        break;
+                }
+                foreach ($objects->toArray() as $object){
+                    if($object->file_name){
+                        $process = new Process("rm -rf $object->file_name",$this->basePath."/".$path);
+                        $process->run();
+                    }
+                }
+            }
+            else{
+                $pathForDeletion = "";
+                if($isProject){
+                    $process = new Process("rm -rf $dirArray[0]",$this->basePath);
+                    $process->run();
+                }
+                else if($isCorpus){
+                    $pathForDeletion = $this->basePath."/".$dirArray[0];
+                    $process = new Process("rm -rf *",$pathForDeletion);
+                    $process->run();
+                }
+
+
+            }
+
+
             $isdeleted = true;
         }
 

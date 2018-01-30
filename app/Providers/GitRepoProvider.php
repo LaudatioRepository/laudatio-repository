@@ -26,7 +26,8 @@ class GitRepoProvider extends ServiceProvider
     {
         //
         $this->app->singleton('App\Custom\GitRepoInterface', function ($app){
-            return new GitRepoService();
+            $instance = $this->app->make('App\Laudatio\Utils\LaudatioUtilService');
+            return new GitRepoService($instance);
         });
     }
 }
