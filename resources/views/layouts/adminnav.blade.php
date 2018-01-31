@@ -283,6 +283,9 @@
                                     <a href="/admin/roles">List User Roles</a>
                                 </li>
                                 <li>
+                                    <a href="/admin/permissions/create">Create permissions</a>
+                                </li>
+                                <li>
                                     <a href="/admin/roles/create">Create User Roles</a>
                                 </li>
                                 <li>

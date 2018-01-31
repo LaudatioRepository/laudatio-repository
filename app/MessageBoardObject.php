@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MessageBoard extends Model
+class MessageBoardObject extends Model
 {
     //
 }

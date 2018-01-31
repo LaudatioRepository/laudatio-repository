@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Permission;
+//use App\Permission;
 use Illuminate\Http\Request;
+//Importing laravel-permission models
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
+    public function __construct() {
+        $this->middleware(['auth', 'isAdmin']); //isAdmin middleware lets only users with a //specific permission permission to access these resources
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +21,14 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        //
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        $permissions = Permission::all(); //Get all permissions
+
+        return view('admin.permissions.index')
+            ->with('permissions', $permissions)
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 
     /**
@@ -24,7 +38,13 @@ class PermissionController extends Controller
      */
     public function create()
     {
-        //
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        $roles = Role::get(); //Get all roles
+        return view('admin.permissions.create')
+            ->with('roles', $roles)
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 
     /**
@@ -35,51 +55,98 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'name'=>'required|max:40',
+        ]);
+
+        $name = $request['name'];
+        $description = $request['description'];
+        $permission = new Permission();
+        $permission->name = $name;
+        $permission->description = $description;
+
+        $roles = $request['roles'];
+
+        $permission->save();
+
+        if (!empty($request['roles'])) { //If one or more role is selected
+            foreach ($roles as $role) {
+                $r = Role::where('id', '=', $role)->firstOrFail(); //Match input role to db record
+
+                $permission = Permission::where('name', '=', $name)->first(); //Match input //permission to db record
+                $r->givePermissionTo($permission);
+            }
+        }
+
+        return redirect()->route('permissions.index')
+            ->with('flash_message',
+                'Permission'. $permission->name.' added!');
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function show(Permission $permission)
+    public function show($id)
     {
-        //
+        return redirect('admin.permissions');
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit(Permission $permission)
+    public function edit($id)
     {
-        //
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
+        $permission = Permission::findOrFail($id);
+
+        return view('admin.permissions.edit', compact('permission'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Permission $permission)
+    public function update(Request $request, $id)
     {
-        //
+        $permission = Permission::findOrFail($id);
+        $this->validate($request, [
+            'name'=>'required|max:40',
+        ]);
+        $input = $request->all();
+        $permission->fill($input)->save();
+
+        return redirect()->route('permissions.index')
+            ->with('flash_message',
+                'Permission'. $permission->name.' updated!');
+
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Permission  $permission
-     * @return \Illuminate\Http\Response
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Permission $permission)
+    public function destroy($id)
     {
-        //
+        $permission = Permission::findOrFail($id);
+
+        //Make it impossible to delete this specific permission
+        if ($permission->name == "Administer roles & permissions") {
+            return redirect()->route('admin.permissions.index')
+                ->with('flash_message',
+                    'Cannot delete this Permission!');
+        }
+
+        $permission->delete();
+
+        return redirect()->route('permissions.index')
+            ->with('flash_message',
+                'Permission deleted!');
+
     }
 }

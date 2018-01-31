@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\MessageBoard;
+use App\MessageBoardObject;
 use Illuminate\Http\Request;
 
 class MessageBoard extends Controller
@@ -41,7 +41,7 @@ class MessageBoard extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\MessageBoard  $messageBoard
+     * @param  \App\MessageBoardObject  $messageBoard
      * @return \Illuminate\Http\Response
      */
     public function show(MessageBoard $messageBoard)
@@ -52,7 +52,7 @@ class MessageBoard extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\MessageBoard  $messageBoard
+     * @param  \App\MessageBoardObject  $messageBoard
      * @return \Illuminate\Http\Response
      */
     public function edit(MessageBoard $messageBoard)
@@ -64,7 +64,7 @@ class MessageBoard extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\MessageBoard  $messageBoard
+     * @param  \App\MessageBoardObject  $messageBoard
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, MessageBoard $messageBoard)
@@ -75,7 +75,7 @@ class MessageBoard extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\MessageBoard  $messageBoard
+     * @param  \App\MessageBoardObject  $messageBoard
      * @return \Illuminate\Http\Response
      */
     public function destroy(MessageBoard $messageBoard)

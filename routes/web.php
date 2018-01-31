@@ -5,9 +5,10 @@ Auth::routes();
 Route::get('/auth/{social}',['as' => 'auth.social.login', 'uses' => 'Auth\LoginController@socialLogin'])->where('social','twitter|facebook|linkedin|google|github|bitbucket|gitlab');
 Route::get('/auth/{social}/callback',['as' => 'auth.social.callback', 'uses' => 'Auth\LoginController@handleProviderCallback'])->where('social','twitter|facebook|linkedin|google|github|bitbucket|gitlab');
 
-Route::get('/', ['uses' => 'IndexController@index']);
-Route::get('/admin', ['as' => 'admin', 'uses' => 'IndexController@admin'])->middleware('auth');
+Route::get('/', ['uses' => 'IndexController@index'])->middleware('auth');
 Route::get('/dashboard', ['as' => 'admin', 'uses' => 'DashboardController@index'])->middleware('auth');
+Route::get('/admin', ['as' => 'admin', 'uses' => 'IndexController@admin'])->middleware('auth');
+
 
 
 
@@ -54,6 +55,7 @@ Route::post('/admin/uploadFiles',['as' => 'gitRepo.uploadFiles.post', 'uses' => 
 
 
 /** ROLES  **/
+
 Route::get('/admin/roles',[ 'as' => 'admin.roles.index', 'uses' => 'RoleController@index'])->middleware('auth');
 Route::get('/admin/roles/create',[ 'as' => 'admin.roles.create', 'uses' => 'RoleController@create'])->middleware('auth');
 Route::post('/admin/roles',[ 'as' => 'admin.roles.store', 'uses' => 'RoleController@store'])->middleware('auth');
@@ -65,6 +67,15 @@ Route::delete('/admin/roles/{role}',[ 'as' => 'admin.roles.destroy', 'uses' => '
 Route::get('/admin/userroles',[ 'as' => 'admin.roles.assignusers', 'uses' => 'RoleController@assignUsers'])->middleware('auth');
 Route::get('/admin/userroles/{corpusproject}/{user}',[ 'as' => 'admin.roles.assignroletocpbyuser', 'uses' => 'RoleController@assignRolesToUsers'])->middleware('auth');
 Route::get('/admin/userroles/{role}/{user}/delete',[ 'as' => 'admin.roles.deleteroleforuser', 'uses' => 'RoleController@removeRoleFromUser'])->middleware('auth');
+
+
+/*
+Route::resource('roles', 'RoleController');
+
+*/
+Route::group(array('prefix' => 'admin'), function() {
+    Route::resource('permissions', 'PermissionController');
+});
 
 /** END ROLES  **/
 

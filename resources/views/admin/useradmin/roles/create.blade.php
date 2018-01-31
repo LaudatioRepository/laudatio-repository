@@ -1,7 +1,8 @@
 @extends('layouts.admin', ['isLoggedIn' => $isLoggedIn])
 
+@section('title', '| Add role')
 @section('content')
-    <div class="content">
+    <!--div class="content">
         <form action="/admin/roles" method="post">
             {{ csrf_field() }}
             <div class="col-lg-12">
@@ -28,22 +29,54 @@
                                 <label for="role_corpus">Corpus role: <input type="radio" name="role_type" id="role_type" value="corpus" /></label>
                             </div>
                             <br /><br />
-                            <div class="form-group>">
-                                <label for="role_superuser"><i class="fa fa-superpowers" aria-hidden="true"></i> Is super user <input type="checkbox" name="role_superuser" id="role_superuser" /></label>
-                            </div>
+
                             <br /><br />
                             <div class="form-group>">
                                 <button type="submit" value="Create" class="btn btn-primary ">Create Role</button>
                             </div>
                         </div>
-                        <!-- /.row (nested) -->
                     </div>
-                    <!-- /.panel-body -->
                 </div>
-                <!-- /.panel -->
             </div>
         </form>
+    </div-->
+    <div class='col-lg-4 col-lg-offset-4'>
+
+        <h1><i class='fa fa-key'></i> Add Role</h1>
+        <hr>
+
+        {{ Form::open(array('url' => 'admin/roles')) }}
+        {{ csrf_field() }}
+        <div class="form-group">
+            {{ Form::label('name', 'Name') }}
+            {{ Form::text('name', null, array('class' => 'form-control')) }}
+        </div>
+        <div class="form-group>">
+            {{ Form::label('role_description', 'Role Description') }}
+            {{ Form::textarea('role_description', null, array('class' => 'form-control')) }}
+        </div>
+        <div class="form-group>">
+            {{ Form::label('role_superuser', 'Is super user') }}
+            {{ Form::checkbox('role_superuser', 'on', false) }}
+
+        </div>
+
+        <h5><b>Assign Permissions</b></h5>
+
+        <div class='form-group'>
+            @foreach ($permissions as $permission)
+                {{ Form::checkbox('permissions[]',  $permission->id ) }}
+                {{ Form::label($permission->name, ucfirst($permission->name)) }}<br>
+
+            @endforeach
+        </div>
+
+        {{ Form::submit('Add', array('class' => 'btn btn-primary')) }}
+
+        {{ Form::close() }}
+
     </div>
+
     <div class="col-lg-12">
         @include('layouts.errors')
     </div>

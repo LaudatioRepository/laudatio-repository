@@ -30,7 +30,9 @@
                     <li><a href="{{ route('login') }}">Login</a></li>
                     <li><a href="{{ route('register') }}">Register</a></li>
                 @else
-                    <li class="li-docs no-basic"><a href="{{ route('admin') }}">Admin</a></li>
+                    @can('Administer the application')
+                        <li class="li-docs no-basic"><a href="{{ route('admin') }}">Admin</a></li>
+                    @endcan
                     <li class="li-docs no-basic"><a href="{{ route('gitRepo.route.schema') }}">Schema</a></li>
                     <li class="li-docs no-basic"><a href="{{ route('gitRepo.route') }}">Projects</a></li>
 
