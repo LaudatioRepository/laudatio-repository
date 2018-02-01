@@ -301,13 +301,19 @@ class CorpusProjectController extends Controller
             array_push($user_roles[$corpusProjectUser->pivot->role_id],$corpusProjectUser->id);
         }
 
-        $roles = Role::where('super_user',0)->get();
+        $roles = Role::all();
+        $filteredRoles = array();
+        foreach ($roles as $role){
+            if($role->hasPermissionTo('Can create Corpus Project') && $role->super_user == 0){
+                array_push($filteredRoles,$role);
+            }
+        }
 
 
         return view('admin.useradmin.roles.assign_roles_to_user')
             ->with('corpusProject', $corpusproject)
             ->with('users', $users)
-            ->with('roles', $roles)
+            ->with('roles', $filteredRoles)
             ->with('user_roles',$user_roles)
             ->with('isLoggedIn', $isLoggedIn)
             ->with('loggedInUser',$loggedInUser);
@@ -354,6 +360,7 @@ class CorpusProjectController extends Controller
                     $msg .= "<li>".$role->name."<ul>";
                     foreach($user_data as $userId) {
                         $user = User::find($userId);
+                        $user->roles()->attach($role);
                         if($user) {
                             $msg .= "<li>".$user->name."</li>";
                             $corpus_project->users()->save($user,['role_id' => $roleId]);

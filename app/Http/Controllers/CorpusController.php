@@ -493,13 +493,19 @@ class CorpusController extends Controller
             }
         }
 */
-        $roles = Role::where([['super_user','=',0],['role_type','!=','corpusproject']])->get();
+        $roles = Role::all();
+        $filteredRoles = array();
+        foreach ($roles as $role){
+            if(!$role->hasPermissionTo('Can create Corpus Project') && ($role->hasPermissionTo('Can create Corpus') || $role->hasPermissionTo('Can edit Corpus'))  && $role->super_user == 0){
+                array_push($filteredRoles,$role);
+            }
+        }
 
 
         return view('admin.useradmin.roles.assign_corpusroles_to_user')
             ->with('corpus', $corpus)
             ->with('users', $users)
-            ->with('roles', $roles)
+            ->with('roles', $filteredRoles)
             ->with('user_roles',$user_roles)
             ->with('isLoggedIn', $isLoggedIn)
             ->with('loggedInUser',$loggedInUser);
