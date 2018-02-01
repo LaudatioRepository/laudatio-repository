@@ -6,8 +6,13 @@ Route::get('/auth/{social}',['as' => 'auth.social.login', 'uses' => 'Auth\LoginC
 Route::get('/auth/{social}/callback',['as' => 'auth.social.callback', 'uses' => 'Auth\LoginController@handleProviderCallback'])->where('social','twitter|facebook|linkedin|google|github|bitbucket|gitlab');
 
 Route::get('/', ['uses' => 'IndexController@index'])->middleware('auth');
-Route::get('/dashboard', ['as' => 'admin', 'uses' => 'DashboardController@index'])->middleware('auth');
-Route::get('/admin', ['as' => 'admin', 'uses' => 'IndexController@admin'])->middleware('auth');
+Route::get('/dashboard', ['as' => 'dashboard', 'uses' => 'DashboardController@index'])->middleware('auth');
+Route::get('/admin', ['as' => 'admin', 'uses' => 'AdminController@index'])->middleware('auth');
+Route::get('/browse', ['as' => 'browse', 'uses' => 'BrowseController@index']);
+Route::get('/publish', ['as' => 'publish', 'uses' => 'IndexController@publish']);
+Route::get('/schema/{path?}',[ 'as' => 'gitRepo.route.schema', 'uses' => 'GitRepoController@listSchema'])->where('path', '.+')->middleware('auth');
+Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
+
 
 
 
@@ -79,13 +84,6 @@ Route::group(array('prefix' => 'admin'), function() {
 
 /** END ROLES  **/
 
-Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
-
-Route::get('/repository',[ 'as' => 'gitLab', 'uses' => 'GitLabController@listProjects'])->middleware('auth');
-
-
-Route::get('/schema/{path?}',[ 'as' => 'gitRepo.route.schema', 'uses' => 'GitRepoController@listSchema'])->where('path', '.+')->middleware('auth');
-
 
 Route::get('/viewFile/{path}',[ 'as' => 'gitRepo.readFile.route', 'uses' => 'GitRepoController@readFile'])->where('path', '.+')->middleware('auth');
 Route::get('/admin/deleteFile/{path}',[ 'as' => 'gitRepo.deleteFile.route', 'uses' => 'GitRepoController@deleteFile'])->where('path', '.+')->middleware('auth');
@@ -125,4 +123,5 @@ Route::post('/createcorpus',['as' => 'gitRepo.createcorpus.post', 'uses' => 'Git
 Route::get('/validatetei/{dirname}',['as' => 'gitRepo.validatetei.get', 'uses' => 'ValidateTEIController@validateFiles'])->where('dirname', '.+')->middleware('auth');
 
 
+/*BROWSE */
 Route::get('/browse/{header}/{id}', ['as' => 'browse.showHeaders.get', 'uses' => 'BrowseController@index']);

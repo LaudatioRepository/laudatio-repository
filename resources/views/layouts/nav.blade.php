@@ -24,7 +24,9 @@
 
             <!-- Right Side Of Navbar -->
             <ul class="nav navbar-nav navbar-right">
-                <li class="li-docs no-basic"><a href="{{ route('search') }}">Search</a></li>
+                <li><a href="{{ route('browse') }}">Published Corpora</a></li>
+                <li><a href="{{ route('search') }}">Search</a></li>
+                <li><a href="{{ route('publish') }}">Publish</a></li>
                 <!-- Authentication Links -->
                 @if (Auth::guest())
                     <li><a href="{{ route('login') }}">Login</a></li>
@@ -33,8 +35,9 @@
                     @can('Administer the application')
                         <li class="li-docs no-basic"><a href="{{ route('admin') }}">Admin</a></li>
                     @endcan
-                    <li class="li-docs no-basic"><a href="{{ route('gitRepo.route.schema') }}">Schema</a></li>
-                    <li class="li-docs no-basic"><a href="{{ route('gitRepo.route') }}">Projects</a></li>
+                        @can('Can Edit Corpus')
+                            <li class="li-docs no-basic"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+                        @endcan
 
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
