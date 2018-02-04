@@ -7,11 +7,11 @@
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <button type="button" class="btn btn-danger btn-circle btn-xl pull-right">
-                            <a href="/admin/corpusprojects/{{$corpusproject->id}}/delete"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></a>
+                            <a href="/project/corpusprojects/{{$corpusproject->id}}/delete"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></a>
                         </button>
 
                         <button type="button" class="btn btn-primary btn-circle btn-xl pull-right">
-                            <a href="/admin/corpusprojects/{{$corpusproject->id}}/edit"><i class="fa fa-edit fa-2x" aria-hidden="true"></i></a>
+                            <a href="/project/corpusprojects/{{$corpusproject->id}}/edit"><i class="fa fa-edit fa-2x" aria-hidden="true"></i></a>
                         </button>
                         <h1>{{$corpusproject->name}}</h1>
                     </div>
@@ -46,7 +46,7 @@
                                         </span>
                                                 <span class="pull-right">Created at: {{$corpus->created_at->toFormattedDateString()}}
                                                     <button type="button" class="btn btn-success btn-circle">
-                                                <a href="/admin/corpora/{{$corpus->id}}/{{$corpusproject->directory_path}}/{{$corpus->directory_path}}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
+                                                <a href="/project/corpora/{{$corpus->id}}/{{$corpusproject->directory_path}}/{{$corpus->directory_path}}"><i class="fa fa-external-link" aria-hidden="true"></i></a>
                                             </button>
                                         </span>
                                             </div>
@@ -60,8 +60,8 @@
                                 </div>
                                 <span class="pull-right">
                                     <button type="button" class="btn btn-success btn-circle">
-                                        <a href="/admin/corpora/create/{{$corpusproject->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
-                                        <!--a href="/admin/corpusprojects/assigncorpora/{{$corpusproject->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a-->
+                                        <a href="/project/corpora/create/{{$corpusproject->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                        <!--a href="/project/corpusprojects/assigncorpora/{{$corpusproject->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a-->
                                     </button>
                                     Add a corpus to the corpus project
                                 </span>
@@ -83,7 +83,7 @@
                                                 @else
                                                     <span class="pull-right">
                                                     Add roles <button type="button" class="btn btn-success btn-circle">
-                                                        <a href="/admin/userroles/{{$corpusproject->id}}/{{$user->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                                        <a href="/project/userroles/{{$corpusproject->id}}/{{$user->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
                                                     </button>
                                                     </span>
                                                 @endif
@@ -94,7 +94,7 @@
                                 </div>
                                 <span class="pull-right">
                                     <button type="button" class="btn btn-success btn-circle">
-                                        <a href="/admin/corpusprojects/assignusers/{{$corpusproject->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                        <a href="/project/corpusprojects/assignusers/{{$corpusproject->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
                                     </button>
                                     Add collaborators to the corpus project
                                 </span>

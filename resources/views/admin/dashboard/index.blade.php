@@ -5,78 +5,77 @@
         <h1 class="page-header">Dashboard</h1>
         <!-- /.col-lg-12 -->
         <div class="row">
+
             <div class="col-lg-8">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <i class="fa fa-bell fa-fw"></i> Projects
+                        <i class="fa fa-bell fa-fw"></i> Memberships in Projects and Corpora
                     </div>
                     <div class="panel-body">
                         <div class="row">
-                            <div class="col-lg-6">
-                                @can('view_roles')
+                            <div>
+
                                 <div class="table-responsive">
+
+                                    @if(count($assignments['corpusProjects']) > 0)
                                     <table class="table table-bordered table-hover table-striped">
                                         <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Project</th>
-                                            <th>Corpus</th>
-                                            <th>Role</th>
-                                        </tr>
+                                            <tr>
+                                                <th colspan="2">Corpus Project roles</th>
+                                            </tr>
+                                            <tr>
+                                                <th>Project</th>
+                                                <th>Role</th>
+                                            </tr>
                                         </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td>3326</td>
-                                            <td>10/21/2013</td>
-                                            <td>3:29 PM</td>
-                                            <td>$321.33</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3325</td>
-                                            <td>10/21/2013</td>
-                                            <td>3:20 PM</td>
-                                            <td>$234.34</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3324</td>
-                                            <td>10/21/2013</td>
-                                            <td>3:03 PM</td>
-                                            <td>$724.17</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3323</td>
-                                            <td>10/21/2013</td>
-                                            <td>3:00 PM</td>
-                                            <td>$23.71</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3322</td>
-                                            <td>10/21/2013</td>
-                                            <td>2:49 PM</td>
-                                            <td>$8345.23</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3321</td>
-                                            <td>10/21/2013</td>
-                                            <td>2:23 PM</td>
-                                            <td>$245.12</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3320</td>
-                                            <td>10/21/2013</td>
-                                            <td>2:15 PM</td>
-                                            <td>$5663.54</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3319</td>
-                                            <td>10/21/2013</td>
-                                            <td>2:13 PM</td>
-                                            <td>$943.45</td>
-                                        </tr>
+                                        @can('Can create Corpus Project')
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2">{{link_to_route('project.corpusProject.create', $title = "Create a new project", $parameters = [], $attributes = ["class" => "btn btn-default pull-right"])}}</td>
+                                                </tr>
+                                            </tfoot>
+                                        @endcan
+                                        <tbody id="projectRoles">
+                                        @if(count($assignments['corpusProjects']) > 0)
+                                            @foreach($assignments['corpusProjects'] as $projectId => $assignment)
+                                                <tr>
+                                                    <td>{{link_to_route('project.corpusProject.show', $title = $assignment['name'], $parameters = ['corpusproject' => $projectId], $attributes = [])}}</td>
+                                                    <td>{{$assignment['role']}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                         </tbody>
                                     </table>
+                                    @endif
+                                    @if(count($assignments['corpora']) > 0)
+                                        <table class="table table-bordered table-hover table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3">Corpus roles</th>
+                                                </tr>
+                                                <tr>
+                                                    <th>Project</th>
+                                                    <th>Corpus</th>
+                                                    <th>Role</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="projectRoles">
+                                                @foreach($assignments['corpora'] as $corpusId => $assignment)
+                                                    <tr>
+                                                        <td>{{link_to_route('project.corpusProject.show', $title = $assignment['corpus_project']['name'], $parameters = ['corpusproject' => $assignment['corpus_project']['id']], $attributes = [])}}</td>
+                                                        <td>{{link_to_route('project.corpora.show', $title = $assignment['corpus_name']['name'], $parameters = ['corpus' => $corpusId, 'path' => $assignment['corpus_project']['directory_path'].'/'.$assignment['corpus_name']['directory_path']], $attributes = [])}}</td>
+                                                        <td>{{$assignment['role']}}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @endif
                                 </div>
-                                @endcan
+
                                 <!-- /.table-responsive -->
                             </div>
                         </div>
@@ -155,7 +154,124 @@
                 </div>
             </div>
             </div>
-
         </div>
+
+
+      <!-- ALL CORPORA -->
+        @can('Can create corpus project')
+        <div class="row">
+
+            <div class="col-lg-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bell fa-fw"></i> All Corpora
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div>
+
+                                <div class="table-responsive">
+
+                                    @if(count($corpora) > 0)
+                                        <table class="table table-bordered table-hover table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>Corpus</th>
+                                                <th>Corpus Admin
+
+                                                </th>
+                                                <th>Corpus collaborators
+
+                                                </th>
+                                            </tr>
+                                            </thead>
+
+                                            <tfoot>
+                                            <tr>
+                                                <td colspan="3">{{link_to_route('project.corpusProject.create', $title = "Create a new project", $parameters = [], $attributes = ["class" => "btn btn-default pull-right"])}}</td>
+                                            </tr>
+                                            </tfoot>
+
+                                            <tbody id="projectRoles">
+                                            @if(count($corpora) > 0)
+                                                @foreach($corpora as $corpusId => $corpus)
+                                                    <tr>
+                                                        <td>
+                                                            {{link_to_route('project.corpora.show', $title = $corpus['name'], $parameters = ['corpus' => $corpusId,'path' => $corpus['directory_path'].'/'.$corpus['projectPath']], $attributes = [])}}
+                                                        </td>
+                                                        <td>
+                                                            @if(count($corpus['corpusAdmin']) > 0)
+                                                                <a href="#" class="list-group-item">
+                                                                 <span class="pull-right text-muted small">
+                                                                    <i class="fa fa-minus-square fa-fw"></i>
+                                                                 </span>
+                                                                    {{$corpus['corpusAdmin']['name']}}
+                                                                    : {{$corpus['corpusAdmin']['id']}}
+                                                                    : {{$corpus['corpusAdmin']['roleId']}}
+                                                                </a>
+                                                            @endif
+                                                            <br />
+                                                            <span class="pull-right text-muted small">
+                                                                <i class="fa fa-plus-square fa-fw"></i>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="list-group">
+                                                                @foreach($corpus['corpusUsers'] as $corpusUser)
+                                                                    <a href="#" class="list-group-item">
+                                                                         <span class="pull-right text-muted small">
+                                                                            <i class="fa fa-minus-square fa-fw"></i>
+                                                                         </span>
+                                                                        {{$corpusUser['name']}} : {{$corpusUser['role']}}
+                                                                    </a>
+                                                                @endforeach
+                                                            </div>
+                                                            <span class="pull-right text-muted small">
+                                                                <i class="fa fa-plus-square fa-fw"></i>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+
+                                                    </tr>
+                                                @endforeach
+                                            @endif
+                                            </tbody>
+                                        </table>
+                                    @endif
+                                </div>
+
+                                <!-- /.table-responsive -->
+                            </div>
+                        </div>
+                        <!-- /.row -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bell fa-fw"></i> All publications in project
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endcan
     </div>
+<script language="JavaScript">
+    (function () {
+
+    })();
+
+
+</script>
 @endsection

@@ -96,7 +96,7 @@ class DocumentController extends Controller
 
         $corpora = Corpus::latest()->get();
 
-        return view('admin.corpusadmin.index', compact('corpora'))
+        return view('admin.corpus.index', compact('corpora'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }

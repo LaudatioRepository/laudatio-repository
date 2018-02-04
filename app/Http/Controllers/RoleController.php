@@ -19,7 +19,7 @@ class RoleController extends Controller
 {
 
     public function __construct() {
-        $this->middleware(['auth', 'isAdmin']);//isAdmin middleware lets only users with a //specific permission permission to access these resources
+        //$this->middleware(['auth', 'isAdmin']);//isAdmin middleware lets only users with a //specific permission permission to access these resources
     }
     /**
      * Display a listing of the resource.
@@ -270,7 +270,6 @@ class RoleController extends Controller
                 array_push($users,$useritem);
             }
         }
-        //dd($roles);
 
         return view('admin.useradmin.roles.assign_superusers')
             ->with('roles', $role)
@@ -285,7 +284,6 @@ class RoleController extends Controller
         $corpusproject = CorpusProject::find($corpusProjectId);
         $user = User::find($userId);
         $roles = Role::where('super_user',0)->get();
-
         return view('admin.useradmin.roles.assign_roles_to_user')
             ->with('corpusProject', $corpusproject)
             ->with('user', $user)
@@ -302,6 +300,7 @@ class RoleController extends Controller
     {
 
         $input =$request ->all();
+        Log::info("INPÖT: ".print_r($input, 1));
         $msg = "";
         if ($request->ajax()){
             $msg .= "<p>Assigned the following users to the following roles</p>";
@@ -366,7 +365,7 @@ class RoleController extends Controller
                         $user = User::find($userId);
                         if($user) {
                             $msg .= "<li>".$user->name."</li>";
-                            $corpus_project->users()->save($user,['role_id' => $roleId]);
+                            $corpus_project->users()->save($user,['role_id' => $roleId,'project_id' => $corpus_project->id, 'corpus_id' => 0]);
 
                         }
                     }

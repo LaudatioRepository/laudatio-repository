@@ -1,6 +1,9 @@
 @extends('layouts.admin', ['isLoggedIn' => $isLoggedIn])
 
 @section('content')
+
+    <h2>Assign users to {{$corpusproject
+->name}}</h2>
     <div class="role-user-container col-lg-10">
         <div class="row">
             <div class="col-lg-12 bhoechie-tab-container">
@@ -58,14 +61,6 @@
                                                 <div class="well">
                                                     <div class="row">
                                                         <div class="col-md-2">
-                                                            <div class="btn-group">
-                                                                <a class="btn btn-default selector" title="select all"><i class="fa fa-unchecked"></i></a>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-10">
-                                                            <div class="input-group">
-                                                                <input type="text" name="SearchDualList" class="form-control" placeholder="search" />
-                                                            </div>
                                                         </div>
                                                     </div>
                                                     @if($loop->index == 0)
@@ -74,7 +69,14 @@
                                                                 <ul class="list-group" id="ul_{{$loop->index}}">
                                                                     @endif
                                                                     @foreach($users as $user)
-                                                                        <li class="list-group-item"  data-userid="{{$user->id}}" ><i class="fa fa-user fa-fw"></i> {{$user->name}}</li>
+
+                                                                        @if(count($user_roles) > 0 && isset($user_roles[$role->id]))
+                                                                            @if(!in_array($user->id,$user_roles[$role->id]))
+                                                                                <li class="list-group-item"  data-userid="{{$user->id}}" ><i class="fa fa-user fa-fw"></i> {{$user->name}}</li>
+                                                                            @endif
+                                                                        @else
+                                                                            <li class="list-group-item"  data-userid="{{$user->id}}" ><i class="fa fa-user fa-fw"></i> {{$user->name}}</li>
+                                                                        @endif
                                                                     @endforeach
                                                                 </ul>
                                                 </div>
@@ -88,9 +90,12 @@
                 </div>
             </div>
             <br />
-            <button type="submit" value="Create" id="assignButton" class="btn btn-primary pull-right">Assign users</button>
+            <button type="submit" value="Create" id="assignButton" class="btn btn-primary pull-right">Assign users and roles to  {{$corpusproject
+->name}}</button>
         </div>
-        <input type="hidden" id="_token" value="{{ csrf_token() }}">
+        <input type="hidden" id="_token" value="{{ csrf_token() }}" />
+        <input type="hidden" id="project_id" value="{{$corpusproject
+->id}}" />
     </div>
     <div class="col-lg-12">
         @include('layouts.errors')
@@ -171,38 +176,48 @@
             var postData = {}
             postData.token = token;
             postData.role_users = {}
+            postData.project_id =  $('#project_id').val();
             var list_lefts = $('.list-left ul');
             $(list_lefts).each(function () {
+                console.log($(this).data('roleid'));
                 var roleid = $(this).data('roleid');
                 $(this).children('li.list-group-item.active').each(function () {
                     if(typeof postData.role_users[roleid] == 'undefined'){
                         postData.role_users[roleid] = []
                     }
                     postData.role_users[roleid].push($(this).data('userid'));
+                    $(this).remove();
                 });
 
             })
-            console.log(postData);
 
 
-            $.ajax({
-                url: "/api/adminapi/userroles",
-                type:"POST",
-                data: postData,
-                async: true,
-                statusCode: {
-                    500: function () {
-                        alert("server down");
+            console.log(postData)
+            if(Object.keys(postData.role_users).length > 0){
+                $.ajax({
+                    url: "/api/adminapi/userrolesbyproject",
+                    type:"POST",
+                    data: postData,
+                    async: true,
+                    statusCode: {
+                        500: function () {
+                            alert("server down");
+                        }
+                    },
+                    success:function(data){
+                        console.log(data);
+                        var flashMessage = '<div id="flash-message" class="alert alert-success"> '+data.msg+' </div>';
+                        $('#page-wrapper').append(flashMessage);
+                    },error:function(){
+                        console.log("error!!!!");
                     }
-                },
-                success:function(data){
-                    console.log(data);
-                    var flashMessage = '<div id="flash-message" class="alert alert-success"> '+data.msg+' </div>';
-                    $('#page-wrapper').append(flashMessage);
-                },error:function(){
-                    console.log("error!!!!");
-                }
-            }); //end of ajax
+                }); //end of ajax
+            }
+            else{
+                var flashMessage = '<div id="flash-message" class="alert alert-success"> Error: you must choose users to assign </div>';
+                $('#page-wrapper').append(flashMessage);
+            }
+
 
 
         });

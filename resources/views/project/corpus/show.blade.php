@@ -1,4 +1,4 @@
-@extends('layouts.admin', ['isLoggedIn' => $isLoggedIn])
+@extends('layouts.project', ['isLoggedIn' => $isLoggedIn])
 
 @section('content')
     <div id="container">
@@ -7,11 +7,11 @@
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <button type="button" class="btn btn-danger btn-circle btn-xl pull-right">
-                            <a href="{{ route('admin.corpora.delete', array('corpus' => $corpus->id, 'corpusproject_directory_path' => $corpusproject_directory_path)) }}"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></a>
+                            <a href="{{ route('project.corpora.delete', array('corpus' => $corpus->id, 'corpusproject_directory_path' => $corpusproject_directory_path)) }}"><i class="fa fa-trash-o fa-2x" aria-hidden="true"></i></a>
                         </button>
 
                         <button type="button" class="btn btn-primary btn-circle btn-xl pull-right">
-                            <a href="/admin/corpora/{{$corpus->id}}/edit"><i class="fa fa-edit fa-2x" aria-hidden="true"></i></a>
+                            <a href="/project/corpora/{{$corpus->id}}/edit"><i class="fa fa-edit fa-2x" aria-hidden="true"></i></a>
                         </button>
                         <h1>{{$corpus->name}}</h1>
                     </div>
@@ -92,7 +92,7 @@
                                                     @else
                                                         <span class="pull-right">
                                                     Add roles <button type="button" class="btn btn-success btn-circle">
-                                                        <a href="/admin/userroles/{{$corpus->id}}/{{$user->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                                        <a href="/project/userroles/{{$corpus->id}}/{{$user->id}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
                                                     </button>
                                                     </span>
                                                     @endif
@@ -103,7 +103,7 @@
                                 </div>
                                 <span class="pull-right">
                                     <button type="button" class="btn btn-success btn-circle">
-                                        <a href="{{ URL::route('admin.corpora.assignusers',$corpus->id)}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                        <a href="{{ URL::route('project.corpora.assignusers',$corpus->id)}}"><i class="fa fa-plus" aria-hidden="true"></i></a>
                                     </button>
                                     Add collaborators to the corpus project
                                 </span>
@@ -114,10 +114,10 @@
                                         @if ($fileData["headerData"]["hasdir"] == false && strpos($fileData["headerData"]["path"],"Untitled") !== false)
                                             <a href="{{route('gitRepo.upload.get',array('dirname' => $fileData["headerData"]["path"])) }}" style="display: block; margin-top: 20px"><button type="button" class="btn btn-primary btn-lg center-block">Upload a Corpus Header <i class="fa fa-upload fa-3x" aria-hidden="true"></i></button></a>
                                         @else
-                                            <a href="/admin/corpora/{{$corpus->id}}/{{$fileData["headerData"]["previouspath"]}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
+                                            <a href="/project/corpora/{{$corpus->id}}/{{$fileData["headerData"]["previouspath"]}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
                                             <h4>Corpus Headers</h4>
                                             <br />
-                                            @include('admin.corpusadmin.projectList')
+                                            @include('project.corpus.projectList')
                                         @endif
                                     @endif
                                 </div>
@@ -127,10 +127,10 @@
                                         @if ($fileData["headerData"]["hasdir"] == false && strpos($fileData["headerData"]["path"],"Untitled") !== false)
                                             <a href="{{route('gitRepo.upload.get',array('dirname' => $fileData["headerData"]["path"])) }}" style="display: block; margin-top: 20px"><button type="button" class="btn btn-primary btn-lg center-block">Upload a Corpus Header <i class="fa fa-upload fa-3x" aria-hidden="true"></i></button></a>
                                         @else
-                                            <a href="/admin/corpora/{{$corpus->id}}/{{$fileData["headerData"]["previouspath"]}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
+                                            <a href="/project/corpora/{{$corpus->id}}/{{$fileData["headerData"]["previouspath"]}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
                                             <h4>Corpus Headers</h4>
                                             <br />
-                                            @include('admin.corpusadmin.projectList')
+                                            @include('project.corpus.projectList')
                                         @endif
                                     @endif
                                 </div>
@@ -142,10 +142,10 @@
                                 <div class="tab-pane fade" id="files">
                             @endif
                                     @if($fileData["corpusData"]["pathcount"] > 3)
-                                        <a href="/admin/corpora/{{$corpus->id}}/{{$fileData["corpusData"]["previouspath"]}}#files" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
+                                        <a href="/project/corpora/{{$corpus->id}}/{{$fileData["corpusData"]["previouspath"]}}#files" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
                                     @endif
                                 <h4>Corpus Files</h4>
-                                @include('admin.corpusadmin.fileList')
+                                @include('project.corpus.fileList')
                             </div>
                             <div class="tab-pane fade" id="publications">
                                 <h4>Publications</h4>
