@@ -511,7 +511,7 @@ class CorpusController extends Controller
 
         //dd($filteredRoles);
 
-        return view('admin.useradmin.roles.assign_corpusroles_to_user')
+        return view('project.corpus.assign_corpusroles_to_user')
             ->with('corpus', $corpus)
             ->with('users', $users)
             ->with('user',$loggedInUser)
@@ -530,9 +530,7 @@ class CorpusController extends Controller
         if ($request->ajax()){
             $msg .= "<p>Assigned the following roles to user </p>";
             $role_users = $input['role_users'];
-            Log::info("ROLEUSERS: ".print_r($role_users,1));
             $corpus = Corpus::find($input['corpus_id']);
-            Log::info("CORPUS: ".print_r($corpus->name,1)." ID: ".$corpus->id);
             $msg .= "<ul>";
 
 
@@ -540,10 +538,8 @@ class CorpusController extends Controller
                 $role = Role::find($roleId);
                 if($role){
                     $msg .= "<li>".$role->name."<ul>";
-                    Log::info("ROLE: ".print_r($role->name,1)." ID: ".$roleId);
                     foreach($user_data as $userId) {
                         $user = User::find($userId);
-                        Log::info("user: ".print_r($user->name,1)." ID: ".$userId);
 
                         if($user) {
                             $msg .= "<li>".$user->name."</li>";
@@ -556,6 +552,30 @@ class CorpusController extends Controller
                 }
             }//end foreach
 
+            $msg .= "</ul>";
+        }
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $msg,
+        );
+
+        return Response::json($response);
+    }
+
+    public function deleteRelationsByCorpus(Request $request){
+        $input =$request ->all();
+        $msg = "";
+        if ($request->ajax()){
+
+            $msg .= "<p>Removed the following user from the project: </p>";
+            $userId = $input['userId'];
+            $roleId = $input['roleId'];
+            $corpus = Corpus::find($input['corpusId']);
+            $user = User::find($userId);
+            $corpus->users()->detach($userId);
+            $msg .= "<ul>";
+            $msg .= "<li>".$user->name."</li>";
             $msg .= "</ul>";
         }
 

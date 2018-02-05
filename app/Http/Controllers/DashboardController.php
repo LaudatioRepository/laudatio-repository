@@ -20,9 +20,10 @@ class DashboardController extends Controller
         $user = \Auth::user();
 
         $assignments = $this->userAssignments($user);
-        Log::info("assignments: ".print_r($assignments, 1));
+        //Log::info("assignments: ".print_r($assignments, 1));
 
         $corpora = $this->allCorpora();
+        //Log::info("allcorpora: ".print_r($corpora, 1));
         //dd($corpora);
 
         return view('admin.dashboard.index')
@@ -44,7 +45,9 @@ class DashboardController extends Controller
                 "name" => $corpus->name,
                 "directory_path" => $corpus->directory_path,
                 "corpusUsers" => array(),
-                "projectPath" => $corpusProjects[0]->directory_path
+                "projectPath" => $corpusProjects[0]->directory_path,
+                "projectId" => $corpusProjects[0]->id,
+                "corpusAdmin" => array()
             );
 
 
@@ -65,21 +68,26 @@ class DashboardController extends Controller
                         $corpusAdmin = $corpusUser->name;
                         $corpusAdminId = $corpusUser->id;
                         $corpusAdminRoleId = $role->id;
+                        $corpora[$corpus->id]['corpusAdmin'] = array(
+                            "name" => $corpusAdmin,
+                            "id" => $corpusAdminId,
+                            "roleId" => $corpusAdminRoleId
+                        );
                     }
-                    array_push($corpora[$corpus->id]['corpusUsers'],array(
-                            "name" => $corpusUser->name,
-                            "id" => $corpusUser->id,
-                            "role" => $role->name
-                        )
-                    );
+                    else{
+                        array_push($corpora[$corpus->id]['corpusUsers'],array(
+                                "name" => $corpusUser->name,
+                                "id" => $corpusUser->id,
+                                "role" => $role->name,
+                                "roleId" => $role->id
+                            )
+                        );
+                    }
+
                 }
             }
 
-            $corpora[$corpus->id]['corpusAdmin'] = array(
-              "name" => $corpusAdmin,
-                "id" => $corpusAdminId,
-                "roleId" => $corpusAdminRoleId
-            );
+
         }
         return $corpora;
     }

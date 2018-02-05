@@ -353,9 +353,7 @@ class CorpusProjectController extends Controller
         if ($request->ajax()){
             $msg .= "<p>Assigned the following roles to user </p>";
             $role_users = $input['role_users'];
-            Log::info("ROLEUSERS: ".print_r($role_users,1));
             $corpus_project = CorpusProject::find($input['project_id']);
-            Log::info("corpus_project: ".print_r($corpus_project->name,1)." ID: ".$corpus_project->id);
             $msg .= "<ul>";
             foreach($role_users as $roleId => $user_data) {
                 $role = Role::find($roleId);
@@ -363,11 +361,9 @@ class CorpusProjectController extends Controller
                     $msg .= "<li>".$role->name."<ul>";
                     foreach($user_data as $userId) {
                         $user = User::find($userId);
-                        $user->roles()->attach($role);
                         if($user) {
                             $msg .= "<li>".$user->name."</li>";
                             $corpus_project->users()->save($user,['role_id' => $roleId]);
-
                         }
                     }
                     $msg .= "</ul></li>";
@@ -395,5 +391,28 @@ class CorpusProjectController extends Controller
         return view('admin.useradmin.roles.index', compact('roles'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
+    }
+
+    public function deleteRelationsByProject(Request $request){
+        $input =$request ->all();
+        $msg = "";
+        if ($request->ajax()){
+
+            $msg .= "<p>Removed the following user from the project: </p>";
+            $userId = $input['userId'];
+            $corpusProject = CorpusProject::find($input['projectId']);
+            $user = User::find($userId);
+            $corpusProject->users()->detach($userId);
+            $msg .= "<ul>";
+            $msg .= "<li>".$user->name."</li>";
+            $msg .= "</ul>";
+        }
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $msg,
+        );
+
+        return Response::json($response);
     }
 }

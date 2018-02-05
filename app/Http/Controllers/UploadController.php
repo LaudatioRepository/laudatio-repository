@@ -241,10 +241,10 @@ class UploadController extends Controller
         }
 
         if($isCorpusHeader && !$isUntitled) {
-            return redirect()->route('admin.corpora.show', ['path' => $corpusProjectPath.'/'.$gitLabCorpusPath . '/TEI-HEADERS', 'corpus' => $corpusId]);
+            return redirect()->route('project.corpora.show', ['path' => $corpusProjectPath.'/'.$gitLabCorpusPath . '/TEI-HEADERS', 'corpus' => $corpusId]);
         }
         else if ($isCorpusHeader && $isUntitled){
-            return redirect()->route('admin.corpora.show', ['path' => $dirPath, 'corpus' => $corpusId]);
+            return redirect()->route('project.corpora.show', ['path' => $dirPath, 'corpus' => $corpusId]);
         }
         else{
             return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
@@ -265,6 +265,6 @@ class UploadController extends Controller
 
         $gitFunction = new GitFunction();
         $createdPaths = $gitFunction->writeFiles($dirPath,$paths, $this->flysystem,$file->getRealPath(),$directoryPath);
-        return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
+        return redirect()->route('project.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
     }
 }

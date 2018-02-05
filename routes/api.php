@@ -44,6 +44,8 @@ Route::group(array('prefix' => 'adminapi'), function() {
     Route::post('userroles','RoleController@storeRelations');
     Route::post('userrolesbyproject','CorpusProjectController@storeRelationsByProject');
     Route::post('userrolesbycorpus','CorpusController@storeRelationsByCorpus');
+    Route::post('deleterolesbycorpus','CorpusController@deleteRelationsByCorpus');
+    Route::post('deleterolesbyproject','CorpusProjectController@deleteRelationsByProject');
     Route::post('deletemultiple','GitRepoController@deleteMultipleFiles');
     Route::post('createFormat','GitRepoController@createFormatFolder');
 });

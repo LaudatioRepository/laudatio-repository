@@ -5,7 +5,6 @@
         <h1 class="page-header">Dashboard</h1>
         <!-- /.col-lg-12 -->
         <div class="row">
-
             <div class="col-lg-8">
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -14,9 +13,7 @@
                     <div class="panel-body">
                         <div class="row">
                             <div>
-
                                 <div class="table-responsive">
-
                                     @if(count($assignments['corpusProjects']) > 0)
                                     <table class="table table-bordered table-hover table-striped">
                                         <thead>
@@ -153,104 +150,100 @@
                     </div>
                 </div>
             </div>
-            </div>
         </div>
-
-
-      <!-- ALL CORPORA -->
+        <!-- ALL CORPORA -->
         @can('Can create corpus project')
-        <div class="row">
-
             <div class="col-lg-8">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i class="fa fa-bell fa-fw"></i> All Corpora
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bell fa-fw"></i> All Corpora
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div>
 
-                                <div class="table-responsive">
+                            <div class="table-responsive">
 
-                                    @if(count($corpora) > 0)
-                                        <table class="table table-bordered table-hover table-striped">
-                                            <thead>
-                                            <tr>
-                                                <th>Corpus</th>
-                                                <th>Corpus Admin
+                                @if(count($corpora) > 0)
+                                    <table class="table table-bordered table-hover table-striped">
+                                        <thead>
+                                        <tr>
+                                            <th>Corpus</th>
+                                            <th>Corpus Admin
 
-                                                </th>
-                                                <th>Corpus collaborators
+                                            </th>
+                                            <th>Corpus collaborators
 
-                                                </th>
-                                            </tr>
-                                            </thead>
+                                            </th>
+                                        </tr>
+                                        </thead>
 
-                                            <tfoot>
-                                            <tr>
-                                                <td colspan="3">{{link_to_route('project.corpusProject.create', $title = "Create a new project", $parameters = [], $attributes = ["class" => "btn btn-default pull-right"])}}</td>
-                                            </tr>
-                                            </tfoot>
+                                        <tfoot>
+                                        <tr>
+                                            <td colspan="3">{{link_to_route('project.corpusProject.create', $title = "Create a new project", $parameters = [], $attributes = ["class" => "btn btn-default pull-right"])}}</td>
+                                        </tr>
+                                        </tfoot>
 
-                                            <tbody id="projectRoles">
-                                            @if(count($corpora) > 0)
-                                                @foreach($corpora as $corpusId => $corpus)
-                                                    <tr>
-                                                        <td>
-                                                            {{link_to_route('project.corpora.show', $title = $corpus['name'], $parameters = ['corpus' => $corpusId,'path' => $corpus['directory_path'].'/'.$corpus['projectPath']], $attributes = [])}}
-                                                        </td>
-                                                        <td>
-                                                            @if(count($corpus['corpusAdmin']) > 0)
-                                                                <a href="#" class="list-group-item">
+                                        <tbody id="projectRoles">
+                                        @if(count($corpora) > 0)
+                                            @foreach($corpora as $corpusId => $corpus)
+                                                <tr>
+                                                    <td>
+                                                        {{link_to_route('project.corpora.show', $title = $corpus['name'], $parameters = ['corpus' => $corpusId,'path' => $corpus['directory_path'].'/'.$corpus['projectPath']], $attributes = [])}}
+                                                    </td>
+                                                    <td>
+                                                        @if(count($corpus['corpusAdmin']) > 0)
+                                                            <a href="javascript:" class="list-group-item delete-corpus-admin" data-corpusid="{{$corpusId}}" data-corpusadmin-userid="{{$corpus['corpusAdmin']['id']}}" data-corpusadmin-roleid="{{$corpus['corpusAdmin']['roleId']}}">
                                                                  <span class="pull-right text-muted small">
                                                                     <i class="fa fa-minus-square fa-fw"></i>
                                                                  </span>
-                                                                    {{$corpus['corpusAdmin']['name']}}
-                                                                    : {{$corpus['corpusAdmin']['id']}}
-                                                                    : {{$corpus['corpusAdmin']['roleId']}}
-                                                                </a>
-                                                            @endif
-                                                            <br />
-                                                            <span class="pull-right text-muted small">
-                                                                <i class="fa fa-plus-square fa-fw"></i>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <div class="list-group">
-                                                                @foreach($corpus['corpusUsers'] as $corpusUser)
-                                                                    <a href="#" class="list-group-item">
-                                                                         <span class="pull-right text-muted small">
+                                                                {{$corpus['corpusAdmin']['name']}}
+                                                                : {{$corpus['corpusAdmin']['id']}}
+                                                                : {{$corpus['corpusAdmin']['roleId']}}
+                                                            </a>
+                                                        @endif
+                                                        <br />
+                                                        <a href="/project/corpora/assignusers/{{$corpusId}}">
+                                                                    <span class="pull-right text-muted small">
+                                                                        <i class="fa fa-plus-square fa-fw"></i>
+                                                                    </span>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <div class="list-group">
+                                                            @foreach($corpus['corpusUsers'] as $corpusUser)
+                                                                <a href="javascript:" class="list-group-item corpus-user" data-corpusid="{{$corpusId}}" data-corpususerid="{{$corpusUser['id']}}" data-corpususerroleid="{{$corpusUser['roleId']}}">
+                                                                <span class="pull-right text-muted small">
                                                                             <i class="fa fa-minus-square fa-fw"></i>
                                                                          </span>
-                                                                        {{$corpusUser['name']}} : {{$corpusUser['role']}}
-                                                                    </a>
-                                                                @endforeach
-                                                            </div>
-                                                            <span class="pull-right text-muted small">
-                                                                <i class="fa fa-plus-square fa-fw"></i>
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
+                                                                {{$corpusUser['name']}} : {{$corpusUser['role']}}
+                                                                </a>
+                                                            @endforeach
+                                                        </div>
+                                                        <a href="/project/corpora/assignusers/{{$corpusId}}">
+                                                                    <span class="pull-right text-muted small">
+                                                                        <i class="fa fa-plus-square fa-fw"></i>
+                                                                    </span>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
 
-                                                    </tr>
-                                                @endforeach
-                                            @endif
-                                            </tbody>
-                                        </table>
-                                    @endif
-                                </div>
-
-                                <!-- /.table-responsive -->
+                                                </tr>
+                                            @endforeach
+                                        @endif
+                                        </tbody>
+                                    </table>
+                                @endif
                             </div>
+
+                            <!-- /.table-responsive -->
                         </div>
-                        <!-- /.row -->
                     </div>
+                    <!-- /.row -->
                 </div>
             </div>
         </div>
-
-        <div class="row">
             <div class="col-lg-8">
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -264,11 +257,128 @@
                     </div>
                 </div>
             </div>
-        </div>
         @endcan
+    </div>
+
+    <input type="hidden" id="_token" value="{{ csrf_token() }}">
     </div>
 <script language="JavaScript">
     (function () {
+
+        $('.delete-corpus-admin').on('click', function() {
+            var token = $('#_token').val();
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+
+            var postData = {}
+            postData.token = token;
+            postData.corpusId = $(this).data('corpusid');
+            postData.userId = $(this).data('corpusadmin-userid');
+            postData.roleId = $(this).data('corpusadmin-roleid');
+            console.log(postData);
+
+
+            $.ajax({
+                url: "/api/adminapi/deleterolesbycorpus",
+                type:"POST",
+                data: postData,
+                async: true,
+                statusCode: {
+                    500: function () {
+                        alert("server down");
+                    }
+                },
+                success:function(data){
+                    console.log(data);
+                    var flashMessage = '<div id="flash-message" class="alert alert-success"> '+data.msg+' </div>';
+                    $('#page-wrapper').append(flashMessage);
+                },error:function(){
+                    console.log("error!!!!");
+                }
+            }); //end of ajax
+        });
+
+        $('.project-user').on('click', function() {
+            var token = $('#_token').val();
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+
+            var postData = {}
+            postData.token = token;
+            postData.projectId = $(this).data('projectid');
+            postData.userId = $(this).data('projectuserid');
+            postData.roleId = $(this).data('projectuserroleid');
+            console.log(postData);
+
+
+            $.ajax({
+                url: "/api/adminapi/deleterolesbyproject",
+                type:"POST",
+                data: postData,
+                async: true,
+                statusCode: {
+                    500: function () {
+                        alert("server down");
+                    }
+                },
+                success:function(data){
+                    console.log(data);
+                    var flashMessage = '<div id="flash-message" class="alert alert-success"> '+data.msg+' </div>';
+                    $('#page-wrapper').append(flashMessage);
+                },error:function(){
+                    console.log("error!!!!");
+                }
+            }); //end of ajax
+        });
+
+        $('.corpus-user').on('click', function() {
+            var token = $('#_token').val();
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+
+            var postData = {}
+            postData.token = token;
+            postData.corpusId = $(this).data('corpusid');
+            postData.userId = $(this).data('corpususerid');
+            postData.roleId = $(this).data('corpususerroleid');
+            console.log(postData);
+
+
+            $.ajax({
+                url: "/api/adminapi/deleterolesbycorpus",
+                type:"POST",
+                data: postData,
+                async: true,
+                statusCode: {
+                    500: function () {
+                        alert("server down");
+                    }
+                },
+                success:function(data){
+                    console.log(data);
+                    var flashMessage = '<div id="flash-message" class="alert alert-success"> '+data.msg+' </div>';
+                    $('#page-wrapper').append(flashMessage);
+                    $(this).remove();
+                },error:function(){
+                    console.log("error!!!!");
+                }
+            }); //end of ajax
+        });
 
     })();
 
