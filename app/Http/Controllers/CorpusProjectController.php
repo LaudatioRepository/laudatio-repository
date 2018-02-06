@@ -361,7 +361,9 @@ class CorpusProjectController extends Controller
                     $msg .= "<li>".$role->name."<ul>";
                     foreach($user_data as $userId) {
                         $user = User::find($userId);
+
                         if($user) {
+                            $user->roles()->attach($role);
                             $msg .= "<li>".$user->name."</li>";
                             $corpus_project->users()->save($user,['role_id' => $roleId]);
                         }

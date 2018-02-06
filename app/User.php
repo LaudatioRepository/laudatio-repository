@@ -38,6 +38,6 @@ class User extends Authenticatable
     }
 
     public function corpora() {
-        return $this->belongsToMany(Corpus::class);
+        return $this->belongsToMany(Corpus::class)->withPivot('role_id');
     }
 }

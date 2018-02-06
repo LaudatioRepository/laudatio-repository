@@ -542,6 +542,10 @@ class CorpusController extends Controller
                         $user = User::find($userId);
 
                         if($user) {
+                            if(!$user->roles->contains($role)){
+                                $user->roles()->attach($role);
+                            }
+
                             $msg .= "<li>".$user->name."</li>";
                             $corpus->users()->save($user,['role_id' => $roleId]);
 

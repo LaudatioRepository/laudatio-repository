@@ -153,7 +153,7 @@
         </div>
         <!-- ALL CORPORA -->
         @can('Can create corpus project')
-            <div class="col-lg-8">
+         <div class="col-lg-8">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-bell fa-fw"></i> All Corpora
@@ -227,9 +227,6 @@
                                                         </a>
                                                     </td>
                                                 </tr>
-                                                <tr>
-
-                                                </tr>
                                             @endforeach
                                         @endif
                                         </tbody>
@@ -244,20 +241,88 @@
                 </div>
             </div>
         </div>
+
             <div class="col-lg-8">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i class="fa fa-bell fa-fw"></i> All publications in project
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div>
-                            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bell fa-fw"></i> All publications in project
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         @endcan
+
+        @can('Can create corpus')
+            <div class="col-lg-8">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bell fa-fw"></i> My Corpora
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div>
+
+                                <div class="table-responsive">
+                                    @if(count($corpora) > 0)
+                                        <table class="table table-bordered table-hover table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>Corpus</th>
+                                                <th>Corpus collaborators</th>
+                                            </tr>
+                                            </thead>
+
+                                            <tfoot>
+                                            <tr>
+                                                <td colspan="3">{{link_to_route('project.corpusProject.create', $title = "Create a new project", $parameters = [], $attributes = ["class" => "btn btn-default pull-right"])}}</td>
+                                            </tr>
+                                            </tfoot>
+
+                                            <tbody id="projectRoles">
+                                            @if(count($corpora) > 0)
+                                                @foreach($corpora as $corpusId => $corpus)
+                                                    <tr>
+                                                        <td>
+                                                            {{link_to_route('project.corpora.show', $title = $corpus['name'], $parameters = ['corpus' => $corpusId,'path' => $corpus['directory_path'].'/'.$corpus['projectPath']], $attributes = [])}}
+                                                        </td>
+                                                        <td>
+                                                            <div class="list-group">
+                                                                @foreach($corpus['corpusUsers'] as $corpusUser)
+                                                                    <a href="javascript:" class="list-group-item corpus-user" data-corpusid="{{$corpusId}}" data-corpususerid="{{$corpusUser['id']}}" data-corpususerroleid="{{$corpusUser['roleId']}}">
+                                                                <span class="pull-right text-muted small">
+                                                                            <i class="fa fa-minus-square fa-fw"></i>
+                                                                         </span>
+                                                                        {{$corpusUser['name']}} : {{$corpusUser['role']}}
+                                                                    </a>
+                                                                @endforeach
+                                                            </div>
+                                                            <a href="/project/corpora/assignusers/{{$corpusId}}">
+                                                                    <span class="pull-right text-muted small">
+                                                                        <i class="fa fa-plus-square fa-fw"></i>
+                                                                    </span>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
+                                            </tbody>
+                                        </table>
+                                    @endif
+                                </div>
+
+                                <!-- /.table-responsive -->
+                            </div>
+                        </div>
+                        <!-- /.row -->
+                    </div>
+                </div>
+            </div>
+            @endcan
     </div>
 
     <input type="hidden" id="_token" value="{{ csrf_token() }}">

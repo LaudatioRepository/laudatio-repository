@@ -20,11 +20,13 @@ class DashboardController extends Controller
         $user = \Auth::user();
 
         $assignments = $this->userAssignments($user);
-        //Log::info("assignments: ".print_r($assignments, 1));
 
-        $corpora = $this->allCorpora();
-        //Log::info("allcorpora: ".print_r($corpora, 1));
-        //dd($corpora);
+        $allCorpora = Corpus::all();
+        $corpora = $this->allCorpora($allCorpora);
+
+        $userCorpora= $user->corpora()->wherePivot('role_id',3)->get();
+        $myCorpora = $this->myCorpora($userCorpora);
+
 
         return view('admin.dashboard.index')
             ->with('isLoggedIn', $isLoggedIn)
@@ -33,11 +35,49 @@ class DashboardController extends Controller
             ->with('user',$user);
     }
 
-    public function allCorpora(){
+    public function myCorpora($corpora){
+        $myCorpora = array();
+        foreach ($corpora as $corpus){
+            $corpusProjects = $corpus->corpusprojects()->get();
+            $corpusUsers = $corpus->users()->get();
+            $myCorpora[$corpus->id] = array(
+                "name" => $corpus->name,
+                "directory_path" => $corpus->directory_path,
+                "corpusUsers" => array(),
+                "projectPath" => $corpusProjects[0]->directory_path,
+                "projectId" => $corpusProjects[0]->id,
+                "corpusAdmin" => array()
+            );
+            $corpusUsers = $corpus->users()->get();
+
+            foreach ($corpusUsers as $corpusUser) {
+                if ($corpusUser->id == $corpusUser->id) {
+                    $role = Role::find($corpusUser->pivot->role_id);
+
+                    if(
+                        $role->hasPermissionTo('Can edit corpus') &&
+                        !$role->hasPermissionTo('Can create corpus project') &&
+                        !$role->hasPermissionTo('Administer the application')
+                    ){
+                        array_push($myCorpora[$corpus->id]['corpusUsers'],array(
+                                "name" => $corpusUser->name,
+                                "id" => $corpusUser->id,
+                                "role" => $role->name,
+                                "roleId" => $role->id
+                            )
+                        );
+                    }
+
+                }
+            }//end for users
+        }
+        return $myCorpora;
+    }
+    
+
+    public function allCorpora($allCorpora){
 
         $corpora = array();
-
-        $allCorpora = Corpus::all();
 
         foreach ($allCorpora as $corpus){
             $corpusProjects = $corpus->corpusprojects()->get();
