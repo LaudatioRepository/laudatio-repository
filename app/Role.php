@@ -2,9 +2,13 @@
 
 namespace App;
 
-class Role extends Model
+class Role extends \Spatie\Permission\Models\Role
 {
+    /*
     public function users(){
         return $this->belongsToMany(User::class);
     }
+    */
+
+
 }

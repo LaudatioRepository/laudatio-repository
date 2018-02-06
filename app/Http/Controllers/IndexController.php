@@ -21,13 +21,4 @@ class IndexController extends Controller
     {
         return view('index');
     }
-
-    public function admin()
-    {
-        $isLoggedIn = \Auth::check();
-        $user = \Auth::user();
-        return view('admin.adminIndex')
-            ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',$user);
-    }
 }

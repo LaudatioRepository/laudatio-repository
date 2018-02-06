@@ -247,53 +247,7 @@
                     <!-- /input-group -->
                 </li>
                 <li>
-                    <a href="/admin"><i class="fa fa-dashboard fa-fw"></i> Admin</a>
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-archive fa-fw"></i> Corpus Projects<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                        <li>
-                            <a href="/project/corpusprojects">List all Corpus Projects</a>
-                        </li>
-                        <li>
-                            <a href="/project/corpusprojects/create">Create a new Corpus Project</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-sitemap fa-fw"></i>Corpora<span class="fa arrow"></span></a>
-                            <ul class="nav nav-third-level">
-                                <li>
-                                    <a href="/project/corpora">List all Corpora</a>
-                                </li>
-                                <li>
-                                    <a href="/project/corpora/create">Assign an existing Corpus to an existing Project</a>
-                                </li>
-                            </ul>
-                        </li>
-
-                    </ul>
-                    <!-- /.nav-second-level -->
-                </li>
-                <li>
-                    <a href="#"><i class="fa fa-group fa-fw"></i> User Management<span class="fa arrow"></span></a>
-                    <ul class="nav nav-second-level">
-                        <li>
-                            <a href="#"><i class="fa fa-suitcase fa-fw"></i>User role management <span class="fa arrow"></span></a>
-                            <ul class="nav nav-third-level">
-                                <li>
-                                    <a href="/admin/roles">List User Roles</a>
-                                </li>
-                                <li>
-                                    <a href="/admin/permissions/create">Create permissions</a>
-                                </li>
-                                <li>
-                                    <a href="/admin/roles/create">Create User Roles</a>
-                                </li>
-                                <li>
-                                    <a href="/admin/userroles">Assign Super users</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+                    <a href="/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                 </li>
             </ul>
         </div>

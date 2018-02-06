@@ -39,7 +39,7 @@ class CorpusProjectController extends Controller
         $user = \Auth::user();
         $CorpusProjects = CorpusProject::latest()->get();
 
-        return view('admin.corpusprojectadmin.index', compact('CorpusProjects'))
+        return view('project.corpusproject.index', compact('CorpusProjects'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -55,7 +55,7 @@ class CorpusProjectController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-        return view('admin.corpusprojectadmin.create')
+        return view('project.corpusproject.create')
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -98,7 +98,7 @@ class CorpusProjectController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.corpusProject.index');
+        return redirect()->route('project.corpusProject.index');
     }
 
     /**
@@ -113,6 +113,7 @@ class CorpusProjectController extends Controller
         $corpusProjectUsers = $corpusproject->users()->get();
         $corpora = $corpusproject->corpora()->get();
 
+        //dd($corpusProjectUsers);
         foreach ($corpusProjectUsers as $corpusProjectUser){
             if(!isset($user_roles[$corpusProjectUser->id])){
                 $user_roles[$corpusProjectUser->id]['roles'] = array();
@@ -124,7 +125,7 @@ class CorpusProjectController extends Controller
         }
 
 
-        return view('admin.corpusprojectadmin.show', compact('corpusproject'))
+        return view('project.corpusproject.show', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user_roles',$user_roles)
             ->with('corpora',$corpora)
@@ -140,7 +141,7 @@ class CorpusProjectController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-        return view('admin.corpusprojectadmin.edit', compact('corpusproject'))
+        return view('project.corpusproject.edit', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -168,8 +169,8 @@ class CorpusProjectController extends Controller
         );
         $this->GitLabService->updateGitLabGroup($corpusproject->gitlab_id,$params);
         $corpora = $corpusproject->corpora()->get();
-        dd($corpora);
-        return view('admin.corpusprojectadmin.show', compact('corpusproject'))
+
+        return view('project.corpusproject.show', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('corpora',$corpora)
             ->with('user',$user);
@@ -183,7 +184,7 @@ class CorpusProjectController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-        return view('admin.corpusprojectadmin.delete', compact('corpusproject'))
+        return view('project.corpusproject.delete', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -221,7 +222,7 @@ class CorpusProjectController extends Controller
 
         $this->GitRepoService->deleteProjectFileStructure($this->flysystem,$corpusproject->directory_path);
 
-        return view('admin.corpusprojectadmin.index', compact('CorpusProjects'))
+        return view('project.corpusproject.index', compact('CorpusProjects'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -242,7 +243,7 @@ class CorpusProjectController extends Controller
             }
         }
 
-        return view('admin.corpusprojectadmin.assign_corpora')
+        return view('project.corpusproject.assign_corpora')
             ->with('corpusproject', $corpusproject)
             ->with('corpora', $filteredList)
             ->with('isLoggedIn', $isLoggedIn)
@@ -266,7 +267,7 @@ class CorpusProjectController extends Controller
             $corpusproject->corpora()->attach($corpus);
         }
 
-        return redirect()->route('admin.corpusProject.index');
+        return redirect()->route('project.corpusProject.index');
     }
 
 
@@ -301,13 +302,19 @@ class CorpusProjectController extends Controller
             array_push($user_roles[$corpusProjectUser->pivot->role_id],$corpusProjectUser->id);
         }
 
-        $roles = Role::where('super_user',0)->get();
+        $roles = Role::all();
+        $filteredRoles = array();
+        foreach ($roles as $role){
+            if($role->hasPermissionTo('Can create corpus project') && $role->super_user == 0){
+                array_push($filteredRoles,$role);
+            }
+        }
 
 
-        return view('admin.useradmin.roles.assign_roles_to_user')
-            ->with('corpusProject', $corpusproject)
+        return view('project.corpusproject.assign_projectroles_to_user')
+            ->with('corpusproject', $corpusproject)
             ->with('users', $users)
-            ->with('roles', $roles)
+            ->with('roles', $filteredRoles)
             ->with('user_roles',$user_roles)
             ->with('isLoggedIn', $isLoggedIn)
             ->with('loggedInUser',$loggedInUser);
@@ -334,7 +341,7 @@ class CorpusProjectController extends Controller
             $corpusproject->users()->attach($user);
         }
 
-        return redirect()->route('admin.corpusProject.index');
+        return redirect()->route('project.corpusProject.index');
     }
 
 
@@ -354,10 +361,11 @@ class CorpusProjectController extends Controller
                     $msg .= "<li>".$role->name."<ul>";
                     foreach($user_data as $userId) {
                         $user = User::find($userId);
+
                         if($user) {
+                            $user->roles()->attach($role);
                             $msg .= "<li>".$user->name."</li>";
                             $corpus_project->users()->save($user,['role_id' => $roleId]);
-
                         }
                     }
                     $msg .= "</ul></li>";
@@ -385,5 +393,28 @@ class CorpusProjectController extends Controller
         return view('admin.useradmin.roles.index', compact('roles'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
+    }
+
+    public function deleteRelationsByProject(Request $request){
+        $input =$request ->all();
+        $msg = "";
+        if ($request->ajax()){
+
+            $msg .= "<p>Removed the following user from the project: </p>";
+            $userId = $input['userId'];
+            $corpusProject = CorpusProject::find($input['projectId']);
+            $user = User::find($userId);
+            $corpusProject->users()->detach($userId);
+            $msg .= "<ul>";
+            $msg .= "<li>".$user->name."</li>";
+            $msg .= "</ul>";
+        }
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $msg,
+        );
+
+        return Response::json($response);
     }
 }

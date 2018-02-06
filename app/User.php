@@ -4,10 +4,12 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     use Notifiable;
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -36,6 +38,6 @@ class User extends Authenticatable
     }
 
     public function corpora() {
-        return $this->belongsToMany(Corpus::class);
+        return $this->belongsToMany(Corpus::class)->withPivot('role_id');
     }
 }

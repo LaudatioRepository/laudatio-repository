@@ -10,7 +10,7 @@
         </ul>
     @endif
 
-    <form action="/admin/upload" method="post" enctype="multipart/form-data">
+    <form action="/project/upload" method="post" enctype="multipart/form-data">
         {{ csrf_field() }}
         <!--p>Directory name:
         <br />

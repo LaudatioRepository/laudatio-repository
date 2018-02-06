@@ -29,7 +29,7 @@
                                         <td>
                                         </td>
                                         <td class="text-center"><span class="fa fa-folder"></span></td>
-                                        <td><a href="{{ route('admin.corpora.show', array('corpus' => $corpus,'path' => $project['path'])) }}">{{$project['basename']}}</a></td>
+                                        <td><a href="{{ route('project.corpora.show', array('corpus' => $corpus,'path' => $project['path'])) }}">{{$project['basename']}}</a></td>
                                         <td class="text-center">
                                             @if($fileData["headerData"]["pathcount"] == 3 || $fileData["headerData"]["pathcount"] == 1)
 

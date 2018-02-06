@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Corpus;
-use App\Document;
+use App\MessageBoardObject;
 use Illuminate\Http\Request;
 
-class DocumentController extends Controller
+class MessageBoard extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -42,10 +41,10 @@ class DocumentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Document  $document
+     * @param  \App\MessageBoardObject  $messageBoard
      * @return \Illuminate\Http\Response
      */
-    public function show(Document $document)
+    public function show(MessageBoard $messageBoard)
     {
         //
     }
@@ -53,10 +52,10 @@ class DocumentController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Document  $document
+     * @param  \App\MessageBoardObject  $messageBoard
      * @return \Illuminate\Http\Response
      */
-    public function edit(Document $document)
+    public function edit(MessageBoard $messageBoard)
     {
         //
     }
@@ -65,10 +64,10 @@ class DocumentController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Document  $document
+     * @param  \App\MessageBoardObject  $messageBoard
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Document $document)
+    public function update(Request $request, MessageBoard $messageBoard)
     {
         //
     }
@@ -76,28 +75,11 @@ class DocumentController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Document  $document
+     * @param  \App\MessageBoardObject  $messageBoard
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Document $document)
+    public function destroy(MessageBoard $messageBoard)
     {
-        $isLoggedIn = \Auth::check();
-        $user = \Auth::user();
-
-        if(count($document->corpus()) > 0) {
-            $document->corpus()->detach();
-        }
-
-        if(count($document->annotations()) > 0) {
-            $document->annotations()->detach();
-        }
-
-        $document->delete();
-
-        $corpora = Corpus::latest()->get();
-
-        return view('admin.corpus.index', compact('corpora'))
-            ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',$user);
+        //
     }
 }

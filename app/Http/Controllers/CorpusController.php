@@ -10,6 +10,7 @@ use App\Role;
 use App\Custom\GitRepoInterface;
 use App\Custom\GitLabInterface;
 use GrahamCampbell\Flysystem\FlysystemManager;
+use Illuminate\Support\Facades\Auth;
 use Response;
 use Log;
 
@@ -44,7 +45,7 @@ class CorpusController extends Controller
             $corpusProjects[$corpus->id] = $corpusProjectsTemp[0]->directory_path;
         }
 
-        return view('admin.corpusadmin.index', compact('corpora'))
+        return view('/project.corpus.index', compact('corpora'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('corpusProjects', $corpusProjects)
             ->with('user',$user);
@@ -59,7 +60,7 @@ class CorpusController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-        return view('admin.corpusadmin.create')
+        return view('project.corpus.create')
             ->with('isLoggedIn', $isLoggedIn)
             ->with('corpusProjectId',$corpusproject->id)
             ->with('user',$user);
@@ -94,7 +95,7 @@ class CorpusController extends Controller
             $corpus->corpusprojects()->attach($corpusproject);
         }
 
-        return redirect()->route('admin.corpora.index');
+        return redirect()->route('project.corpora.index');
     }
 
     /**
@@ -133,7 +134,7 @@ class CorpusController extends Controller
             $corpus->corpusprojects()->attach($corpusProject);
         }
 
-        return redirect()->route('admin.corpora.index');
+        return redirect()->route('project.corpora.index');
     }
 
     /**
@@ -200,7 +201,7 @@ class CorpusController extends Controller
             */
         }
 
-        return redirect()->route('admin.corpora.index');
+        return redirect()->route('project.corpora.index');
     }
 
     /**
@@ -282,6 +283,7 @@ class CorpusController extends Controller
 
 
             $corpusUsers = $corpus->users()->get();
+
             foreach ($corpusUsers as $corpusUser){
                 if(!isset($user_roles[$corpusUser->id])){
                     $user_roles[$corpusUser->id] = array();
@@ -294,9 +296,9 @@ class CorpusController extends Controller
 
             }
         }
-        //dd($fileData);
+        //dd($corpusUsers );
 
-        return view("admin.corpusadmin.show",["corpus" => $corpus, "corpusproject_directory_path" => $corpusProject_directory_path, "fileData" => $fileData])
+        return view("project.corpus.show",["corpus" => $corpus, "corpusproject_directory_path" => $corpusProject_directory_path, "fileData" => $fileData])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user_roles',$user_roles)
             ->with('user',$user);
@@ -310,7 +312,7 @@ class CorpusController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-        return view('admin.corpusadmin.edit', compact('corpus'))
+        return view('project.corpus.edit', compact('corpus'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -356,7 +358,7 @@ class CorpusController extends Controller
         }
 
 
-        return view('admin.corpusprojectadmin.show', compact('corpusproject'))
+        return view('project.corpusproject.show', compact('corpusproject'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('corpora',$corpora)
             ->with('user_roles',$user_roles)
@@ -375,7 +377,7 @@ class CorpusController extends Controller
 
         $corpusProject = CorpusProject::where('directory_path', '=', $corpusproject_directory_path)->get();
 
-        return view('admin.corpusadmin.delete', compact('corpus'))
+        return view('project.corpus.delete', compact('corpus'))
             ->with('projectId', $corpusProject[0]->id)
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
@@ -445,7 +447,7 @@ class CorpusController extends Controller
             $corpusProjects[$corpus->id] = $corpusProjectsTemp[0]->directory_path;
         }
 
-        return view('admin.corpusadmin.index', compact('corpora'))
+        return view('project.corpus.index', compact('corpora'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('corpusProjects', $corpusProjects)
             ->with('user',$user);
@@ -493,20 +495,34 @@ class CorpusController extends Controller
             }
         }
 */
-        $roles = Role::where([['super_user','=',0],['role_type','!=','corpusproject']])->get();
+        $roles = Role::all();
+        $filteredRoles = array();
+        foreach ($roles as $role){
+                if(
+                    !$role->hasPermissionTo('Administer the application') &&
+                    !$role->hasPermissionTo('Can create corpus project') &&
+                    ($role->hasPermissionTo('Can create corpus')
+                        || $role->hasPermissionTo('Can edit corpus')
+                    )
+                ){
+                    array_push($filteredRoles,$role);
+            }
+        }
 
+        //dd($filteredRoles);
 
-        return view('admin.useradmin.roles.assign_corpusroles_to_user')
+        return view('project.corpus.assign_corpusroles_to_user')
             ->with('corpus', $corpus)
             ->with('users', $users)
-            ->with('roles', $roles)
+            ->with('user',$loggedInUser)
+            ->with('roles', $filteredRoles)
             ->with('user_roles',$user_roles)
             ->with('isLoggedIn', $isLoggedIn)
             ->with('loggedInUser',$loggedInUser);
 
     }
 
-    public function storeRelationsByProject(Request $request)
+    public function storeRelationsByCorpus(Request $request)
     {
 
         $input =$request ->all();
@@ -514,9 +530,7 @@ class CorpusController extends Controller
         if ($request->ajax()){
             $msg .= "<p>Assigned the following roles to user </p>";
             $role_users = $input['role_users'];
-            Log::info("ROLEUSERS: ".print_r($role_users,1));
             $corpus = Corpus::find($input['corpus_id']);
-            Log::info("CORPUS: ".print_r($corpus->name,1)." ID: ".$corpus->id);
             $msg .= "<ul>";
 
 
@@ -524,12 +538,14 @@ class CorpusController extends Controller
                 $role = Role::find($roleId);
                 if($role){
                     $msg .= "<li>".$role->name."<ul>";
-                    Log::info("ROLE: ".print_r($role->name,1)." ID: ".$roleId);
                     foreach($user_data as $userId) {
                         $user = User::find($userId);
-                        Log::info("user: ".print_r($user->name,1)." ID: ".$userId);
 
                         if($user) {
+                            if(!$user->roles->contains($role)){
+                                $user->roles()->attach($role);
+                            }
+
                             $msg .= "<li>".$user->name."</li>";
                             $corpus->users()->save($user,['role_id' => $roleId]);
 
@@ -551,6 +567,30 @@ class CorpusController extends Controller
         return Response::json($response);
     }
 
+    public function deleteRelationsByCorpus(Request $request){
+        $input =$request ->all();
+        $msg = "";
+        if ($request->ajax()){
+
+            $msg .= "<p>Removed the following user from the project: </p>";
+            $userId = $input['userId'];
+            $roleId = $input['roleId'];
+            $corpus = Corpus::find($input['corpusId']);
+            $user = User::find($userId);
+            $corpus->users()->detach($userId);
+            $msg .= "<ul>";
+            $msg .= "<li>".$user->name."</li>";
+            $msg .= "</ul>";
+        }
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $msg,
+        );
+
+        return Response::json($response);
+    }
+
     public function  destroyCorpusUser($corpusId,$userId){
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
@@ -559,7 +599,7 @@ class CorpusController extends Controller
         $corpus->users()->detach($userId);
 
         $roles = Role::latest()->get();
-        return view('admin.useradmin.roles.index', compact('roles'))
+        return view('project.useradmin.roles.index', compact('roles'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }

@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="content">
-        <form action="/admin/corpora/{{$corpus->id}}/{{$projectId}}" method="post">
+        <form action="/project/corpora/{{$corpus->id}}/{{$projectId}}" method="post">
             {{ csrf_field() }}
             {{ method_field('DELETE') }}
             <div class="col-lg-12">
@@ -20,7 +20,7 @@
                             <p> {{count($corpus->users)}} users are assigned to this Corpus</p>
                         @endif
                         <div class="form-group">
-                            <a href="{{ URL::route('admin.corpora.index') }}" type="button" class="btn btn-primary"> Cancel </a>
+                            <a href="{{ URL::route('project.corpora.index') }}" type="button" class="btn btn-primary"> Cancel </a>
                             <button type="submit" class="btn btn-danger">Delete</button>
                         </div>
                     </div>

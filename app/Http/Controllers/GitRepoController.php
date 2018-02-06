@@ -246,7 +246,7 @@ class GitRepoController extends Controller
             return redirect()->route('admin.corpusProject.show',['corpusproject' => $projectObject[0]->id]);
         }
         else{
-            return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpusId]);
+            return redirect()->route('project.corpora.show',['path' => $directoryPath,'corpus' => $corpusId]);
         }
     }
 
@@ -259,7 +259,7 @@ class GitRepoController extends Controller
         if($result) {
             session()->flash('message', $path.' was sucessfully deleted!');
         }
-        return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
+        return redirect()->route('project.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
     }
 
 
@@ -402,7 +402,7 @@ class GitRepoController extends Controller
             return redirect()->route('admin.corpusProject.show',['corpusproject' => $projectObject[0]->id]);
         }
         else{
-            return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpusId]);
+            return redirect()->route('project.corpora.show',['path' => $directoryPath,'corpus' => $corpusId]);
         }
 
     }
@@ -417,7 +417,7 @@ class GitRepoController extends Controller
         if($result) {
             session()->flash('message', $path.' was sucessfully deleted!');
         }
-        return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
+        return redirect()->route('project.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
     }
 
 
@@ -431,7 +431,7 @@ class GitRepoController extends Controller
         if($result) {
             session()->flash('message', $path.' was sucessfully deleted!');
         }
-        return redirect()->route('admin.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
+        return redirect()->route('project.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
     }
 
     /**
@@ -631,7 +631,7 @@ class GitRepoController extends Controller
         }
 
 
-        return redirect()->route('admin.corpora.show',['path' => $returnPath,'corpus' => $corpusid]);
+        return redirect()->route('project.corpora.show',['path' => $returnPath,'corpus' => $corpusid]);
     }
 
     /**

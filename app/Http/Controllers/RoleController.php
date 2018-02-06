@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Role;
+//use App\Role;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Session;
+use Auth;
 use App\User;
 use App\CorpusProject;
 use App\Corpus;
@@ -13,6 +17,10 @@ use DB;
 
 class RoleController extends Controller
 {
+
+    public function __construct() {
+        //$this->middleware(['auth', 'isAdmin']);//isAdmin middleware lets only users with a //specific permission permission to access these resources
+    }
     /**
      * Display a listing of the resource.
      *
@@ -22,7 +30,7 @@ class RoleController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-        $roles = Role::latest()->get();
+        $roles = Role::all();
 
         return view('admin.useradmin.roles.index', compact('roles'))
             ->with('isLoggedIn', $isLoggedIn)
@@ -38,7 +46,9 @@ class RoleController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-        return view('admin.useradmin.roles.create')
+        $permissions = Permission::all();
+
+        return view('admin.useradmin.roles.create',['permissions' => $permissions])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -52,14 +62,15 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $this->validate(request(), [
-            'role_name' => 'required'
+            'name' => 'required',
+            'permissions' => 'required'
         ]);
+
 
         $role_super_user = 0;
         if(request('role_superuser') == 'on'){
             $role_super_user = 1;
         }
-
 
         $role_type = "";
 
@@ -67,15 +78,25 @@ class RoleController extends Controller
             $role_type = request('role_type');
         }
 
-        Role::create([
-            "name" => request('role_name'),
-            "description" => request('role_description'),
-            "role_type" => $role_type,
-            'super_user' => $role_super_user
-        ]);
+        $role = new Role();
+        $role->name = request('name');
+        $role->description = request('role_description');
+        $role->role_type = $role_type;
+        $role->super_user = $role_super_user;
 
-        session()->flash('message', request('role_name').' was sucessfully created!');
-        return redirect()->route('admin.roles.index');
+        $role->save();
+        $permissions = $request['permissions'];
+
+        foreach ($permissions as $permission) {
+            $p = Permission::where('id', '=', $permission)->firstOrFail();
+            //Fetch the newly created role and assign permission
+            $role = Role::where('name', '=', request('name'))->first();
+            $role->givePermissionTo($p);
+        }
+
+        return redirect()->route('admin.roles.index')
+            ->with('flash_message',
+                'Role'. $role->name.' added!');
     }
 
 
@@ -151,7 +172,8 @@ class RoleController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
-        return view('admin.useradmin.roles.edit', compact('role'))
+        $permissions = Permission::all();
+        return view('admin.useradmin.roles.edit', compact('role','permissions'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -167,13 +189,32 @@ class RoleController extends Controller
         $user = \Auth::user();
 
         $role->update([
-            'name' => $request->get('role_name'),
-            'description' => $request->get('role_description'),
+            'name' => $request->get('name'),
+            'description' => $request->get('description'),
         ]);
 
-        return view('admin.useradmin.roles.show', compact('role'))
+
+        $input = $request->except(['permissions']);
+        $permissions = $request['permissions'];
+        $role->fill($input)->save();
+
+        $p_all = Permission::all();//Get all permissions
+
+        foreach ($p_all as $p) {
+            $role->revokePermissionTo($p); //Remove all permissions associated with role
+        }
+
+        foreach ($permissions as $permission) {
+            $p = Permission::where('id', '=', $permission)->firstOrFail(); //Get corresponding form //permission in db
+            $role->givePermissionTo($p);  //Assign permission to role
+        }
+
+        return redirect()->route('admin.roles.index')
+            ->with('flash_message',
+                'Role'. $role->name.' updated!')
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
+
     }
 
     /**
@@ -190,22 +231,26 @@ class RoleController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @param Role $role
-     * @return $this
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Request $request, Role $role)
+    public function destroy($id)
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
 
+        $role = Role::findOrFail($id);
+
+        /*
         if(count($role->users()) > 0) {
             $role->users()->detach();
         }
+        */
 
         $role->delete();
-        $roles = Role::latest()->get();
-        return view('admin.useradmin.roles.index', compact('roles'))
+        return redirect()->route('admin.roles.index')
+            ->with('flash_message',
+                'Role deleted!')
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -219,16 +264,15 @@ class RoleController extends Controller
 
         $usercollection = User::all();
         $users = array();
-        $roles = Role::where('super_user',1)->get();
+        $role = Role::where('super_user',1)->get();
         foreach ($usercollection as $useritem){
-            if(!$useritem->roles->contains(1)){
+            if(!$useritem->roles->contains($role[0]->id)){
                 array_push($users,$useritem);
             }
         }
 
-
         return view('admin.useradmin.roles.assign_superusers')
-            ->with('roles', $roles)
+            ->with('roles', $role)
             ->with('users', $users)
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
@@ -240,7 +284,6 @@ class RoleController extends Controller
         $corpusproject = CorpusProject::find($corpusProjectId);
         $user = User::find($userId);
         $roles = Role::where('super_user',0)->get();
-
         return view('admin.useradmin.roles.assign_roles_to_user')
             ->with('corpusProject', $corpusproject)
             ->with('user', $user)
@@ -257,6 +300,7 @@ class RoleController extends Controller
     {
 
         $input =$request ->all();
+        Log::info("INPÖT: ".print_r($input, 1));
         $msg = "";
         if ($request->ajax()){
             $msg .= "<p>Assigned the following users to the following roles</p>";
@@ -271,7 +315,8 @@ class RoleController extends Controller
                         $user = User::find($userId);
                         if($user) {
                             $msg .= "<li>".$user->name."</li>";
-                            $role->users()->attach($user);
+                            //$role->users()->attach($user);
+                            $user->roles()->sync($role);
                         }
                     }
                     $msg .= "</ul></li>";
@@ -320,7 +365,7 @@ class RoleController extends Controller
                         $user = User::find($userId);
                         if($user) {
                             $msg .= "<li>".$user->name."</li>";
-                            $corpus_project->users()->save($user,['role_id' => $roleId]);
+                            $corpus_project->users()->save($user,['role_id' => $roleId,'project_id' => $corpus_project->id, 'corpus_id' => 0]);
 
                         }
                     }
