@@ -8384,11 +8384,6 @@ button.close {
 }
 */
 
-.Header {
-  padding: 1.5em;
-  text-align: center;
-}
-
 @media (min-width: 768px) {
   .Header {
     padding: 3em 1.5em;
@@ -8398,9 +8393,6 @@ button.close {
 @media (min-width: 768px) {
   .Header--cozy {
     padding: 1.5em;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
   }
 
   /*
@@ -8499,7 +8491,6 @@ button.close {
   -webkit-box-ordinal-group: 0;
   -ms-flex-order: -1;
   order: -1;
-  padding: 1em;
   border-radius: 3px;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -8511,21 +8502,18 @@ button.close {
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
-  max-width: 55em;
 }
 
-.HolyGrail-content .Blockwrapper .Corpus-MetadataBlock {
+.HolyGrail-content .Blockwrapper {
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
       -ms-flex-direction: row;
           flex-direction: row;
-  border-radius: 5px;
   margin-bottom: 20px;
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
   min-height: 400px;
-  border: rgba(147, 128, 108, 0.1) 1px solid;
   -webkit-box-flex: 0;
       -ms-flex: 0 0 40em;
           flex: 0 0 40em;
@@ -8563,10 +8551,7 @@ button.close {
 
 .Corpus-MetadataBlock-header,
 .HolyGrail-content .Blockwrapper .Corpus-MetadataBlock-header {
-  padding: 0 1em;
   font-weight: bold;
-  background: rgba(61, 255, 106, 0.1);
-  border: rgba(147, 128, 108, 0.1) 1px solid;
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
@@ -8594,16 +8579,8 @@ button.close {
   background: rgba(255, 255, 153, 0.1);
 }
 
-.navbar-default,
-.Footer {
-  background-color: #5e5767 !important;
-  color: #d2c2c2 !important;
-}
-
 #browseapp .HolyGrail-header {
-  background: rgba(61, 255, 106, 0.1);
-  border: rgba(147, 128, 108, 0.1) 1px solid;
-  border-radius: 10px;
+  background: #f8f4f2;
 }
 
 #project,
@@ -8707,6 +8684,17 @@ label {
   color: silver;
 }
 
+.nav > li.active > a {
+  color: #000000;
+  border-top: solid 1px #e3d8cf;
+  border-bottom: solid 1px #e3d8cf;
+}
+
+.nav > li > a {
+  color: #ff4900;
+  border-bottom: solid 1px #e3d8cf;
+}
+
 .dropdown-menu > li > a:hover {
   background-color: #44c7f4 !important;
   color: cyan !important;
@@ -8719,5 +8707,120 @@ a .fa.fa-external-link-square,
 
 .autorhorheader {
   text-align: left;
+}
+
+/*Material ICONS*/
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+  /* Support for IE. */
+  -webkit-font-feature-settings: 'liga';
+          font-feature-settings: 'liga';
+}
+
+/* CORPUS VIEW */
+
+.resultbar {
+  background-color: #f4e8e0;
+  height: 4em;
+  font-size: 0.9em;
+}
+
+.headerBreadCrumb {
+  float: left;
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  margin-left: 10%;
+}
+
+.prevNextBreadCrumb {
+  float: right;
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  margin-right: 10%;
+}
+
+/*GENERAL RULES*/
+
+/* Create three unequal columns that floats next to each other */
+
+.headerColumn {
+  float: left;
+  padding: 10px;
+}
+
+.headerMenuColumn {
+  float: left;
+  padding: 2px;
+}
+
+.headerColumn blockquote {
+  border: none;
+  text-align: left;
+  font-size: 0.9em;
+}
+
+.left {
+  width: 10%;
+}
+
+.right {
+  width: 25%;
+}
+
+.middle {
+  width: 65%;
+}
+
+/* Clear floats after the columns */
+
+.headerRow:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+#info-block {
+  max-width: 150px;
+  margin: auto;
+}
+
+#info-block section {
+  margin: 8px;
+  border: 1px solid silver;
+  padding: 4px;
+}
+
+.file-marker > div {
+  padding: 0 3px;
+  margin-top: -1.25em;
+}
+
+.box-title {
+  background: #f8f4f2 none repeat scroll 0 0;
+  display: inline-block;
+  padding: 0 6px;
+  margin-left: 20%;
 }
 

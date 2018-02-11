@@ -3,6 +3,7 @@
 @section('content')
 
     <div class="HolyGrail">
+        <breadcrumb :headerdata="headerdata" :header="header"></breadcrumb>
         <header class="HolyGrail-header">
             <div class="overlay">
                 <div class="Header Header--cozy" role="banner" v-show="header == 'corpus'">
@@ -12,17 +13,8 @@
                     <documentheader :headerdata="headerdata" :header="header"></documentheader>
                 </div>
             </div>
-
-
         </header>
         <main class="HolyGrail-body">
-            <nav class="HolyGrail-nav u-textCenter">
-               <div class="list-group">
-                   <a href="#" class="list-group-item">Corpus</a>
-                   <a href="#" class="list-group-item">Document</a>
-                   <a href="#" class="list-group-item">Annotation</a>
-               </div>
-            </nav>
             <article class="HolyGrail-content">
                 <div class="Blockwrapper">
                     <div class="Corpus-MetadataBlock" v-show="header == 'corpus'">
@@ -51,12 +43,6 @@
                     </div>
                 </div>
             </article>
-
         </main>
-        <footer class="HolyGrail-footer">
-            <div class="Footer">
-                Institut für deutsche Sprache und Linguistik , Computer- und Medienservice
-            </div>
-        </footer>
     </div>
 @stop

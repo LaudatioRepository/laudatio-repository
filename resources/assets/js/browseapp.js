@@ -6,6 +6,7 @@ require('./filters');
 window.Vue = require('vue');
 const util = require('util');
 
+Vue.component('breadcrumb', require('./components/BreadCrumb.vue'));
 Vue.component('corpusheader', require('./components/CorpusHeader.vue'));
 Vue.component('documentheader', require('./components/DocumentHeader.vue'));
 Vue.component('metadata-block-header-corpus', require('./components/CorpusMetadataBlockHeader.vue'));

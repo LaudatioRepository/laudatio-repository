@@ -15,6 +15,10 @@ Vue.filter('arrayToString', function (array) {
     return string;
 });
 
+Vue.filter('touppercase', function (string){
+    return string.toUpperCase();
+});
+
 
 Vue.filter('addHash', function (string) {
     return "#".concat(string);
