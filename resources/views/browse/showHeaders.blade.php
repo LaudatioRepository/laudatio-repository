@@ -32,17 +32,11 @@
                         </div>
                     </div>
                     <div class="Document-MetadataBlock" v-show="header == 'document'">
-                        <div class="Document-MetadataBlock-header">
-                            <metadata-block-header-document :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-header-document>
-                        </div>
                         <div class="Document-MetadataBlock-body">
                             <metadata-block-body-document :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-body-document>
                         </div>
                     </div>
                     <div class="Annotation-MetadataBlock" v-show="header == 'annotation'">
-                        <div class="Annotation-MetadataBlock-header">
-                            Annotation metadata-header
-                        </div>
                         <div class="Annotation-MetadataBlock-body">
                             Annotation metadata-body
                         </div>

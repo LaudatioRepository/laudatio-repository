@@ -6,18 +6,28 @@
                </div>
              <div class="headerColumn middle">
                 <h1 class="documentTitle">{{ headerdata.document_title | arrayToString }}</h1>
+                <div class="corpusAffiliationHeader">Document in {{headerdata.documentCorpusdata.corpus_title | arrayToString}}</div>
                 <div class="autorHeader">{{headerdata.document_author_forename | arrayToString}} {{headerdata.document_author_surname | arrayToString}}</div>
 
 
                 <div class="clearfix pull-left">
-                <span v-if="typeof headerdata.document_publication_publishing_date != 'undefined'"><i class="material-icons" aria-hidden="true">access_time</i> Published: {{headerdata.document_publication_publishing_date | arrayToString}}</span>
-                <span v-if="typeof headerdata.document_publication_place != 'undefined'"><i class="material-icons" aria-hidden="true">language</i> {{headerdata.document_publication_place | arrayToString}} </span><br />
-                <span v-if="typeof headerdata.document_list_of_annotations_name != 'undefined'">{{headerdata.document_list_of_annotations_name.length}} Annotations</span>
-                <span v-if="typeof headerdata.document_size_extent != 'undefined'"><i class="material-icons"  aria-hidden="true">publish</i> {{headerdata.document_size_extent | arrayToString}} Tokens</span>
-                <span v-if="typeof headerdata.document_languages_language != 'undefined'"><i class="material-icons"  aria-hidden="true">publish</i> {{concatLanguages}} </span>
-                <span v-if="typeof headerdata.document_history_faximile_link != 'undefined'"><a v-bind:href="facsimileUri()"><i class="material-icons"  aria-hidden="true">facsimile</i></a> </span>
-
+                    <span v-if="typeof headerdata.document_publication_publishing_date != 'undefined'"><i class="material-icons" aria-hidden="true">access_time</i> {{headerdata.document_publication_publishing_date | arrayToString}}</span>
+                    <span v-if="typeof headerdata.document_publication_place != 'undefined'"><i class="material-icons" aria-hidden="true">language</i> {{concatLanguages}} </span>
+                    <span v-if="typeof headerdata.document_size_extent != 'undefined'"><i class="material-icons"  aria-hidden="true">code</i> {{headerdata.document_size_extent | arrayToString}} Tokens</span>
+                    <span v-if="typeof headerdata.document_languages_language != 'undefined'"><i class="material-icons">location_on</i> {{headerdata.document_publication_place | arrayToString}} </span>
+                    <span v-if="typeof headerdata.document_history_faximile_link != 'undefined'"><a v-bind:href="facsimileUri()"><i class="material-icons"  aria-hidden="true">facsimile</i></a> </span>
                 </div>
+
+                <blockquote class="headerCitation clearfix pull-left">
+                    <span class="citation">
+                    <i class="material-icons">format_quote</i>
+                    {{ corpusAuthors() }};
+                    {{ headerdata.documentCorpusdata.corpus_title | arrayToString }};
+                    {{ headerdata.documentCorpusdata.corpus_publication_publisher[0] }};
+                    Homepage: {{ headerdata.documentCorpusdata.corpus_encoding_project_homepage[0] }};
+                    Corpus-Link: <a href="http://handle">http://handle.net/xxx</a>
+                    </span>
+                </blockquote>
             </div>
              <div class="headerColumn right">
                  <aside id="info-block">
@@ -75,6 +85,17 @@
         methods: {
             facsimileUri: function(id) {
                 return this.headerdata.document_history_faximile_link
+            },
+            corpusAuthors: function(){
+                var authorString = "";
+                for(var i=0; i < this.headerdata.documentCorpusdata.corpus_editor_forename.length;i++) {
+                    authorString += this.headerdata.documentCorpusdata.corpus_editor_forename[i]
+                        .concat(' ')
+                        .concat(this.headerdata.documentCorpusdata.corpus_editor_surname[i])
+                        .concat(',');
+                }
+                authorString = authorString.substring(0,authorString.lastIndexOf(","));
+                return authorString;
             }
         },
         mounted() {

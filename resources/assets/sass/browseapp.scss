@@ -486,7 +486,8 @@ a .fa.fa-external-link-square, .facsimile {
   border-left: none;
   border-right: none;
   border-radius: 0;
-  width: 180px;
+  min-width: 200px;
+  max-width: 250px;
   font-size: 0.9em;
 }
 
@@ -495,6 +496,7 @@ a .fa.fa-external-link-square, .facsimile {
   color: #000000;
   border: none;
   border-radius: 0;
-  width: 180px;
+  min-width: 200px;
+  max-width: 250px;
   font-size: 0.9em;
 }

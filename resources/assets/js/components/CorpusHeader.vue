@@ -10,11 +10,10 @@
 
 
                 <div class="clearfix pull-left">
-                <span><i class="material-icons" aria-hidden="true" v-if="typeof headerdata.corpus_documents != 'undefined'">access_time</i> Documents from</span>
-                <span><i class="material-icons" aria-hidden="true" v-if="typeof headerdata.corpus_size_value != 'undefined'">language</i> {{headerdata.corpus_languages_language[0]}}</span><br />
-                <span v-if="typeof headerdata.corpus_size_value != 'undefined'">{{headerdata.corpus_size_value | arrayToString}} Tokens</span>
-                <span><i class="material-icons"  aria-hidden="true" v-if="typeof headerdata.corpus_publication_publication_date != 'undefined'">publish</i> {{headerdata.corpus_publication_publication_date | lastElement}}</span>
-
+                    <span v-if="typeof headerdata.corpus_documents != 'undefined'"><i class="material-icons" aria-hidden="true">access_time</i> Documents from</span>
+                    <span v-if="typeof headerdata.corpus_size_value != 'undefined'"><i class="material-icons" aria-hidden="true">language</i> {{headerdata.corpus_languages_language[0]}}</span><br />
+                    <span v-if="typeof headerdata.corpus_size_value != 'undefined'"><i class="material-icons" aria-hidden="true">code</i>{{headerdata.corpus_size_value | arrayToString}} Tokens</span>
+                    <span v-if="typeof headerdata.corpus_publication_publication_date != 'undefined'"><i class="material-icons"  aria-hidden="true">publish</i> {{headerdata.corpus_publication_publication_date | lastElement}}</span>
                 </div>
 
                 <blockquote class="headerCitation clearfix pull-left">

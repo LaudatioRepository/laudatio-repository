@@ -23,8 +23,24 @@ class BrowseController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index($header,$id){
-        $data = $this->ElasticService->getDocument($header,$header,$id);
-
+        $data = null;
+        switch ($header){
+            case "corpus":
+                $data = $this->ElasticService->getCorpus($id);
+                break;
+            case "document":
+                $data = $this->ElasticService->getDocument($id);
+                $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('_id' => $data['result']['in_corpora'][0])),array($id));
+                $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
+                $annotationGroups = $this->ElasticService->getAnnotationGroups();
+                $data['result']['annotationGroups'] = $annotationGroups['aggregations']['annotations']['buckets'];
+                break;
+            case "annotation":
+                $data = $this->ElasticService->getAnnotation($id);
+                break;
+        }
+        //dd($data);
+        //dd($header);
         JavaScript::put([
             "header" => $header,
             "header_id" => $id,

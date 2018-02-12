@@ -46,26 +46,25 @@ class ElasticService implements ElasticsearchInterface
 
     }
 
+
     /**
-     * @param $index
-     * @param $type
      * @param $id
      * @param bool $full
      * @return array
      */
-    public function getDocument($index,$type,$id,$full = true){
+    public function getCorpus($id,$full = true){
         if(!$full){
             $params = [
-                'index' => $index,
-                'type' => $type,
+                'index' => 'corpus',
+                'type' => 'corpus',
                 'id' => $id,
                 '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]
             ];
         }
         else{
             $params = [
-                'index' => $index,
-                'type' => $type,
+                'index' => 'corpus',
+                'type' => 'corpus',
                 'id' => $id,
                 '_source_exclude' => ['message']
             ];
@@ -90,8 +89,92 @@ class ElasticService implements ElasticsearchInterface
 
     }
 
+    /**
+     * @param $id
+     * @param bool $full
+     * @return array
+     */
+    public function getDocument($id,$full = true){
+        if(!$full){
+            $params = [
+                'index' => 'document',
+                'type' => 'document',
+                'id' => $id,
+                '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]
+            ];
+        }
+        else{
+            $params = [
+                'index' => 'document',
+                'type' => 'document',
+                'id' => $id,
+                '_source_exclude' => ['message']
+            ];
+        }
+
+
+        $response = Elasticsearch::get($params);
+        if(!$full){
+//            Log::info("SENDING: ".print_r($response,1));
+            return array(
+                'error' => false,
+                'result' => $response['_source']
+            );
+        }
+        else{
+            return array(
+                'error' => false,
+                'found' => $response['found'],
+                'result' => $response['_source']
+            );
+        }
+
+    }
+
+    /**
+     * @param $id
+     * @param bool $full
+     * @return array
+     */
+    public function getAnnotation($id,$full = true){
+        if(!$full){
+            $params = [
+                'index' => 'annotation',
+                'type' => 'annotation',
+                'id' => $id,
+                '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]
+            ];
+        }
+        else{
+            $params = [
+                'index' => 'annotation',
+                'type' => 'annotation',
+                'id' => $id,
+                '_source_exclude' => ['message']
+            ];
+        }
+
+
+        $response = Elasticsearch::get($params);
+        if(!$full){
+            return array(
+                'error' => false,
+                'result' => $response['_source']
+            );
+        }
+        else{
+            return array(
+                'error' => false,
+                'found' => $response['found'],
+                'result' => $response['_source']
+            );
+        }
+
+    }
+
 
     public function getDocumentByCorpus($searchData,$corpusData){
+        Log::info("SEARCHDATA: ".print_r($searchData,1));
         $resultData = array();
 
         $queryBuilder = new QueryBuilder();
@@ -154,14 +237,13 @@ class ElasticService implements ElasticsearchInterface
 
     public function getCorpusByDocument($searchData,$documentData){
         $resultData = array();
-
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
         $counter = 0;
         foreach($searchData as $queryData){
             $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
 
-            //Log::info("SENDING: ".print_r($queryBody,1));
+            Log::info("SENDING: ".print_r($queryBody,1));
 
             $params = [
                 'size' => 1000,
@@ -169,7 +251,7 @@ class ElasticService implements ElasticsearchInterface
                 'type' => 'corpus',
                 'body' => $queryBody,
                 //'_source_exclude' => ['message'],
-                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description"],
+                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname"],
                 'filter_path' => ['hits.hits']
             ];
             $results = Elasticsearch::search($params);
@@ -941,7 +1023,6 @@ class ElasticService implements ElasticsearchInterface
         ];
 
         $results = Elasticsearch::search($params);
-
         return $results;
     }
 
@@ -962,6 +1043,26 @@ class ElasticService implements ElasticsearchInterface
         ];
 
         $results = Elasticsearch::deleteByQuery($params);
+        return $results;
+    }
+
+    public function getAnnotationGroups(){
+        $queryBuilder = new QueryBuilder();
+
+        $queryBody = $queryBuilder->buildTermsAggregationQuery(array(
+            "name" => "annotations",
+            "field" => "preparation_encoding_annotation_group.keyword"
+        ));
+
+        $params = [
+            'index' => 'annotation',
+            'type' => 'annotation',
+            'body' => $queryBody,
+            'size'=> 100,
+            'filter_path' => ['aggregations.annotations.buckets.key']
+        ];
+
+        $results = Elasticsearch::search($params);
         return $results;
     }
 

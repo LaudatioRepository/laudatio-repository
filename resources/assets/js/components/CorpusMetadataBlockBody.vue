@@ -1,53 +1,61 @@
 <template lang="html">
-<div class="container tab-content" id="corpusMetadataBody">
-<div class="row">
-  <div class="col-sm-3">
-    <div class="sidebar-nav">
-        <div class="navbar-collapse collapse sidebar-navbar-collapse">
-          <ul class="nav nav-stacked">
-              <li role="tab" class="nav-link active"><a href="#description" data-toggle="pill">DESCRIPTION</a></li>
-              <li role="tab" class="nav-link"><a href="#authorship" data-toggle="pill">AUTHORSHIP</a></li>
-              <li role="tab" class="nav-link"><a href="#versions" data-toggle="pill">VERSIONS</a></li>
-              <li role="tab" class="nav-link"><a href="#license" data-toggle="pill">LICENSE / REVISION</a></li>
-              <li role="tab" class="nav-link"><a href="#formats" data-toggle="pill">FORMATS</a></li>
-        </ul>
-      </div>
+<div class="container tab-content">
+    <div class="tab-pane fade in active" id="corpusMetadataBody">
+        <div class="row">
+          <div class="col-sm-3">
+            <div class="sidebar-nav">
+                <div class="navbar-collapse collapse sidebar-navbar-collapse">
+                  <ul class="nav nav-stacked">
+                      <li role="tab" class="nav-link active"><a href="#description" data-toggle="pill">DESCRIPTION</a></li>
+                      <li role="tab" class="nav-link"><a href="#authorship" data-toggle="pill">AUTHORSHIP</a></li>
+                      <li role="tab" class="nav-link"><a href="#versions" data-toggle="pill">VERSIONS</a></li>
+                      <li role="tab" class="nav-link"><a href="#license" data-toggle="pill">LICENSE / REVISION</a></li>
+                      <li role="tab" class="nav-link"><a href="#formats" data-toggle="pill">FORMATS</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-9">
+            <div class="tab-content" v-if="header == 'corpus'">
+                <div id="description" class="tab-pane fade in active">
+                <div class="panel-body">{{headerdata.corpus_encoding_project_description | lastElement}}</div>
+                </div>
+                <div id="authorship" class="tab-pane fade">
+                    <ul class="list-group">
+                        <li v-for="annotator in getAnnotators"  v-bind:annotator="annotator" :key="annotator" class="list-group-item"><i class="fa fa-user" aria-hidden="true"></i> {{annotator}}</li>
+                    </ul>
+                </div>
+                <div id="versions" class="tab-pane fade">
+                    <ul class="list-group">
+                        <li v-for="revision in getRevisions" v-bind:revision="revision" :key="revision" class="list-group-item">
+                        <i class="fa fa-code-fork" aria-hidden="true"></i> {{revision.date.concat(' ').concat(revision.version).concat(' ').concat(revision.description)}}
+                        </li>
+                    </ul>
+                </div>
+                <div id="license" class="tab-pane fade">
+                    <ul class="list-group">
+                        <li v-for="(annotation, index) in headerdata.annotation_name" v-bind:annotation="annotation" :key="annotation" class="list-group-item">
+                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{annotation}} ({{headerdata.annotation_type[index]}}) {{getDocumentsByAnnotation}} <span class="badge" v-if="typeof documentsByAnnotation[0] != 'undefined'">{{documentsByAnnotation[0][annotation]}}</span>
+                        </li>
+                    </ul>
+                </div>
+                <div id="formats" class="tab-pane fade">
+                    <ul class="list-group">
+                        <li v-for="(annotation, index) in headerdata.annotation_name" v-bind:annotation="annotation" :key="annotation" class="list-group-item">
+                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{annotation}} ({{headerdata.annotation_type[index]}}) {{getDocumentsByAnnotation}} <span class="badge" v-if="typeof documentsByAnnotation[0] != 'undefined'">{{documentsByAnnotation[0][annotation]}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+          </div>
+        </div>
     </div>
-  </div>
-  <div class="col-sm-9">
-    <div class="tab-content" v-if="header == 'corpus'">
-        <div id="description" class="tab-pane fade in active">
-        <div class="panel-body">{{headerdata.corpus_encoding_project_description | lastElement}}</div>
-        </div>
-        <div id="authorship" class="tab-pane fade">
-            <ul class="list-group">
-                <li v-for="annotator in getAnnotators"  v-bind:annotator="annotator" :key="annotator" class="list-group-item"><i class="fa fa-user" aria-hidden="true"></i> {{annotator}}</li>
-            </ul>
-        </div>
-        <div id="versions" class="tab-pane fade">
-            <ul class="list-group">
-                <li v-for="revision in getRevisions" v-bind:revision="revision" :key="revision" class="list-group-item">
-                <i class="fa fa-code-fork" aria-hidden="true"></i> {{revision.date.concat(' ').concat(revision.version).concat(' ').concat(revision.description)}}
-                </li>
-            </ul>
-        </div>
-        <div id="license" class="tab-pane fade">
-            <ul class="list-group">
-                <li v-for="(annotation, index) in headerdata.annotation_name" v-bind:annotation="annotation" :key="annotation" class="list-group-item">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{annotation}} ({{headerdata.annotation_type[index]}}) {{getDocumentsByAnnotation}} <span class="badge" v-if="typeof documentsByAnnotation[0] != 'undefined'">{{documentsByAnnotation[0][annotation]}}</span>
-                </li>
-            </ul>
-        </div>
-        <div id="formats" class="tab-pane fade">
-            <ul class="list-group">
-                <li v-for="(annotation, index) in headerdata.annotation_name" v-bind:annotation="annotation" :key="annotation" class="list-group-item">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{annotation}} ({{headerdata.annotation_type[index]}}) {{getDocumentsByAnnotation}} <span class="badge" v-if="typeof documentsByAnnotation[0] != 'undefined'">{{documentsByAnnotation[0][annotation]}}</span>
-                </li>
-            </ul>
-        </div>
+    <div class="tab-pane fade" id="documentMetadataBody">
+        Documents
     </div>
-  </div>
-</div>
+    <div class="tab-pane fade" id="annotationMetadataBody">
+        Annotations
+    </div>
 </div>
 </template>
 

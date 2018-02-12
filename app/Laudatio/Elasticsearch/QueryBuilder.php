@@ -13,8 +13,9 @@ use ONGR\ElasticsearchDSL\Query\FullText\MatchQuery;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\FullText\MultiMatchQuery;
 use ONGR\ElasticsearchDSL\Query\TermLevel\RangeQuery;
-Use ONGR\ElasticsearchDSL\Aggregation\Bucketing\DateRangeAggregation;
-Use ONGR\ElasticsearchDSL\Aggregation\Bucketing\RangeAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\Bucketing\DateRangeAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\Bucketing\RangeAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\Bucketing\TermsAggregation;
 use ONGR\ElasticsearchDSL\Search;
 use Log;
 
@@ -214,6 +215,19 @@ class QueryBuilder
 
         $queryArray = $search->toArray();
 
+        return $queryArray;
+    }
+
+    public function buildTermsAggregationQuery($data){
+        $termAggregation = new TermsAggregation($data['name']);
+        $termAggregation->setField($data['field']);
+
+        $matchAllQuery = new MatchAllQuery();
+        $search = new Search();
+        $search->addQuery($matchAllQuery);
+
+        $search->addAggregation($termAggregation);
+        $queryArray = $search->toArray();
         return $queryArray;
     }
 }

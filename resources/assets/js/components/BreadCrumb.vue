@@ -5,9 +5,21 @@
                 <span v-show="header == 'annotation'">| {{ headerdata.annotation_title | arrayToString | arrayToString | touppercase }}</span>
             </div>
             <div class="prevNextBreadCrumb">
-                <span>PREVIOUS CORPUS | </span>
-                <span> 10 / 10</span>
-                <span> | NEXT CORPUS</span>
+                <span v-show="header == 'corpus'">
+                    <span>PREVIOUS CORPUS | </span>
+                    <span> 10 / 10</span>
+                    <span> | NEXT CORPUS</span>
+                </span>
+                <span v-show="header == 'document'">
+                    <span>PREVIOUS DOCUMENT | </span>
+                    <span> 10 / 10</span>
+                    <span> | NEXT DOCUMENT</span>
+                </span>
+                <span v-show="header == 'annotaiton'">
+                    <span>PREVIOUS ANNOTAION | </span>
+                    <span> 10 / 10</span>
+                    <span> | NEXT ANNOTATION</span>
+                </span>
             </div>
         </div>
 </template>

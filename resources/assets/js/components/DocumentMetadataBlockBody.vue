@@ -1,35 +1,50 @@
 <template lang="html">
-    <div class="headerRow headerNav"  v-if="header == 'document'">
-    <div class="headerColumn left">
-
-    </div>
-    <div class="headerColumn middle">
-    <ul class="nav nav-pills">
-        <li role="tab"><a href="#documentMetadataBody" data-toggle="pill">DOCUMENT METADATA</a></li>
-        <li role="tab"><a href="#annotationMetadataBody" data-toggle="pill">ANNOTATIONS <i class="material-icons">create</i> 200</a></li>
-    </ul>
-    </div>
-    <div class="headerColumn right">
-        <div  id="documentMetadataBody" class="tab-content" v-if="header == 'document'">
-        <div id="project" class="tab-pane fade in active panel panel-default">
-        <div class="panel-body"></div>
-        <div id="annotators" class="tab-pane fade in active panel panel-default">
-            <ul class="list-group">
-                <li v-for="annotation in headerdata.document_list_of_annotations_name" v-bind:annotation="annotation" :key="annotation" class="list-group-item">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{annotation}}
-                </li>
-            </ul>
-        </div>
-        <div id="revisions" class="tab-pane fade">
+    <div class="container tab-content">
+        <div class="tab-pane fade in active" id="documentMetadata">
+            <div class="row">
+              <div class="col-sm-3">
+                <div class="sidebar-nav">
+                    <div class="navbar-collapse collapse sidebar-navbar-collapse">
+                      <ul class="nav nav-stacked">
+                          <li role="tab" class="nav-link active"><a href="#description" data-toggle="pill">DESCRIPTION</a></li>
+                          <li role="tab" class="nav-link"><a href="#authorship" data-toggle="pill">SOURCE DESCRIPTION</a></li>
+                          <li role="tab" class="nav-link"><a href="#license" data-toggle="pill">LICENSE / REVISION</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-9">
+                <div class="tab-content" v-if="header == 'document'">
+                    DOCU
+                </div>
+              </div>
+            </div>
 
         </div>
-        <div id="annotations" class="tab-pane fade">
+        <div class="tab-pane fade" id="annotationMetadata">
+        <div class="row">
+              <div class="col-sm-3">
 
-        </div>
-        </div>
+                <div class="sidebar-nav">
+                    <div class="navbar-collapse collapse sidebar-navbar-collapse">
+                      <ul class="nav nav-stacked">
+                        <li v-for="(annotationGroup, index) in headerdata.annotationGroups" :class="{ 'active': index === 0 }" class="nav-link" role="tab">
+                            <a v-bind:href="('#').concat(annotationGroup.key)" data-toggle="pill">{{annotationGroup.key}}</a>
+                        </li>
 
-    </div>
-    </div>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-9">
+               <div class="tab-content">
+                <div class="tab-pane fade" v-for="(annotationGroup, index) in headerdata.annotationGroups" :id="annotationGroup.key" v-if="header == 'document'" :class="{ 'in active': index === 0 }">
+                    {{annotationGroup.key}}
+                </div>
+                </div>
+              </div>
+            </div>
+         </div>
     </div>
 </template>
 
@@ -48,7 +63,7 @@
 
         },
         mounted() {
-            console.log('CorpusMetadataBlockBody mounted.')
+            console.log('DocumentMetadataBlockBody mounted.')
         }
     }
 </script>
