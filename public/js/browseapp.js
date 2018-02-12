@@ -33458,15 +33458,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -33608,9 +33599,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           _vm._m(0)
-        ]),
-        _vm._v(" "),
-        _vm._m(1)
+        ])
       ])
     : _vm._e()
 }
@@ -33745,18 +33734,6 @@ var staticRenderFns = [
         ])
       ])
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "headerRow" }, [
-      _c("div", { staticClass: "headerMenuColumn" }, [_vm._v("Corpus")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "headerMenuColumn" }, [_vm._v("Documents")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "headerMenuColumn" }, [_vm._v("Annotation")])
-    ])
   }
 ]
 render._withStripped = true
@@ -33851,6 +33828,42 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -33865,7 +33878,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
-        console.log('CorpusMetadataBlockHeader mounted.');
+        console.log('DocumentMetadataBlockHeader mounted.');
     }
 });
 
@@ -33878,148 +33891,282 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _vm.header == "document"
-    ? _c("div", { attrs: { id: "corpusheader" } }, [
-        _c("h1", [
-          _vm._v(_vm._s(_vm._f("arrayToString")(_vm.headerdata.document_title)))
-        ]),
-        _vm._v(" "),
-        _c("p", { staticClass: "autorhoreader" }, [
-          _vm._v(
-            _vm._s(
-              _vm._f("arrayToString")(_vm.headerdata.document_author_forename)
-            ) +
-              " " +
-              _vm._s(
-                _vm._f("arrayToString")(_vm.headerdata.document_author_surname)
+    ? _c("div", { attrs: { id: "documentheader" } }, [
+        _c("div", { staticClass: "headerRow" }, [
+          _c("div", { staticClass: "headerColumn left" }),
+          _vm._v(" "),
+          _c("div", { staticClass: "headerColumn middle" }, [
+            _c("h1", { staticClass: "documentTitle" }, [
+              _vm._v(
+                _vm._s(_vm._f("arrayToString")(_vm.headerdata.document_title))
               )
-          )
-        ]),
-        _vm._v(" "),
-        _c("table", { staticClass: "table table-condensed table-responsive" }, [
-          _c("tr", [
-            _c("td", [
-              _c("span", { staticClass: "iconwrapper" }, [
-                typeof _vm.headerdata.document_publication_publishing_date !=
-                "undefined"
-                  ? _c("i", {
-                      staticClass: "fa fa-university fa-2x",
-                      attrs: { "aria-hidden": "true" }
-                    })
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("strong", [
-                  _vm._v(
-                    "Published: " +
-                      _vm._s(
-                        _vm._f("arrayToString")(
-                          _vm.headerdata.document_publication_publishing_date
-                        )
-                      )
-                  )
-                ])
-              ])
             ]),
             _vm._v(" "),
-            _c("td", [
-              _c("span", { staticClass: "iconwrapper" }, [
-                typeof _vm.headerdata.document_publication_place != "undefined"
-                  ? _c("i", {
-                      staticClass: "fa fa-map-marker fa-2x",
-                      attrs: { "aria-hidden": "true" }
-                    })
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("strong", [
-                  _vm._v(
-                    _vm._s(
-                      _vm._f("arrayToString")(
-                        _vm.headerdata.document_publication_place
-                      )
+            _c("div", { staticClass: "autorHeader" }, [
+              _vm._v(
+                _vm._s(
+                  _vm._f("arrayToString")(
+                    _vm.headerdata.document_author_forename
+                  )
+                ) +
+                  " " +
+                  _vm._s(
+                    _vm._f("arrayToString")(
+                      _vm.headerdata.document_author_surname
                     )
                   )
-                ])
-              ])
+              )
             ]),
             _vm._v(" "),
-            _c("td", [
-              _c("span", { staticClass: "iconwrapper" }, [
-                typeof _vm.headerdata.document_list_of_annotations_name !=
-                "undefined"
-                  ? _c("i", {
-                      staticClass: "fa fa-pencil-square-o fa-2x",
-                      attrs: { "aria-hidden": "true" }
-                    })
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("strong", [
-                  _vm._v(
-                    _vm._s(
-                      _vm.headerdata.document_list_of_annotations_name.length
-                    ) + " Annotations"
-                  )
-                ])
-              ])
+            _c("div", { staticClass: "clearfix pull-left" }, [
+              typeof _vm.headerdata.document_publication_publishing_date !=
+              "undefined"
+                ? _c("span", [
+                    _c(
+                      "i",
+                      {
+                        staticClass: "material-icons",
+                        attrs: { "aria-hidden": "true" }
+                      },
+                      [_vm._v("access_time")]
+                    ),
+                    _vm._v(
+                      " Published: " +
+                        _vm._s(
+                          _vm._f("arrayToString")(
+                            _vm.headerdata.document_publication_publishing_date
+                          )
+                        )
+                    )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              typeof _vm.headerdata.document_publication_place != "undefined"
+                ? _c("span", [
+                    _c(
+                      "i",
+                      {
+                        staticClass: "material-icons",
+                        attrs: { "aria-hidden": "true" }
+                      },
+                      [_vm._v("language")]
+                    ),
+                    _vm._v(
+                      " " +
+                        _vm._s(
+                          _vm._f("arrayToString")(
+                            _vm.headerdata.document_publication_place
+                          )
+                        ) +
+                        " "
+                    )
+                  ])
+                : _vm._e(),
+              _c("br"),
+              _vm._v(" "),
+              typeof _vm.headerdata.document_list_of_annotations_name !=
+              "undefined"
+                ? _c("span", [
+                    _vm._v(
+                      _vm._s(
+                        _vm.headerdata.document_list_of_annotations_name.length
+                      ) + " Annotations"
+                    )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              typeof _vm.headerdata.document_size_extent != "undefined"
+                ? _c("span", [
+                    _c(
+                      "i",
+                      {
+                        staticClass: "material-icons",
+                        attrs: { "aria-hidden": "true" }
+                      },
+                      [_vm._v("publish")]
+                    ),
+                    _vm._v(
+                      " " +
+                        _vm._s(
+                          _vm._f("arrayToString")(
+                            _vm.headerdata.document_size_extent
+                          )
+                        ) +
+                        " Tokens"
+                    )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              typeof _vm.headerdata.document_languages_language != "undefined"
+                ? _c("span", [
+                    _c(
+                      "i",
+                      {
+                        staticClass: "material-icons",
+                        attrs: { "aria-hidden": "true" }
+                      },
+                      [_vm._v("publish")]
+                    ),
+                    _vm._v(" " + _vm._s(_vm.concatLanguages) + " ")
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              typeof _vm.headerdata.document_history_faximile_link !=
+              "undefined"
+                ? _c("span", [
+                    _c("a", { attrs: { href: _vm.facsimileUri() } }, [
+                      _c(
+                        "i",
+                        {
+                          staticClass: "material-icons",
+                          attrs: { "aria-hidden": "true" }
+                        },
+                        [_vm._v("facsimile")]
+                      )
+                    ])
+                  ])
+                : _vm._e()
             ])
           ]),
           _vm._v(" "),
-          _c("tr", [
-            _c("td", [
-              _c("span", { staticClass: "iconwrapper" }, [
-                typeof _vm.headerdata.document_size_extent != "undefined"
-                  ? _c("i", {
-                      staticClass: "fa fa-cubes fa-2x",
-                      attrs: { "aria-hidden": "true" }
-                    })
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("strong", [
-                  _vm._v(
-                    _vm._s(
-                      _vm._f("arrayToString")(
-                        _vm.headerdata.document_size_extent
-                      )
-                    ) + " Tokens"
-                  )
-                ])
-              ])
-            ]),
+          _vm._m(0)
+        ])
+      ])
+    : _vm._e()
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "headerColumn right" }, [
+      _c("aside", { attrs: { id: "info-block" } }, [
+        _c("section", { staticClass: "file-marker" }, [
+          _c("div", [
+            _c("div", { staticClass: "box-title" }, [_vm._v("CORPUS")]),
             _vm._v(" "),
-            _c("td", [
-              _c("span", { staticClass: "iconwrapper" }, [
-                typeof _vm.headerdata.document_languages_language != "undefined"
-                  ? _c("i", {
-                      staticClass: "fa fa-language fa-2x",
-                      attrs: { "aria-hidden": "true" }
-                    })
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("strong", [_vm._v(_vm._s(_vm.concatLanguages))])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("td", [
-              _c("span", { staticClass: "iconwrapper" }, [
-                _c("a", { attrs: { href: _vm.facsimileUri() } }, [
-                  typeof _vm.headerdata.document_history_faximile_link !=
-                  "undefined"
-                    ? _c("i", {
-                        staticClass: "fa fa-external-link-square fa-2x",
-                        attrs: { "aria-hidden": "true" }
-                      })
-                    : _vm._e(),
+            _c("div", { staticClass: "box-contents" }, [
+              _c("div", { attrs: { id: "download" } }, [
+                _c("div", { staticClass: "btn-group  btn-group-xs" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-danger dropdown-toggle",
+                      attrs: {
+                        type: "button",
+                        "data-toggle": "dropdown",
+                        "aria-haspopup": "true",
+                        "aria-expanded": "false"
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                                        DOWNLOAD "
+                      ),
+                      _c("span", { staticClass: "caret" })
+                    ]
+                  ),
                   _vm._v(" "),
-                  _c("span", { staticClass: "facsimile" }, [
-                    _vm._v("Facsimile")
+                  _c("ul", { staticClass: "dropdown-menu" }, [
+                    _c("li", [
+                      _c("a", { attrs: { href: "#" } }, [_vm._v("Action")])
+                    ]),
+                    _vm._v(" "),
+                    _c("li", [
+                      _c("a", { attrs: { href: "#" } }, [
+                        _vm._v("Another action")
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("li", [
+                      _c("a", { attrs: { href: "#" } }, [
+                        _vm._v("Something else here")
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("li", {
+                      staticClass: "divider",
+                      attrs: { role: "separator" }
+                    }),
+                    _vm._v(" "),
+                    _c("li", [
+                      _c("a", { attrs: { href: "#" } }, [
+                        _vm._v("Separated link")
+                      ])
+                    ])
                   ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "btn-group  btn-group-xs" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-xs btn-danger",
+                      attrs: { type: "button" }
+                    },
+                    [_vm._v("OPEN IN ANNIS")]
+                  )
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "btn-group btn-group-xs" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-default dropdown-toggle",
+                      attrs: {
+                        type: "button",
+                        "data-toggle": "dropdown",
+                        "aria-haspopup": "true",
+                        "aria-expanded": "false"
+                      }
+                    },
+                    [
+                      _vm._v("\n                                        CITE "),
+                      _c("span", { staticClass: "caret" })
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("ul", { staticClass: "dropdown-menu" }, [
+                    _c("li", [
+                      _c("a", { attrs: { href: "#" } }, [_vm._v("Action")])
+                    ]),
+                    _vm._v(" "),
+                    _c("li", [
+                      _c("a", { attrs: { href: "#" } }, [
+                        _vm._v("Another action")
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("li", [
+                      _c("a", { attrs: { href: "#" } }, [
+                        _vm._v("Something else here")
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("li", {
+                      staticClass: "divider",
+                      attrs: { role: "separator" }
+                    }),
+                    _vm._v(" "),
+                    _c("li", [
+                      _c("a", { attrs: { href: "#" } }, [
+                        _vm._v("Separated link")
+                      ])
+                    ])
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "license" }, [
+                  _c("i", { staticClass: "cc cc-BY cc-lg" })
                 ])
               ])
             ])
           ])
         ])
       ])
-    : _vm._e()
-}
-var staticRenderFns = []
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -34086,6 +34233,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata'],
@@ -34102,9 +34262,68 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("p", [_vm._v("POOP")])
+  return _vm._m(0)
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "headerRow headerNav" }, [
+      _c("div", { staticClass: "headerColumn left" }),
+      _vm._v(" "),
+      _c("div", { staticClass: "headerColumn middle" }, [
+        _c("ul", { staticClass: "nav nav-pills" }, [
+          _c("li", { staticClass: "active", attrs: { role: "tab" } }, [
+            _c(
+              "a",
+              { attrs: { href: "#corpusMetadataBody", "data-toggle": "pill" } },
+              [
+                _vm._v("CORPUS "),
+                _c("i", { staticClass: "material-icons" }, [_vm._v("book")])
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { attrs: { role: "tab" } }, [
+            _c(
+              "a",
+              {
+                attrs: { href: "#documentMetadataBody", "data-toggle": "pill" }
+              },
+              [
+                _vm._v("DOCUMENTS "),
+                _c("i", { staticClass: "material-icons" }, [
+                  _vm._v("description")
+                ]),
+                _vm._v(" 10")
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { attrs: { role: "tab" } }, [
+            _c(
+              "a",
+              {
+                attrs: {
+                  href: "#annotationMetadataBody",
+                  "data-toggle": "pill"
+                }
+              },
+              [
+                _vm._v("ANNOTATIONS "),
+                _c("i", { staticClass: "material-icons" }, [_vm._v("create")]),
+                _vm._v(" 200")
+              ]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "headerColumn right" })
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -34292,198 +34511,205 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container" }, [
-    _c("div", { staticClass: "row" }, [
-      _vm._m(0),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-sm-9" }, [
-        _vm.header == "corpus"
-          ? _c("div", { staticClass: "tab-content" }, [
-              _c(
-                "div",
-                {
-                  staticClass: "tab-pane fade in active",
-                  attrs: { id: "description" }
-                },
-                [
-                  _c("div", { staticClass: "panel-body" }, [
-                    _vm._v(
-                      _vm._s(
-                        _vm._f("lastElement")(
-                          _vm.headerdata.corpus_encoding_project_description
+  return _c(
+    "div",
+    {
+      staticClass: "container tab-content",
+      attrs: { id: "corpusMetadataBody" }
+    },
+    [
+      _c("div", { staticClass: "row" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-sm-9" }, [
+          _vm.header == "corpus"
+            ? _c("div", { staticClass: "tab-content" }, [
+                _c(
+                  "div",
+                  {
+                    staticClass: "tab-pane fade in active",
+                    attrs: { id: "description" }
+                  },
+                  [
+                    _c("div", { staticClass: "panel-body" }, [
+                      _vm._v(
+                        _vm._s(
+                          _vm._f("lastElement")(
+                            _vm.headerdata.corpus_encoding_project_description
+                          )
                         )
                       )
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "tab-pane fade", attrs: { id: "authorship" } },
+                  [
+                    _c(
+                      "ul",
+                      { staticClass: "list-group" },
+                      _vm._l(_vm.getAnnotators, function(annotator) {
+                        return _c(
+                          "li",
+                          {
+                            key: annotator,
+                            staticClass: "list-group-item",
+                            attrs: { annotator: annotator }
+                          },
+                          [
+                            _c("i", {
+                              staticClass: "fa fa-user",
+                              attrs: { "aria-hidden": "true" }
+                            }),
+                            _vm._v(" " + _vm._s(annotator))
+                          ]
+                        )
+                      })
                     )
-                  ])
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "tab-pane fade", attrs: { id: "authorship" } },
-                [
-                  _c(
-                    "ul",
-                    { staticClass: "list-group" },
-                    _vm._l(_vm.getAnnotators, function(annotator) {
-                      return _c(
-                        "li",
-                        {
-                          key: annotator,
-                          staticClass: "list-group-item",
-                          attrs: { annotator: annotator }
-                        },
-                        [
-                          _c("i", {
-                            staticClass: "fa fa-user",
-                            attrs: { "aria-hidden": "true" }
-                          }),
-                          _vm._v(" " + _vm._s(annotator))
-                        ]
-                      )
-                    })
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "tab-pane fade", attrs: { id: "versions" } },
-                [
-                  _c(
-                    "ul",
-                    { staticClass: "list-group" },
-                    _vm._l(_vm.getRevisions, function(revision) {
-                      return _c(
-                        "li",
-                        {
-                          key: revision,
-                          staticClass: "list-group-item",
-                          attrs: { revision: revision }
-                        },
-                        [
-                          _c("i", {
-                            staticClass: "fa fa-code-fork",
-                            attrs: { "aria-hidden": "true" }
-                          }),
-                          _vm._v(
-                            " " +
-                              _vm._s(
-                                revision.date
-                                  .concat(" ")
-                                  .concat(revision.version)
-                                  .concat(" ")
-                                  .concat(revision.description)
-                              ) +
-                              "\n                "
-                          )
-                        ]
-                      )
-                    })
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "tab-pane fade", attrs: { id: "license" } },
-                [
-                  _c(
-                    "ul",
-                    { staticClass: "list-group" },
-                    _vm._l(_vm.headerdata.annotation_name, function(
-                      annotation,
-                      index
-                    ) {
-                      return _c(
-                        "li",
-                        {
-                          key: annotation,
-                          staticClass: "list-group-item",
-                          attrs: { annotation: annotation }
-                        },
-                        [
-                          _c("i", {
-                            staticClass: "fa fa-pencil-square-o",
-                            attrs: { "aria-hidden": "true" }
-                          }),
-                          _vm._v(
-                            " " +
-                              _vm._s(annotation) +
-                              " (" +
-                              _vm._s(_vm.headerdata.annotation_type[index]) +
-                              ") " +
-                              _vm._s(_vm.getDocumentsByAnnotation) +
-                              " "
-                          ),
-                          typeof _vm.documentsByAnnotation[0] != "undefined"
-                            ? _c("span", { staticClass: "badge" }, [
-                                _vm._v(
-                                  _vm._s(
-                                    _vm.documentsByAnnotation[0][annotation]
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "tab-pane fade", attrs: { id: "versions" } },
+                  [
+                    _c(
+                      "ul",
+                      { staticClass: "list-group" },
+                      _vm._l(_vm.getRevisions, function(revision) {
+                        return _c(
+                          "li",
+                          {
+                            key: revision,
+                            staticClass: "list-group-item",
+                            attrs: { revision: revision }
+                          },
+                          [
+                            _c("i", {
+                              staticClass: "fa fa-code-fork",
+                              attrs: { "aria-hidden": "true" }
+                            }),
+                            _vm._v(
+                              " " +
+                                _vm._s(
+                                  revision.date
+                                    .concat(" ")
+                                    .concat(revision.version)
+                                    .concat(" ")
+                                    .concat(revision.description)
+                                ) +
+                                "\n                "
+                            )
+                          ]
+                        )
+                      })
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "tab-pane fade", attrs: { id: "license" } },
+                  [
+                    _c(
+                      "ul",
+                      { staticClass: "list-group" },
+                      _vm._l(_vm.headerdata.annotation_name, function(
+                        annotation,
+                        index
+                      ) {
+                        return _c(
+                          "li",
+                          {
+                            key: annotation,
+                            staticClass: "list-group-item",
+                            attrs: { annotation: annotation }
+                          },
+                          [
+                            _c("i", {
+                              staticClass: "fa fa-pencil-square-o",
+                              attrs: { "aria-hidden": "true" }
+                            }),
+                            _vm._v(
+                              " " +
+                                _vm._s(annotation) +
+                                " (" +
+                                _vm._s(_vm.headerdata.annotation_type[index]) +
+                                ") " +
+                                _vm._s(_vm.getDocumentsByAnnotation) +
+                                " "
+                            ),
+                            typeof _vm.documentsByAnnotation[0] != "undefined"
+                              ? _c("span", { staticClass: "badge" }, [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm.documentsByAnnotation[0][annotation]
+                                    )
                                   )
-                                )
-                              ])
-                            : _vm._e()
-                        ]
-                      )
-                    })
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                { staticClass: "tab-pane fade", attrs: { id: "formats" } },
-                [
-                  _c(
-                    "ul",
-                    { staticClass: "list-group" },
-                    _vm._l(_vm.headerdata.annotation_name, function(
-                      annotation,
-                      index
-                    ) {
-                      return _c(
-                        "li",
-                        {
-                          key: annotation,
-                          staticClass: "list-group-item",
-                          attrs: { annotation: annotation }
-                        },
-                        [
-                          _c("i", {
-                            staticClass: "fa fa-pencil-square-o",
-                            attrs: { "aria-hidden": "true" }
-                          }),
-                          _vm._v(
-                            " " +
-                              _vm._s(annotation) +
-                              " (" +
-                              _vm._s(_vm.headerdata.annotation_type[index]) +
-                              ") " +
-                              _vm._s(_vm.getDocumentsByAnnotation) +
-                              " "
-                          ),
-                          typeof _vm.documentsByAnnotation[0] != "undefined"
-                            ? _c("span", { staticClass: "badge" }, [
-                                _vm._v(
-                                  _vm._s(
-                                    _vm.documentsByAnnotation[0][annotation]
+                                ])
+                              : _vm._e()
+                          ]
+                        )
+                      })
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "tab-pane fade", attrs: { id: "formats" } },
+                  [
+                    _c(
+                      "ul",
+                      { staticClass: "list-group" },
+                      _vm._l(_vm.headerdata.annotation_name, function(
+                        annotation,
+                        index
+                      ) {
+                        return _c(
+                          "li",
+                          {
+                            key: annotation,
+                            staticClass: "list-group-item",
+                            attrs: { annotation: annotation }
+                          },
+                          [
+                            _c("i", {
+                              staticClass: "fa fa-pencil-square-o",
+                              attrs: { "aria-hidden": "true" }
+                            }),
+                            _vm._v(
+                              " " +
+                                _vm._s(annotation) +
+                                " (" +
+                                _vm._s(_vm.headerdata.annotation_type[index]) +
+                                ") " +
+                                _vm._s(_vm.getDocumentsByAnnotation) +
+                                " "
+                            ),
+                            typeof _vm.documentsByAnnotation[0] != "undefined"
+                              ? _c("span", { staticClass: "badge" }, [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm.documentsByAnnotation[0][annotation]
+                                    )
                                   )
-                                )
-                              ])
-                            : _vm._e()
-                        ]
-                      )
-                    })
-                  )
-                ]
-              )
-            ])
-          : _vm._e()
+                                ])
+                              : _vm._e()
+                          ]
+                        )
+                      })
+                    )
+                  ]
+                )
+              ])
+            : _vm._e()
+        ])
       ])
-    ])
-  ])
+    ]
+  )
 }
 var staticRenderFns = [
   function() {
@@ -34744,6 +34970,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -34769,65 +35008,119 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _vm.header == "document"
-    ? _c("div", { staticClass: "tab-content" }, [
-        _c(
-          "div",
-          {
-            staticClass: "tab-pane fade in active panel panel-default",
-            attrs: { id: "project" }
-          },
-          [
-            _c("div", { staticClass: "panel-body" }),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass: "tab-pane fade in active panel panel-default",
-                attrs: { id: "annotators" }
-              },
-              [
-                _c(
-                  "ul",
-                  { staticClass: "list-group" },
-                  _vm._l(
-                    _vm.headerdata.document_list_of_annotations_name,
-                    function(annotation) {
-                      return _c(
-                        "li",
+    ? _c("div", { staticClass: "headerRow headerNav" }, [
+        _c("div", { staticClass: "headerColumn left" }),
+        _vm._v(" "),
+        _vm._m(0),
+        _vm._v(" "),
+        _c("div", { staticClass: "headerColumn right" }, [
+          _vm.header == "document"
+            ? _c(
+                "div",
+                {
+                  staticClass: "tab-content",
+                  attrs: { id: "documentMetadataBody" }
+                },
+                [
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "tab-pane fade in active panel panel-default",
+                      attrs: { id: "project" }
+                    },
+                    [
+                      _c("div", { staticClass: "panel-body" }),
+                      _vm._v(" "),
+                      _c(
+                        "div",
                         {
-                          key: annotation,
-                          staticClass: "list-group-item",
-                          attrs: { annotation: annotation }
+                          staticClass:
+                            "tab-pane fade in active panel panel-default",
+                          attrs: { id: "annotators" }
                         },
                         [
-                          _c("i", {
-                            staticClass: "fa fa-pencil-square-o",
-                            attrs: { "aria-hidden": "true" }
-                          }),
-                          _vm._v(" " + _vm._s(annotation) + "\n            ")
+                          _c(
+                            "ul",
+                            { staticClass: "list-group" },
+                            _vm._l(
+                              _vm.headerdata.document_list_of_annotations_name,
+                              function(annotation) {
+                                return _c(
+                                  "li",
+                                  {
+                                    key: annotation,
+                                    staticClass: "list-group-item",
+                                    attrs: { annotation: annotation }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fa fa-pencil-square-o",
+                                      attrs: { "aria-hidden": "true" }
+                                    }),
+                                    _vm._v(
+                                      " " +
+                                        _vm._s(annotation) +
+                                        "\n            "
+                                    )
+                                  ]
+                                )
+                              }
+                            )
+                          )
                         ]
-                      )
-                    }
+                      ),
+                      _vm._v(" "),
+                      _c("div", {
+                        staticClass: "tab-pane fade",
+                        attrs: { id: "revisions" }
+                      }),
+                      _vm._v(" "),
+                      _c("div", {
+                        staticClass: "tab-pane fade",
+                        attrs: { id: "annotations" }
+                      })
+                    ]
                   )
-                )
-              ]
-            ),
-            _vm._v(" "),
-            _c("div", {
-              staticClass: "tab-pane fade",
-              attrs: { id: "revisions" }
-            }),
-            _vm._v(" "),
-            _c("div", {
-              staticClass: "tab-pane fade",
-              attrs: { id: "annotations" }
-            })
-          ]
-        )
+                ]
+              )
+            : _vm._e()
+        ])
       ])
     : _vm._e()
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "headerColumn middle" }, [
+      _c("ul", { staticClass: "nav nav-pills" }, [
+        _c("li", { attrs: { role: "tab" } }, [
+          _c(
+            "a",
+            { attrs: { href: "#documentMetadataBody", "data-toggle": "pill" } },
+            [_vm._v("DOCUMENT METADATA")]
+          )
+        ]),
+        _vm._v(" "),
+        _c("li", { attrs: { role: "tab" } }, [
+          _c(
+            "a",
+            {
+              attrs: { href: "#annotationMetadataBody", "data-toggle": "pill" }
+            },
+            [
+              _vm._v("ANNOTATIONS "),
+              _c("i", { staticClass: "material-icons" }, [_vm._v("create")]),
+              _vm._v(" 200")
+            ]
+          )
+        ])
+      ])
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {

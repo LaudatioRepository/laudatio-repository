@@ -70,15 +70,6 @@
                 </aside>
             </div>
         </div>
-        <div class="headerRow">
-            <div class="headerMenuColumn">Corpus</div>
-            <div class="headerMenuColumn">Documents</div>
-            <div class="headerMenuColumn">Annotation</div>
-        </div>
-
-
-
-
     </div>
 </template>
 

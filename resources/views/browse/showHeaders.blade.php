@@ -12,15 +12,21 @@
                 <div class="Header Header--cozy" role="banner" v-show="header == 'document'">
                     <documentheader :headerdata="headerdata" :header="header"></documentheader>
                 </div>
+                <div class="Header Header--cozy" role="banner" v-show="header == 'annotation'">
+                    <annotationheader :headerdata="headerdata" :header="header"></annotationheader>
+                </div>
+            </div>
+            <div class="Corpus-MetadataBlock-header" v-show="header == 'corpus'">
+                <metadata-block-header-corpus :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-header-corpus>
+            </div>
+            <div class="Corpus-MetadataBlock-header" v-show="header == 'document'">
+                <metadata-block-header-document :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-header-document>
             </div>
         </header>
         <main class="HolyGrail-body">
             <article class="HolyGrail-content">
                 <div class="Blockwrapper">
                     <div class="Corpus-MetadataBlock" v-show="header == 'corpus'">
-                        <div class="Corpus-MetadataBlock-header">
-                            <metadata-block-header-corpus :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-header-corpus>
-                        </div>
                         <div class="Corpus-MetadataBlock-body">
                             <metadata-block-body-corpus :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-body-corpus>
                         </div>
