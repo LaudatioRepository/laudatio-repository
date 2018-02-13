@@ -30,8 +30,11 @@ class BrowseController extends Controller
                 break;
             case "document":
                 $data = $this->ElasticService->getDocument($id);
-                $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('_id' => $data['result']['in_corpora'][0])),array($id));
-                $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
+                if(count($data['result']['in_corpora']) > 0){
+                    $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('_id' => $data['result']['in_corpora'][0])),array($id));
+                    $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
+                }
+
                 $annotationGroups = $this->ElasticService->getAnnotationGroups();
                 $data['result']['annotationGroups'] = $annotationGroups['aggregations']['annotations']['buckets'];
                 break;
@@ -40,7 +43,7 @@ class BrowseController extends Controller
                 break;
         }
         //dd($data);
-        //dd($header);
+        dd($data);
         JavaScript::put([
             "header" => $header,
             "header_id" => $id,

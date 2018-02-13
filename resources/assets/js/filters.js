@@ -12,6 +12,9 @@ Vue.filter('arrayToString', function (array) {
     else{
         string = array.toString();
     }
+    if(string == "NA"){
+        string = "-";
+    }
     return string;
 });
 
