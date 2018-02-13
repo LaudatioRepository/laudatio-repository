@@ -12,6 +12,7 @@ interface ElasticsearchInterface {
     public function getCorpus($id,$full);
     public function getDocument($id,$full);
     public function getAnnotation($id,$full);
+    public function getAnnotationByName($name, $fields);
     public function getAnnotationGroups();
     public function search($index, $field, $term);
     public function searchGeneral($searchData);

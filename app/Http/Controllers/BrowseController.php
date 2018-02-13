@@ -35,15 +35,44 @@ class BrowseController extends Controller
                     $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
                 }
 
-                $annotationGroups = $this->ElasticService->getAnnotationGroups();
-                $data['result']['annotationGroups'] = $annotationGroups['aggregations']['annotations']['buckets'];
+                $annotationMapping = array();
+                foreach($data['result']['document_list_of_annotations_id'] as $annotationId){
+                    $annotationData = $this->ElasticService->getAnnotationByName($annotationId, array(
+                        "preparation_encoding_annotation_group",
+                        "preparation_title",
+                        "in_documents"
+                    ));
+
+                    //Log::info("group: ".print_r($annotationData['result'],1));
+                    if(!$annotationData['error'] && count($annotationData['result']) > 0){
+                        if(array_key_exists('preparation_encoding_annotation_group', $annotationData['result'][0])){
+                            $groups = array_unique($annotationData['result'][0]['preparation_encoding_annotation_group']);
+                            foreach ($groups as $group){
+                                if(!array_key_exists($group,$annotationMapping)){
+                                    $annotationMapping[$group] = array();
+                                }
+                                $dataArray = array();
+                                if(array_key_exists('in_documents', $annotationData['result'][0])){
+                                    $dataArray['document_count'] = count($annotationData['result'][0]['in_documents']);
+                                }
+                                $dataArray['title'] = $annotationData['result'][0]['preparation_title'][0];
+                                array_push($annotationMapping[$group],$dataArray);
+                            }
+                        }
+                    }
+
+                }
+
+
+                $data['result']['annotationGroups'] = $annotationMapping;
+                
                 break;
             case "annotation":
                 $data = $this->ElasticService->getAnnotation($id);
                 break;
         }
         //dd($data);
-        dd($data);
+
         JavaScript::put([
             "header" => $header,
             "header_id" => $id,

@@ -35221,6 +35221,55 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -35268,6 +35317,47 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var publicationString = "";
             publicationString += this.documentAuthors().concat(' (' + this.headerdata.document_publication_publishing_date[0] + ')').concat(' ').concat(this.headerdata.document_title[0]).concat('.').concat(' ').concat(this.documentPublisher()).concat('.').concat(' ').concat(this.headerdata.document_publication_place[0]).concat('.');
             return publicationString;
+        },
+        totalAnnotations: function totalAnnotations() {
+            var total = 0;
+            for (var key in this.headerdata.annotationGroups) {
+                var item = this.headerdata.annotationGroups[key];
+                total += item.length;
+            }
+            return total;
+        },
+        allAnnotations: function allAnnotations() {
+            var allAnnotations = [];
+            /*
+            for (var key in this.headerdata.annotationGroups) {
+                var items = this.headerdata.annotationGroups[key];
+                items['group'] = key;
+                allAnnotations.push(items);
+             }
+            console.log("FETT: "+JSON.stringify(allAnnotations))
+             var count = -1; // which must be static value
+            for(let i in this.headerdata.annotationGroups){
+                if(this.headerdata.annotationGroups.hasOwnProperty(i)){
+                    count++;
+                    let elem = this.headerdata.annotationGroups[i][count];
+                    if(typeof elem != 'undefined'){
+                        elem.group = i;
+                    }
+                     console.log(JSON.stringify(elem));
+                    allAnnotations.push(this.headerdata.annotationGroups[i][count]);
+                };
+            };
+             */
+
+            Object.keys(this.headerdata.annotationGroups).forEach(function (key, index) {
+
+                this[key].forEach(function (value) {
+                    value.group = key;
+                    console.log(value);
+                    allAnnotations.push(value);
+                });
+            }, this.headerdata.annotationGroups);
+            return allAnnotations;
         }
     },
     computed: {},
@@ -35700,15 +35790,11 @@ var render = function() {
                   _c(
                     "ul",
                     { staticClass: "nav nav-stacked" },
-                    _vm._l(_vm.headerdata.annotationGroups, function(
-                      annotationGroup,
-                      index
-                    ) {
-                      return _c(
+                    [
+                      _c(
                         "li",
                         {
-                          staticClass: "nav-link",
-                          class: { active: index === 0 },
+                          staticClass: "nav-link active",
                           attrs: { role: "tab" }
                         },
                         [
@@ -35716,15 +35802,49 @@ var render = function() {
                             "a",
                             {
                               attrs: {
-                                href: "#".concat(annotationGroup.key),
+                                href: "#allAnnotations",
                                 "data-toggle": "pill"
                               }
                             },
-                            [_vm._v(_vm._s(annotationGroup.key))]
+                            [
+                              _vm._v(
+                                "All (" + _vm._s(_vm.totalAnnotations()) + ")"
+                              )
+                            ]
                           )
                         ]
-                      )
-                    })
+                      ),
+                      _vm._v(" "),
+                      _vm._l(_vm.headerdata.annotationGroups, function(
+                        annotationGroup,
+                        key
+                      ) {
+                        return _c(
+                          "li",
+                          { staticClass: "nav-link", attrs: { role: "tab" } },
+                          [
+                            _c(
+                              "a",
+                              {
+                                attrs: {
+                                  href: "#".concat(key),
+                                  "data-toggle": "pill"
+                                }
+                              },
+                              [
+                                _vm._v(
+                                  _vm._s(key) +
+                                    " (" +
+                                    _vm._s(annotationGroup.length) +
+                                    ")"
+                                )
+                              ]
+                            )
+                          ]
+                        )
+                      })
+                    ],
+                    2
                   )
                 ]
               )
@@ -35735,28 +35855,107 @@ var render = function() {
             _c(
               "div",
               { staticClass: "tab-content" },
-              _vm._l(_vm.headerdata.annotationGroups, function(
-                annotationGroup,
-                index
-              ) {
-                return _vm.header == "document"
+              [
+                _vm.header == "document"
                   ? _c(
                       "div",
                       {
-                        staticClass: "tab-pane fade",
-                        class: { "in active": index === 0 },
-                        attrs: { id: annotationGroup.key }
+                        staticClass: "tab-pane fade in active",
+                        attrs: { id: "allAnnotations" }
                       },
                       [
-                        _vm._v(
-                          "\n                " +
-                            _vm._s(annotationGroup.key) +
-                            "\n            "
-                        )
+                        _c("h2", [
+                          _vm._v(
+                            "Annotations - All (" +
+                              _vm._s(_vm.totalAnnotations()) +
+                              ")"
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("table", { staticClass: "table table-striped" }, [
+                          _vm._m(2),
+                          _vm._v(" "),
+                          _c(
+                            "tbody",
+                            _vm._l(_vm.allAnnotations(), function(
+                              annotationData
+                            ) {
+                              return _c("tr", [
+                                _c("td", [
+                                  _vm._v(_vm._s(annotationData["title"]))
+                                ]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(_vm._s(annotationData["group"]))
+                                ]),
+                                _vm._v(" "),
+                                _vm._m(3, true),
+                                _vm._v(" "),
+                                _vm._m(4, true),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    _vm._s(annotationData["document_count"])
+                                  )
+                                ])
+                              ])
+                            })
+                          )
+                        ])
                       ]
                     )
-                  : _vm._e()
-              })
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm._l(_vm.headerdata.annotationGroups, function(
+                  annotationGroup,
+                  key
+                ) {
+                  return _vm.header == "document"
+                    ? _c(
+                        "div",
+                        { staticClass: "tab-pane fade", attrs: { id: key } },
+                        [
+                          _c("h2", [
+                            _vm._v(
+                              _vm._s(key) +
+                                " (" +
+                                _vm._s(annotationGroup.length) +
+                                ")"
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("table", { staticClass: "table table-striped" }, [
+                            _vm._m(5, true),
+                            _vm._v(" "),
+                            _c(
+                              "tbody",
+                              _vm._l(annotationGroup, function(annotationData) {
+                                return _c("tr", [
+                                  _c("td", [
+                                    _vm._v(_vm._s(annotationData["title"]))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [_vm._v(_vm._s(key))]),
+                                  _vm._v(" "),
+                                  _vm._m(6, true),
+                                  _vm._v(" "),
+                                  _vm._m(7, true),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(
+                                      _vm._s(annotationData["document_count"])
+                                    )
+                                  ])
+                                ])
+                              })
+                            )
+                          ])
+                        ]
+                      )
+                    : _vm._e()
+                })
+              ],
+              2
             )
           ])
         ])
@@ -35824,6 +36023,66 @@ var staticRenderFns = [
         _c("th", [_vm._v("Revision Description")])
       ])
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("Annotation title")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Category")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Guidelines")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Preparation steps")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Documents")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", [_c("span", { staticClass: "redArrow" }, [_vm._v(">")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", [_c("span", { staticClass: "redArrow" }, [_vm._v(">")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("Annotation title")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Category")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Guidelines")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Preparation steps")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Documents")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", [_c("span", { staticClass: "redArrow" }, [_vm._v(">")])])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", [_c("span", { staticClass: "redArrow" }, [_vm._v(">")])])
   }
 ]
 render._withStripped = true

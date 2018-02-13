@@ -142,7 +142,7 @@ class ElasticService implements ElasticsearchInterface
                 'index' => 'annotation',
                 'type' => 'annotation',
                 'id' => $id,
-                '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]
+                //'_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]
             ];
         }
         else{
@@ -170,6 +170,33 @@ class ElasticService implements ElasticsearchInterface
             );
         }
 
+    }
+
+    /**
+     * @param $name
+     * @return array
+     */
+    public function getAnnotationByName($name,$fields){
+        $result = array();
+        $queryBuilder = new QueryBuilder();
+        $queryBody = $queryBuilder->buildSingleMatchQuery(array(array('preparation_title' => $name)));
+        $params = [
+            'size' => 1,
+            'index' => 'annotation',
+            'type' => 'annotation',
+            'body' => $queryBody,
+            '_source' => $fields,
+            'filter_path' => ['hits.hits']
+        ];
+
+        $response = Elasticsearch::search($params);
+        if(count($response['hits']['hits']) > 0){
+            array_push($result,$response['hits']['hits'][0]['_source']);
+        }
+        return array(
+            'error' => false,
+            'result' => $result
+        );
     }
 
 
@@ -242,8 +269,6 @@ class ElasticService implements ElasticsearchInterface
         $counter = 0;
         foreach($searchData as $queryData){
             $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
-
-            Log::info("SENDING: ".print_r($queryBody,1));
 
             $params = [
                 'size' => 1000,
