@@ -8859,3 +8859,10 @@ a .fa.fa-external-link-square,
   font-size: 0.9em;
 }
 
+#allAnnotations .table thead th,
+#allAnnotations .table.condensed thead th,
+#allAnnotations .table-footer {
+  background: none;
+  border: none;
+}
+

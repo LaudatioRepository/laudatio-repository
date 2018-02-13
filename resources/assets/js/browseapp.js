@@ -6,9 +6,13 @@ require('./filters');
 window.Vue = require('vue');
 const util = require('util');
 
+import VueGoodTable from 'vue-good-table';
+window.Vue.use(VueGoodTable);
+
 Vue.component('breadcrumb', require('./components/BreadCrumb.vue'));
 Vue.component('corpusheader', require('./components/CorpusHeader.vue'));
 Vue.component('documentheader', require('./components/DocumentHeader.vue'));
+Vue.component('annotationheader', require('./components/AnnotationHeader.vue'));
 Vue.component('metadata-block-header-corpus', require('./components/CorpusMetadataBlockHeader.vue'));
 Vue.component('metadata-block-body-corpus', require('./components/CorpusMetadataBlockBody.vue'));
 Vue.component('metadata-block-header-document', require('./components/DocumentMetadataBlockHeader.vue'));

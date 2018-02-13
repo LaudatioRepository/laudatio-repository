@@ -153,29 +153,16 @@
               <div class="col-sm-9">
                <div class="tab-content">
                <div class="tab-pane fade in active" id="allAnnotations" v-if="header == 'document'">
-                    <h2>Annotations - All ({{totalAnnotations()}})</h2>
-                     <table class="table table-striped">
-                         <thead>
-                            <tr>
-                                <th>Annotation title</th>
-                                <th>Category</th>
-                                <th>Guidelines</th>
-                                <th>Preparation steps</th>
-                                <th>Documents</th>
-                            </tr>
-                         </thead>
-                         <tbody>
+                 <h2>Annotations - All ({{totalAnnotations()}})</h2>
 
-                            <tr v-for="(annotationData) in allAnnotations()">
-                                <td>{{annotationData['title']}}</td>
-                                <td>{{annotationData['group']}}</td>
-                                <td><span class="redArrow">&gt;</span></td>
-                                <td><span class="redArrow">&gt;</span></td>
-                                <td>{{annotationData['document_count']}}</td>
-                            </tr>
+                 <vue-good-table
+                  title=""
+                  :columns="allAnnotationColumns"
+                  :rows="allAnnotationRows"
+                  :paginate="true"
+                  :lineNumbers="false"
+                  styleClass="table table-striped"/>
 
-                         </tbody>
-                     </table>
                 </div>
                 <div class="tab-pane fade" v-for="(annotationGroup, key) in headerdata.annotationGroups" :id="key" v-if="header == 'document'">
                     <h2>{{key}} ({{annotationGroup.length}})</h2>
@@ -215,7 +202,38 @@
             return {
                 annotators: [],
                 revisions: [],
-                documentsByAnnotation: []
+                documentsByAnnotation: [],
+                allAnnotationColumns: [
+                    {
+                        label: 'Annotation title',
+                        field: 'title',
+                        filterable: true,
+                    },
+                    {
+                        label: 'Category',
+                        field: 'group',
+                        filterable: true,
+                    },
+                    {
+                        label: 'Guidelines',
+                        field: 'guidelines',
+                        filterable: false,
+                    },
+                    {
+                        label: 'Preparation steps',
+                        field: 'prep',
+                        filterable: false,
+                    },
+                    {
+                        label: 'Documents',
+                        field: 'document_count',
+                        type: 'number',
+                        html: false,
+                        filterable: true,
+                    },
+
+                ],
+                allAnnotationRows: this.allAnnotations(),
             }
 
         },
@@ -281,40 +299,19 @@
             },
             allAnnotations: function(){
                 var allAnnotations = [];
-                /*
-                for (var key in this.headerdata.annotationGroups) {
-                    var items = this.headerdata.annotationGroups[key];
-                    items['group'] = key;
-                    allAnnotations.push(items);
-
-                }
-                console.log("FETT: "+JSON.stringify(allAnnotations))
-
-                var count = -1; // which must be static value
-                for(let i in this.headerdata.annotationGroups){
-                    if(this.headerdata.annotationGroups.hasOwnProperty(i)){
-                        count++;
-                        let elem = this.headerdata.annotationGroups[i][count];
-                        if(typeof elem != 'undefined'){
-                            elem.group = i;
-                        }
-
-                        console.log(JSON.stringify(elem));
-                        allAnnotations.push(this.headerdata.annotationGroups[i][count]);
-                    };
-                };
-                 */
-
                 Object.keys(this.headerdata.annotationGroups).forEach(function(key, index) {
 
                     this[key].forEach(function(value){
                         value.group = key;
-                        console.log(value);
+                        if(typeof value.document_count == 'undefined'){
+                            value.document_count = 0.0;
+                        }
                         allAnnotations.push(value);
                     })
                 }, this.headerdata.annotationGroups);
                 return allAnnotations;
             }
+
         },
         computed: {
 

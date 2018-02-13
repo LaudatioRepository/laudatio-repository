@@ -53,7 +53,7 @@ class BrowseController extends Controller
                                 }
                                 $dataArray = array();
                                 if(array_key_exists('in_documents', $annotationData['result'][0])){
-                                    $dataArray['document_count'] = count($annotationData['result'][0]['in_documents']);
+                                    $dataArray['document_count'] = floatval(count($annotationData['result'][0]['in_documents']));
                                 }
                                 $dataArray['title'] = $annotationData['result'][0]['preparation_title'][0];
                                 array_push($annotationMapping[$group],$dataArray);
@@ -65,7 +65,7 @@ class BrowseController extends Controller
 
 
                 $data['result']['annotationGroups'] = $annotationMapping;
-                
+
                 break;
             case "annotation":
                 $data = $this->ElasticService->getAnnotation($id);
