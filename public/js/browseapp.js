@@ -35265,6 +35265,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -35375,574 +35384,623 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container tab-content" }, [
-    _c(
-      "div",
-      {
-        staticClass: "tab-pane fade in active",
-        attrs: { id: "documentMetadata" }
-      },
-      [
-        _c("div", { staticClass: "row" }, [
-          _vm._m(0),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-sm-9" }, [
-            _vm.header == "document"
-              ? _c("div", { staticClass: "tab-content" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass: "tab-pane fade in active",
-                      attrs: { id: "description" }
-                    },
-                    [
-                      _c("h2", [_vm._v("DESCRIPTION")]),
-                      _vm._v(" "),
-                      _c("table", { staticClass: "table table-condensed" }, [
-                        _c("tr", [
-                          _c("th", [_vm._v("Title: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata.document_title
-                                  )
-                                ) +
-                                " "
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Author: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(" " + _vm._s(_vm.documentAuthors()) + " ")
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Editor: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(" " + _vm._s(_vm.documentEditors()) + " ")
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Register: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata.document_genre
-                                  )
-                                ) +
-                                " "
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Publisher: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(" " + _vm._s(_vm.documentPublisher()) + " ")
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Place: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata.document_publication_place
-                                  )
-                                ) +
-                                " "
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Publication: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(" " + _vm._s(_vm.publication()) + " ")
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Series: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata.document_publication_series
-                                  )
-                                ) +
-                                " "
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Scope")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              _vm._s(
-                                _vm._f("arrayToString")(
-                                  _vm.headerdata.document_publication_pages
-                                )
-                              )
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Document size")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              _vm._s(
-                                _vm._f("arrayToString")(
-                                  _vm.headerdata.document_size_extent
-                                )
-                              ) +
-                                " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata.document_size_type
-                                  )
-                                )
-                            )
-                          ])
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("h2", [_vm._v("Language")]),
-                      _vm._v(" "),
+  return _c("div", { staticClass: "headerRow headerNav" }, [
+    _c("div", { staticClass: "bodyColumn left" }),
+    _vm._v(" "),
+    _c("div", { staticClass: "bodyColumn middle" }, [
+      _c("div", { staticClass: "container tab-content" }, [
+        _c(
+          "div",
+          {
+            staticClass: "tab-pane fade in active",
+            attrs: { id: "documentMetadata" }
+          },
+          [
+            _c("div", { staticClass: "row" }, [
+              _vm._m(0),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-9" }, [
+                _vm.header == "document"
+                  ? _c("div", { staticClass: "tab-content" }, [
                       _c(
-                        "table",
-                        { staticClass: "table table-condensed" },
-                        _vm._l(
-                          _vm.headerdata.document_languages_style,
-                          function(languageData, index) {
-                            return _c("tr", [
-                              _c("th", [
-                                _vm._v(_vm._s(languageData.concat(": ")))
+                        "div",
+                        {
+                          staticClass: "tab-pane fade in active",
+                          attrs: { id: "description" }
+                        },
+                        [
+                          _c("h2", [_vm._v("DESCRIPTION")]),
+                          _vm._v(" "),
+                          _c(
+                            "table",
+                            { staticClass: "table table-condensed" },
+                            [
+                              _c("tr", [
+                                _c("th", [_vm._v("Title: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata.document_title
+                                        )
+                                      ) +
+                                      " "
+                                  )
+                                ])
                               ]),
                               _vm._v(" "),
-                              _c("td", [
-                                _vm._v(
-                                  _vm._s(
-                                    _vm.headerdata.document_languages_language[
-                                      index
-                                    ]
+                              _c("tr", [
+                                _c("th", [_vm._v("Author: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " + _vm._s(_vm.documentAuthors()) + " "
                                   )
-                                )
-                              ])
-                            ])
-                          }
-                        )
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass: "tab-pane fade",
-                      attrs: { id: "sourcedescription" }
-                    },
-                    [
-                      _c("h2", [_vm._v("SOURCE DESCRIPTION")]),
-                      _vm._v(" "),
-                      _c("table", { staticClass: "table table-condensed" }, [
-                        _c("tr", [
-                          _c("th", [_vm._v("Title: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata.document_history_title
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Editor: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " + _vm._s(_vm.documentEditors()) + " "
                                   )
-                                ) +
-                                " "
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Original Title: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata
-                                      .document_history_original_title
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Register: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata.document_genre
+                                        )
+                                      ) +
+                                      " "
                                   )
-                                ) +
-                                " "
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Type: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata
-                                      .document_history_document_type
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Publisher: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " + _vm._s(_vm.documentPublisher()) + " "
                                   )
-                                ) +
-                                " "
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Date: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata.document_history_not_before
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Place: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata
+                                            .document_publication_place
+                                        )
+                                      ) +
+                                      " "
                                   )
-                                ) +
-                                " : " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata.document_history_not_after
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Publication: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(" " + _vm._s(_vm.publication()) + " ")
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Series: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata
+                                            .document_publication_series
+                                        )
+                                      ) +
+                                      " "
                                   )
-                                )
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Place: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata
-                                      .document_history_original_place
-                                  )
-                                ) +
-                                " "
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Location in manuscript: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata
-                                      .document_history_location_in_manuscript
-                                  )
-                                ) +
-                                " "
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Collection: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata.document_history_collection
-                                  )
-                                ) +
-                                " "
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Repository: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata.document_history_repo
-                                  )
-                                ) +
-                                " "
-                            )
-                          ])
-                        ]),
-                        _vm._v(" "),
-                        _c("tr", [
-                          _c("th", [_vm._v("Faximile: ")]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _vm._v(
-                              " " +
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.headerdata
-                                      .document_history_faximile_link
-                                  )
-                                ) +
-                                " "
-                            )
-                          ])
-                        ])
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    { staticClass: "tab-pane fade", attrs: { id: "license" } },
-                    [
-                      _c("h2", [_vm._v("LIcense / REVISION")]),
-                      _vm._v(" "),
-                      _c("table", { staticClass: "table table-striped" }, [
-                        _vm._m(1),
-                        _vm._v(" "),
-                        _c(
-                          "tbody",
-                          _vm._l(
-                            _vm.headerdata.revision_document_version,
-                            function(versionData, index) {
-                              return _c("tr", [
-                                _c("td", [_vm._v(_vm._s(versionData))]),
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Scope")]),
                                 _vm._v(" "),
                                 _c("td", [
                                   _vm._v(
                                     _vm._s(
-                                      _vm.headerdata.revision_publishing_date[
-                                        index
-                                      ]
-                                    )
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    _vm._s(
-                                      _vm.headerdata.revision_description[index]
+                                      _vm._f("arrayToString")(
+                                        _vm.headerdata
+                                          .document_publication_pages
+                                      )
                                     )
                                   )
                                 ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Document size")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm._f("arrayToString")(
+                                        _vm.headerdata.document_size_extent
+                                      )
+                                    ) +
+                                      " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata.document_size_type
+                                        )
+                                      )
+                                  )
+                                ])
                               ])
-                            }
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c("h2", [_vm._v("Language")]),
+                          _vm._v(" "),
+                          _c(
+                            "table",
+                            { staticClass: "table table-condensed" },
+                            _vm._l(
+                              _vm.headerdata.document_languages_style,
+                              function(languageData, index) {
+                                return _c("tr", [
+                                  _c("th", [
+                                    _vm._v(_vm._s(languageData.concat(": ")))
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(
+                                      _vm._s(
+                                        _vm.headerdata
+                                          .document_languages_language[index]
+                                      )
+                                    )
+                                  ])
+                                ])
+                              }
+                            )
                           )
-                        )
-                      ])
-                    ]
-                  )
-                ])
-              : _vm._e()
-          ])
-        ])
-      ]
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "tab-pane fade", attrs: { id: "annotationMetadata" } },
-      [
-        _c("div", { staticClass: "row" }, [
-          _c("div", { staticClass: "col-sm-3" }, [
-            _c("div", { staticClass: "sidebar-nav" }, [
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "navbar-collapse collapse sidebar-navbar-collapse"
-                },
-                [
-                  _c(
-                    "ul",
-                    { staticClass: "nav nav-stacked" },
-                    [
+                        ]
+                      ),
+                      _vm._v(" "),
                       _c(
-                        "li",
+                        "div",
                         {
-                          staticClass: "nav-link active",
-                          attrs: { role: "tab" }
+                          staticClass: "tab-pane fade",
+                          attrs: { id: "sourcedescription" }
                         },
                         [
+                          _c("h2", [_vm._v("SOURCE DESCRIPTION")]),
+                          _vm._v(" "),
                           _c(
-                            "a",
-                            {
-                              attrs: {
-                                href: "#allAnnotations",
-                                "data-toggle": "pill"
-                              }
-                            },
+                            "table",
+                            { staticClass: "table table-condensed" },
                             [
-                              _vm._v(
-                                "All (" + _vm._s(_vm.totalAnnotations()) + ")"
-                              )
+                              _c("tr", [
+                                _c("th", [_vm._v("Title: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata.document_history_title
+                                        )
+                                      ) +
+                                      " "
+                                  )
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Original Title: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata
+                                            .document_history_original_title
+                                        )
+                                      ) +
+                                      " "
+                                  )
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Type: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata
+                                            .document_history_document_type
+                                        )
+                                      ) +
+                                      " "
+                                  )
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Date: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata
+                                            .document_history_not_before
+                                        )
+                                      ) +
+                                      " : " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata
+                                            .document_history_not_after
+                                        )
+                                      )
+                                  )
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Place: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata
+                                            .document_history_original_place
+                                        )
+                                      ) +
+                                      " "
+                                  )
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Location in manuscript: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata
+                                            .document_history_location_in_manuscript
+                                        )
+                                      ) +
+                                      " "
+                                  )
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Collection: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata
+                                            .document_history_collection
+                                        )
+                                      ) +
+                                      " "
+                                  )
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Repository: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata.document_history_repo
+                                        )
+                                      ) +
+                                      " "
+                                  )
+                                ])
+                              ]),
+                              _vm._v(" "),
+                              _c("tr", [
+                                _c("th", [_vm._v("Faximile: ")]),
+                                _vm._v(" "),
+                                _c("td", [
+                                  _vm._v(
+                                    " " +
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.headerdata
+                                            .document_history_faximile_link
+                                        )
+                                      ) +
+                                      " "
+                                  )
+                                ])
+                              ])
                             ]
                           )
                         ]
                       ),
                       _vm._v(" "),
-                      _vm._l(_vm.headerdata.annotationGroups, function(
-                        annotationGroup,
-                        key
-                      ) {
-                        return _c(
-                          "li",
-                          { staticClass: "nav-link", attrs: { role: "tab" } },
-                          [
+                      _c(
+                        "div",
+                        {
+                          staticClass: "tab-pane fade",
+                          attrs: { id: "license" }
+                        },
+                        [
+                          _c("h2", [_vm._v("LIcense / REVISION")]),
+                          _vm._v(" "),
+                          _c("table", { staticClass: "table table-striped" }, [
+                            _vm._m(1),
+                            _vm._v(" "),
                             _c(
-                              "a",
-                              {
-                                attrs: {
-                                  href: "#".concat(key),
-                                  "data-toggle": "pill"
+                              "tbody",
+                              _vm._l(
+                                _vm.headerdata.revision_document_version,
+                                function(versionData, index) {
+                                  return _c("tr", [
+                                    _c("td", [_vm._v(_vm._s(versionData))]),
+                                    _vm._v(" "),
+                                    _c("td", [
+                                      _vm._v(
+                                        _vm._s(
+                                          _vm.headerdata
+                                            .revision_publishing_date[index]
+                                        )
+                                      )
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("td", [
+                                      _vm._v(
+                                        _vm._s(
+                                          _vm.headerdata.revision_description[
+                                            index
+                                          ]
+                                        )
+                                      )
+                                    ])
+                                  ])
                                 }
+                              )
+                            )
+                          ])
+                        ]
+                      )
+                    ])
+                  : _vm._e()
+              ])
+            ])
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "tab-pane fade", attrs: { id: "annotationMetadata" } },
+          [
+            _c("div", { staticClass: "row" }, [
+              _c("div", { staticClass: "col-sm-3" }, [
+                _c("div", { staticClass: "sidebar-nav" }, [
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "navbar-collapse collapse sidebar-navbar-collapse"
+                    },
+                    [
+                      _c(
+                        "ul",
+                        { staticClass: "nav nav-stacked" },
+                        [
+                          _c(
+                            "li",
+                            {
+                              staticClass: "nav-link active",
+                              attrs: { role: "tab" }
+                            },
+                            [
+                              _c(
+                                "a",
+                                {
+                                  attrs: {
+                                    href: "#allAnnotations",
+                                    "data-toggle": "pill"
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    "All (" +
+                                      _vm._s(_vm.totalAnnotations()) +
+                                      ")"
+                                  )
+                                ]
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _vm._l(_vm.headerdata.annotationGroups, function(
+                            annotationGroup,
+                            key
+                          ) {
+                            return _c(
+                              "li",
+                              {
+                                staticClass: "nav-link",
+                                attrs: { role: "tab" }
                               },
                               [
+                                _c(
+                                  "a",
+                                  {
+                                    attrs: {
+                                      href: "#".concat(key),
+                                      "data-toggle": "pill"
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      _vm._s(key) +
+                                        " (" +
+                                        _vm._s(annotationGroup.length) +
+                                        ")"
+                                    )
+                                  ]
+                                )
+                              ]
+                            )
+                          })
+                        ],
+                        2
+                      )
+                    ]
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-9" }, [
+                _c(
+                  "div",
+                  { staticClass: "tab-content" },
+                  [
+                    _vm.header == "document"
+                      ? _c(
+                          "div",
+                          {
+                            staticClass: "tab-pane fade in active",
+                            attrs: { id: "allAnnotations" }
+                          },
+                          [
+                            _c("h2", [
+                              _vm._v(
+                                "Annotations - All (" +
+                                  _vm._s(_vm.totalAnnotations()) +
+                                  ")"
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c("vue-good-table", {
+                              attrs: {
+                                title: "",
+                                columns: _vm.allAnnotationColumns,
+                                rows: _vm.allAnnotationRows,
+                                paginate: true,
+                                lineNumbers: false,
+                                styleClass: "table table-striped"
+                              }
+                            })
+                          ],
+                          1
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm._l(_vm.headerdata.annotationGroups, function(
+                      annotationGroup,
+                      key
+                    ) {
+                      return _vm.header == "document"
+                        ? _c(
+                            "div",
+                            {
+                              staticClass: "tab-pane fade",
+                              attrs: { id: key }
+                            },
+                            [
+                              _c("h2", [
                                 _vm._v(
                                   _vm._s(key) +
                                     " (" +
                                     _vm._s(annotationGroup.length) +
                                     ")"
                                 )
-                              ]
-                            )
-                          ]
-                        )
-                      })
-                    ],
-                    2
-                  )
-                ]
-              )
-            ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-sm-9" }, [
-            _c(
-              "div",
-              { staticClass: "tab-content" },
-              [
-                _vm.header == "document"
-                  ? _c(
-                      "div",
-                      {
-                        staticClass: "tab-pane fade in active",
-                        attrs: { id: "allAnnotations" }
-                      },
-                      [
-                        _c("h2", [
-                          _vm._v(
-                            "Annotations - All (" +
-                              _vm._s(_vm.totalAnnotations()) +
-                              ")"
+                              ]),
+                              _vm._v(" "),
+                              _c(
+                                "table",
+                                { staticClass: "table table-striped" },
+                                [
+                                  _vm._m(2, true),
+                                  _vm._v(" "),
+                                  _c(
+                                    "tbody",
+                                    _vm._l(annotationGroup, function(
+                                      annotationData
+                                    ) {
+                                      return _c("tr", [
+                                        _c("td", [
+                                          _vm._v(
+                                            _vm._s(annotationData["title"])
+                                          )
+                                        ]),
+                                        _vm._v(" "),
+                                        _c("td", [_vm._v(_vm._s(key))]),
+                                        _vm._v(" "),
+                                        _vm._m(3, true),
+                                        _vm._v(" "),
+                                        _vm._m(4, true),
+                                        _vm._v(" "),
+                                        _c("td", [
+                                          _vm._v(
+                                            _vm._s(
+                                              annotationData["document_count"]
+                                            )
+                                          )
+                                        ])
+                                      ])
+                                    })
+                                  )
+                                ]
+                              )
+                            ]
                           )
-                        ]),
-                        _vm._v(" "),
-                        _c("vue-good-table", {
-                          attrs: {
-                            title: "",
-                            columns: _vm.allAnnotationColumns,
-                            rows: _vm.allAnnotationRows,
-                            paginate: true,
-                            lineNumbers: false,
-                            styleClass: "table table-striped"
-                          }
-                        })
-                      ],
-                      1
-                    )
-                  : _vm._e(),
-                _vm._v(" "),
-                _vm._l(_vm.headerdata.annotationGroups, function(
-                  annotationGroup,
-                  key
-                ) {
-                  return _vm.header == "document"
-                    ? _c(
-                        "div",
-                        { staticClass: "tab-pane fade", attrs: { id: key } },
-                        [
-                          _c("h2", [
-                            _vm._v(
-                              _vm._s(key) +
-                                " (" +
-                                _vm._s(annotationGroup.length) +
-                                ")"
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("table", { staticClass: "table table-striped" }, [
-                            _vm._m(2, true),
-                            _vm._v(" "),
-                            _c(
-                              "tbody",
-                              _vm._l(annotationGroup, function(annotationData) {
-                                return _c("tr", [
-                                  _c("td", [
-                                    _vm._v(_vm._s(annotationData["title"]))
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("td", [_vm._v(_vm._s(key))]),
-                                  _vm._v(" "),
-                                  _vm._m(3, true),
-                                  _vm._v(" "),
-                                  _vm._m(4, true),
-                                  _vm._v(" "),
-                                  _c("td", [
-                                    _vm._v(
-                                      _vm._s(annotationData["document_count"])
-                                    )
-                                  ])
-                                ])
-                              })
-                            )
-                          ])
-                        ]
-                      )
-                    : _vm._e()
-                })
-              ],
-              2
-            )
-          ])
-        ])
-      ]
-    )
+                        : _vm._e()
+                    })
+                  ],
+                  2
+                )
+              ])
+            ])
+          ]
+        )
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "bodyColumn right" })
   ])
 }
 var staticRenderFns = [

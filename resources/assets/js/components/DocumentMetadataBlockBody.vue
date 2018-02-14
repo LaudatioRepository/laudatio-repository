@@ -1,5 +1,10 @@
 <template lang="html">
-    <div class="container tab-content">
+    <div class="headerRow headerNav">
+        <div class="bodyColumn left">
+
+        </div>
+        <div class="bodyColumn middle">
+          <div class="container tab-content">
         <div class="tab-pane fade in active" id="documentMetadata">
             <div class="row">
               <div class="col-sm-3">
@@ -192,6 +197,10 @@
               </div>
             </div>
          </div>
+    </div>
+        </div>
+        <div class="bodyColumn right">
+        </div>
     </div>
 </template>
 

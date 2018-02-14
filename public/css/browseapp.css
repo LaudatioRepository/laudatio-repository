@@ -8765,7 +8765,8 @@ a .fa.fa-external-link-square,
 
 /* Create three unequal columns that floats next to each other */
 
-.headerColumn {
+.headerColumn,
+.bodyColumn {
   float: left;
   padding-left: 10px;
   padding-right: 10px;
@@ -8784,16 +8785,28 @@ a .fa.fa-external-link-square,
   font-size: 0.9em;
 }
 
-.left {
+.headerColumn.left {
   width: 10%;
 }
 
-.right {
+.headerColumn.right {
   width: 25%;
 }
 
-.middle {
+.headerColumn.middle {
   width: 65%;
+}
+
+.bodyColumn.left {
+  width: 5%;
+}
+
+.bodyColumn.right {
+  width: 15%;
+}
+
+.bodyColumn.middle {
+  width: 70%;
 }
 
 /* Clear floats after the columns */
