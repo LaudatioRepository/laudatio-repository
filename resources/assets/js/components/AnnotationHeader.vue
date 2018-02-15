@@ -1,28 +1,26 @@
 <template lang="html">
-    <div id="corpusheader" v-if="header == 'corpus'">
+    <div id="corpusheader" v-if="header == 'annotation'">
         <div class="headerRow">
               <div class="headerColumn left">
 
                </div>
              <div class="headerColumn middle">
-                <h1 class="corpusTitle">{{ headerdata.corpus_title | arrayToString }}</h1>
-                <div class="autorHeader">{{corpusAuthors()}}</div>
+                <h1 class="corpusTitle">{{ headerdata.preparation_title | arrayToString }}</h1>
+                 <div class="corpusAffiliationHeader">Annotation in {{headerdata.annotationCorpusdata.corpus_title | arrayToString}}</div>
+                <div class="editorHeader">{{ annotationEditors() }}</div>
 
 
                 <div class="clearfix pull-left">
-                    <span v-if="typeof headerdata.corpus_documents != 'undefined'"><i class="material-icons" aria-hidden="true">access_time</i> Documents from</span>
-                    <span v-if="typeof headerdata.corpus_size_value != 'undefined'"><i class="material-icons" aria-hidden="true">language</i> {{headerdata.corpus_languages_language[0]}}</span><br />
-                    <span v-if="typeof headerdata.corpus_size_value != 'undefined'"><i class="material-icons" aria-hidden="true">code</i>{{headerdata.corpus_size_value | arrayToString}} Tokens</span>
-                    <span v-if="typeof headerdata.corpus_publication_publication_date != 'undefined'"><i class="material-icons"  aria-hidden="true">publish</i> {{headerdata.corpus_publication_publication_date | lastElement}}</span>
+                    <span v-if="typeof headerdata.preparation_size_valuee != 'undefined'"><i class="material-icons" aria-hidden="true">code</i>{{headerdata.preparation_size_valuee | arrayToString}} {{headerdata.preparation_size_type | arrayToString }}</span>
                 </div>
 
                 <blockquote class="headerCitation clearfix pull-left">
                     <span class="citation">
                     <i class="material-icons">format_quote</i>
                     {{ corpusAuthors() }};
-                    {{ headerdata.corpus_title | arrayToString }};
-                    {{ headerdata.corpus_publication_publisher[0] }};
-                    Homepage: {{ headerdata.corpus_encoding_project_homepage[0] }};
+                    {{ headerdata.annotationCorpusdata.corpus_title | arrayToString }};
+                    {{ headerdata.annotationCorpusdata.corpus_publication_publisher[0] }};
+                    Homepage: {{ headerdata.annotationCorpusdata.corpus_encoding_project_homepage[0] }};
                     Corpus-Link: <a href="http://handle">http://handle.net/xxx</a>
                     </span>
                 </blockquote>
@@ -76,12 +74,26 @@
     export default {
         props: ['headerdata','header'],
         methods: {
+            annotationEditors: function(){
+                var editorString = "";
+                for(var i=0; i < this.headerdata.preparation_editor_forename.length;i++) {
+                    editorString += this.headerdata.preparation_editor_forename[i]
+                        .concat(' ')
+                        .concat(this.headerdata.preparation_editor_surname[i])
+                        .concat(',');
+                }
+                editorString = editorString.substring(0,editorString.lastIndexOf(","));
+                return editorString;
+            },
+            facsimileUri: function(id) {
+                return this.headerdata.document_history_faximile_link
+            },
             corpusAuthors: function(){
                 var authorString = "";
-                for(var i=0; i < this.headerdata.corpus_editor_forename.length;i++) {
-                    authorString += this.headerdata.corpus_editor_forename[i]
+                for(var i=0; i < this.headerdata.annotationCorpusdata.corpus_editor_forename.length;i++) {
+                    authorString += this.headerdata.annotationCorpusdata.corpus_editor_forename[i]
                         .concat(' ')
-                        .concat(this.headerdata.corpus_editor_surname[i])
+                        .concat(this.headerdata.annotationCorpusdata.corpus_editor_surname[i])
                         .concat(',');
                 }
                 authorString = authorString.substring(0,authorString.lastIndexOf(","));
@@ -89,7 +101,7 @@
             }
         },
         mounted() {
-            console.log('CorpusMetadataBlockHeader mounted.')
+            console.log('AnnotationHeader mounted.')
         }
     }
 </script>

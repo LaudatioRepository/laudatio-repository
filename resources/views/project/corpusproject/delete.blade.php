@@ -20,7 +20,7 @@
                             <p> {{count($corpusproject->users)}} users are assigned to this Corpus project</p>
                         @endif
                         <div class="form-group">
-                            <a href="{{ URL::route('admin.corpusProject.index') }}" type="button" class="btn btn-primary"> Cancel </a>
+                            <a href="{{ URL::route('project.corpusProject.index') }}" type="button" class="btn btn-primary"> Cancel </a>
                             <button type="submit" class="btn btn-danger">Delete</button>
                         </div>
                     </div>

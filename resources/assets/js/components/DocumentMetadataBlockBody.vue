@@ -308,16 +308,19 @@
             },
             allAnnotations: function(){
                 var allAnnotations = [];
-                Object.keys(this.headerdata.annotationGroups).forEach(function(key, index) {
+                if(null != this.headerdata.annotationGroups && typeof this.headerdata.annotationGroups != 'undefined'){
+                    Object.keys(this.headerdata.annotationGroups).forEach(function(key, index) {
 
-                    this[key].forEach(function(value){
-                        value.group = key;
-                        if(typeof value.document_count == 'undefined'){
-                            value.document_count = 0.0;
-                        }
-                        allAnnotations.push(value);
-                    })
-                }, this.headerdata.annotationGroups);
+                        this[key].forEach(function(value){
+                            value.group = key;
+                            if(typeof value.document_count == 'undefined'){
+                                value.document_count = 0.0;
+                            }
+                            allAnnotations.push(value);
+                        })
+                    }, this.headerdata.annotationGroups);
+                }
+
                 return allAnnotations;
             }
 

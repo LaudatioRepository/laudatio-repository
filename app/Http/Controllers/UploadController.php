@@ -247,7 +247,7 @@ class UploadController extends Controller
             return redirect()->route('project.corpora.show', ['path' => $dirPath, 'corpus' => $corpusId]);
         }
         else{
-            return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
+            return redirect()->route('project.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
         }
     }
 

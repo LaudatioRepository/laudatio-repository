@@ -22,6 +22,9 @@
             <div class="Corpus-MetadataBlock-header" v-show="header == 'document'">
                 <metadata-block-header-document :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-header-document>
             </div>
+            <div class="Corpus-MetadataBlock-header" v-show="header == 'annotation'">
+                <metadata-block-header-annotation :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-header-annotation>
+            </div>
         </header>
         <main class="HolyGrail-body">
             <article class="HolyGrail-content">
@@ -38,7 +41,7 @@
                     </div>
                     <div class="Annotation-MetadataBlock" v-show="header == 'annotation'">
                         <div class="Annotation-MetadataBlock-body">
-                            Annotation metadata-body
+                            <metadata-block-body-annotation :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-body-annotation>
                         </div>
                     </div>
                 </div>

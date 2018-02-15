@@ -69,6 +69,12 @@ class BrowseController extends Controller
                 break;
             case "annotation":
                 $data = $this->ElasticService->getAnnotation($id);
+                if(count($data['result']['in_corpora']) > 0){
+                    $annotationCorpusdata = $this->ElasticService->getCorporaByAnnotation(array(array('_id' => $data['result']['in_corpora'][0])),array($id));
+                    $data['result']['annotationCorpusdata'] = $annotationCorpusdata[$id][0]['_source'];
+                }
+                $guidelines = $this->ElasticService->getGuidelinesByCorpus($data['result']['in_corpora'][0]);
+                $data['result']['guidelines'] = $guidelines;
                 break;
         }
         //dd($data);

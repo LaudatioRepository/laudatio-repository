@@ -771,7 +771,7 @@ class ElasticService implements ElasticsearchInterface
                 'index' => 'corpus',
                 'type' => 'corpus',
                 'body' => $queryBody,
-                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description"],
+                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname"],
                 'filter_path' => ['hits.hits']
             ];
 
@@ -990,7 +990,7 @@ class ElasticService implements ElasticsearchInterface
     }
 
 
-    public function getCorporaByAnnotation($searchData,$annotationData){
+    public function getCorporaByAnnotation_old($searchData,$annotationData){
         $resultData = array();
 
         $queryBuilder = new QueryBuilder();
@@ -1004,7 +1004,7 @@ class ElasticService implements ElasticsearchInterface
                     'index' => 'corpus',
                     'type' => 'corpus',
                     'body' => $queryBody,
-                    '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description"],
+                    '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname"],
                     'filter_path' => ['hits.hits']
                 ];
 
@@ -1018,6 +1018,40 @@ class ElasticService implements ElasticsearchInterface
                 }
             }//end foreach queries
         }
+
+        return $resultData;
+    }
+
+
+
+    public function getCorporaByAnnotation($searchData,$annotationData){
+        $resultData = array();
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $counter = 0;
+        foreach($searchData as $queryData){
+            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+
+            $params = [
+                'size' => 1000,
+                'index' => 'corpus',
+                'type' => 'corpus',
+                'body' => $queryBody,
+                //'_source_exclude' => ['message'],
+                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname"],
+                'filter_path' => ['hits.hits']
+            ];
+            $results = Elasticsearch::search($params);
+            $termData = array_values($annotationData);
+
+            if(count($results['hits']['hits']) > 0){
+                $resultData[$termData[$counter++]] = $results['hits']['hits'];
+            }
+            else{
+                $resultData[$counter++] = array();
+            }
+
+        }//end foreach queries
 
         return $resultData;
     }
@@ -1089,6 +1123,21 @@ class ElasticService implements ElasticsearchInterface
 
         $results = Elasticsearch::search($params);
         return $results;
+    }
+
+    public function getGuidelinesByCorpus($corpusId){
+        $params = [
+            'index' => 'corpus',
+            'type' => 'corpus',
+            'id' => $corpusId,
+            '_source' => ["annotation_id","annotation_type","annotation_name","annotation_tag","annotation_tag_description"]
+        ];
+
+        $response = Elasticsearch::get($params);
+        return array(
+            'error' => false,
+            'result' => $response['_source']
+        );
     }
 
     /**

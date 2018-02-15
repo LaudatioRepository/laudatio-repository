@@ -1,8 +1,9 @@
 <template lang="html">
  <div class="resultbar" role="breadcrumb">
-            <div class="headerBreadCrumb" v-show="header == 'corpus'">HOME | PUBLISHED CORPORA | {{ headerdata.corpus_title | arrayToString | touppercase }}
-                <span v-show="header == 'document'">| {{ headerdata.document_title | arrayToString | arrayToString | touppercase }}</span>
-                <span v-show="header == 'annotation'">| {{ headerdata.annotation_title | arrayToString | arrayToString | touppercase }}</span>
+            <div class="headerBreadCrumb">HOME |  PUBLISHED CORPORA
+                <span v-if="header == 'corpus'"> |  {{ headerdata.corpus_title | arrayToString | touppercase }}</span>
+                <span v-if="header == 'document'"><span v-if="headerdata.documentCorpusdata  != 'undefined'"> |  {{ headerdata.documentCorpusdata.corpus_title | arrayToString | touppercase}}</span> |  {{ headerdata.document_title | arrayToString | arrayToString | touppercase }}</span>
+                <span v-if="header == 'annotation'"><span  v-if="headerdata.annotationCorpusdata  != 'undefined'"> |  {{ headerdata.annotationCorpusdata.corpus_title | arrayToString | touppercase}}</span> |  {{ headerdata.preparation_title | arrayToString | arrayToString | touppercase }}</span>
             </div>
             <div class="prevNextBreadCrumb">
                 <span v-show="header == 'corpus'">
@@ -15,7 +16,7 @@
                     <span> 10 / 10</span>
                     <span> | NEXT DOCUMENT</span>
                 </span>
-                <span v-show="header == 'annotaiton'">
+                <span v-show="header == 'annotation'">
                     <span>PREVIOUS ANNOTAION | </span>
                     <span> 10 / 10</span>
                     <span> | NEXT ANNOTATION</span>

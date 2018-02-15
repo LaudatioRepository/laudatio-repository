@@ -17,6 +17,8 @@ Vue.component('metadata-block-header-corpus', require('./components/CorpusMetada
 Vue.component('metadata-block-body-corpus', require('./components/CorpusMetadataBlockBody.vue'));
 Vue.component('metadata-block-header-document', require('./components/DocumentMetadataBlockHeader.vue'));
 Vue.component('metadata-block-body-document', require('./components/DocumentMetadataBlockBody.vue'));
+Vue.component('metadata-block-header-annotation', require('./components/AnnotationMetadataBlockHeader.vue'));
+Vue.component('metadata-block-body-annotation', require('./components/AnnotationMetadataBlockBody.vue'));
 
 const browseApp = new Vue({
     el: '#browseapp',
