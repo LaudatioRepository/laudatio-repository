@@ -243,7 +243,7 @@ class GitRepoController extends Controller
         }
         if($dirArray[3] == 'corpus'){
             $projectObject = DB::table('corpus_projects')->where('directory_path',$dirArray[0])->get();
-            return redirect()->route('admin.corpusProject.show',['corpusproject' => $projectObject[0]->id]);
+            return redirect()->route('project.corpusProject.show',['corpusproject' => $projectObject[0]->id]);
         }
         else{
             return redirect()->route('project.corpora.show',['path' => $directoryPath,'corpus' => $corpusId]);

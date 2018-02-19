@@ -97,6 +97,8 @@ class UploadController extends Controller
         $gitLabCorpusPath = "";
         $isVersioned = $this->laudatioUtilsService->corpusIsVersioned($corpusId);
 
+
+
         foreach ($request->formats as $format) {
             $fileName = $format->getClientOriginalName();
             $pathContents = $this->flysystem->listContents($dirPath, false);
@@ -105,6 +107,13 @@ class UploadController extends Controller
                     $isUpdate = true;
                     break;
                 }
+            }
+
+            $canUpload = true;
+            if( $dirPathArray[$last_id] == 'corpus'
+                && $corpus->file_name != $fileName
+                && strpos($corpus->name,"Untitled") === false){
+                $canUpload = false;
             }
 
             $xmlpath = $format->getRealPath();
@@ -144,7 +153,7 @@ class UploadController extends Controller
 
                         }
                         else{
-                            if($corpus->file_name == $fileName){
+                            if($canUpload){
                                 $params = array(
                                     "name" => $corpusTitle[0],
                                     "file_name" => $fileName,
@@ -182,7 +191,9 @@ class UploadController extends Controller
              */
 
             $canUpload = true;
-            if( $dirPathArray[$last_id] == 'corpus' && $corpus->file_name != $fileName){
+            if( $dirPathArray[$last_id] == 'corpus'
+                && $corpus->file_name != $fileName
+                && strpos($corpus->name,"Untitled") === false){
                 $canUpload = false;
             }
 
