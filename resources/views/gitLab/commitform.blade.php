@@ -17,7 +17,7 @@
                     Commit your files
                 </div>
                 <div class="panel-body">
-                    <form action="/admin/commit" method="post" enctype="multipart/form-data">
+                    <form action="/project/commit" method="post" enctype="multipart/form-data">
                         {{ csrf_field() }}
                         Commit message:
                         <br />

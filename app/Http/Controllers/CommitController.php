@@ -24,7 +24,7 @@ class CommitController extends Controller
             ])->get();
 
             if(null != $corpusProjectObject && null != $corpusObject){
-                $corpusId = $corpusProjectObject[0]->id;
+                $corpusId = $corpusObject[0]->id;
             }
 
 

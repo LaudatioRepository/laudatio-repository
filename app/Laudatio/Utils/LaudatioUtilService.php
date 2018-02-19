@@ -153,6 +153,21 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     }
 
     /**
+     * Checks if Corpus is versioned and
+     * @param $corpusId
+     * @return bool
+     */
+    public function corpusIsVersioned($corpusId){
+        $isVersioned = false;
+        $corpus = Corpus::findOrFail($corpusId);
+
+        if($corpus->vid >= 1){
+            $isVersioned = true;
+        }
+        return $isVersioned;
+    }
+
+    /**
      * Populate Document object with attributes fom the Document header
      * @param $json
      * @param $corpusId

@@ -559,14 +559,13 @@ class GitRepoController extends Controller
 
         if(is_dir($this->basePath.'/'.$dirname)){
             $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$dirname);
-
             $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$corpusid);
 
             if($isCommited){
                 if($isHeader){
                     foreach ($stagedFiles as $stagedFile){
                         $dirArray = explode("/",trim($stagedFile));
-                        if(count($dirArray) > 1){
+                        if(count($dirArray) >= 3){
                             $fileName = $dirArray[2];
 
                             if(is_dir($this->basePath.'/'.$dirname.'/'.$fileName)){

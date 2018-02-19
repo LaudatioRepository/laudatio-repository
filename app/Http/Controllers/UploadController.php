@@ -55,7 +55,7 @@ class UploadController extends Controller
             $isCorpusHeader = true;
         }
 
-        return view('gitLab.uploadform',["dirname" => $dirname,"corpusid" => $corpus[0]->id, "isCorpusHeader" => $isCorpusHeader,"corpusProjectPath" => $dirArray[0]])
+        return view('gitLab.uploadform',["dirname" => $dirname,"corpusid" => $corpus[0]->id, "isCorpusHeader" => $isCorpusHeader])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',\Auth::user());
     }
@@ -75,7 +75,6 @@ class UploadController extends Controller
 
     public function uploadSubmit(UploadRequest $request)
     {
-        $updated = false;
         $dirPath = $request->directorypath;;
         $dirPathArray = explode("/",$dirPath);
         end($dirPathArray);
@@ -83,25 +82,22 @@ class UploadController extends Controller
 
         $corpusId = $request->corpusid;
         $isCorpusHeader = $request->isCorpusHeader;
-        $corpusProjectPath = $request->corpusProjectPath;
+        $corpusProjectPath = $dirPathArray[0];
+        $corpusPath = $dirPathArray[1];
+
         $corpusProjectDB = DB::table('corpus_projects')->where('directory_path',$corpusProjectPath)->get();
         $corpusProjectId = $corpusProjectDB[0]->gitlab_id;
         $corpus = Corpus::find($corpusId);
 
         $filePath = "";
         $currentFilePath = $corpus->directory_path;
-        $corpusPath = $dirPathArray[1];
+
+
 
         $gitLabCorpusPath = "";
-
-        $isUntitled = true;
-
-        if(strpos($dirPathArray[1],"untitled") === false){
-            $isUntitled = false;
-        }
+        $isVersioned = $this->laudatioUtilsService->corpusIsVersioned($corpusId);
 
         foreach ($request->formats as $format) {
-            $isUpdate = false;
             $fileName = $format->getClientOriginalName();
             $pathContents = $this->flysystem->listContents($dirPath, false);
             foreach ($pathContents as $object) {
@@ -118,13 +114,11 @@ class UploadController extends Controller
                 $json = $this->laudatioUtilsService->parseXMLToJson($xmlNode, array());
                 $jsonPath = new JSONPath($json,JSONPath::ALLOW_MAGIC);
 
-                //dd($corpusProjectPath);
                 if($dirPathArray[$last_id] == 'corpus'){
                     $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
                     if($corpusTitle[0]){
-                        if($isUntitled){
+                        if(!$isVersioned){
                             $corpusPath = $this->GitRepoService->updateCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus->directory_path,$corpusTitle[0]);
-                            //dd($corpusPath);
                             $gitLabCorpusPath = substr($corpusPath,strrpos($corpusPath,"/")+1);
                             $this->laudatioUtilsService->updateDirectoryPaths($gitLabCorpusPath,$corpusId);
                             $gitLabResponse = $this->GitLabService->createGitLabProject(
@@ -160,8 +154,13 @@ class UploadController extends Controller
                         }
 
 
-                        $isUntitled = false;
-                        $filePath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                        if(!$isVersioned){
+                            $filePath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                        }
+                        else{
+                            $filePath = $corpusProjectPath."/".$corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                        }
+
 
                     }
                 }
@@ -176,11 +175,6 @@ class UploadController extends Controller
                 }
             }
 
-/*
-            if(!$isCorpusHeader){
-                $filePath = $dirPath."/".$fileName;
-            }
-*/
             /*
              * Move the uploaded file to the correct path
              */
@@ -195,9 +189,11 @@ class UploadController extends Controller
                 $this->flysystem->writeStream($filePath, $stream);
             }
             else{
-                $stream = fopen($format->getRealPath(), 'r+');
-                $this->flysystem->updateStream($filePath, $stream);
-                $updated = true;
+                if($isVersioned){
+                    $stream = fopen($format->getRealPath(), 'r+');
+                    $this->flysystem->updateStream($filePath, $stream);
+                }
+
             }
 
             if (is_resource($stream)) {
@@ -205,8 +201,7 @@ class UploadController extends Controller
             }
 
 
-            if(!$isUntitled){
-
+            if(!$isVersioned){
                 $commitPath = "";
                 $addPath = "";
                 if(!$isCorpusHeader){
@@ -219,31 +214,27 @@ class UploadController extends Controller
                     $commitPath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
                 }
 
-
                 // Git Add the file(s)
                 \App::call('App\Http\Controllers\GitRepoController@addFiles',[
                     'path' => $addPath,
                     'corpus' => $corpusId
                 ]);
-
-                if(!$isUpdate){
-                    //git commit The files
-                    \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
-                        'dirname' => $commitPath,
-                        'commitmessage' => "Adding files for ".$fileName,
-                        'corpus' => $corpusId
-                    ]);
-                }
+                //git commit The files
+                \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
+                    'dirname' => $commitPath,
+                    'commitmessage' => "Adding files for ".$fileName,
+                    'corpus' => $corpusId
+                ]);
 
             }
 
 
         }
 
-        if($isCorpusHeader && !$isUntitled) {
+        if($isCorpusHeader && !$isVersioned) {
             return redirect()->route('project.corpora.show', ['path' => $corpusProjectPath.'/'.$gitLabCorpusPath . '/TEI-HEADERS', 'corpus' => $corpusId]);
         }
-        else if ($isCorpusHeader && $isUntitled){
+        else if ($isCorpusHeader && $isVersioned){
             return redirect()->route('project.corpora.show', ['path' => $dirPath, 'corpus' => $corpusId]);
         }
         else{
