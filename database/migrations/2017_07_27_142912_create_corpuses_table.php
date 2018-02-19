@@ -16,7 +16,7 @@ class CreateCorpusesTable extends Migration
         Schema::create('corpuses', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('vid')->nullable();
-            $table->string('name');
+            $table->text('name');
             $table->text('description');
             $table->string('corpus_size_type')->nullable();
             $table->string('corpus_size_value')->nullable();

@@ -181,8 +181,14 @@ class UploadController extends Controller
              * Move the uploaded file to the correct path
              */
 
+            $canUpload = true;
+            if( $dirPathArray[$last_id] == 'corpus' && $corpus->file_name != $fileName){
+                $canUpload = false;
+            }
 
-            if($corpus->file_name == $fileName){
+
+
+            if($canUpload){
                 $gitFunction = new GitFunction();
                 $exists = $gitFunction->fileExists($filePath);
                 if(!$exists){
