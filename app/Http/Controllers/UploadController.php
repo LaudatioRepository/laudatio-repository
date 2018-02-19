@@ -144,13 +144,15 @@ class UploadController extends Controller
 
                         }
                         else{
+                            if($corpus->file_name == $fileName){
+                                $params = array(
+                                    "name" => $corpusTitle[0],
+                                    "file_name" => $fileName,
+                                );
+                                $gitLabCorpusPath = substr($corpusPath,strrpos($corpusPath,"/"));
+                                $this->laudatioUtilsService->updateCorpusAttributes($params,$corpusId);
+                            }
 
-                            $params = array(
-                                "name" => $corpusTitle[0],
-                                "file_name" => $fileName,
-                            );
-                            $gitLabCorpusPath = substr($corpusPath,strrpos($corpusPath,"/"));
-                            $this->laudatioUtilsService->updateCorpusAttributes($params,$corpusId);
                         }
 
 
@@ -180,53 +182,58 @@ class UploadController extends Controller
              */
 
 
-            $gitFunction = new GitFunction();
-
-            $exists = $gitFunction->fileExists($filePath);
-
-            if(!$exists){
-                $stream = fopen($format->getRealPath(), 'r+');
-                $this->flysystem->writeStream($filePath, $stream);
-            }
-            else{
-                if($isVersioned){
+            if($corpus->file_name == $fileName){
+                $gitFunction = new GitFunction();
+                $exists = $gitFunction->fileExists($filePath);
+                if(!$exists){
                     $stream = fopen($format->getRealPath(), 'r+');
-                    $this->flysystem->updateStream($filePath, $stream);
-                }
-
-            }
-
-            if (is_resource($stream)) {
-                fclose($stream);
-            }
-
-
-            if(!$isVersioned){
-                $commitPath = "";
-                $addPath = "";
-                if(!$isCorpusHeader){
-                    $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
-                    $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
-                    $corpusPath = $dirPathArray[1];
+                    $this->flysystem->writeStream($filePath, $stream);
                 }
                 else{
-                    $addPath = $corpusPath.'/TEI-HEADERS/corpus/';
-                    $commitPath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                    if($isVersioned){
+                        $stream = fopen($format->getRealPath(), 'r+');
+                        $this->flysystem->updateStream($filePath, $stream);
+                    }
+
                 }
 
-                // Git Add the file(s)
-                \App::call('App\Http\Controllers\GitRepoController@addFiles',[
-                    'path' => $addPath,
-                    'corpus' => $corpusId
-                ]);
-                //git commit The files
-                \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
-                    'dirname' => $commitPath,
-                    'commitmessage' => "Adding files for ".$fileName,
-                    'corpus' => $corpusId
-                ]);
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+
+
+                if(!$isVersioned){
+                    $commitPath = "";
+                    $addPath = "";
+                    if(!$isCorpusHeader){
+                        $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
+                        $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
+                        $corpusPath = $dirPathArray[1];
+                    }
+                    else{
+                        $addPath = $corpusPath.'/TEI-HEADERS/corpus/';
+                        $commitPath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                    }
+
+                    // Git Add the file(s)
+                    \App::call('App\Http\Controllers\GitRepoController@addFiles',[
+                        'path' => $addPath,
+                        'corpus' => $corpusId
+                    ]);
+                    //git commit The files
+                    \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
+                        'dirname' => $commitPath,
+                        'commitmessage' => "Adding files for ".$fileName,
+                        'corpus' => $corpusId
+                    ]);
+
+                }
 
             }
+            else{
+                session()->flash('message', 'The corpus header you tried to upload does not belong to this corpus');
+            }
+
 
 
         }
