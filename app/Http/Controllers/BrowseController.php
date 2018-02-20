@@ -30,8 +30,9 @@ class BrowseController extends Controller
                 break;
             case "document":
                 $data = $this->ElasticService->getDocument($id);
+                Log::info("data: ".print_r($data,1));
                 if(count($data['result']['in_corpora']) > 0){
-                    $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('_id' => $data['result']['in_corpora'][0])),array($id));
+                    $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $data['result']['in_corpora'])),array($id));
                     $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
                 }
 
@@ -43,7 +44,7 @@ class BrowseController extends Controller
                         "in_documents"
                     ));
 
-                    //Log::info("group: ".print_r($annotationData['result'],1));
+
                     if(!$annotationData['error'] && count($annotationData['result']) > 0){
                         if(array_key_exists('preparation_encoding_annotation_group', $annotationData['result'][0])){
                             $groups = array_unique($annotationData['result'][0]['preparation_encoding_annotation_group']);
@@ -70,11 +71,11 @@ class BrowseController extends Controller
             case "annotation":
                 $data = $this->ElasticService->getAnnotation($id);
                 if(count($data['result']['in_corpora']) > 0){
-                    $annotationCorpusdata = $this->ElasticService->getCorporaByAnnotation(array(array('_id' => $data['result']['in_corpora'][0])),array($id));
+                    $annotationCorpusdata = $this->ElasticService->getCorporaByAnnotation(array(array('corpus_id' => $data['result']['in_corpora'])),array($id));
                     $data['result']['annotationCorpusdata'] = $annotationCorpusdata[$id][0]['_source'];
                 }
-                $guidelines = $this->ElasticService->getGuidelinesByCorpus($data['result']['in_corpora'][0]);
-                $data['result']['guidelines'] = $guidelines;
+                //$guidelines = $this->ElasticService->getGuidelinesByCorpus($data['result']['in_corpora']);
+                //$data['result']['guidelines'] = $guidelines;
                 break;
         }
         //dd($data);

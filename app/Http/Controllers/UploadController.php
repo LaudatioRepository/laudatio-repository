@@ -231,23 +231,23 @@ class UploadController extends Controller
                 $commitPath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
             }
 
-            //if($dirPathArray[$last_id] == 'corpus' && !$isVersioned){
-                // Git Add the file(s)
-                \App::call('App\Http\Controllers\GitRepoController@addFiles',[
-                    'path' => $addPath,
-                    'corpus' => $corpusId
-                ]);
-                //git commit The files
-                \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
-                    'dirname' => $commitPath,
-                    'commitmessage' => "Adding files for ".$fileName,
-                    'corpus' => $corpusId
-                ]);
-
-            //}
+        if($dirPathArray[$last_id] == 'corpus' && !$isVersioned){
+            // Git Add the file(s)
+            \App::call('App\Http\Controllers\GitRepoController@addFiles',[
+                'path' => $addPath,
+                'corpus' => $corpusId
+            ]);
+            //git commit The files
+            \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
+                'dirname' => $commitPath,
+                'commitmessage' => "Adding files for ".$fileName,
+                'corpus' => $corpusId
+            ]);
 
         }
-       
+
+        }
+
         if($dirPathArray[$last_id] == 'corpus' && !$isVersioned) {
             return redirect()->route('project.corpora.show', ['path' => $corpusProjectPath.'/'.$gitLabCorpusPath . '/TEI-HEADERS', 'corpus' => $corpusId]);
         }

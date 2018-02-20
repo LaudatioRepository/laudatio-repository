@@ -34709,9 +34709,9 @@ var app = new Vue({
                         });
 
                         for (var ri = 0; ri < res.data.results.length; ri++) {
-                            corpusRefs.push(res.data.results[ri]._id);
+                            corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
                             corpus_ids.push({
-                                'in_corpora': '' + res.data.results[ri]._id + ''
+                                'in_corpora': '' + res.data.results[ri]._source.corpus_id[0] + ''
                             });
                         }
 
@@ -34722,8 +34722,8 @@ var app = new Vue({
                                 cacheString: _this2.corpusCacheString
                             };
 
-                            console.log("corpus_ids: " + corpus_ids);
-                            console.log("corpusRefs: " + corpusRefs);
+                            console.log("corpus_ids: " + JSON.stringify(corpus_ids));
+                            console.log("corpusRefs: " + JSON.stringify(corpusRefs));
 
                             /**
                              * Get all documents contained in the corpora
@@ -34738,6 +34738,7 @@ var app = new Vue({
                                 }
 
                                 _this2.documentsByCorpus = documentsByCorpus;
+                                console.log("documentsByCorpus: " + JSON.stringify(_this2.documentsByCorpus));
                             });
 
                             /**
@@ -35715,9 +35716,9 @@ var render = function() {
     _vm.corpusresults && _vm.corpusresults.length >= 1
       ? _c(
           "div",
-          _vm._l(_vm.corpusresults, function(corpusresult) {
+          _vm._l(_vm.corpusresults, function(corpusresult, index) {
             return _c("searchresultpanel_corpus", {
-              key: corpusresult,
+              key: index,
               attrs: {
                 corpusresult: corpusresult,
                 documentsbycorpus: _vm.documentsbycorpus,
@@ -35730,9 +35731,12 @@ var render = function() {
         _vm.stateDocumentCorpusresults.length >= 1
         ? _c(
             "div",
-            _vm._l(_vm.stateDocumentCorpusresults, function(corpusresult) {
+            _vm._l(_vm.stateDocumentCorpusresults, function(
+              corpusresult,
+              index
+            ) {
               return _c("searchresultpanel_corpus", {
-                key: corpusresult,
+                key: index,
                 attrs: {
                   corpusresult: corpusresult,
                   documentsbycorpus: _vm.documentsbycorpus,
@@ -35745,9 +35749,12 @@ var render = function() {
           _vm.stateAnnotationCorpusresults.length >= 1
           ? _c(
               "div",
-              _vm._l(_vm.stateAnnotationCorpusresults, function(corpusresult) {
+              _vm._l(_vm.stateAnnotationCorpusresults, function(
+                corpusresult,
+                index
+              ) {
                 return _c("searchresultpanel_corpus", {
-                  key: corpusresult,
+                  key: index,
                   attrs: {
                     corpusresult: corpusresult,
                     documentsbycorpus: _vm.documentsbycorpus,
@@ -35950,9 +35957,9 @@ var render = function() {
     _vm.documentresults && _vm.documentresults.length >= 1
       ? _c(
           "div",
-          _vm._l(_vm.documentresults, function(documentresult) {
+          _vm._l(_vm.documentresults, function(documentresult, index) {
             return _c("searchresultpanel_document", {
-              key: documentresult,
+              key: index,
               attrs: {
                 documentresult: documentresult,
                 annotationsbydocument: _vm.annotationsbydocument,
@@ -35964,9 +35971,9 @@ var render = function() {
       : _vm.statedocumentresults && _vm.statedocumentresults.length >= 1
         ? _c(
             "div",
-            _vm._l(_vm.statedocumentresults, function(documentresult) {
+            _vm._l(_vm.statedocumentresults, function(documentresult, index) {
               return _c("searchresultpanel_document", {
-                key: documentresult,
+                key: index,
                 attrs: {
                   documentresult: documentresult,
                   annotationsbydocument: _vm.annotationsbydocument,
@@ -35980,10 +35987,11 @@ var render = function() {
           ? _c(
               "div",
               _vm._l(_vm.stateannotationdocumentresults, function(
-                documentresult
+                documentresult,
+                index
               ) {
                 return _c("searchresultpanel_document", {
-                  key: documentresult,
+                  key: index,
                   attrs: {
                     documentresult: documentresult,
                     annotationsbydocument: _vm.annotationsbydocument,
@@ -36186,9 +36194,9 @@ var render = function() {
     _vm.annotationresults && _vm.annotationresults.length >= 1
       ? _c(
           "div",
-          _vm._l(_vm.annotationresults, function(annotationresult) {
+          _vm._l(_vm.annotationresults, function(annotationresult, index) {
             return _c("searchresultpanel_annotation", {
-              key: annotationresult,
+              key: index,
               attrs: {
                 annotationresult: annotationresult,
                 corpusbyannotation: _vm.corpusbyannotation,
@@ -36202,10 +36210,11 @@ var render = function() {
         ? _c(
             "div",
             _vm._l(_vm.stateCorpusAnnotationresults, function(
-              annotationresult
+              annotationresult,
+              index
             ) {
               return _c("searchresultpanel_annotation", {
-                key: annotationresult,
+                key: index,
                 attrs: {
                   annotationresult: annotationresult,
                   corpusbyannotation: _vm.corpusbyannotation,
@@ -36219,10 +36228,11 @@ var render = function() {
           ? _c(
               "div",
               _vm._l(_vm.stateDocumentAnnotationresults, function(
-                annotationresult
+                annotationresult,
+                index
               ) {
                 return _c("searchresultpanel_annotation", {
-                  key: annotationresult,
+                  key: index,
                   attrs: {
                     annotationresult: annotationresult,
                     corpusbyannotation: _vm.corpusbyannotation,
@@ -37862,11 +37872,14 @@ var render = function() {
     _c(
       "div",
       { staticClass: "panel-group", attrs: { id: "accordion" } },
-      _vm._l(_vm.corpusresult.results, function(corpusresultdata) {
+      _vm._l(_vm.corpusresult.results, function(corpusresultdata, index) {
         return _vm.corpusresult.results.length > 0
           ? _c(
               "div",
-              { key: corpusresultdata._id, staticClass: "panel panel-default" },
+              {
+                key: corpusresultdata._source.corpus_id[0],
+                staticClass: "panel panel-default"
+              },
               [
                 _c("div", { staticClass: "panel-heading" }, [
                   _c(
@@ -37876,11 +37889,15 @@ var render = function() {
                       attrs: {
                         "data-toggle": "collapse",
                         "data-parent": "#accordion",
-                        "data-target": _vm._f("addHash")(corpusresultdata._id)
+                        "data-target": _vm._f("addHash")(
+                          corpusresultdata._source.corpus_id[0]
+                        )
                       },
                       on: {
                         click: function($event) {
-                          _vm.emitCorpusRelations(corpusresultdata._id)
+                          _vm.emitCorpusRelations(
+                            corpusresultdata._source.corpus_id[0]
+                          )
                         }
                       }
                     },

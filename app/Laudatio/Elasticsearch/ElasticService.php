@@ -410,7 +410,7 @@ class ElasticService implements ElasticsearchInterface
             'index' => 'corpus',
             'type' => '',
             'body' => $queryBody,
-            '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description"],
+            '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_id"],
             //'_source_exclude' => ['message']
         ];
 
