@@ -22,6 +22,5 @@
         <input type="submit" value="Upload" />
         <input type ="hidden" name="directorypath" value="{{$dirname}}" />
         <input type ="hidden" name="corpusid" value="{{$corpusid}}" />
-        <input type ="hidden" name="isCorpusHeader" value="{{$isCorpusHeader}}" />
     </form>
 @stop

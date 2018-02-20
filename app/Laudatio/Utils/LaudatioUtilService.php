@@ -272,6 +272,21 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $document;
     }
 
+
+    /**
+     * @param $documentId
+     * @return bool
+     */
+    public function documentIsVersioned($documentId){
+        $isVersioned = false;
+        $document = Document::findOrFail($documentId);
+
+        if($document->vid >= 1){
+            $isVersioned = true;
+        }
+        return $isVersioned;
+    }
+
     /**
      * Populate Annotation object with attributes from the Annotation Header
      * @param $json
@@ -385,6 +400,16 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $annotation = annotaion::find($annotationId);
         $annotation->update($params);
         return $annotation;
+    }
+
+    public function annotationIsVersioned($annotationId){
+        $isVersioned = false;
+        $annotation = Annotation::findOrFail($annotationId);
+
+        if($annotation->vid >= 1){
+            $isVersioned = true;
+        }
+        return $isVersioned;
     }
 
 

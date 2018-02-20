@@ -48,14 +48,7 @@ class UploadController extends Controller
         $corpusDB = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
         $corpus = Corpus::with('corpusprojects')->where('id', $corpusDB[0]->id)->get();
 
-        //dd($corpus[0]->name);
-
-        $isCorpusHeader = false;
-        if(strpos($corpus[0]->name,"Untitled") !== false && null == $corpus[0]->file_name){
-            $isCorpusHeader = true;
-        }
-
-        return view('gitLab.uploadform',["dirname" => $dirname,"corpusid" => $corpus[0]->id, "isCorpusHeader" => $isCorpusHeader])
+        return view('gitLab.uploadform',["dirname" => $dirname,"corpusid" => $corpus[0]->id])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',\Auth::user());
     }
@@ -81,7 +74,6 @@ class UploadController extends Controller
         $last_id=key($dirPathArray);
 
         $corpusId = $request->corpusid;
-        $isCorpusHeader = $request->isCorpusHeader;
         $corpusProjectPath = $dirPathArray[0];
         $corpusPath = $dirPathArray[1];
 
@@ -95,7 +87,7 @@ class UploadController extends Controller
 
 
         $gitLabCorpusPath = "";
-        $isVersioned = $this->laudatioUtilsService->corpusIsVersioned($corpusId);
+        $isVersioned = false;
 
 
 
@@ -124,6 +116,7 @@ class UploadController extends Controller
                 $jsonPath = new JSONPath($json,JSONPath::ALLOW_MAGIC);
 
                 if($dirPathArray[$last_id] == 'corpus'){
+                    $isVersioned = $this->laudatioUtilsService->corpusIsVersioned($corpusId);
                     $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
                     if($corpusTitle[0]){
                         if(!$isVersioned){
@@ -177,10 +170,12 @@ class UploadController extends Controller
                 }
                 else if($dirPathArray[$last_id] == 'document'){
                     $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId,$fileName,false);
+                    $isVersioned = $this->laudatioUtilsService->documentIsVersioned($document->id);
                     $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/document/'.$fileName;
                 }
                 else if($dirPathArray[$last_id] == 'annotation'){
                     $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId,$fileName,false);
+                    $isVersioned = $this->laudatioUtilsService->annotationIsVersioned($annotation->id);
                     $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/annotation/'.$fileName;
                     $preparationSteps = $this->laudatioUtilsService->setPreparationAttributes($json,$annotation->id,$corpusId,false);
                 }
@@ -202,6 +197,7 @@ class UploadController extends Controller
             if($canUpload){
                 $gitFunction = new GitFunction();
                 $exists = $gitFunction->fileExists($filePath);
+                $stream = null;
                 if(!$exists){
                     $stream = fopen($format->getRealPath(), 'r+');
                     $this->flysystem->writeStream($filePath, $stream);
@@ -218,47 +214,44 @@ class UploadController extends Controller
                     fclose($stream);
                 }
 
-
-                if(!$isVersioned){
-                    $commitPath = "";
-                    $addPath = "";
-                    if(!$isCorpusHeader){
-                        $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
-                        $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
-                        $corpusPath = $dirPathArray[1];
-                    }
-                    else{
-                        $addPath = $corpusPath.'/TEI-HEADERS/corpus/';
-                        $commitPath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
-                    }
-
-                    // Git Add the file(s)
-                    \App::call('App\Http\Controllers\GitRepoController@addFiles',[
-                        'path' => $addPath,
-                        'corpus' => $corpusId
-                    ]);
-                    //git commit The files
-                    \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
-                        'dirname' => $commitPath,
-                        'commitmessage' => "Adding files for ".$fileName,
-                        'corpus' => $corpusId
-                    ]);
-
-                }
-
             }
             else{
                 session()->flash('message', 'The corpus header you tried to upload does not belong to this corpus');
             }
 
+            $commitPath = "";
+            $addPath = "";
+            if($dirPathArray[$last_id] != 'corpus'){
+                $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
+                $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
+                $corpusPath = $dirPathArray[1];
+            }
+            else{
+                $addPath = $corpusPath.'/TEI-HEADERS/corpus/';
+                $commitPath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+            }
 
+            //if($dirPathArray[$last_id] == 'corpus' && !$isVersioned){
+                // Git Add the file(s)
+                \App::call('App\Http\Controllers\GitRepoController@addFiles',[
+                    'path' => $addPath,
+                    'corpus' => $corpusId
+                ]);
+                //git commit The files
+                \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
+                    'dirname' => $commitPath,
+                    'commitmessage' => "Adding files for ".$fileName,
+                    'corpus' => $corpusId
+                ]);
+
+            //}
 
         }
-
-        if($isCorpusHeader && !$isVersioned) {
+       
+        if($dirPathArray[$last_id] == 'corpus' && !$isVersioned) {
             return redirect()->route('project.corpora.show', ['path' => $corpusProjectPath.'/'.$gitLabCorpusPath . '/TEI-HEADERS', 'corpus' => $corpusId]);
         }
-        else if ($isCorpusHeader && $isVersioned){
+        else if ($dirPathArray[$last_id] == 'corpus' && $isVersioned){
             return redirect()->route('project.corpora.show', ['path' => $dirPath, 'corpus' => $corpusId]);
         }
         else{

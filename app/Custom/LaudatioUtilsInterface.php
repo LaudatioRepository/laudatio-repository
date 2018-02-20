@@ -18,9 +18,11 @@ interface LaudatioUtilsInterface
     public function corpusIsVersioned($corpusId);
     public function setDocumentAttributes($json,$corpusId,$fileName,$isDir);
     public function updateDocumentAttributes($params,$documentId);
+    public function documentIsVersioned($documentId);
     public function setAnnotationAttributes($json,$corpusId,$fileName,$isDir);
     public function updateAnnotationAttributes($params,$annotationId);
     public function setPreparationAttributes($json,$annotationId,$corpusId,$isDir);
+    public function annotationIsVersioned($annotationId);
 
     public function associateDocumentsToCorpus($documents,$corpusId);
     public function associateAnnotationsToDocument($annotations,$documentId);
