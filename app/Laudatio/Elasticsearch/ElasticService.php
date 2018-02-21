@@ -89,6 +89,27 @@ class ElasticService implements ElasticsearchInterface
 
     }
 
+    public function deleteCorpus($id){
+        $result = array();
+        $queryBuilder = new QueryBuilder();
+        $queryBody = $queryBuilder->buildSingleMatchQuery(array(array('_id' => $id)));
+        $params = [
+            'size' => 1,
+            'index' => 'corpus',
+            'type' => 'corpus',
+            'body' => $queryBody,
+        ];
+
+        $response = Elasticsearch::deletebyquery($params);
+        if($response['deleted'] > 0){
+            array_push($result,$response);
+        }
+        return array(
+            'error' => false,
+            'result' => $result
+        );
+    }
+
     /**
      * @param $id
      * @param bool $full
@@ -129,6 +150,37 @@ class ElasticService implements ElasticsearchInterface
             );
         }
 
+    }
+
+
+    public function deleteDocument($id,$corpusId){
+        $result = array();
+        $queryBuilder = new QueryBuilder();
+
+        $searchData = array();
+        array_push($searchData,array(
+            "document_id" => $id
+        ));
+
+        array_push($searchData,array(
+            "in_corpora" => $corpusId
+        ));
+        $queryBody = $queryBuilder->buildMustQuery($searchData);
+        $params = [
+            'size' => 1,
+            'index' => 'document',
+            'type' => 'document',
+            'body' => $queryBody,
+        ];
+
+        $response = Elasticsearch::deletebyquery($params);
+        if($response['deleted'] > 0){
+            array_push($result,$response);
+        }
+        return array(
+            'error' => false,
+            'result' => $result
+        );
     }
 
     /**
@@ -172,6 +224,75 @@ class ElasticService implements ElasticsearchInterface
 
     }
 
+    public function deleteAnnotation($id,$corpusId){
+        $result = array();
+        $queryBuilder = new QueryBuilder();
+        array_push($searchData,array(
+            "preparation_annotation_id" => $id
+        ));
+
+        array_push($searchData,array(
+            "in_corpora" => $corpusId
+        ));
+        $queryBody = $queryBuilder->buildMustQuery($searchData);
+
+        $params = [
+            'size' => 1,
+            'index' => 'annotation',
+            'type' => 'annotation',
+            'body' => $queryBody,
+        ];
+
+        $response = Elasticsearch::deletebyquery($params);
+        if($response['deleted'] > 0){
+            array_push($result,$response);
+        }
+        return array(
+            'error' => false,
+            'result' => $result
+        );
+    }
+
+
+    public function deleteIndexedObject($index,$params){
+        $result = array();
+        $searchData = array();
+        $queryBuilder = new QueryBuilder();
+
+        foreach($params as $field => $value){
+            array_push($searchData,array(
+                $field => $value
+            ));
+        }
+        $queryBody = null;
+
+        if(count($params) == 1){
+            $queryBody = $queryBuilder->buildSingleMatchQuery($params);
+
+        }
+        else if(count($params) >  1){
+            $queryBody = $queryBuilder->buildMustQuery($params);
+        }
+
+
+        $params = [
+            'size' => 1,
+            'index' => $index,
+            'type' => $index,
+            'body' => $queryBody,
+            //'conflicts' => 'proceed'
+        ];
+
+        $response = Elasticsearch::deletebyquery($params);
+        if($response['deleted'] > 0){
+            array_push($result,$response);
+        }
+        return array(
+            'error' => false,
+            'result' => $result
+        );
+    }
+
     /**
      * @param $name
      * @return array
@@ -201,7 +322,6 @@ class ElasticService implements ElasticsearchInterface
 
 
     public function getDocumentByCorpus($searchData,$corpusData){
-        Log::info("SEARCHDATA: ".print_r($searchData,1));
         $resultData = array();
 
         $queryBuilder = new QueryBuilder();
@@ -404,7 +524,6 @@ class ElasticService implements ElasticsearchInterface
         else{
             $queryBody = $queryBuilder->buildMustFilterRangeQuery($searchData->fields,$searchData->range);
         }
-
         $params = [
             'size' => 1000,
             'index' => 'corpus',
@@ -1029,29 +1148,28 @@ class ElasticService implements ElasticsearchInterface
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
         $counter = 0;
-        foreach($searchData as $queryData){
-            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+        Log::info("sea: ".print_r($searchData,1 ));
+        $queryBody = $queryBuilder->buildSingleMatchQuery($searchData);
+        Log::info("QB: ".print_r($queryBody,1 ));
+        $params = [
+            'size' => 1000,
+            'index' => 'corpus',
+            'type' => 'corpus',
+            'body' => $queryBody,
+            //'_source_exclude' => ['message'],
+            '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname"],
+            'filter_path' => ['hits.hits']
+        ];
+        $results = Elasticsearch::search($params);
+        $termData = array_values($annotationData);
 
-            $params = [
-                'size' => 1000,
-                'index' => 'corpus',
-                'type' => 'corpus',
-                'body' => $queryBody,
-                //'_source_exclude' => ['message'],
-                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname"],
-                'filter_path' => ['hits.hits']
-            ];
-            $results = Elasticsearch::search($params);
-            $termData = array_values($annotationData);
+        if(count($results['hits']['hits']) > 0){
+            $resultData[$termData[$counter++]] = $results['hits']['hits'];
+        }
+        else{
+            $resultData[$counter++] = array();
+        }
 
-            if(count($results['hits']['hits']) > 0){
-                $resultData[$termData[$counter++]] = $results['hits']['hits'];
-            }
-            else{
-                $resultData[$counter++] = array();
-            }
-
-        }//end foreach queries
 
         return $resultData;
     }

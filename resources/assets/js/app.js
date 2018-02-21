@@ -218,8 +218,7 @@ const app = new Vue({
                                 cacheString: this.corpusCacheString
                             }
 
-                            console.log("corpus_ids: " + JSON.stringify(corpus_ids));
-                            console.log("corpusRefs: " + JSON.stringify(corpusRefs));
+
 
                             /**
                              * Get all documents contained in the corpora
@@ -234,7 +233,6 @@ const app = new Vue({
                                 }
 
                                 this.documentsByCorpus = documentsByCorpus;
-                                console.log("documentsByCorpus: " + JSON.stringify(this.documentsByCorpus));
                             });
 
                             /**

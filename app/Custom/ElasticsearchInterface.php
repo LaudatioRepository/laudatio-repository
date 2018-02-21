@@ -10,8 +10,11 @@ use Illuminate\Http\Request;
 
 interface ElasticsearchInterface {
     public function getCorpus($id,$full);
+    public function deleteCorpus($id);
     public function getDocument($id,$full);
+    public function deleteDocument($id,$corpusId);
     public function getAnnotation($id,$full);
+    public function deleteAnnotation($title,$corpusId);
     public function getAnnotationByName($name, $fields);
     public function getAnnotationGroups();
     public function getGuidelinesByCorpus($corpusId);
@@ -37,6 +40,7 @@ interface ElasticsearchInterface {
     public function createIndex($name);
     public function deleteIndex($indexId);
     public function truncateIndex($index);
+    public function deleteIndexedObject($index,$params);
 
     /**
      * Helpers

@@ -46,6 +46,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $namespaces = $xml->getDocNamespaces();
         $namespaces[''] = null; //add base (empty) namespace
 
+
         //get attributes from all namespaces
         $attributesArray = array();
         foreach ($namespaces as $prefix => $namespace) {
@@ -58,6 +59,18 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                     . $attributeName;
                 $attributesArray[$attributeKey] = (string)$attribute;
             }
+
+            foreach ($xml->attributes('xml', TRUE) as $attributeName => $attribute) {
+                //replace characters in attribute name
+                if ($options['keySearch']) $attributeName =
+                    str_replace($options['keySearch'], $options['keyReplace'], $attributeName);
+                $attributeKey = $options['attributePrefix']
+                    . ($prefix ? $prefix . $options['namespaceSeparator'] : '')
+                    . $attributeName;
+                $attributesArray[$attributeKey] = (string)$attribute;
+            }
+
+            
         }
 
         //get child nodes from all namespaces
@@ -122,7 +135,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      */
     public function setCorpusAttributes($json,$params){
         $jsonPath = new JSONPath($json,JSONPath::ALLOW_MAGIC);
-
+        $corpusId = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.id')->data();
         $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
         $corpusDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
         $corpusSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
@@ -136,6 +149,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             "corpus_size_value" => $corpusSizeValue[0],
             'gitlab_group_id' => $params['gitlab_group_id'],
             'directory_path' => $params['corpus_path'],
+            'corpus_id' => count($corpusId) > 0 ? $corpusId[0] : uniqid('corpus_'),
             'gitlab_id' => $params['gitlab_id'],
             'gitlab_web_url' => $params['gitlab_web_url'],
             'gitlab_namespace_path' => $params['gitlab_name_with_namespace'],
@@ -176,19 +190,21 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      */
     public function setDocumentAttributes($json,$corpusId,$fileName,$isDir){
         $jsonPath = new JSONPath($json);
-
+       //Log::info("JSPN: ".print_r($json,1));
         $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
         if(!$documentTitle){
             $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
         }
 
+        $document_id = $jsonPath->find('$.TEI.teiHeader.fileDesc.id')->data();
+
         $documentGenre = $jsonPath->find('$.TEI.teiHeader.style')->data();
 
+        //$documentSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc[?(@.extent)].extent.type')->data();
+        $documentSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
 
-        $documentSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc[?(@.extent)].extent.type')->data();
 
-
-        $documentSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc[?(@.extent)].extent.text')->data();
+        $documentSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text')->data();
 
         $encodingDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc.schemaSpec.elementSpec[*]')->data();
 
@@ -203,6 +219,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $document->document_genre = count($documentGenre) > 0 ? $documentGenre[0] : "";
             $document->document_size_type = count($documentSizeType) > 0 ? $documentSizeType[0]: "";
             $document->document_size_value = count($documentSizeValue) > 0 ? $documentSizeValue[0]: 0;
+            $document->document_id = $document_id[0];
             $document->corpus_id = $corpusId;
             $document->file_name = $fileName;
             $document->directory_path = $corpus->directory_path;
@@ -214,6 +231,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $document->document_genre = count($documentGenre) > 0 ? $documentGenre[0] : "";
             $document->document_size_type = count($documentSizeType) > 0 ? $documentSizeType[0]: "";
             $document->document_size_value = count($documentSizeValue) > 0 ? $documentSizeValue[0]: 0;
+            $document->document_id = $document_id[0];
             $document->corpus_id = $corpusId;
             $document->directory_path = $corpus->directory_path;
             $document->file_name = $fileName;
@@ -547,7 +565,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $fileName
      * @param $type
      * @return mixed
-     * @todo: This is very brittle, we need some kind of GUID
+     * @todo: This is very brittle, we need some kind of GUID, and to add at least the corpus id to avoid ambiguity
      */
     public function getModelByFileName($fileName, $type, $isDir){
         $object = null;
@@ -586,6 +604,62 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 else{
                     $object = Annotation::where([
                         ['file_name', '=',$fileName]
+                    ])->get();
+                }
+
+                break;
+        }
+        return $object;
+    }
+
+    /**
+     * @param $fileName
+     * @param $type
+     * @param $isDir
+     * @param $corpusId
+     * @return \Illuminate\Support\Collection|null
+     */
+    public function getModelByFileAndCorpus($fileName, $type, $isDir, $corpusId){
+        $object = null;
+        switch ($type){
+            case 'corpus':
+                if($isDir){
+                    $object = Corpus::where([
+                        ['directory_path', '=',$fileName]
+                    ])->get();
+                }
+                else{
+                    $object = Corpus::where([
+                        ['file_name', '=',$fileName]
+                    ])->get();
+                }
+                break;
+            case 'document':
+                if($isDir){
+                    $object = Document::where([
+                        ['directory_path', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
+                    ])->get();
+                }
+                else{
+                    $object = Document::where([
+                        ['file_name', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
+                    ])->get();
+                }
+
+                break;
+            case 'annotation':
+                if($isDir){
+                    $object = Annotation::where([
+                        ['directory_path', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
+                    ])->get();
+                }
+                else{
+                    $object = Annotation::where([
+                        ['file_name', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
                     ])->get();
                 }
 

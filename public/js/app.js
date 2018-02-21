@@ -34720,15 +34720,11 @@ var app = new Vue({
                                 corpus_ids: corpus_ids,
                                 corpusRefs: corpusRefs,
                                 cacheString: _this2.corpusCacheString
-                            };
 
-                            console.log("corpus_ids: " + JSON.stringify(corpus_ids));
-                            console.log("corpusRefs: " + JSON.stringify(corpusRefs));
-
-                            /**
-                             * Get all documents contained in the corpora
-                             */
-                            window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
+                                /**
+                                 * Get all documents contained in the corpora
+                                 */
+                            };window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
 
                                 if (Object.keys(documentRes.data.results).length > 0) {
                                     var documentsByCorpus = {};
@@ -34738,7 +34734,6 @@ var app = new Vue({
                                 }
 
                                 _this2.documentsByCorpus = documentsByCorpus;
-                                console.log("documentsByCorpus: " + JSON.stringify(_this2.documentsByCorpus));
                             });
 
                             /**

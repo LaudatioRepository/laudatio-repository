@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Custom\ElasticsearchInterface;
 use App\Laudatio\GitLaB\GitFunction;
 use App\Custom\GitRepoInterface;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ use App\Annotation;
 use DB;
 use Response;
 use Log;
+use Illuminate\Support\Facades\Cache;
 
 class GitRepoController extends Controller
 {
@@ -27,8 +29,9 @@ class GitRepoController extends Controller
     protected $GitRepoService;
     protected $laudatioUtils;
     protected $GitLabService;
+    protected $elasticService;
 
-    public function __construct(GitRepoInterface $Gitservice, FlysystemManager $flysystem, LaudatioUtilsInterface $laudatioUtils,GitLabInterface $GitLabService)
+    public function __construct(GitRepoInterface $Gitservice, FlysystemManager $flysystem, LaudatioUtilsInterface $laudatioUtils,GitLabInterface $GitLabService, ElasticsearchInterface $elasticService)
     {
         $this->flysystem = $flysystem;
         $this->connection = $this->flysystem->getDefaultConnection();
@@ -36,6 +39,7 @@ class GitRepoController extends Controller
         $this->GitRepoService = $Gitservice;
         $this->laudatioUtils = $laudatioUtils;
         $this->GitLabService = $GitLabService;
+        $this->elasticService = $elasticService;
 
     }
 
@@ -151,6 +155,7 @@ class GitRepoController extends Controller
     public function deleteFile($path){
         $directoryPath = substr($path,0,strrpos($path,"/"));
         $dirArray = explode("/",$path);
+        //dd($dirArray);
         $corpusPath = $dirArray[1];
 
         if($dirArray[3] == 'corpus') {
@@ -162,50 +167,100 @@ class GitRepoController extends Controller
                 "file_name" => "",
             );
             $this->laudatioUtils->updateCorpusAttributes($params,$corpusId);
+            $deleteParams = array();
+            array_push($deleteParams,array(
+                "corpus_id" => $corpus->corpus_id
+            ));
+
+            if(count($deleteParams) > 0){
+                $this->elasticService->deleteIndexedObject($dirArray[3],$deleteParams);
+            }
 
         }
         else if($dirArray[3] == 'document'){
-
-
+            $document = null;
+            $corpusId = "";
             if(count($dirArray) > 4){
                 $headerObject = DB::table('documents')->where('file_name', $dirArray[4])->get();
                 $document = Document::find($headerObject[0]->id);
                 $corpusId = $document->corpus_id;
+                $corpus = Corpus::findOrFail($corpusId);
                 if(count($document->annotations()) > 0) {
                     $document->annotations()->detach();
                 }
 
                 $document->delete();
+                $deleteParams = array();
+                array_push($deleteParams,array(
+                    "document_id" => $document->document_id
+                ));
+
+                array_push($deleteParams,array(
+                    "in_corpora" => $corpus->corpus_id
+                ));
+
+                if(count($deleteParams) > 0){
+                    $this->elasticService->deleteIndexedObject($dirArray[3],$deleteParams);
+                }
             }
             else{
                 //we are deleting contents of a folder
                 $documents = DB::table('documents')->where('directory_path',$dirArray[1])->get();
-                foreach ($documents->toArray() as $document){
-                    if($document->file_name){
-
-                        $docu = Document::find($document->id);
-                        $corpusId = $docu->corpus_id;
-                        if(count($docu->annotations()) > 0) {
-                            $docu->annotations()->detach();
+                foreach ($documents->toArray() as $docu){
+                    if($docu->file_name){
+                        $deleteParams = array();
+                        $document = Document::find($docu->id);
+                        $corpusId = $document->corpus_id;
+                        $corpus = Corpus::findOrFail($corpusId);
+                        if(count($document->annotations()) > 0) {
+                            $document->annotations()->detach();
                         }
 
-                        $docu->delete();
+                        $document->delete();
                         $result = $this->GitRepoService->deleteFile($this->flysystem,$path."/".$document->file_name);
+
+                        array_push($deleteParams,array(
+                            "document_id" => $document->document_id
+                        ));
+
+                        array_push($deleteParams,array(
+                            "in_corpora" => $corpus->corpus_id
+                        ));
+
+                        if(count($deleteParams) > 0){
+                            $this->elasticService->deleteIndexedObject($dirArray[3],$deleteParams);
+                        }
 
                     }
                 }
             }
+
         }
         else if($dirArray[3] == 'annotation'){
+            $corpusId = "";
+            $annotation = null;
             if(count($dirArray) > 4){
                 $headerObject = DB::table('annotations')->where('file_name',$dirArray[4])->get();
                 $annotation = Annotation::find($headerObject[0]->id);
                 $corpusId = $annotation->corpus_id;
+                $corpus = Corpus::findOrFail($corpusId);
                 if(count($annotation->documents()) > 0) {
                     $annotation->documents()->detach();
                 }
                 $annotation->preparations()->delete();
                 $annotation->delete();
+                $deleteParams = array();
+                array_push($deleteParams,array(
+                    "preparation_annotation_id" => $annotation->annotation_id,
+                ));
+
+                array_push($deleteParams,array(
+                    "in_corpora" => $corpus->corpus_id
+                ));
+
+                if(count($deleteParams) > 0){
+                    $this->elasticService->deleteIndexedObject($dirArray[3],$deleteParams);
+                }
             }
             else{
                 //we are deleting contents of a folder
@@ -214,22 +269,32 @@ class GitRepoController extends Controller
                     if($item->file_name){
 
                         $annotation = Annotation::find($item->id);
-
+                        $deleteParams = array();
                         $corpusId = $annotation->corpus_id;
+                        $corpus = Corpus::findOrFail($corpusId);
                         if(count($annotation->documents()) > 0) {
                             $annotation->documents()->detach();
                         }
                         $annotation->preparations()->delete();
                         $annotation->delete();
                         $result = $this->GitRepoService->deleteFile($this->flysystem,$path."/".$annotation->file_name);
+                        array_push($deleteParams,array(
+                            "preparation_annotation_id" => $annotation->annotation_id,
+                        ));
 
+                        array_push($deleteParams,array(
+                            "in_corpora" => $corpus->corpus_id
+                        ));
+
+                        if(count($deleteParams) > 0){
+                            $this->elasticService->deleteIndexedObject($dirArray[3],$deleteParams);
+                        }
                     }
                 }
-
             }
+
         }
 
-        $corpusId = 0;
         $result = "";
 
         if(count($dirArray) > 4){
@@ -237,10 +302,12 @@ class GitRepoController extends Controller
         }
 
 
+        Cache::flush();
 
         if($result) {
             session()->flash('message', $path.' was sucessfully deleted!');
         }
+
         if($dirArray[3] == 'corpus'){
             $projectObject = DB::table('corpus_projects')->where('directory_path',$dirArray[0])->get();
             return redirect()->route('project.corpusProject.show',['corpusproject' => $projectObject[0]->id]);
@@ -408,15 +475,36 @@ class GitRepoController extends Controller
     }
 
     public function deleteUntrackedFile($path){
-        $directoryPath = substr($path,0,strrpos($path,"/"));
-        $dirArray = explode("/",$directoryPath);
+        $isFolder = false;
+        $dirArray = explode("/",$path);
+
+        if(count($dirArray) == 4){
+            Log::info("IS FOLDER: ".print_r($dirArray,1));
+            $isFolder = true;
+        }
+
         $corpusPath = $dirArray[1];
+        $type = $dirArray[3];
+
+        $directoryPath = implode("/",array_slice($dirArray, 0, 4));
+        Log::info("directoryPath: ".print_r($directoryPath,1));
+
+
         $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
         $result = $this->GitRepoService->deleteUntrackedFile($this->flysystem,$path);
-        $this->laudatioUtils->deleteModels($path);
+        if($isFolder){
+            $this->laudatioUtils->deleteModels($path);
+        }
+        else{
+            $fileName = $dirArray[4];
+            $object = $this->laudatioUtils->getModelByFileAndCorpus($fileName,$type,$isFolder,$corpus[0]->id);
+            $this->laudatioUtils->deleteModel($type,$object[0]->id);
+        }
+
         if($result) {
             session()->flash('message', $path.' was sucessfully deleted!');
         }
+
         return redirect()->route('project.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
     }
 

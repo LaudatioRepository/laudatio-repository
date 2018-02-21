@@ -17,7 +17,7 @@
                             @endif
                             <th>Action</th>
                             @if(!$fileData["headerData"]["hasdir"])
-                                <th>Size</th>
+                                <th>File size</th>
                             @endif
                             <th>Last updated</th>
                         </tr>
