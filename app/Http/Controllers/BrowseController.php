@@ -30,9 +30,9 @@ class BrowseController extends Controller
                 break;
             case "document":
                 $data = $this->ElasticService->getDocument($id);
-                Log::info("data: ".print_r($data,1));
+
                 if(count($data['result']['in_corpora']) > 0){
-                    $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $data['result']['in_corpora'])),array($id));
+                    $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $data['result']['in_corpora'][0])),array($id));
                     $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
                 }
 

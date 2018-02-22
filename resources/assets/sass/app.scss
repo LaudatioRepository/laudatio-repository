@@ -384,3 +384,15 @@ span.badge {
 a.navlink {
   color: #000000;
 }
+
+.notfoundtree{
+  background: url(../images/404tree.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  min-height: 600px;
+  max-height: 1162px;
+  min-width: 800px;
+  max-width: 2048px;
+}
