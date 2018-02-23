@@ -256,16 +256,8 @@ class ElasticService implements ElasticsearchInterface
 
     public function deleteIndexedObject($index,$params){
         $result = array();
-        $searchData = array();
-        $queryBuilder = new QueryBuilder();
-
-        foreach($params as $field => $value){
-            array_push($searchData,array(
-                $field => $value
-            ));
-        }
         $queryBody = null;
-
+        $queryBuilder = new QueryBuilder();
         if(count($params) == 1){
             $queryBody = $queryBuilder->buildSingleMatchQuery($params);
 
@@ -291,6 +283,38 @@ class ElasticService implements ElasticsearchInterface
             'error' => false,
             'result' => $result
         );
+    }
+
+    public function getElasticIdByObjectId($index,$objectparams){
+        $elasticIds = array();
+        $queryBuilder = new QueryBuilder();
+        foreach ($objectparams as $objectId => $objectparam){
+            if(count($objectparam) == 1){
+                $queryBody = $queryBuilder->buildSingleMatchQuery($objectparam);
+
+            }
+            else if(count($objectparam) >  1){
+                $queryBody = $queryBuilder->buildMustQuery($objectparam);
+            }
+
+
+            $params = [
+                'size' => 10,
+                'index' => $index,
+                'type' => $index,
+                'body' => $queryBody,
+                '_source' => ["_id"]
+            ];
+            $response = Elasticsearch::search($params);
+
+            $hits = isset($response['hits']['hits'][0]) ? $response['hits']['hits'][0] : false;
+            if($hits){
+                $elasticIds[$objectId] = $response['hits']['hits'][0]['_id'];
+            }
+
+        }
+
+        return $elasticIds;
     }
 
     /**

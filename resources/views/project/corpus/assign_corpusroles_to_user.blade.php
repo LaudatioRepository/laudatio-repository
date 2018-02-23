@@ -1,7 +1,6 @@
 @extends('layouts.admin', ['isLoggedIn' => $isLoggedIn])
 
 @section('content')
-
     <h2>Assign users to {{$corpus->name}}</h2>
     <div class="role-user-container col-lg-10">
         <div class="row">

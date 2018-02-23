@@ -12,6 +12,7 @@
                     <div class="panel-body">
                         <div class="panel-group" id="accordion">
                             @foreach($corpora as $corpus)
+                                @if(isset($corpusProjects[$corpus->id]))
                                 <div class="panel panel-default">
                                     <div class="panel-heading">
                                         <span class="panel-title">
@@ -31,6 +32,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                @endif
                             @endforeach
                         </div>
                     </div>

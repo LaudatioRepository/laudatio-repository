@@ -339,6 +339,103 @@ class GitRepoService implements GitRepoInterface
         return $isAdded;
     }
 
+    public function addFiles($path,$corpus){
+        $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
+        $file = substr($path,strrpos($path,"/")+1);
+        $isAdded = $this->addFilesToRepository($pathWithOutAddedFolder,$file);
+        return $isAdded;
+    }
+
+
+    public function commitFiles($dirname = "", $commitmessage, $corpusid){
+        $isHeader = false;
+        if(strpos($dirname,'TEI-HEADER') !== false){
+            $isHeader = true;
+        }
+        $gitFunction = new  GitFunction();
+        $patharray = explode("/",$dirname);
+        end($patharray);
+        $last_id = key($patharray);
+
+        $object = null;
+        $returnPath = "";
+        $fileName = substr($dirname, strrpos($dirname,"/")+1);
+        $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
+
+        if(is_dir($this->basePath.'/'.$dirname)){
+            $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$dirname);
+            $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$corpusid);
+
+            if($isCommited){
+                if($isHeader){
+                    foreach ($stagedFiles as $stagedFile){
+                        $dirArray = explode("/",trim($stagedFile));
+                        if(count($dirArray) >= 3){
+                            $fileName = $dirArray[2];
+
+                            if(is_dir($this->basePath.'/'.$dirname.'/'.$fileName)){
+                                $object = $this->laudatioUtilsService->getModelByFileName($fileName,$patharray[$last_id], true);
+                                if(count($object) > 0){
+                                    $this->laudatioUtilsService->setVersionMapping($fileName,$patharray[$last_id],true);
+                                    $fileName = $object[0]->directory_path;
+                                }
+                            }
+                            else{
+                                $object = $this->laudatioUtilsService->getModelByFileName($fileName,$patharray[$last_id], false);
+                                if(count($object) > 0){
+                                    $this->laudatioUtilsService->setVersionMapping($fileName,$patharray[$last_id],false);
+                                    $fileName = $object[0]->directory_path;
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+
+                $returnPath = $dirname;
+            }
+        }
+        else{
+            $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$corpusid);
+            if($isCommited){
+                if($isHeader){
+                    $this->laudatioUtilsService->setVersionMapping($fileName,$patharray[($last_id-1)],false);
+                    $object = $this->laudatioUtilsService->getModelByFileName($fileName,$patharray[($last_id-1)], false);
+                }
+
+                $returnPath = $pathWithOutAddedFolder;
+            }
+        }
+
+        $commitdata = $this->getCommitData($pathWithOutAddedFolder);
+
+        if($isHeader){
+            if(is_dir($this->basePath.'/'.$dirname)){
+                if(count($object) > 0){
+                    if($object[0]->directory_path == $fileName){
+                        $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
+                        $object[0]->gitlab_commit_date = $commitdata['date'];
+                        $object[0]->gitlab_commit_description = $commitdata['message'];
+                        $object[0]->save();
+                    }
+                }
+            }
+            else{
+                if(count($object) > 0){
+                    if($object[0]->file_name == $fileName){
+                        $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
+                        $object[0]->gitlab_commit_date = $commitdata['date'];
+                        $object[0]->gitlab_commit_description = $commitdata['message'];
+                        $object[0]->save();
+                    }
+                }
+            }
+
+        }
+        return $returnPath;
+    }
+
     public function initiateRepository($path){
         $gitFunction = new GitFunction();
         $isInitiated = $gitFunction->initiateRepository($path);

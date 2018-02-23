@@ -6,6 +6,7 @@ namespace App;
 class Corpus extends Model
 {
 
+    protected $guarded = array();
     public function corpusprojects(){
         return $this->belongsToMany(CorpusProject::class);
     }

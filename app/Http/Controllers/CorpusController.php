@@ -42,7 +42,10 @@ class CorpusController extends Controller
 
         foreach ($corpora as $corpus){
             $corpusProjectsTemp = $corpus->corpusprojects()->get();
-            $corpusProjects[$corpus->id] = $corpusProjectsTemp[0]->directory_path;
+            $cp = isset($corpusProjectsTemp[0]) ? $corpusProjectsTemp[0] : false;
+            if($cp) {
+                $corpusProjects[$corpus->id] = $corpusProjectsTemp[0]->directory_path;
+            }
         }
 
         return view('/project.corpus.index', compact('corpora'))
@@ -444,7 +447,10 @@ class CorpusController extends Controller
 
         foreach ($corpora as $corpus){
             $corpusProjectsTemp = $corpus->corpusprojects()->get();
-            $corpusProjects[$corpus->id] = $corpusProjectsTemp[0]->directory_path;
+            $cp = isset($corpusProjectsTemp[0]) ? $corpusProjectsTemp[0] : false;
+            if($cp){
+                $corpusProjects[$corpus->id] = $corpusProjectsTemp[0]->directory_path;
+            }
         }
 
         return view('project.corpus.index', compact('corpora'))

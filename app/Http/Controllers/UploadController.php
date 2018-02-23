@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Corpus;
 use App\CorpusProject;
+use App\Document;
+use App\Annotation;
 use App\Http\Requests\UploadRequest;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use DB;
@@ -11,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Custom\LaudatioUtilsInterface;
 use App\Custom\GitRepoInterface;
 use App\Custom\GitLabInterface;
+use App\Custom\ElasticsearchInterface;
 use App\Laudatio\GitLaB\GitFunction;
 use Log;
 use Flow\JSONPath\JSONPath;
@@ -25,9 +28,10 @@ class UploadController extends Controller
     protected $basePath;
     protected $GitLabService;
     protected $GitRepoService;
+    protected $elasticService;
 
 
-    public function __construct(FlysystemManager $flysystem, LaudatioUtilsInterface $laudatioUtilsService, GitLabInterface $GitLabService,GitRepoInterface $Gitservice)
+    public function __construct(FlysystemManager $flysystem, LaudatioUtilsInterface $laudatioUtilsService, GitLabInterface $GitLabService,GitRepoInterface $Gitservice, ElasticsearchInterface $elasticService)
     {
         $this->flysystem = $flysystem;
         $this->GitRepoService = $Gitservice;
@@ -35,6 +39,7 @@ class UploadController extends Controller
         $this->laudatioUtilsService = $laudatioUtilsService;
         $this->connection = $this->flysystem->getDefaultConnection();
         $this->GitLabService = $GitLabService;
+        $this->elasticService = $elasticService;
     }
 
     public function uploadForm($dirname = "")
@@ -84,11 +89,13 @@ class UploadController extends Controller
         $filePath = "";
         $currentFilePath = $corpus->directory_path;
 
-
-
         $gitLabCorpusPath = "";
         $isVersioned = false;
 
+        $document = null;
+        $documents = array();
+        $annotation = null;
+        $annotations = array();
 
 
         foreach ($request->formats as $format) {
@@ -170,11 +177,38 @@ class UploadController extends Controller
                 }
                 else if($dirPathArray[$last_id] == 'document'){
                     $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId,$fileName,false);
+                    if(!array_key_exists($document->id,$documents)){
+                        $documents[$document->id] = array();
+                    }
+                    $idParams = array();
+                    array_push($idParams,array(
+                        "document_id" => $document->document_id
+                    ));
+
+                    array_push($idParams,array(
+                        "in_corpora" => $corpus->corpus_id
+                    ));
+                    $documents[$document->id] = $idParams;
+
                     $isVersioned = $this->laudatioUtilsService->documentIsVersioned($document->id);
                     $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/document/'.$fileName;
                 }
                 else if($dirPathArray[$last_id] == 'annotation'){
                     $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId,$fileName,false);
+                    if(!array_key_exists($annotation->id,$documents)){
+                        $annotations[$annotation->id] = array();
+                    }
+
+                    $idParams = array();
+                    array_push($idParams, array(
+                        "preparation_annotation_id" => $annotation->annotation_id,
+                    ));
+
+                    array_push($idParams, array(
+                        "in_corpora" => $corpus->corpus_id
+                    ));
+                    $annotations[$annotation->id] = $idParams;
+
                     $isVersioned = $this->laudatioUtilsService->annotationIsVersioned($annotation->id);
                     $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/annotation/'.$fileName;
                     $preparationSteps = $this->laudatioUtilsService->setPreparationAttributes($json,$annotation->id,$corpusId,false);
@@ -231,22 +265,44 @@ class UploadController extends Controller
                 $commitPath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
             }
 
-        if($dirPathArray[$last_id] == 'corpus' && !$isVersioned){
-            // Git Add the file(s)
-            \App::call('App\Http\Controllers\GitRepoController@addFiles',[
-                'path' => $addPath,
-                'corpus' => $corpusId
-            ]);
-            //git commit The files
-            \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
-                'dirname' => $commitPath,
-                'commitmessage' => "Adding files for ".$fileName,
-                'corpus' => $corpusId
-            ]);
+            //if($dirPathArray[$last_id] == 'corpus' && !$isVersioned){
 
+                //add files
+                $this->GitRepoService->addFiles($addPath,$corpusId);
+
+                //git commit The files
+                $this->GitRepoService->commitFiles($commitPath,"Adding files for ".$fileName,$corpusId);
+            //}
         }
 
+
+        if($dirPathArray[$last_id] == 'corpus'){
+
         }
+        else if($dirPathArray[$last_id] == 'document'){
+            if(isset($corpus->corpus_id)){
+                $elasticIds = $this->elasticService->getElasticIdByObjectId('document',$documents);
+                foreach ($elasticIds as $documentId => $elasticId){
+                    $documentToBeUpdated = Document::findOrFail($documentId);
+                    $documentToBeUpdated->elasticsearch_id = $elasticIds[$documentId];
+                    $documentToBeUpdated->save();
+                }
+                //$this->laudatioUtilsService->updateDocumentAttributes($updateParams,$document->id);
+            }
+        }
+        else if($dirPathArray[$last_id] == 'annotation'){
+            if(isset($corpus->corpus_id)){
+                $elasticIds = $this->elasticService->getElasticIdByObjectId('annotation',$annotations);
+                foreach ($elasticIds as $annotationId => $elasticId){
+                    $annotationToBeUpdated = Annotation::findOrFail($annotationId);
+                    $annotationToBeUpdated->elasticsearch_id = $elasticIds[$annotationId];
+                    $annotationToBeUpdated->save();
+                }
+                //$this->laudatioUtilsService->updateAnnotationAttributes($updateParams,$annotation->id);
+            }
+        }
+
+
 
         if($dirPathArray[$last_id] == 'corpus' && !$isVersioned) {
             return redirect()->route('project.corpora.show', ['path' => $corpusProjectPath.'/'.$gitLabCorpusPath . '/TEI-HEADERS', 'corpus' => $corpusId]);

@@ -41,6 +41,7 @@ interface ElasticsearchInterface {
     public function deleteIndex($indexId);
     public function truncateIndex($index);
     public function deleteIndexedObject($index,$params);
+    public function getElasticIdByObjectId($index,$params);
 
     /**
      * Helpers

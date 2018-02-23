@@ -19,6 +19,8 @@ interface GitRepoInterface {
     public function addFilesToRepository($path,$file);
     public function deleteFile($flysystem, $path);
     public function deleteUntrackedFile($flysystem,$path);
+    public function addFiles($path,$corpus);
+    public function commitFiles($dirname, $commitmessage, $corpusid);
 
     /** HELPERS  **/
     public function filterDottedFiles($array);
