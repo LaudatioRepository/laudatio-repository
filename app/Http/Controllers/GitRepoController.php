@@ -192,7 +192,7 @@ class GitRepoController extends Controller
                 $document->delete();
                 $deleteParams = array();
                 array_push($deleteParams,array(
-                    "document_id" => $document->document_id
+                    "_id" => $document->elasticsearch_id
                 ));
 
                 array_push($deleteParams,array(
@@ -220,15 +220,16 @@ class GitRepoController extends Controller
                         $result = $this->GitRepoService->deleteFile($this->flysystem,$path."/".$document->file_name);
 
                         array_push($deleteParams,array(
-                            "document_id" => $document->document_id
+                            "_id" => $document->elasticsearch_id
                         ));
 
                         array_push($deleteParams,array(
                             "in_corpora" => $corpus->corpus_id
                         ));
 
+
                         if(count($deleteParams) > 0){
-                            $this->elasticService->deleteIndexedObject($dirArray[3],$deleteParams);
+                            $result = $this->elasticService->deleteIndexedObject($dirArray[3],$deleteParams);
                         }
 
                     }
@@ -251,7 +252,7 @@ class GitRepoController extends Controller
                 $annotation->delete();
                 $deleteParams = array();
                 array_push($deleteParams,array(
-                    "preparation_annotation_id" => $annotation->annotation_id,
+                    "_id" => $annotation->elasticsearch_id,
                 ));
 
                 array_push($deleteParams,array(
@@ -259,7 +260,9 @@ class GitRepoController extends Controller
                 ));
 
                 if(count($deleteParams) > 0){
+                    Log::info("DELETEPARAMS: ".print_r($deleteParams,1 ));
                     $this->elasticService->deleteIndexedObject($dirArray[3],$deleteParams);
+                    Log::info("RESULT: ".print_r($result,1 ));
                 }
             }
             else{
@@ -279,7 +282,7 @@ class GitRepoController extends Controller
                         $annotation->delete();
                         $result = $this->GitRepoService->deleteFile($this->flysystem,$path."/".$annotation->file_name);
                         array_push($deleteParams,array(
-                            "preparation_annotation_id" => $annotation->annotation_id,
+                            "_id" => $annotation->elasticsearch_id,
                         ));
 
                         array_push($deleteParams,array(

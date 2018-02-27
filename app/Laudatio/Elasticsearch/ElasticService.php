@@ -12,6 +12,7 @@ use App\Custom\ElasticsearchInterface;
 use Elasticsearch;
 use Elasticsearch\Endpoints\DeleteByQuery;
 use Log;
+use Cache;
 use Illuminate\Http\Request;
 
 class ElasticService implements ElasticsearchInterface
@@ -255,6 +256,7 @@ class ElasticService implements ElasticsearchInterface
 
 
     public function deleteIndexedObject($index,$params){
+        Cache::flush();
         $result = array();
         $queryBody = null;
         $queryBuilder = new QueryBuilder();
@@ -279,6 +281,7 @@ class ElasticService implements ElasticsearchInterface
         if($response['deleted'] > 0){
             array_push($result,$response);
         }
+        Cache::flush();
         return array(
             'error' => false,
             'result' => $result
@@ -286,6 +289,8 @@ class ElasticService implements ElasticsearchInterface
     }
 
     public function getElasticIdByObjectId($index,$objectparams){
+        //empty querycache
+        Cache::flush();
         $elasticIds = array();
         $queryBuilder = new QueryBuilder();
         foreach ($objectparams as $objectId => $objectparam){
@@ -306,7 +311,7 @@ class ElasticService implements ElasticsearchInterface
                 '_source' => ["_id"]
             ];
             $response = Elasticsearch::search($params);
-
+            
             $hits = isset($response['hits']['hits'][0]) ? $response['hits']['hits'][0] : false;
             if($hits){
                 $elasticIds[$objectId] = $response['hits']['hits'][0]['_id'];
