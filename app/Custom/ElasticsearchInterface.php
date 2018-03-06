@@ -18,6 +18,8 @@ interface ElasticsearchInterface {
     public function getAnnotationByName($name, $fields);
     public function getAnnotationGroups();
     public function getGuidelinesByCorpus($corpusId);
+    public function getGuidelinesByCorpusAndAnnotationId($corpusId,$annotationName);
+    public function getFormatsByCorpus($corpusId);
     public function search($index, $field, $term);
     public function searchGeneral($searchData);
     public function searchCorpusIndex($searchData);

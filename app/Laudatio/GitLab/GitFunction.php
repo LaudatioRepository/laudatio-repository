@@ -36,7 +36,7 @@ class GitFunction
     }
 
     public function doAdd($path){
-
+        Log::info("doAdd: ".$path);
         if(is_dir($path)){
             $process = new Process("git add .",$path);
         }

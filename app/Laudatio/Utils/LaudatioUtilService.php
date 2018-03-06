@@ -190,7 +190,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      */
     public function setDocumentAttributes($json,$corpusId,$fileName,$isDir){
         $jsonPath = new JSONPath($json);
-       //Log::info("JSPN: ".print_r($json,1));
+
         $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
         if(!$documentTitle){
             $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
@@ -200,7 +200,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
         $documentGenre = $jsonPath->find('$.TEI.teiHeader.style')->data();
 
-        //$documentSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc[?(@.extent)].extent.type')->data();
+
         $documentSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
 
 

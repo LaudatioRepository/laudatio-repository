@@ -71,11 +71,44 @@ class BrowseController extends Controller
             case "annotation":
                 $data = $this->ElasticService->getAnnotation($id);
                 if(count($data['result']['in_corpora']) > 0){
+                    //$annotationCorpusdata = $this->ElasticService->getCorporaByAnnotation(array(array('corpus_id' => $data['result']['in_corpora'])),array($id));
                     $annotationCorpusdata = $this->ElasticService->getCorporaByAnnotation(array(array('corpus_id' => $data['result']['in_corpora'][0])),array($id));
                     $data['result']['annotationCorpusdata'] = $annotationCorpusdata[$id][0]['_source'];
                 }
-                //$guidelines = $this->ElasticService->getGuidelinesByCorpus($data['result']['in_corpora']);
-                //$data['result']['guidelines'] = $guidelines;
+                $guidelines = $this->ElasticService->getGuidelinesByCorpusAndAnnotationId($data['result']['in_corpora'][0],$data['result']['preparation_annotation_id'][0]);
+
+                $formats = array();
+                $formatSearchResult = $this->ElasticService->getFormatsByCorpus($data['result']['in_corpora'][0]);
+                $guidelineArray = array();
+                foreach ($formatSearchResult['aggregations']['formats']['buckets'] as $formatSearchResult) {
+
+                    if(!array_key_exists($formatSearchResult['key'],$guidelineArray)){
+                        $guidelineArray[$formatSearchResult['key']] = array('annotations' => array());
+                    }
+
+                    foreach ($guidelines['result']['hits']['hits'] as $guideline){
+                        foreach ($guideline['_source']['in_annotations'] as $annotationkey) {
+                            if($data['result']['preparation_annotation_id'][0] == $annotationkey &&
+                                in_array($formatSearchResult['key'],$guideline['_source']['formats'])){
+                                if(!array_key_exists($annotationkey, $guidelineArray[$formatSearchResult['key']]['annotations'])){
+                                    $guidelineArray[$formatSearchResult['key']]['annotations'][$annotationkey] = array();
+                                }
+
+                                if(!array_key_exists($guideline['_source']['id'], $guidelineArray[$formatSearchResult['key']]['annotations'][$annotationkey])){
+                                    $guidelineArray[$formatSearchResult['key']]['annotations'][$annotationkey][$guideline['_source']['id']] = $guideline['_source']['desc'];
+                                }
+                            }
+
+                        }
+
+                    }
+
+                    array_push($formats,$formatSearchResult['key']);
+                }
+                $data['result']['allformats'] = $formats;
+
+                $data['result']['guidelines'] = $guidelineArray;
+                //Log::info("GUIDELINES: ".print_r( $data['result']['guidelines'],1 ));
                 break;
         }
         //dd($data);

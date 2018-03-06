@@ -52179,6 +52179,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -52186,11 +52208,44 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             annotators: [],
             revisions: [],
-            documentsByAnnotation: []
+            documentsByAnnotation: [],
+            guidelineColumns: [{
+                label: 'Annotation key',
+                field: 'title',
+                filterable: true
+            }, {
+                label: 'Description',
+                field: 'description',
+                filterable: true
+            }],
+            guidelineRows: []
 
         };
     },
-    methods: {},
+    methods: {
+        rows: function rows(format) {
+            var guidelineArray = [];
+            var annotationTitle = this.headerdata.preparation_title[0];
+            if (null != this.headerdata.guidelines && typeof this.headerdata.guidelines != 'undefined') {
+                Object.keys(this.headerdata.guidelines).forEach(function (formatKey, formatIndex) {
+                    var annotationData = this[formatKey];
+                    if (typeof this[formatKey]['annotations'] != 'undefined') {
+                        if (format == formatKey && Object.keys(this[formatKey]['annotations']).length > 0) {
+                            Object.keys(this[formatKey]['annotations'][annotationTitle]).forEach(function (guidelineKey, guidelineIndex) {
+                                var valueObject = {};
+                                valueObject.title = guidelineKey;
+                                valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey];
+
+                                guidelineArray.push(valueObject);
+                            }, this[formatKey]['annotations']);
+                        }
+                    }
+                }, this.headerdata.guidelines);
+            }
+            return guidelineArray;
+        }
+
+    },
     computed: {},
     mounted: function mounted() {
         console.log('DocumentMetadataBlockBody mounted.');
@@ -52218,11 +52273,102 @@ var render = function() {
           },
           [
             _c("div", { staticClass: "row" }, [
-              _vm._m(0),
+              _c("div", { staticClass: "col-sm-3" }, [
+                _c("div", { staticClass: "sidebar-nav" }, [
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "navbar-collapse collapse sidebar-navbar-collapse"
+                    },
+                    [
+                      _c(
+                        "ul",
+                        { staticClass: "nav nav-stacked" },
+                        [
+                          _vm._m(0),
+                          _vm._v(" "),
+                          _vm._l(_vm.headerdata.guidelines, function(
+                            guidelinedata,
+                            guidelinekey
+                          ) {
+                            return _c(
+                              "li",
+                              {
+                                staticClass: "nav-link",
+                                attrs: { role: "tab" }
+                              },
+                              [
+                                Object.keys(guidelinedata["annotations"])
+                                  .length > 0
+                                  ? _c(
+                                      "a",
+                                      {
+                                        attrs: {
+                                          href: "#".concat(guidelinekey),
+                                          "data-toggle": "pill"
+                                        }
+                                      },
+                                      [_vm._v(_vm._s(guidelinekey))]
+                                    )
+                                  : _vm._e()
+                              ]
+                            )
+                          })
+                        ],
+                        2
+                      )
+                    ]
+                  )
+                ])
+              ]),
               _vm._v(" "),
               _c("div", { staticClass: "col-sm-9" }, [
                 _vm.header == "annotation"
-                  ? _c("div", { staticClass: "tab-content" }, [_vm._m(1)])
+                  ? _c(
+                      "div",
+                      { staticClass: "tab-content" },
+                      [
+                        _vm._m(1),
+                        _vm._v(" "),
+                        _vm._l(_vm.headerdata.guidelines, function(
+                          guidelinedata,
+                          guidelinekey
+                        ) {
+                          return _vm.header == "annotation"
+                            ? _c(
+                                "div",
+                                {
+                                  staticClass: "tab-pane fade",
+                                  attrs: { id: guidelinekey }
+                                },
+                                [
+                                  _c("h2", [
+                                    _vm._v(
+                                      "GUIDELINES - for the " +
+                                        _vm._s(guidelinekey) +
+                                        " format"
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("vue-good-table", {
+                                    attrs: {
+                                      title: "",
+                                      columns: _vm.guidelineColumns,
+                                      rows: _vm.rows(guidelinekey),
+                                      paginate: true,
+                                      lineNumbers: false,
+                                      styleClass: "table table-striped"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            : _vm._e()
+                        })
+                      ],
+                      2
+                    )
                   : _vm._e()
               ])
             ])
@@ -52238,7 +52384,7 @@ var render = function() {
               _vm._v(" "),
               _c("div", { staticClass: "col-sm-9" }, [
                 _c("div", { staticClass: "tab-content" }, [
-                  _vm.header == "document"
+                  _vm.header == "annotation"
                     ? _c("div", {
                         staticClass: "tab-pane fade in active",
                         attrs: { id: "allAnnotations" }
@@ -52260,29 +52406,15 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-sm-3" }, [
-      _c("div", { staticClass: "sidebar-nav" }, [
-        _c(
-          "div",
-          { staticClass: "navbar-collapse collapse sidebar-navbar-collapse" },
-          [
-            _c("ul", { staticClass: "nav nav-stacked" }, [
-              _c(
-                "li",
-                { staticClass: "nav-link active", attrs: { role: "tab" } },
-                [
-                  _c(
-                    "a",
-                    { attrs: { href: "#tei-header", "data-toggle": "pill" } },
-                    [_vm._v("TEI-HEADER")]
-                  )
-                ]
-              )
-            ])
-          ]
-        )
-      ])
-    ])
+    return _c(
+      "li",
+      { staticClass: "nav-link active", attrs: { role: "tab" } },
+      [
+        _c("a", { attrs: { href: "#tei-header", "data-toggle": "pill" } }, [
+          _vm._v("TEI-HEADER")
+        ])
+      ]
+    )
   },
   function() {
     var _vm = this

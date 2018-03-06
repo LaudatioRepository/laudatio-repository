@@ -74,7 +74,6 @@ class ElasticService implements ElasticsearchInterface
 
         $response = Elasticsearch::get($params);
         if(!$full){
-//            Log::info("SENDING: ".print_r($response,1));
             return array(
                 'error' => false,
                 'result' => $response['_source']
@@ -137,7 +136,6 @@ class ElasticService implements ElasticsearchInterface
 
         $response = Elasticsearch::get($params);
         if(!$full){
-//            Log::info("SENDING: ".print_r($response,1));
             return array(
                 'error' => false,
                 'result' => $response['_source']
@@ -311,7 +309,7 @@ class ElasticService implements ElasticsearchInterface
                 '_source' => ["_id"]
             ];
             $response = Elasticsearch::search($params);
-            
+
             $hits = isset($response['hits']['hits'][0]) ? $response['hits']['hits'][0] : false;
             if($hits){
                 $elasticIds[$objectId] = $response['hits']['hits'][0]['_id'];
@@ -751,10 +749,8 @@ class ElasticService implements ElasticsearchInterface
                 'body' => $queryBody,
                 '_source_exclude' => ['message']
             ];
-            //Log::info("queryBody : ".print_r($queryBody,1));
 
             $results = Elasticsearch::search($params);
-            //Log::info("results : ".print_r($results,1));
             return $results;
         }
         else{
@@ -811,7 +807,6 @@ class ElasticService implements ElasticsearchInterface
 
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
-        //Log::info("SENDING: ".print_r($request->searchData,1));
 
         if(count($request->searchData) > 1){
             $queryBody = $queryBuilder->buildMustQuery($request->searchData);
@@ -1005,7 +1000,6 @@ class ElasticService implements ElasticsearchInterface
             }
             $qs = "\r";
             $queries = array();
-            //Log::info("getDocumentsByAnnotation:id ".$id);
             foreach($annotationDatum as $queryData){
                 $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
                 array_push($queries,$queryBody);
@@ -1017,7 +1011,6 @@ class ElasticService implements ElasticsearchInterface
                 }
             }
 
-            //Log::info("getDocumentsByAnnotation:qs ".print_r($qs,1));
             $resultset = $this->curlRequest($qs,'document/_msearch');
             $results = $resultset['resultdata'];
 
@@ -1051,8 +1044,7 @@ class ElasticService implements ElasticsearchInterface
                     }
                 }
 
-                //Log::info("getDocumentsByAnnotation:results ".print_r($resultData[$id],1));
-                //Log::info("curlinfo ".print_r($resultset['curlinfo'],1));
+
                 $metrics[$id]['curlinfo_url'] = $resultset['curlinfo']['url'];
                 $metrics[$id]['curlinfo_http_code'] = $resultset['curlinfo']['http_code'];
                 $metrics[$id]['curlinfo_size_download'] = $resultset['curlinfo']['size_download'];
@@ -1069,20 +1061,14 @@ class ElasticService implements ElasticsearchInterface
 
         $allhits = array();
         foreach($metrics as $id => $data){
-            //Log::info("data: ".print_r($data,1));
             array_push($data,'{"profile": true,"query": {"match": {"'.$key.'": "'.$value.'"}}, "size": 1000, "_source": ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]}');
-            //array_push($allhits,$data);
             fputcsv($file,$data);
         }
         fclose($file);
-        //file_put_contents("/Users/rolfguescini/source/phpelasticsearchlaudatio/storage/serialized.txt",serialize($allhits));
 
         $resultData['metrics'] = $metrics;
         $totaltime = floor($totaltime/60000).':'.floor(($totaltime%60000)/1000).':'.str_pad(floor($totaltime%1000),3,'0', STR_PAD_LEFT);
         $resultData['totaltime'] = $totaltime;
-        //Log::info("metrics ".print_r($resultData['metrics'],1));
-        //Log::info("metrics:total ".print_r($resultData['totaltime'],1));
-
 
 
         return $resultData;
@@ -1105,7 +1091,6 @@ class ElasticService implements ElasticsearchInterface
             foreach($annotationDatum as $queryData){
 
                 if(strlen($queryData['_id']) > 1){
-                    //Log::info("getDocumentsByAnnotation:params ".print_r($queryData,1));
                     $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
                     array_push($queries,$queryBody);
                 }
@@ -1122,7 +1107,7 @@ class ElasticService implements ElasticsearchInterface
             ];
 
             $results = Elasticsearch::msearch($params);
-            //Log::info("DOING MSEEARCH: ".print_r($results,1));
+
             foreach ($results['responses'] as $result){
                 if(count($result['hits']['hits']) > 0){
                     array_push($resultData[$id],$result['hits']['hits'][0]);
@@ -1177,9 +1162,8 @@ class ElasticService implements ElasticsearchInterface
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
         $counter = 0;
-        Log::info("sea: ".print_r($searchData,1 ));
         $queryBody = $queryBuilder->buildSingleMatchQuery($searchData);
-        Log::info("QB: ".print_r($queryBody,1 ));
+
         $params = [
             'size' => 1000,
             'index' => 'corpus',
@@ -1269,22 +1253,89 @@ class ElasticService implements ElasticsearchInterface
         ];
 
         $results = Elasticsearch::search($params);
+
         return $results;
     }
 
     public function getGuidelinesByCorpus($corpusId){
+        $queryBuilder = new QueryBuilder();
+        $queryBody = $queryBuilder->buildSingleMatchQuery(array(
+            array(
+                "in_corpus" => $corpusId
+            )
+        ));
+
         $params = [
-            'index' => 'corpus',
-            'type' => 'corpus',
-            'id' => $corpusId,
-            '_source' => ["annotation_id","annotation_type","annotation_name","annotation_tag","annotation_tag_description"]
+            'index' => 'guideline',
+            'type' => 'guideline',
+            'body' => $queryBody,
+            'size'=> 100,
+            '_source' => ["formats","in_annotations","id","desc"]
         ];
 
-        $response = Elasticsearch::get($params);
+        $results = Elasticsearch::search($params);
         return array(
             'error' => false,
-            'result' => $response['_source']
+            'result' => $results
         );
+    }
+
+    public function getGuidelinesByCorpusAndAnnotationId($corpusId,$annotationName){
+        $queryBuilder = new QueryBuilder();
+        $queryBody = $queryBuilder->buildMustQuery(array(
+            array(
+                "in_corpus" => $corpusId
+            ),
+            array(
+                "in_annotations" => $annotationName
+            ),
+        ));
+
+        $params = [
+            'index' => 'guideline',
+            'type' => 'guideline',
+            'body' => $queryBody,
+            'size'=> 100,
+            '_source' => ["formats","in_annotations","id","desc"]
+        ];
+
+        $results = Elasticsearch::search($params);
+        return array(
+            'error' => false,
+            'result' => $results
+        );
+    }
+
+    /**
+     * getFormatsByCorpus
+     * Fetches all format terms for a given Corpus
+     * @param $corpusId
+     * @return mixed
+     */
+    public function getFormatsByCorpus($corpusId){
+        $queryBuilder = new QueryBuilder();
+
+        $queryBody = $queryBuilder->buildTermsAggregationQueryByMatchQuery(
+            array(
+                "field" => "in_corpus",
+                "value" => $corpusId
+            ),
+            array(
+                "name" => "formats",
+                "field" => "formats.keyword"
+            )
+        );
+
+        $params = [
+            'index' => 'guideline',
+            'type' => 'guideline',
+            'body' => $queryBody,
+            'size'=> 100,
+            'filter_path' => ['aggregations.formats.buckets.key']
+        ];
+
+        $results = Elasticsearch::search($params);
+        return $results;
     }
 
     /**

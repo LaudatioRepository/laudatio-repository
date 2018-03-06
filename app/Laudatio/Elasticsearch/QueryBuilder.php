@@ -132,9 +132,7 @@ class QueryBuilder
             "document_size_extent_to" => "document_size_extent"
 
         );
-        //Log::info("fielddata: ".print_r($fielddata,1));
 
-        //Log::info("rangedata: ".print_r($rangedata,1));
 
         foreach($fielddata as $param){
             foreach ($param as $key => $value){
@@ -228,6 +226,21 @@ class QueryBuilder
 
         $search->addAggregation($termAggregation);
         $queryArray = $search->toArray();
+
+        return $queryArray;
+    }
+
+    public function buildTermsAggregationQueryByMatchQuery($matchData, $aggregationData){
+        $termAggregation = new TermsAggregation($aggregationData['name']);
+        $termAggregation->setField($aggregationData['field']);
+
+        $matchQuery = new MatchQuery($matchData['field'], $matchData['value']);
+        $search = new Search();
+        $search->addQuery($matchQuery);
+
+        $search->addAggregation($termAggregation);
+        $queryArray = $search->toArray();
+
         return $queryArray;
     }
 }
