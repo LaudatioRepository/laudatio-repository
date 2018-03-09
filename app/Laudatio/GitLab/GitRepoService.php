@@ -341,7 +341,9 @@ class GitRepoService implements GitRepoInterface
 
     public function addFiles($path,$corpus){
         $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
+        Log::info("PATH: ".$path);
         $file = substr($path,strrpos($path,"/")+1);
+        Log::info("pathWithOutAddedFolder: ".$pathWithOutAddedFolder." FILE: ".$file);
         $isAdded = $this->addFilesToRepository($pathWithOutAddedFolder,$file);
         return $isAdded;
     }

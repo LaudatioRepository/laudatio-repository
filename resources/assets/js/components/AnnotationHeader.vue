@@ -76,10 +76,10 @@
         methods: {
             annotationEditors: function(){
                 var editorString = "";
-                for(var i=0; i < this.headerdata.preparation_editor_forename.length;i++) {
-                    editorString += this.headerdata.preparation_editor_forename[i]
+                for(var i=0; i < this.headerdata.corpus_editor_forename.length;i++) {
+                    editorString += this.headerdata.corpus_editor_forename[i]
                         .concat(' ')
-                        .concat(this.headerdata.preparation_editor_surname[i])
+                        .concat(this.headerdata.corpus_editor_surname[i])
                         .concat(',');
                 }
                 editorString = editorString.substring(0,editorString.lastIndexOf(","));

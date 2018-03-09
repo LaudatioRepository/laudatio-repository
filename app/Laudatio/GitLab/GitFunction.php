@@ -189,6 +189,7 @@ class GitFunction
     public function addUntracked($pathWithOutAddedFolder, $folder = ""){
         $isAdded = false;
         $status = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
+        Log::info("STATUS: ".$status);
         if($folder == ""){
             if($this->isUntracked($status)){
                 $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder);

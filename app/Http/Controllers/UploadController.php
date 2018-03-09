@@ -261,8 +261,8 @@ class UploadController extends Controller
                 $corpusPath = $dirPathArray[1];
             }
             else{
-                $addPath = $corpusPath.'/TEI-HEADERS/corpus/';
-                $commitPath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/';
+                $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/'.$fileName;
             }
 
             //if($dirPathArray[$last_id] == 'corpus' && !$isVersioned){
