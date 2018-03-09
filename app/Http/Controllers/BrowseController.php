@@ -30,42 +30,42 @@ class BrowseController extends Controller
                 break;
             case "document":
                 $data = $this->ElasticService->getDocument($id);
-
-                if(count($data['result']['in_corpora']) > 0){
-                    $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $data['result']['in_corpora'][0])),array($id));
+                $corpusId = is_array($data['result']['in_corpora']) ? $data['result']['in_corpora'][0]: $data['result']['in_corpora'];
+                if($corpusId){
+                    $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $corpusId)),array($id));
                     $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
-                }
 
-                $annotationMapping = array();
-                foreach($data['result']['document_list_of_annotations_id'] as $annotationId){
-                    $annotationData = $this->ElasticService->getAnnotationByName($annotationId, array(
-                        "preparation_encoding_annotation_group",
-                        "preparation_title",
-                        "in_documents"
-                    ));
+                    $annotationMapping = array();
+                    foreach($data['result']['document_list_of_annotations_id'] as $annotationId){
+                        $annotationData = $this->ElasticService->getAnnotationByName($annotationId, array(
+                            "preparation_encoding_annotation_group",
+                            "preparation_title",
+                            "in_documents"
+                        ));
 
 
-                    if(!$annotationData['error'] && count($annotationData['result']) > 0){
-                        if(array_key_exists('preparation_encoding_annotation_group', $annotationData['result'][0])){
-                            $groups = array_unique($annotationData['result'][0]['preparation_encoding_annotation_group']);
-                            foreach ($groups as $group){
-                                if(!array_key_exists($group,$annotationMapping)){
-                                    $annotationMapping[$group] = array();
+                        if(!$annotationData['error'] && count($annotationData['result']) > 0){
+                            if(array_key_exists('preparation_encoding_annotation_group', $annotationData['result'][0])){
+                                $groups = array_unique($annotationData['result'][0]['preparation_encoding_annotation_group']);
+                                foreach ($groups as $group){
+                                    if(!array_key_exists($group,$annotationMapping)){
+                                        $annotationMapping[$group] = array();
+                                    }
+                                    $dataArray = array();
+                                    if(array_key_exists('in_documents', $annotationData['result'][0])){
+                                        $dataArray['document_count'] = floatval(count($annotationData['result'][0]['in_documents']));
+                                    }
+                                    $dataArray['title'] = $annotationData['result'][0]['preparation_title'][0];
+                                    array_push($annotationMapping[$group],$dataArray);
                                 }
-                                $dataArray = array();
-                                if(array_key_exists('in_documents', $annotationData['result'][0])){
-                                    $dataArray['document_count'] = floatval(count($annotationData['result'][0]['in_documents']));
-                                }
-                                $dataArray['title'] = $annotationData['result'][0]['preparation_title'][0];
-                                array_push($annotationMapping[$group],$dataArray);
                             }
                         }
+
                     }
 
+
+                    $data['result']['annotationGroups'] = $annotationMapping;
                 }
-
-
-                $data['result']['annotationGroups'] = $annotationMapping;
 
                 break;
             case "annotation":
@@ -104,8 +104,14 @@ class BrowseController extends Controller
 
                         array_push($formats,$formatSearchResult['key']);
                     }
-                    $data['result']['allformats'] = $formats;
 
+                    if(count($data['result']['in_documents']) > 0){
+                        $documentsByAnnotation = $this->ElasticService->getDocumentsByAnnotationAndCorpusId($data['result']['in_documents'],$corpusId);
+                        $data['result']['documents'] = $documentsByAnnotation['results'];
+                    }
+
+
+                    $data['result']['allformats'] = $formats;
                     $data['result']['guidelines'] = $guidelineArray;
                     //Log::info("GUIDELINES: ".print_r( $data['result']['guidelines'],1 ));
                 }

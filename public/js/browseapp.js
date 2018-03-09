@@ -52007,43 +52007,47 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "headerRow headerNav" }, [
+    _c("div", { staticClass: "headerColumn left" }),
+    _vm._v(" "),
+    _c("div", { staticClass: "headerColumn middle" }, [
+      _c("ul", { staticClass: "nav nav-pills" }, [
+        _vm._m(0),
+        _vm._v(" "),
+        _vm._m(1),
+        _vm._v(" "),
+        _c("li", { attrs: { role: "tab" } }, [
+          _c("a", { attrs: { href: "#documents", "data-toggle": "pill" } }, [
+            _vm._v("DOCUMENTS "),
+            _c("i", { staticClass: "material-icons" }, [_vm._v("create")]),
+            _vm._v(" " + _vm._s(_vm.headerdata.documents.length))
+          ])
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "headerColumn right" })
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "headerRow headerNav" }, [
-      _c("div", { staticClass: "headerColumn left" }),
-      _vm._v(" "),
-      _c("div", { staticClass: "headerColumn middle" }, [
-        _c("ul", { staticClass: "nav nav-pills" }, [
-          _c("li", { staticClass: "active", attrs: { role: "tab" } }, [
-            _c("a", { attrs: { href: "#guidelines", "data-toggle": "pill" } }, [
-              _vm._v("GUIDELINES")
-            ])
-          ]),
-          _vm._v(" "),
-          _c("li", { attrs: { role: "tab" } }, [
-            _c(
-              "a",
-              { attrs: { href: "#preparationsteps", "data-toggle": "pill" } },
-              [_vm._v("PREPARATION STEPS")]
-            )
-          ]),
-          _vm._v(" "),
-          _c("li", { attrs: { role: "tab" } }, [
-            _c("a", { attrs: { href: "#documents", "data-toggle": "pill" } }, [
-              _vm._v("DOCUMENTS "),
-              _c("i", { staticClass: "material-icons" }, [_vm._v("create")]),
-              _vm._v(" 200")
-            ])
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "headerColumn right" })
+    return _c("li", { staticClass: "active", attrs: { role: "tab" } }, [
+      _c("a", { attrs: { href: "#guidelines", "data-toggle": "pill" } }, [
+        _vm._v("GUIDELINES")
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", { attrs: { role: "tab" } }, [
+      _c("a", { attrs: { href: "#preparationsteps", "data-toggle": "pill" } }, [
+        _vm._v("PREPARATION STEPS")
+      ])
     ])
   }
 ]
@@ -52109,6 +52113,14 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -52374,6 +52386,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 label: 'Annotation sub group',
                 field: 'subgroup',
                 filterable: true
+            }],
+            documentColumns: [{
+                label: 'Title',
+                field: 'title',
+                filterable: true
+            }, {
+                label: 'Tokens',
+                field: 'tokens',
+                filterable: true
+            }, {
+                label: 'Publishing date',
+                field: 'date',
+                filterable: true
+            }, {
+                label: 'Place',
+                field: 'place',
+                filterable: true
+            }, {
+                label: 'Annotations',
+                field: 'annotations',
+                type: 'number',
+                html: false,
+                filterable: true
             }]
         };
     },
@@ -52503,6 +52538,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 }
             }
             return preparationArray;
+        },
+        documentRows: function documentRows() {
+            var documentArray = [];
+            var theHeaderData = this.headerdata;
+            if (typeof theHeaderData.documents != 'undefined' && typeof theHeaderData.in_documents != 'undefined' && this.hasSameLength([theHeaderData.documents, theHeaderData.in_documents]) && theHeaderData.documents.length > 0) {
+
+                for (var i = 0; i < theHeaderData.documents.length; i++) {
+                    var documentObject = {};
+                    documentObject.title = theHeaderData.documents[i].document_title[0];
+                    documentObject.tokens = theHeaderData.documents[i].document_size_extent[0];
+                    documentObject.date = theHeaderData.documents[i].document_publication_publishing_date[0];
+                    documentObject.place = theHeaderData.documents[i].document_history_original_place[0];
+                    documentObject.annotations = theHeaderData.documents[i].document_list_of_annotations_id.length;
+                    documentObject.document_id = theHeaderData.in_documents[i];
+                    documentArray.push(documentObject);
+                }
+            }
+            return documentArray;
+        },
+        goToDocument: function goToDocument(row, index) {
+            console.log("ROW: " + JSON.stringify(row)); //the object for the row that was clicked on
+            console.log("INDIX: " + index); // index of the row that was clicked on
+            document.location = "/browse/document/" + row.document_id;
+            return index;
         },
         hasSameLength: function hasSameLength(attributes) {
             var hasSameLength = false;
@@ -53011,6 +53070,37 @@ var render = function() {
                       )
                     : _vm._e()
                 ])
+              ])
+            ])
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "tab-pane fade", attrs: { id: "documents" } },
+          [
+            _c("div", { staticClass: "row" }, [
+              _c("div", { staticClass: "col-sm-9" }, [
+                _c(
+                  "div",
+                  { staticClass: "tab-content" },
+                  [
+                    _c("h2", [_vm._v("DOCUMENTS")]),
+                    _vm._v(" "),
+                    _c("vue-good-table", {
+                      attrs: {
+                        title: "",
+                        columns: _vm.documentColumns,
+                        rows: _vm.documentRows(),
+                        paginate: true,
+                        lineNumbers: false,
+                        onClick: _vm.goToDocument,
+                        styleClass: "table table-striped"
+                      }
+                    })
+                  ],
+                  1
+                )
               ])
             ])
           ]

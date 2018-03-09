@@ -923,6 +923,41 @@ class ElasticService implements ElasticsearchInterface
         return $results['hits']['hits'][0];
     }
 
+    public function getDocumentsByAnnotationAndCorpusId($documentList,$corpusId){
+        $resultData = array();
+
+        foreach($documentList as $documentId) {
+            $queryBuilder = new QueryBuilder();
+            $queryBody = $queryBuilder->buildMustQuery(array(
+                array(
+                    "in_corpora" => $corpusId
+                ),
+                array(
+                    "_id" => $documentId
+                ),
+            ));
+
+            $params = [
+                'index' => 'document',
+                'type' => 'document',
+                'body' => $queryBody,
+                'size'=> 100,
+                '_source' => ["document_title","document_size_extent","document_publication_publishing_date","document_id","document_history_original_place","document_list_of_annotations_id","_id"]
+            ];
+            $result = Elasticsearch::search($params);
+
+            if(count($result['hits']['hits']) > 0){
+                array_push($resultData,$result['hits']['hits'][0]['_source']);
+            }
+        }
+
+
+
+        return array(
+            'error' => false,
+            'results' => $resultData
+        );
+    }
 
     public function getDocumentsByAnnotation($searchData,$annotationData){
         $resultData = array();

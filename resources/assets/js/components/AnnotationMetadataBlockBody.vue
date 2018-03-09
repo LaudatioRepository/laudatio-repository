@@ -4,167 +4,175 @@
 
         </div>
         <div class="bodyColumn middle">
-          <div class="container tab-content">
-        <div class="tab-pane fade in active" id="guidelines">
-            <div class="row">
-              <div class="col-sm-3">
-                <div class="sidebar-nav">
-                    <div class="navbar-collapse collapse sidebar-navbar-collapse">
-                      <ul class="nav nav-stacked">
-                          <li role="tab" class="nav-link active"><a href="#tei-header" data-toggle="pill">TEI-HEADER</a></li>
-                          <li v-for="(guidelinedata, guidelinekey) in headerdata.guidelines" class="nav-link" role="tab">
-                                <a v-if="Object.keys(guidelinedata['annotations']).length > 0" v-bind:href="('#').concat(guidelinekey)" data-toggle="pill" >{{guidelinekey}}</a>
-                                <!-- a href="#" data-toggle="collapse" v-bind:data-target="('#drilldown-').concat(guidelinekey)">{{guidelinekey}}</a-->
-                                    <!--ul v-bind:id="('drilldown-').concat(guidelinekey)" class="nav nav-stacked collapse">
-                                        <li role="tab" class="nav-link" v-for="(annotationdata, annotationkey) in guidelinedata['annotations']">
-                                            <a href="#">{{annotationkey}}</a>
-                                         </li>
-                                      </ul-->
-
-
-                            <!--span v-else>
-                                <a v-bind:href="('#').concat(guidelinekey)" data-toggle="pill" >{{guidelinekey}}</a>
-                            </span-->
-                        </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-9">
-                <div class="tab-content" v-if="header == 'annotation'">
-                    <div class="tab-pane fade in active" id="tei-header">
-                        <h2>GUIDELINES - TEI-Header</h2>
-                        <table class="table table-condensed">
-                            <tr>
-                                <th>Title: </th>
-
-                            </tr>
-
-                        </table>
-                    </div>
-                    <div class="tab-pane fade" v-for="(guidelinedata, guidelinekey) in headerdata.guidelines" :id="guidelinekey" v-if="header == 'annotation'">
-                    <h2>GUIDELINES - for the {{guidelinekey}} format</h2>
-                    <vue-good-table
-                      title=""
-                      :columns="guidelineColumns"
-                      :rows=guidelineRows(guidelinekey)
-                      :paginate="true"
-                      :lineNumbers="false"
-                      styleClass="table table-striped"/>
-                    </div>
-
-                </div>
-              </div>
-            </div>
-        </div>
-        <div class="tab-pane fade" id="preparationsteps">
-        <div class="row">
-              <div class="col-sm-3">
-
-                <div class="sidebar-nav">
-                    <div class="navbar-collapse collapse sidebar-navbar-collapse">
-                      <ul class="nav nav-stacked">
-                        <li class="nav-link" role="tab">
-                            <a href="#" data-toggle="collapse" data-target="#authorship">AUTHORSHIP</a>
-                            <ul class="nav nav-stacked collapsed" id="authorship">
-                                <li role="tab" class="nav-link active"><a href="#editors" data-toggle="pill" v-if="this.annotatorRows().length > 0">EDITORS</a></li>
-                                <li role="tab" class="nav-link"><a href="#annotators" data-toggle="pill" v-if="this.annotatorRows().length > 0">ANNOTATORS</a></li>
-                                <li role="tab" class="nav-link"><a href="#transcription" data-toggle="pill" v-if="this.transcriptionRows().length > 0">TRANSCRIPTION</a></li>
-                                <li role="tab" class="nav-link" v-if="this.infrastructureRows().length > 0"><a href="#infrastructure" data-toggle="pill">INFRASTRUCTURE</a></li>
+            <!-- start guidelines -->
+            <div class="container tab-content">
+                <div class="tab-pane fade in active" id="guidelines">
+                    <div class="row">
+                      <div class="col-sm-3">
+                        <div class="sidebar-nav">
+                            <div class="navbar-collapse collapse sidebar-navbar-collapse">
+                              <ul class="nav nav-stacked">
+                                  <li role="tab" class="nav-link active"><a href="#tei-header" data-toggle="pill">TEI-HEADER</a></li>
+                                  <li v-for="(guidelinedata, guidelinekey) in headerdata.guidelines" class="nav-link" role="tab">
+                                        <a v-if="Object.keys(guidelinedata['annotations']).length > 0" v-bind:href="('#').concat(guidelinekey)" data-toggle="pill" >{{guidelinekey}}</a>
+                                </li>
                             </ul>
-                        </li>
-                        <li role="tab" class="nav-link" v-if="this.versionRows().length > 0"><a href="#versions" data-toggle="pill">VERSIONS</a></li>
-                        <li role="tab" class="nav-link" v-if="this.licenseRows().length > 0"><a href="#license" data-toggle="pill">LICENSE/SOURCE</a></li>
-                        <li role="tab" class="nav-link"><a href="#preparation" data-toggle="pill">PREPARATION</a></li>
-                    </ul>
-                  </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-sm-9">
+                        <div class="tab-content" v-if="header == 'annotation'">
+                            <div class="tab-pane fade in active" id="tei-header">
+                                <h2>GUIDELINES - TEI-Header</h2>
+                                <table class="table table-condensed">
+                                    <tr>
+                                        <th>Title: </th>
+
+                                    </tr>
+
+                                </table>
+                            </div>
+                            <div class="tab-pane fade" v-for="(guidelinedata, guidelinekey) in headerdata.guidelines" :id="guidelinekey" v-if="header == 'annotation'">
+                                <h2>GUIDELINES - for the {{guidelinekey}} format</h2>
+                                <vue-good-table
+                                  title=""
+                                  :columns="guidelineColumns"
+                                  :rows=guidelineRows(guidelinekey)
+                                  :paginate="true"
+                                  :lineNumbers="false"
+                                  styleClass="table table-striped"/>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
                 </div>
-              </div>
-              <div class="col-sm-9">
-               <div class="tab-content">
+                <!-- end guidelines -->
+                <!-- start preparation steps -->
+                <div class="tab-pane fade" id="preparationsteps">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <div class="sidebar-nav">
+                                <div class="navbar-collapse collapse sidebar-navbar-collapse">
+                                  <ul class="nav nav-stacked">
+                                    <li class="nav-link" role="tab">
+                                        <a href="#" data-toggle="collapse" data-target="#authorship">AUTHORSHIP</a>
+                                        <ul class="nav nav-stacked collapsed" id="authorship">
+                                            <li role="tab" class="nav-link active"><a href="#editors" data-toggle="pill" v-if="this.annotatorRows().length > 0">EDITORS</a></li>
+                                            <li role="tab" class="nav-link"><a href="#annotators" data-toggle="pill" v-if="this.annotatorRows().length > 0">ANNOTATORS</a></li>
+                                            <li role="tab" class="nav-link"><a href="#transcription" data-toggle="pill" v-if="this.transcriptionRows().length > 0">TRANSCRIPTION</a></li>
+                                            <li role="tab" class="nav-link" v-if="this.infrastructureRows().length > 0"><a href="#infrastructure" data-toggle="pill">INFRASTRUCTURE</a></li>
+                                        </ul>
+                                    </li>
+                                    <li role="tab" class="nav-link" v-if="this.versionRows().length > 0"><a href="#versions" data-toggle="pill">VERSIONS</a></li>
+                                    <li role="tab" class="nav-link" v-if="this.licenseRows().length > 0"><a href="#license" data-toggle="pill">LICENSE/SOURCE</a></li>
+                                    <li role="tab" class="nav-link"><a href="#preparation" data-toggle="pill">PREPARATION</a></li>
+                                  </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="tab-content">
+                                <div class="tab-pane fade in active" id="editors" v-if="header == 'annotation' && this.editorRows().length > 0">
+                                <h2>EDITORS</h2>
+                                    <vue-good-table
+                                      title=""
+                                      :columns="personColumns"
+                                      :rows=editorRows()
+                                      :paginate="true"
+                                      :lineNumbers="false"
+                                      styleClass="table table-striped"/>
+                                </div>
 
-                   <div class="tab-pane fade in active" id="editors" v-if="header == 'annotation' && this.editorRows().length > 0">
-                        <h2>EDITORS</h2>
-                        <vue-good-table
-                          title=""
-                          :columns="personColumns"
-                          :rows=editorRows()
-                          :paginate="true"
-                          :lineNumbers="false"
-                          styleClass="table table-striped"/>
+                                <div class="tab-pane fade" id="annotators" v-if="header == 'annotation' && this.annotatorRows().length > 0">
+                                    <h2>ANNOTATORS</h2>
+                                    <vue-good-table
+                                      title=""
+                                      :columns="personColumns"
+                                      :rows=annotatorRows()
+                                      :paginate="true"
+                                      :lineNumbers="false"
+                                      styleClass="table table-striped"/>
+                                </div>
+
+                                <div class="tab-pane fade" id="transcription" v-if="header == 'annotation' && this.transcriptionRows().length > 0">
+                                    <h2>TRANSCRIPTION</h2>
+                                     <vue-good-table
+                                      title=""
+                                      :columns="personColumns"
+                                      :rows=transcriptionRows()
+                                      :paginate="true"
+                                      :lineNumbers="false"
+                                      styleClass="table table-striped"/>
+                                </div>
+
+                                <div class="tab-pane fade" id="infrastructure" v-if="header == 'annotation' && this.infrastructureRows().length > 0">
+                                    <h2>INFRASTRUCTURE</h2>
+                                    <vue-good-table
+                                      title=""
+                                      :columns="personColumns"
+                                      :rows=infrastructureRows()
+                                      :paginate="true"
+                                      :lineNumbers="false"
+                                      styleClass="table table-striped"/>
+                                </div>
+
+                                <div class="tab-pane fade" id="versions" v-if="header == 'annotation' && this.versionRows().length > 0">
+                                    <h2>VERSIONS</h2>
+                                    <vue-good-table
+                                      title=""
+                                      :columns="versionColumns"
+                                      :rows=versionRows()
+                                      :paginate="true"
+                                      :lineNumbers="false"
+                                      styleClass="table table-striped"/>
+                                </div>
+
+                                <div class="tab-pane fade" id="license" v-if="header == 'annotation' && this.licenseRows().length > 0">
+                                    <h2>LICENSE/SOURCE</h2>
+                                    <vue-good-table
+                                      title=""
+                                      :columns="licenseColumns"
+                                      :rows=licenseRows()
+                                      :paginate="true"
+                                      :lineNumbers="false"
+                                      styleClass="table table-striped"/>
+                                </div>
+
+                                <div class="tab-pane fade" id="preparation" v-if="header == 'annotation'">
+                                    <h2>PREPARATION</h2>
+                                    <vue-good-table
+                                      title=""
+                                      :columns="preparationColumns"
+                                      :rows=preparationRows()
+                                      :paginate="true"
+                                      :lineNumbers="false"
+                                      styleClass="table table-striped"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="tab-pane fade" id="annotators" v-if="header == 'annotation' && this.annotatorRows().length > 0">
-                        <h2>ANNOTATORS</h2>
-                        <vue-good-table
-                          title=""
-                          :columns="personColumns"
-                          :rows=annotatorRows()
-                          :paginate="true"
-                          :lineNumbers="false"
-                          styleClass="table table-striped"/>
-                    </div>
-
-                    <div class="tab-pane fade" id="transcription" v-if="header == 'annotation' && this.transcriptionRows().length > 0">
-                        <h2>TRANSCRIPTION</h2>
-                         <vue-good-table
-                          title=""
-                          :columns="personColumns"
-                          :rows=transcriptionRows()
-                          :paginate="true"
-                          :lineNumbers="false"
-                          styleClass="table table-striped"/>
-                    </div>
-
-                    <div class="tab-pane fade" id="infrastructure" v-if="header == 'annotation' && this.infrastructureRows().length > 0">
-                        <h2>INFRASTRUCTURE</h2>
-                        <vue-good-table
-                          title=""
-                          :columns="personColumns"
-                          :rows=infrastructureRows()
-                          :paginate="true"
-                          :lineNumbers="false"
-                          styleClass="table table-striped"/>
-                    </div>
-
-                    <div class="tab-pane fade" id="versions" v-if="header == 'annotation' && this.versionRows().length > 0">
-                        <h2>VERSIONS</h2>
-                        <vue-good-table
-                          title=""
-                          :columns="versionColumns"
-                          :rows=versionRows()
-                          :paginate="true"
-                          :lineNumbers="false"
-                          styleClass="table table-striped"/>
-                    </div>
-
-                    <div class="tab-pane fade" id="license" v-if="header == 'annotation' && this.licenseRows().length > 0">
-                        <h2>LICENSE/SOURCE</h2>
-                        <vue-good-table
-                          title=""
-                          :columns="licenseColumns"
-                          :rows=licenseRows()
-                          :paginate="true"
-                          :lineNumbers="false"
-                          styleClass="table table-striped"/>
-                    </div>
-
-                    <div class="tab-pane fade" id="preparation" v-if="header == 'annotation'">
-                        <h2>PREPARATION</h2>
-                        <vue-good-table
-                          title=""
-                          :columns="preparationColumns"
-                          :rows=preparationRows()
-                          :paginate="true"
-                          :lineNumbers="false"
-                          styleClass="table table-striped"/>
-                    </div>
-
                 </div>
-              </div>
+                <!-- end preparationsteps -->
+                <!-- start documents -->
+                <div class="tab-pane fade" id="documents">
+                    <div class="row">
+                        <div class="col-sm-9">
+                            <div class="tab-content">
+                                <h2>DOCUMENTS</h2>
+                                    <vue-good-table
+                                      title=""
+                                      :columns="documentColumns"
+                                      :rows=documentRows()
+                                      :paginate="true"
+                                      :lineNumbers="false"
+                                      :onClick="goToDocument"
+                                      styleClass="table table-striped"/>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+                <!-- end docuemnts -->
             </div>
-         </div>
-    </div>
         </div>
         <div class="bodyColumn right">
         </div>
@@ -286,6 +294,35 @@
                     {
                         label: 'Annotation sub group',
                         field: 'subgroup',
+                        filterable: true
+                    }
+                ],
+                documentColumns: [
+                    {
+                        label: 'Title',
+                        field: 'title',
+                        filterable: true
+                    },
+                    {
+                        label: 'Tokens',
+                        field: 'tokens',
+                        filterable: true
+                    },
+                    {
+                        label: 'Publishing date',
+                        field: 'date',
+                        filterable: true
+                    },
+                    {
+                        label: 'Place',
+                        field: 'place',
+                        filterable: true
+                    },
+                    {
+                        label: 'Annotations',
+                        field: 'annotations',
+                        type: 'number',
+                        html: false,
                         filterable: true
                     }
                 ]
@@ -492,6 +529,37 @@
                     }
                 }
                 return preparationArray;
+            },
+            documentRows: function(){
+              var documentArray = [];
+              var theHeaderData = this.headerdata;
+                if( typeof theHeaderData.documents != 'undefined' &&
+                    typeof theHeaderData.in_documents != 'undefined' &&
+                    this.hasSameLength([
+                        theHeaderData.documents,
+                        theHeaderData.in_documents
+                    ]) &&
+                    theHeaderData.documents.length > 0){
+
+                    for(var i = 0; i < theHeaderData.documents.length; i++) {
+                        var documentObject = {}
+                        documentObject.title = theHeaderData.documents[i].document_title[0];
+                        documentObject.tokens = theHeaderData.documents[i].document_size_extent[0];
+                        documentObject.date = theHeaderData.documents[i].document_publication_publishing_date[0];
+                        documentObject.place = theHeaderData.documents[i].document_history_original_place[0];
+                        documentObject.annotations = theHeaderData.documents[i].document_list_of_annotations_id.length;
+                        documentObject.document_id = theHeaderData.in_documents[i];
+                        documentArray.push(documentObject);
+                    }
+
+                }
+              return documentArray;
+            },
+            goToDocument: function(row, index) {
+                console.log("ROW: "+JSON.stringify(row)); //the object for the row that was clicked on
+                console.log("INDIX: "+index); // index of the row that was clicked on
+                document.location = "/browse/document/"+row.document_id
+                return index;
             },
             hasSameLength: function(attributes) {
                 var hasSameLength = false;
