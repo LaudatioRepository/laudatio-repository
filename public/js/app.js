@@ -37918,7 +37918,7 @@ var render = function() {
                   "div",
                   {
                     staticClass: "panel-collapse collapse",
-                    attrs: { id: corpusresultdata._id }
+                    attrs: { id: corpusresultdata._source.corpus_id[0] }
                   },
                   [
                     _c("div", { staticClass: "panel-body" }, [

@@ -73,7 +73,7 @@
                         <div class="col-sm-9">
                             <div class="tab-content">
                                 <div class="tab-pane fade in active" id="editors" v-if="header == 'annotation' && this.editorRows().length > 0">
-                                <h2>EDITORS</h2>
+                                    <h2>EDITORS</h2>
                                     <vue-good-table
                                       title=""
                                       :columns="personColumns"
@@ -560,6 +560,7 @@
                 console.log("INDIX: "+index); // index of the row that was clicked on
                 document.location = "/browse/document/"+row.document_id
                 return index;
+
             },
             hasSameLength: function(attributes) {
                 var hasSameLength = false;

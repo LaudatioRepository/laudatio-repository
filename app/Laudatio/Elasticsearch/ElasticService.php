@@ -362,7 +362,7 @@ class ElasticService implements ElasticsearchInterface
                 'type' => 'document',
                 'body' => $queryBody,
                 //'_source_exclude' => ['message'],
-                '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
+                '_source' => ["document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"],
                 'filter_path' => ['hits.hits']
             ];
 
