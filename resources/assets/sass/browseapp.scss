@@ -514,3 +514,10 @@ a .fa.fa-external-link-square, .facsimile {
   background: none;
   border: none;
 }
+
+.disabledLink {
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.8;
+  color: silver!important;
+}

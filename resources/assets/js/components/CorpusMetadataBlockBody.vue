@@ -106,7 +106,7 @@
           :rows=documentRows()
           :paginate="true"
           :lineNumbers="false"
-          :onClick="goToDocument"
+          :onClick="goToDocument        "
           styleClass="table table-striped"/>
     </div>
     <div class="tab-pane fade" id="annotationMetadataBody">
@@ -118,11 +118,13 @@
                     <div class="navbar-collapse collapse sidebar-navbar-collapse">
                       <ul class="nav nav-stacked">
                         <li class="nav-link active" role="tab">
-                            <a href="#allAnnotations" data-toggle="pill">All </a>
+                            <a href="#allAnnotations" data-toggle="pill">All ({{headerdata.corpusannotationcount}})</a>
                         </li>
-                        <li v-for="(annotationGroup, key) in headerdata.annotationGroups" class="nav-link" role="tab">
-                            <a v-bind:href="('#').concat(key)" data-toggle="pill">{{key}} ({{annotationGroup.length}})</a>
+                        <li v-for="(annotationGroup) in headerdata.allAnnotationGroups" class="nav-link" role="tab">
+                            <a v-bind:href="('#').concat(annotationGroup)" data-toggle="pill" v-if="groupCount(annotationGroup) > 0 ">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
+                            <a href="#" data-toggle="pill" v-else class="disabledLink">{{annotationGroup | touppercase}}</a>
                         </li>
+
 
                     </ul>
                   </div>
@@ -131,34 +133,27 @@
               <div class="col-sm-9">
                <div class="tab-content">
                    <div class="tab-pane fade in active" id="allAnnotations" v-if="header == 'corpus'">
-                     <h2>Annotations - All </h2>
-
-
+                     <h2>Annotations - All ({{headerdata.corpusannotationcount}})</h2>
+                        <vue-good-table
+                                  title=""
+                                  :columns="annotationColumns"
+                                  :rows=annotationRows()
+                                  :paginate="true"
+                                  :lineNumbers="false"
+                                  :onClick="goToAnnotation"
+                                  styleClass="table table-striped"/>
 
                     </div>
-                    <div class="tab-pane fade" v-for="(annotationGroup, key) in headerdata.annotationGroups" :id="key" v-if="header == 'corpus'">
-                        <h2>{{key}} ({{annotationGroup.length}})</h2>
-                        <table class="table table-striped">
-                             <thead>
-                                <tr>
-                                    <th>Annotation title</th>
-                                    <th>Category</th>
-                                    <th>Guidelines</th>
-                                    <th>Preparation steps</th>
-                                    <th>Documents</th>
-                                </tr>
-                             </thead>
-                             <tbody>
-                                <tr v-for="(annotationData) in annotationGroup">
-                                    <td>{{annotationData['title']}}</td>
-                                    <td>{{key}}</td>
-                                    <td><span class="redArrow">&gt;</span></td>
-                                    <td><span class="redArrow">&gt;</span></td>
-                                    <td>{{annotationData['document_count']}}</td>
-                                </tr>
-
-                             </tbody>
-                         </table>
+                    <div class="tab-pane fade" v-for="(annotationGroup) in headerdata.allAnnotationGroups" :id="annotationGroup" v-if="header == 'corpus'">
+                        <h2>{{annotationGroup}}  ({{groupCount(annotationGroup)}})</h2>
+                        <vue-good-table
+                          title=""
+                          :columns="annotationColumns"
+                          :rows=annotationRows(annotationGroup)
+                          :paginate="true"
+                          :lineNumbers="false"
+                          :onClick="goToAnnotation"
+                          styleClass="table table-striped"/>
                     </div>
                 </div>
               </div>
@@ -423,28 +418,72 @@
                 }
                 return documentArray;
             },
-            annotationRows: function(){
+            annotationRows2: function(){
                 var annotationArray = [];
+                var foundAnnotationArray = [];
                 var theHeaderData = this.headerdata;
-                if(null != this.headerdata.annotationGroups && typeof this.headerdata.annotationGroups != 'undefined'){
-                    Object.keys(this.headerdata.annotationGroups).forEach(function(key, index) {
+                if(null != this.headerdata.corpusAnnotationGroups && typeof this.headerdata.corpusAnnotationGroups != 'undefined'){
+                    Object.keys(this.headerdata.corpusAnnotationGroups).forEach(function(key, index) {
 
                         this[key].forEach(function(value){
                             value.group = key;
                             if(typeof value.document_count == 'undefined'){
                                 value.document_count = 0.0;
                             }
-                            annotationArray.push(value);
+                            if(foundAnnotationArray.indexOf(value.title) == -1){
+                                annotationArray.push(value);
+                                foundAnnotationArray.push(value.title);
+                            }
+
                         })
-                    }, this.headerdata.annotationGroups);
+                    }, this.headerdata.corpusAnnotationGroups);
                 }
 
                 return annotationArray;
             },
+            annotationRows: function(currentkey){
+                //allAnnotationGroups
+                var annotationArray = [];
+                var foundAnnotationArray = [];
+                var theHeaderData = this.headerdata;
+                if(null != theHeaderData.allAnnotationGroups && null != theHeaderData.corpusAnnotationGroups && typeof theHeaderData.corpusAnnotationGroups != 'undefined'){
+                    for(var i = 0; i < theHeaderData.allAnnotationGroups.length; i++){
+
+                    }
+
+                    Object.keys(this.headerdata.corpusAnnotationGroups).forEach(function(key, index) {
+                        if(key == currentkey) {
+                            this[key].forEach(function(value){
+                                value.group = key;
+                                if(typeof value.document_count == 'undefined'){
+                                    value.document_count = 0.0;
+                                }
+                                if(foundAnnotationArray.indexOf(value.title) == -1){
+                                    annotationArray.push(value);
+                                    foundAnnotationArray.push(value.title);
+                                }
+
+                            })
+                        }
+
+                    }, this.headerdata.corpusAnnotationGroups);
+                }
+
+                return annotationArray;
+            },
+            groupCount: function(key) {
+                var data = this.headerdata.corpusAnnotationGroups;
+                if(typeof data[key] != 'undefined') {
+                    return data[key].length;
+                }
+            },
             goToDocument: function(row, index) {
-                console.log("ROW: "+JSON.stringify(row)); //the object for the row that was clicked on
-                console.log("INDIX: "+index); // index of the row that was clicked on
                 document.location = "/browse/document/"+row.document_id
+                return index;
+
+            },
+            goToAnnotation: function(row, index) {
+                document.location = "/browse/annotation/"+row.preparation_annotation_id
                 return index;
 
             },
@@ -497,7 +536,7 @@
                       index: 'document',
                       corpus_id: corpus_id
                   };
-                  console.log("postAnnotationData: "+postAnnotationData)
+
                   window.axios.post('/api/searchapi/getSearchTotal',postAnnotationData).then(documentsByAnnotationRes => {
                       if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
                           this.documentsByAnnotation.push(

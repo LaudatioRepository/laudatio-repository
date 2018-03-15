@@ -50150,9 +50150,45 @@ var render = function() {
         ? _c("ul", { staticClass: "nav nav-pills" }, [
             _vm._m(0),
             _vm._v(" "),
-            _vm._m(1),
+            _c("li", { attrs: { role: "tab" } }, [
+              _c(
+                "a",
+                {
+                  attrs: {
+                    href: "#documentMetadataBody",
+                    "data-toggle": "pill"
+                  }
+                },
+                [
+                  _vm._v("DOCUMENTS "),
+                  _c("i", { staticClass: "material-icons" }, [
+                    _vm._v("description")
+                  ]),
+                  _vm._v(" " + _vm._s(_vm.headerdata.corpusdocumentcount))
+                ]
+              )
+            ]),
             _vm._v(" "),
-            _vm._m(2)
+            _c("li", { attrs: { role: "tab" } }, [
+              _c(
+                "a",
+                {
+                  attrs: {
+                    href: "#annotationMetadataBody",
+                    "data-toggle": "pill"
+                  }
+                },
+                [
+                  _vm._v("ANNOTATIONS "),
+                  _c("i", { staticClass: "material-icons" }, [
+                    _vm._v("create")
+                  ]),
+                  _vm._v(
+                    " " + _vm._s(_vm.headerdata.totalcorpusannotationcount)
+                  )
+                ]
+              )
+            ])
           ])
         : _vm._e()
     ]),
@@ -50172,38 +50208,6 @@ var staticRenderFns = [
         [
           _vm._v("CORPUS "),
           _c("i", { staticClass: "material-icons" }, [_vm._v("book")])
-        ]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { attrs: { role: "tab" } }, [
-      _c(
-        "a",
-        { attrs: { href: "#documentMetadataBody", "data-toggle": "pill" } },
-        [
-          _vm._v("DOCUMENTS "),
-          _c("i", { staticClass: "material-icons" }, [_vm._v("description")]),
-          _vm._v(" 10")
-        ]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { attrs: { role: "tab" } }, [
-      _c(
-        "a",
-        { attrs: { href: "#annotationMetadataBody", "data-toggle": "pill" } },
-        [
-          _vm._v("ANNOTATIONS "),
-          _c("i", { staticClass: "material-icons" }, [_vm._v("create")]),
-          _vm._v(" 200")
         ]
       )
     ])
@@ -50271,11 +50275,6 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
 //
 //
 //
@@ -50625,28 +50624,66 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
             return documentArray;
         },
-        annotationRows: function annotationRows() {
+        annotationRows2: function annotationRows2() {
             var annotationArray = [];
+            var foundAnnotationArray = [];
             var theHeaderData = this.headerdata;
-            if (null != this.headerdata.annotationGroups && typeof this.headerdata.annotationGroups != 'undefined') {
-                Object.keys(this.headerdata.annotationGroups).forEach(function (key, index) {
+            if (null != this.headerdata.corpusAnnotationGroups && typeof this.headerdata.corpusAnnotationGroups != 'undefined') {
+                Object.keys(this.headerdata.corpusAnnotationGroups).forEach(function (key, index) {
 
                     this[key].forEach(function (value) {
                         value.group = key;
                         if (typeof value.document_count == 'undefined') {
                             value.document_count = 0.0;
                         }
-                        annotationArray.push(value);
+                        if (foundAnnotationArray.indexOf(value.title) == -1) {
+                            annotationArray.push(value);
+                            foundAnnotationArray.push(value.title);
+                        }
                     });
-                }, this.headerdata.annotationGroups);
+                }, this.headerdata.corpusAnnotationGroups);
             }
 
             return annotationArray;
         },
+        annotationRows: function annotationRows(currentkey) {
+            //allAnnotationGroups
+            var annotationArray = [];
+            var foundAnnotationArray = [];
+            var theHeaderData = this.headerdata;
+            if (null != theHeaderData.allAnnotationGroups && null != theHeaderData.corpusAnnotationGroups && typeof theHeaderData.corpusAnnotationGroups != 'undefined') {
+                for (var i = 0; i < theHeaderData.allAnnotationGroups.length; i++) {}
+
+                Object.keys(this.headerdata.corpusAnnotationGroups).forEach(function (key, index) {
+                    if (key == currentkey) {
+                        this[key].forEach(function (value) {
+                            value.group = key;
+                            if (typeof value.document_count == 'undefined') {
+                                value.document_count = 0.0;
+                            }
+                            if (foundAnnotationArray.indexOf(value.title) == -1) {
+                                annotationArray.push(value);
+                                foundAnnotationArray.push(value.title);
+                            }
+                        });
+                    }
+                }, this.headerdata.corpusAnnotationGroups);
+            }
+
+            return annotationArray;
+        },
+        groupCount: function groupCount(key) {
+            var data = this.headerdata.corpusAnnotationGroups;
+            if (typeof data[key] != 'undefined') {
+                return data[key].length;
+            }
+        },
         goToDocument: function goToDocument(row, index) {
-            console.log("ROW: " + JSON.stringify(row)); //the object for the row that was clicked on
-            console.log("INDIX: " + index); // index of the row that was clicked on
             document.location = "/browse/document/" + row.document_id;
+            return index;
+        },
+        goToAnnotation: function goToAnnotation(row, index) {
+            document.location = "/browse/annotation/" + row.preparation_annotation_id;
             return index;
         },
         hasSameLength: function hasSameLength(attributes) {
@@ -50694,7 +50731,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     index: 'document',
                     corpus_id: corpus_id
                 };
-                console.log("postAnnotationData: " + postAnnotationData);
+
                 window.axios.post('/api/searchapi/getSearchTotal', postAnnotationData).then(function (documentsByAnnotationRes) {
                     if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
                         _this.documentsByAnnotation.push(documentsByAnnotationRes.data.results);
@@ -51103,33 +51140,75 @@ var render = function() {
                     "ul",
                     { staticClass: "nav nav-stacked" },
                     [
-                      _vm._m(4),
+                      _c(
+                        "li",
+                        {
+                          staticClass: "nav-link active",
+                          attrs: { role: "tab" }
+                        },
+                        [
+                          _c(
+                            "a",
+                            {
+                              attrs: {
+                                href: "#allAnnotations",
+                                "data-toggle": "pill"
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "All (" +
+                                  _vm._s(_vm.headerdata.corpusannotationcount) +
+                                  ")"
+                              )
+                            ]
+                          )
+                        ]
+                      ),
                       _vm._v(" "),
-                      _vm._l(_vm.headerdata.annotationGroups, function(
-                        annotationGroup,
-                        key
+                      _vm._l(_vm.headerdata.allAnnotationGroups, function(
+                        annotationGroup
                       ) {
                         return _c(
                           "li",
                           { staticClass: "nav-link", attrs: { role: "tab" } },
                           [
-                            _c(
-                              "a",
-                              {
-                                attrs: {
-                                  href: "#".concat(key),
-                                  "data-toggle": "pill"
-                                }
-                              },
-                              [
-                                _vm._v(
-                                  _vm._s(key) +
-                                    " (" +
-                                    _vm._s(annotationGroup.length) +
-                                    ")"
+                            _vm.groupCount(annotationGroup) > 0
+                              ? _c(
+                                  "a",
+                                  {
+                                    attrs: {
+                                      href: "#".concat(annotationGroup),
+                                      "data-toggle": "pill"
+                                    }
+                                  },
+                                  [
+                                    _vm._v(
+                                      _vm._s(
+                                        _vm._f("touppercase")(annotationGroup)
+                                      ) +
+                                        " (" +
+                                        _vm._s(
+                                          _vm.groupCount(annotationGroup)
+                                        ) +
+                                        ")"
+                                    )
+                                  ]
                                 )
-                              ]
-                            )
+                              : _c(
+                                  "a",
+                                  {
+                                    staticClass: "disabledLink",
+                                    attrs: { href: "#", "data-toggle": "pill" }
+                                  },
+                                  [
+                                    _vm._v(
+                                      _vm._s(
+                                        _vm._f("touppercase")(annotationGroup)
+                                      )
+                                    )
+                                  ]
+                                )
                           ]
                         )
                       })
@@ -51153,55 +51232,64 @@ var render = function() {
                         staticClass: "tab-pane fade in active",
                         attrs: { id: "allAnnotations" }
                       },
-                      [_c("h2", [_vm._v("Annotations - All ")])]
+                      [
+                        _c("h2", [
+                          _vm._v(
+                            "Annotations - All (" +
+                              _vm._s(_vm.headerdata.corpusannotationcount) +
+                              ")"
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("vue-good-table", {
+                          attrs: {
+                            title: "",
+                            columns: _vm.annotationColumns,
+                            rows: _vm.annotationRows(),
+                            paginate: true,
+                            lineNumbers: false,
+                            onClick: _vm.goToAnnotation,
+                            styleClass: "table table-striped"
+                          }
+                        })
+                      ],
+                      1
                     )
                   : _vm._e(),
                 _vm._v(" "),
-                _vm._l(_vm.headerdata.annotationGroups, function(
-                  annotationGroup,
-                  key
+                _vm._l(_vm.headerdata.allAnnotationGroups, function(
+                  annotationGroup
                 ) {
                   return _vm.header == "corpus"
                     ? _c(
                         "div",
-                        { staticClass: "tab-pane fade", attrs: { id: key } },
+                        {
+                          staticClass: "tab-pane fade",
+                          attrs: { id: annotationGroup }
+                        },
                         [
                           _c("h2", [
                             _vm._v(
-                              _vm._s(key) +
-                                " (" +
-                                _vm._s(annotationGroup.length) +
+                              _vm._s(annotationGroup) +
+                                "  (" +
+                                _vm._s(_vm.groupCount(annotationGroup)) +
                                 ")"
                             )
                           ]),
                           _vm._v(" "),
-                          _c("table", { staticClass: "table table-striped" }, [
-                            _vm._m(5, true),
-                            _vm._v(" "),
-                            _c(
-                              "tbody",
-                              _vm._l(annotationGroup, function(annotationData) {
-                                return _c("tr", [
-                                  _c("td", [
-                                    _vm._v(_vm._s(annotationData["title"]))
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("td", [_vm._v(_vm._s(key))]),
-                                  _vm._v(" "),
-                                  _vm._m(6, true),
-                                  _vm._v(" "),
-                                  _vm._m(7, true),
-                                  _vm._v(" "),
-                                  _c("td", [
-                                    _vm._v(
-                                      _vm._s(annotationData["document_count"])
-                                    )
-                                  ])
-                                ])
-                              })
-                            )
-                          ])
-                        ]
+                          _c("vue-good-table", {
+                            attrs: {
+                              title: "",
+                              columns: _vm.annotationColumns,
+                              rows: _vm.annotationRows(annotationGroup),
+                              paginate: true,
+                              lineNumbers: false,
+                              onClick: _vm.goToAnnotation,
+                              styleClass: "table table-striped"
+                            }
+                          })
+                        ],
+                        1
                       )
                     : _vm._e()
                 })
@@ -51258,50 +51346,6 @@ var staticRenderFns = [
         _vm._v("FORMATS")
       ])
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "li",
-      { staticClass: "nav-link active", attrs: { role: "tab" } },
-      [
-        _c("a", { attrs: { href: "#allAnnotations", "data-toggle": "pill" } }, [
-          _vm._v("All ")
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("thead", [
-      _c("tr", [
-        _c("th", [_vm._v("Annotation title")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Category")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Guidelines")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Preparation steps")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Documents")])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", [_c("span", { staticClass: "redArrow" }, [_vm._v(">")])])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", [_c("span", { staticClass: "redArrow" }, [_vm._v(">")])])
   }
 ]
 render._withStripped = true
@@ -51406,7 +51450,23 @@ var render = function() {
         ? _c("ul", { staticClass: "nav nav-pills" }, [
             _vm._m(0),
             _vm._v(" "),
-            _vm._m(1)
+            _c("li", { attrs: { role: "tab" } }, [
+              _c(
+                "a",
+                {
+                  attrs: { href: "#annotationMetadata", "data-toggle": "pill" }
+                },
+                [
+                  _vm._v("ANNOTATIONS "),
+                  _c("i", { staticClass: "material-icons" }, [
+                    _vm._v("create")
+                  ]),
+                  _vm._v(
+                    " " + _vm._s(_vm.headerdata.totaldocumentannotationcount)
+                  )
+                ]
+              )
+            ])
           ])
         : _vm._e()
     ]),
@@ -51422,25 +51482,8 @@ var staticRenderFns = [
     return _c("li", { staticClass: "active", attrs: { role: "tab" } }, [
       _c("a", { attrs: { href: "#documentMetadata", "data-toggle": "pill" } }, [
         _vm._v("DOCUMENT METADATA "),
-        _c("i", { staticClass: "material-icons" }, [_vm._v("description")]),
-        _vm._v(" 10")
+        _c("i", { staticClass: "material-icons" }, [_vm._v("description")])
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { attrs: { role: "tab" } }, [
-      _c(
-        "a",
-        { attrs: { href: "#annotationMetadata", "data-toggle": "pill" } },
-        [
-          _vm._v("ANNOTATIONS "),
-          _c("i", { staticClass: "material-icons" }, [_vm._v("create")]),
-          _vm._v(" 200")
-        ]
-      )
     ])
   }
 ]
@@ -52650,7 +52693,7 @@ var render = function() {
                   _c("i", { staticClass: "material-icons" }, [
                     _vm._v("create")
                   ]),
-                  _vm._v(" " + _vm._s(_vm.headerdata.documents.length))
+                  _vm._v(" " + _vm._s(_vm.headerdata.annotationdocumentcount))
                 ]
               )
             ])
