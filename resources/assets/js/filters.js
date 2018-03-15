@@ -19,7 +19,9 @@ Vue.filter('arrayToString', function (array) {
 });
 
 Vue.filter('touppercase', function (string){
-    return string.toUpperCase();
+    if(typeof string != 'undefined') {
+        return string.toUpperCase();
+    }
 });
 
 

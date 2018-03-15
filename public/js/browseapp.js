@@ -32902,7 +32902,9 @@ Vue.filter('arrayToString', function (array) {
 });
 
 Vue.filter('touppercase', function (string) {
-    return string.toUpperCase();
+    if (typeof string != 'undefined') {
+        return string.toUpperCase();
+    }
 });
 
 Vue.filter('addHash', function (string) {
@@ -50437,9 +50439,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -50624,36 +50623,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
             return documentArray;
         },
-        annotationRows2: function annotationRows2() {
-            var annotationArray = [];
-            var foundAnnotationArray = [];
-            var theHeaderData = this.headerdata;
-            if (null != this.headerdata.corpusAnnotationGroups && typeof this.headerdata.corpusAnnotationGroups != 'undefined') {
-                Object.keys(this.headerdata.corpusAnnotationGroups).forEach(function (key, index) {
-
-                    this[key].forEach(function (value) {
-                        value.group = key;
-                        if (typeof value.document_count == 'undefined') {
-                            value.document_count = 0.0;
-                        }
-                        if (foundAnnotationArray.indexOf(value.title) == -1) {
-                            annotationArray.push(value);
-                            foundAnnotationArray.push(value.title);
-                        }
-                    });
-                }, this.headerdata.corpusAnnotationGroups);
-            }
-
-            return annotationArray;
-        },
         annotationRows: function annotationRows(currentkey) {
             //allAnnotationGroups
             var annotationArray = [];
             var foundAnnotationArray = [];
             var theHeaderData = this.headerdata;
             if (null != theHeaderData.allAnnotationGroups && null != theHeaderData.corpusAnnotationGroups && typeof theHeaderData.corpusAnnotationGroups != 'undefined') {
-                for (var i = 0; i < theHeaderData.allAnnotationGroups.length; i++) {}
-
                 Object.keys(this.headerdata.corpusAnnotationGroups).forEach(function (key, index) {
                     if (key == currentkey) {
                         this[key].forEach(function (value) {
@@ -50674,7 +50649,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         groupCount: function groupCount(key) {
             var data = this.headerdata.corpusAnnotationGroups;
-            if (typeof data[key] != 'undefined') {
+            if (typeof data != 'undefined' && typeof data[key] != 'undefined') {
                 return data[key].length;
             }
         },
@@ -51742,19 +51717,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -51851,6 +51813,40 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
 
             return allAnnotations;
+        },
+        annotationRows: function annotationRows(currentkey) {
+            //allAnnotationGroups
+            var annotationArray = [];
+            var foundAnnotationArray = [];
+            var theHeaderData = this.headerdata;
+            if (null != theHeaderData.allAnnotationGroups && null != theHeaderData.annotationGroups && typeof theHeaderData.annotationGroups != 'undefined') {
+                Object.keys(this.headerdata.annotationGroups).forEach(function (key, index) {
+                    if (key == currentkey) {
+                        this[key].forEach(function (value) {
+                            value.group = key;
+                            if (typeof value.document_count == 'undefined') {
+                                value.document_count = 0.0;
+                            }
+                            if (foundAnnotationArray.indexOf(value.title) == -1) {
+                                annotationArray.push(value);
+                                foundAnnotationArray.push(value.title);
+                            }
+                        });
+                    }
+                }, this.headerdata.annotationGroups);
+            }
+
+            return annotationArray;
+        },
+        groupCount: function groupCount(key) {
+            var data = this.headerdata.annotationGroups;
+            if (typeof data != 'undefined' && typeof data[key] != 'undefined') {
+                return data[key].length;
+            }
+        },
+        goToAnnotation: function goToAnnotation(row, index) {
+            document.location = "/browse/annotation/" + row.preparation_annotation_id;
+            return index;
         }
 
     },
@@ -52338,9 +52334,8 @@ var render = function() {
                             ]
                           ),
                           _vm._v(" "),
-                          _vm._l(_vm.headerdata.annotationGroups, function(
-                            annotationGroup,
-                            key
+                          _vm._l(_vm.headerdata.allAnnotationGroups, function(
+                            annotationGroup
                           ) {
                             return _c(
                               "li",
@@ -52349,23 +52344,49 @@ var render = function() {
                                 attrs: { role: "tab" }
                               },
                               [
-                                _c(
-                                  "a",
-                                  {
-                                    attrs: {
-                                      href: "#".concat(key),
-                                      "data-toggle": "pill"
-                                    }
-                                  },
-                                  [
-                                    _vm._v(
-                                      _vm._s(key) +
-                                        " (" +
-                                        _vm._s(annotationGroup.length) +
-                                        ")"
+                                _vm.groupCount(annotationGroup) > 0
+                                  ? _c(
+                                      "a",
+                                      {
+                                        attrs: {
+                                          href: "#".concat(annotationGroup),
+                                          "data-toggle": "pill"
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          _vm._s(
+                                            _vm._f("touppercase")(
+                                              annotationGroup
+                                            )
+                                          ) +
+                                            " (" +
+                                            _vm._s(
+                                              _vm.groupCount(annotationGroup)
+                                            ) +
+                                            ")"
+                                        )
+                                      ]
                                     )
-                                  ]
-                                )
+                                  : _c(
+                                      "a",
+                                      {
+                                        staticClass: "disabledLink",
+                                        attrs: {
+                                          href: "#",
+                                          "data-toggle": "pill"
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          _vm._s(
+                                            _vm._f("touppercase")(
+                                              annotationGroup
+                                            )
+                                          )
+                                        )
+                                      ]
+                                    )
                               ]
                             )
                           })
@@ -52413,64 +52434,39 @@ var render = function() {
                         )
                       : _vm._e(),
                     _vm._v(" "),
-                    _vm._l(_vm.headerdata.annotationGroups, function(
-                      annotationGroup,
-                      key
+                    _vm._l(_vm.headerdata.allAnnotationGroups, function(
+                      annotationGroup
                     ) {
                       return _vm.header == "document"
                         ? _c(
                             "div",
                             {
                               staticClass: "tab-pane fade",
-                              attrs: { id: key }
+                              attrs: { id: annotationGroup }
                             },
                             [
                               _c("h2", [
                                 _vm._v(
-                                  _vm._s(key) +
-                                    " (" +
-                                    _vm._s(annotationGroup.length) +
+                                  _vm._s(annotationGroup) +
+                                    "  (" +
+                                    _vm._s(_vm.groupCount(annotationGroup)) +
                                     ")"
                                 )
                               ]),
                               _vm._v(" "),
-                              _c(
-                                "table",
-                                { staticClass: "table table-striped" },
-                                [
-                                  _vm._m(2, true),
-                                  _vm._v(" "),
-                                  _c(
-                                    "tbody",
-                                    _vm._l(annotationGroup, function(
-                                      annotationData
-                                    ) {
-                                      return _c("tr", [
-                                        _c("td", [
-                                          _vm._v(
-                                            _vm._s(annotationData["title"])
-                                          )
-                                        ]),
-                                        _vm._v(" "),
-                                        _c("td", [_vm._v(_vm._s(key))]),
-                                        _vm._v(" "),
-                                        _vm._m(3, true),
-                                        _vm._v(" "),
-                                        _vm._m(4, true),
-                                        _vm._v(" "),
-                                        _c("td", [
-                                          _vm._v(
-                                            _vm._s(
-                                              annotationData["document_count"]
-                                            )
-                                          )
-                                        ])
-                                      ])
-                                    })
-                                  )
-                                ]
-                              )
-                            ]
+                              _c("vue-good-table", {
+                                attrs: {
+                                  title: "",
+                                  columns: _vm.allAnnotationColumns,
+                                  rows: _vm.annotationRows(annotationGroup),
+                                  paginate: true,
+                                  lineNumbers: false,
+                                  onClick: _vm.goToAnnotation,
+                                  styleClass: "table table-striped"
+                                }
+                              })
+                            ],
+                            1
                           )
                         : _vm._e()
                     })
@@ -52547,36 +52543,6 @@ var staticRenderFns = [
         _c("th", [_vm._v("Revision Description")])
       ])
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("thead", [
-      _c("tr", [
-        _c("th", [_vm._v("Annotation title")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Category")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Guidelines")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Preparation steps")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Documents")])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", [_c("span", { staticClass: "redArrow" }, [_vm._v(">")])])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("td", [_c("span", { staticClass: "redArrow" }, [_vm._v(">")])])
   }
 ]
 render._withStripped = true

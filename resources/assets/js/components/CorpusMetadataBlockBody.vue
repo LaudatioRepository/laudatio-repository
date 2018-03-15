@@ -124,8 +124,6 @@
                             <a v-bind:href="('#').concat(annotationGroup)" data-toggle="pill" v-if="groupCount(annotationGroup) > 0 ">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
                             <a href="#" data-toggle="pill" v-else class="disabledLink">{{annotationGroup | touppercase}}</a>
                         </li>
-
-
                     </ul>
                   </div>
                 </div>
@@ -160,7 +158,6 @@
          </div>
      </div>
     </div>
-</div>
 </template>
 
 <script>
@@ -418,39 +415,12 @@
                 }
                 return documentArray;
             },
-            annotationRows2: function(){
-                var annotationArray = [];
-                var foundAnnotationArray = [];
-                var theHeaderData = this.headerdata;
-                if(null != this.headerdata.corpusAnnotationGroups && typeof this.headerdata.corpusAnnotationGroups != 'undefined'){
-                    Object.keys(this.headerdata.corpusAnnotationGroups).forEach(function(key, index) {
-
-                        this[key].forEach(function(value){
-                            value.group = key;
-                            if(typeof value.document_count == 'undefined'){
-                                value.document_count = 0.0;
-                            }
-                            if(foundAnnotationArray.indexOf(value.title) == -1){
-                                annotationArray.push(value);
-                                foundAnnotationArray.push(value.title);
-                            }
-
-                        })
-                    }, this.headerdata.corpusAnnotationGroups);
-                }
-
-                return annotationArray;
-            },
             annotationRows: function(currentkey){
                 //allAnnotationGroups
                 var annotationArray = [];
                 var foundAnnotationArray = [];
                 var theHeaderData = this.headerdata;
                 if(null != theHeaderData.allAnnotationGroups && null != theHeaderData.corpusAnnotationGroups && typeof theHeaderData.corpusAnnotationGroups != 'undefined'){
-                    for(var i = 0; i < theHeaderData.allAnnotationGroups.length; i++){
-
-                    }
-
                     Object.keys(this.headerdata.corpusAnnotationGroups).forEach(function(key, index) {
                         if(key == currentkey) {
                             this[key].forEach(function(value){
@@ -473,7 +443,7 @@
             },
             groupCount: function(key) {
                 var data = this.headerdata.corpusAnnotationGroups;
-                if(typeof data[key] != 'undefined') {
+                if(typeof  data != 'undefined' && typeof data[key] != 'undefined') {
                     return data[key].length;
                 }
             },

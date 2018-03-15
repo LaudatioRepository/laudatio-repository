@@ -147,10 +147,10 @@
                         <li class="nav-link active" role="tab">
                             <a href="#allAnnotations" data-toggle="pill">All ({{totalAnnotations()}})</a>
                         </li>
-                        <li v-for="(annotationGroup, key) in headerdata.annotationGroups" class="nav-link" role="tab">
-                            <a v-bind:href="('#').concat(key)" data-toggle="pill">{{key}} ({{annotationGroup.length}})</a>
+                        <li v-for="(annotationGroup) in headerdata.allAnnotationGroups" class="nav-link" role="tab">
+                            <a v-bind:href="('#').concat(annotationGroup)" data-toggle="pill" v-if="groupCount(annotationGroup) > 0 ">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
+                            <a href="#" data-toggle="pill" v-else class="disabledLink">{{annotationGroup | touppercase}}</a>
                         </li>
-
                     </ul>
                   </div>
                 </div>
@@ -169,29 +169,16 @@
                   styleClass="table table-striped"/>
 
                 </div>
-                <div class="tab-pane fade" v-for="(annotationGroup, key) in headerdata.annotationGroups" :id="key" v-if="header == 'document'">
-                    <h2>{{key}} ({{annotationGroup.length}})</h2>
-                    <table class="table table-striped">
-                         <thead>
-                            <tr>
-                                <th>Annotation title</th>
-                                <th>Category</th>
-                                <th>Guidelines</th>
-                                <th>Preparation steps</th>
-                                <th>Documents</th>
-                            </tr>
-                         </thead>
-                         <tbody>
-                            <tr v-for="(annotationData) in annotationGroup">
-                                <td>{{annotationData['title']}}</td>
-                                <td>{{key}}</td>
-                                <td><span class="redArrow">&gt;</span></td>
-                                <td><span class="redArrow">&gt;</span></td>
-                                <td>{{annotationData['document_count']}}</td>
-                            </tr>
-
-                         </tbody>
-                     </table>
+                 <div class="tab-pane fade" v-for="(annotationGroup) in headerdata.allAnnotationGroups" :id="annotationGroup" v-if="header == 'document'">
+                    <h2>{{annotationGroup}}  ({{groupCount(annotationGroup)}})</h2>
+                    <vue-good-table
+                      title=""
+                      :columns="allAnnotationColumns"
+                      :rows=annotationRows(annotationGroup)
+                      :paginate="true"
+                      :lineNumbers="false"
+                      :onClick="goToAnnotation"
+                      styleClass="table table-striped"/>
                 </div>
                 </div>
               </div>
@@ -322,6 +309,43 @@
                 }
 
                 return allAnnotations;
+            },
+            annotationRows: function(currentkey){
+                //allAnnotationGroups
+                var annotationArray = [];
+                var foundAnnotationArray = [];
+                var theHeaderData = this.headerdata;
+                if(null != theHeaderData.allAnnotationGroups && null != theHeaderData.annotationGroups && typeof theHeaderData.annotationGroups != 'undefined'){
+                    Object.keys(this.headerdata.annotationGroups).forEach(function(key, index) {
+                        if(key == currentkey) {
+                            this[key].forEach(function(value){
+                                value.group = key;
+                                if(typeof value.document_count == 'undefined'){
+                                    value.document_count = 0.0;
+                                }
+                                if(foundAnnotationArray.indexOf(value.title) == -1){
+                                    annotationArray.push(value);
+                                    foundAnnotationArray.push(value.title);
+                                }
+
+                            })
+                        }
+
+                    }, this.headerdata.annotationGroups);
+                }
+
+                return annotationArray;
+            },
+            groupCount: function(key) {
+                var data = this.headerdata.annotationGroups;
+                if(typeof  data != 'undefined' && typeof data[key] != 'undefined') {
+                    return data[key].length;
+                }
+            },
+            goToAnnotation: function(row, index) {
+                document.location = "/browse/annotation/"+row.preparation_annotation_id
+                return index;
+
             }
 
         },
