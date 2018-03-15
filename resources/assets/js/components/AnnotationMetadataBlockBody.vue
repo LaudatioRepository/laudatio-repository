@@ -534,11 +534,6 @@
               var documentArray = [];
               var theHeaderData = this.headerdata;
                 if( typeof theHeaderData.documents != 'undefined' &&
-                    typeof theHeaderData.in_documents != 'undefined' &&
-                    this.hasSameLength([
-                        theHeaderData.documents,
-                        theHeaderData.in_documents
-                    ]) &&
                     theHeaderData.documents.length > 0){
 
                     for(var i = 0; i < theHeaderData.documents.length; i++) {

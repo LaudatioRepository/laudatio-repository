@@ -53174,7 +53174,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         documentRows: function documentRows() {
             var documentArray = [];
             var theHeaderData = this.headerdata;
-            if (typeof theHeaderData.documents != 'undefined' && typeof theHeaderData.in_documents != 'undefined' && this.hasSameLength([theHeaderData.documents, theHeaderData.in_documents]) && theHeaderData.documents.length > 0) {
+            if (typeof theHeaderData.documents != 'undefined' && theHeaderData.documents.length > 0) {
 
                 for (var i = 0; i < theHeaderData.documents.length; i++) {
                     var documentObject = {};
