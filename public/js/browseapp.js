@@ -50623,8 +50623,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
             return documentArray;
         },
+        allAnnotationRows: function allAnnotationRows() {
+            var annotationArray = [];
+            var foundAnnotationArray = [];
+            var theHeaderData = this.headerdata;
+            if (null != theHeaderData.allAnnotationGroups && null != theHeaderData.corpusAnnotationGroups && typeof theHeaderData.corpusAnnotationGroups != 'undefined') {
+                Object.keys(this.headerdata.corpusAnnotationGroups).forEach(function (key, index) {
+                    this[key].forEach(function (value) {
+                        value.group = key;
+                        if (typeof value.document_count == 'undefined') {
+                            value.document_count = 0.0;
+                        }
+                        if (foundAnnotationArray.indexOf(value.title) == -1) {
+                            annotationArray.push(value);
+                            foundAnnotationArray.push(value.title);
+                        }
+                    });
+                }, this.headerdata.corpusAnnotationGroups);
+            }
+            return annotationArray;
+        },
         annotationRows: function annotationRows(currentkey) {
-            //allAnnotationGroups
             var annotationArray = [];
             var foundAnnotationArray = [];
             var theHeaderData = this.headerdata;
@@ -50647,11 +50666,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             return annotationArray;
         },
-        groupCount: function groupCount(key) {
-            var data = this.headerdata.corpusAnnotationGroups;
-            if (typeof data != 'undefined' && typeof data[key] != 'undefined') {
-                return data[key].length;
+        groupCount: function groupCount(currentkey) {
+            var foundAnnotationArray = [];
+            var theHeaderData = this.headerdata;
+            var count = 0;
+            if (null != theHeaderData.allAnnotationGroups && null != theHeaderData.corpusAnnotationGroups && typeof theHeaderData.corpusAnnotationGroups != 'undefined') {
+                Object.keys(this.headerdata.corpusAnnotationGroups).forEach(function (key, index) {
+                    if (key == currentkey || currentkey == "all") {
+                        this[key].forEach(function (value) {
+                            if (foundAnnotationArray.indexOf(value.title) == -1) {
+                                count++;
+                                foundAnnotationArray.push(value.title);
+                            }
+                        });
+                    }
+                }, this.headerdata.corpusAnnotationGroups);
             }
+            return count;
         },
         goToDocument: function goToDocument(row, index) {
             document.location = "/browse/document/" + row.document_id;
@@ -50676,6 +50707,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 lastLength = attributes[i].length;
             }
             return hasSameLength;
+        },
+        onlyUnique: function onlyUnique(arr) {
+            var a = [];
+            for (var i = 0, l = arr.length; i < l; i++) {
+                if (a.indexOf(arr[i]) === -1 && arr[i] !== '') a.push(arr[i]);
+            }return a;
         }
     },
     computed: {
@@ -51132,9 +51169,7 @@ var render = function() {
                             },
                             [
                               _vm._v(
-                                "All (" +
-                                  _vm._s(_vm.headerdata.corpusannotationcount) +
-                                  ")"
+                                "All (" + _vm._s(_vm.groupCount("all")) + ")"
                               )
                             ]
                           )
@@ -51211,7 +51246,7 @@ var render = function() {
                         _c("h2", [
                           _vm._v(
                             "Annotations - All (" +
-                              _vm._s(_vm.headerdata.corpusannotationcount) +
+                              _vm._s(_vm.groupCount("all")) +
                               ")"
                           )
                         ]),
@@ -51220,7 +51255,7 @@ var render = function() {
                           attrs: {
                             title: "",
                             columns: _vm.annotationColumns,
-                            rows: _vm.annotationRows(),
+                            rows: _vm.allAnnotationRows(),
                             paginate: true,
                             lineNumbers: false,
                             onClick: _vm.goToAnnotation,

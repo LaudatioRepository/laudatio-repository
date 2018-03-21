@@ -118,7 +118,7 @@
                     <div class="navbar-collapse collapse sidebar-navbar-collapse">
                       <ul class="nav nav-stacked">
                         <li class="nav-link active" role="tab">
-                            <a href="#allAnnotations" data-toggle="pill">All ({{headerdata.corpusannotationcount}})</a>
+                            <a href="#allAnnotations" data-toggle="pill">All ({{groupCount("all")}})</a>
                         </li>
                         <li v-for="(annotationGroup) in headerdata.allAnnotationGroups" class="nav-link" role="tab">
                             <a v-bind:href="('#').concat(annotationGroup)" data-toggle="pill" v-if="groupCount(annotationGroup) > 0 ">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
@@ -131,11 +131,11 @@
               <div class="col-sm-9">
                <div class="tab-content">
                    <div class="tab-pane fade in active" id="allAnnotations" v-if="header == 'corpus'">
-                     <h2>Annotations - All ({{headerdata.corpusannotationcount}})</h2>
+                     <h2>Annotations - All ({{groupCount("all")}})</h2>
                         <vue-good-table
                                   title=""
                                   :columns="annotationColumns"
-                                  :rows=annotationRows()
+                                  :rows=allAnnotationRows()
                                   :paginate="true"
                                   :lineNumbers="false"
                                   :onClick="goToAnnotation"
@@ -415,8 +415,28 @@
                 }
                 return documentArray;
             },
+            allAnnotationRows: function() {
+                var annotationArray = [];
+                var foundAnnotationArray = [];
+                var theHeaderData = this.headerdata;
+                if(null != theHeaderData.allAnnotationGroups && null != theHeaderData.corpusAnnotationGroups && typeof theHeaderData.corpusAnnotationGroups != 'undefined'){
+                    Object.keys(this.headerdata.corpusAnnotationGroups).forEach(function(key, index) {
+                        this[key].forEach(function(value){
+                            value.group = key;
+                            if(typeof value.document_count == 'undefined'){
+                                value.document_count = 0.0;
+                            }
+                            if(foundAnnotationArray.indexOf(value.title) == -1){
+                                annotationArray.push(value);
+                                foundAnnotationArray.push(value.title);
+                            }
+
+                        })
+                    }, this.headerdata.corpusAnnotationGroups);
+                }
+                return annotationArray;
+            },
             annotationRows: function(currentkey){
-                //allAnnotationGroups
                 var annotationArray = [];
                 var foundAnnotationArray = [];
                 var theHeaderData = this.headerdata;
@@ -441,11 +461,24 @@
 
                 return annotationArray;
             },
-            groupCount: function(key) {
-                var data = this.headerdata.corpusAnnotationGroups;
-                if(typeof  data != 'undefined' && typeof data[key] != 'undefined') {
-                    return data[key].length;
+            groupCount: function(currentkey) {
+                var foundAnnotationArray = [];
+                var theHeaderData = this.headerdata;
+                var count = 0;
+                if(null != theHeaderData.allAnnotationGroups && null != theHeaderData.corpusAnnotationGroups && typeof theHeaderData.corpusAnnotationGroups != 'undefined'){
+                    Object.keys(this.headerdata.corpusAnnotationGroups).forEach(function(key, index) {
+                        if(key == currentkey || currentkey == "all") {
+                            this[key].forEach(function(value){
+                                if(foundAnnotationArray.indexOf(value.title) == -1){
+                                    count++;
+                                    foundAnnotationArray.push(value.title);
+                                }
+                            })
+                        }
+
+                    }, this.headerdata.corpusAnnotationGroups);
                 }
+                return count;
             },
             goToDocument: function(row, index) {
                 document.location = "/browse/document/"+row.document_id
@@ -473,6 +506,13 @@
                     lastLength = attributes[i].length;
                 }
                 return hasSameLength;
+            },
+            onlyUnique: function (arr) {
+                var a = [];
+                for (var i=0, l=arr.length; i<l; i++)
+                    if (a.indexOf(arr[i]) === -1 && arr[i] !== '')
+                        a.push(arr[i]);
+                return a;
             }
         },
         computed: {

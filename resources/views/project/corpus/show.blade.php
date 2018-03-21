@@ -115,7 +115,7 @@
                                             <a href="{{route('gitRepo.upload.get',array('dirname' => $fileData["headerData"]["path"])) }}" style="display: block; margin-top: 20px"><button type="button" class="btn btn-primary btn-lg center-block">Upload a Corpus Header <i class="fa fa-upload fa-3x" aria-hidden="true"></i></button></a>
                                         @else
                                             <a href="/project/corpora/{{$corpus->id}}/{{$fileData["headerData"]["previouspath"]}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
-                                            <h4>Corpus Headers</h4>
+                                            <h4>Corpus Header: {{$header}}</h4>
                                             <br />
                                             @include('project.corpus.projectList')
                                         @endif
@@ -128,7 +128,7 @@
                                             <a href="{{route('gitRepo.upload.get',array('dirname' => $fileData["headerData"]["path"])) }}" style="display: block; margin-top: 20px"><button type="button" class="btn btn-primary btn-lg center-block">Upload a Corpus Header <i class="fa fa-upload fa-3x" aria-hidden="true"></i></button></a>
                                         @else
                                             <a href="/project/corpora/{{$corpus->id}}/{{$fileData["headerData"]["previouspath"]}}" class="adminIcons"><i class="fa fa-level-up fa-3x pull-right" aria-hidden="true"></i></a>
-                                            <h4>Corpus Headers</h4>
+                                            <h4>Corpus Header: {{$header}}</h4>
                                             <br />
                                             @include('project.corpus.projectList')
                                         @endif

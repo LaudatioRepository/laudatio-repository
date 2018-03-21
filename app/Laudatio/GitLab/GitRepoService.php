@@ -21,11 +21,13 @@ use App\CorpusProject;
 class GitRepoService implements GitRepoInterface
 {
     protected $basePath;
+    protected $scriptPath;
     protected $laudatioUtilsService;
 
     public function __construct(LaudatioUtilsInterface $laudatioUtilsService)
     {
         $this->basePath = config('laudatio.basePath');
+        $this->scriptPath = config('laudatio.scriptPath');
         $this->laudatioUtilsService = $laudatioUtilsService;
     }
 
@@ -55,11 +57,11 @@ class GitRepoService implements GitRepoInterface
             $flysystem->write($dirPath."/TEI-HEADERS/annotation/.info","Annotation header file structure for ".$corpusName);
             $flysystem->createDir($dirPath."/CORPUS-DATA");
 
-            //$this->initiateRepository($dirPath);
-            //$this->addFilesToRepository($dirPath,"TEI-HEADERS");
-            //$this->commitFilesToRepository($this->basePath.'/'.$dirPath,"Created initial corpus file structure for $corpusName");
-            //$this->copyGitHooks($dirPath);
-            //$this->copyScripts($dirPath);
+            $initiated = $this->initiateRepository($dirPath);
+            if($initiated){
+                $this->copyGitHooks($dirPath);
+                $this->copyScripts($dirPath);
+            }
 
         }
 
@@ -78,23 +80,24 @@ class GitRepoService implements GitRepoInterface
         if($flysystem->has($oldDirPath)){
             $gitFunction = new GitFunction();
             $corpusPath = $gitFunction->renameFile($corpusProjectPath,$oldCorpusPath,$normalizedCorpusName);
-            $this->initiateRepository($corpusPath);
-            $this->copyGitHooks($corpusPath);
-            $this->copyScripts($corpusPath);
-            $this->addFilesToRepository($corpusPath,"TEI-HEADERS");
-            $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$corpusPath);
-            $this->commitFilesToRepository($this->basePath.'/'.$corpusPath,"Created initial corpus file structure for $normalizedCorpusName");
-            foreach ($stagedFiles as $stagedFile){
-                $dirArray = explode("/",trim($stagedFile));
-                if($dirArray[0] != "CORPUS-DATA"){
-                    if(count($dirArray) > 1){
-                        $fileName = $dirArray[2];
-                        $this->laudatioUtilsService->setVersionMapping($fileName,$dirArray[1],false);
-                    }
+        }
+        return $corpusPath;
+    }
+
+    public function commitStagedFiles($corpusPath) {
+        $this->addFilesToRepository($corpusPath,"TEI-HEADERS");
+        $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$corpusPath);
+        $this->commitFilesToRepository($this->basePath.'/'.$corpusPath,"Created initial corpus file structure for $normalizedCorpusName");
+        foreach ($stagedFiles as $stagedFile){
+            $dirArray = explode("/",trim($stagedFile));
+            dd($dirArray);
+            if($dirArray[0] != "CORPUS-DATA"){
+                if(count($dirArray) > 1){
+                    $fileName = $dirArray[2];
+                    $this->laudatioUtilsService->setVersionMapping($fileName,$dirArray[1],false);
                 }
             }
         }
-        return $corpusPath;
     }
 
     /**
@@ -341,9 +344,7 @@ class GitRepoService implements GitRepoInterface
 
     public function addFiles($path,$corpus){
         $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
-        Log::info("PATH: ".$path);
         $file = substr($path,strrpos($path,"/")+1);
-        Log::info("pathWithOutAddedFolder: ".$pathWithOutAddedFolder." FILE: ".$file);
         $isAdded = $this->addFilesToRepository($pathWithOutAddedFolder,$file);
         return $isAdded;
     }

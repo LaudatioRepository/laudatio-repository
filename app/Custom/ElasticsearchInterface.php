@@ -34,6 +34,7 @@ interface ElasticsearchInterface {
     public function getCorpusByAnnotation($searchData);
     public function getDocumentByCorpus($searchData,$corpusData);
     public function getDocumentsByAnnotationAndCorpusId($documentList,$corpusId);
+    public function getDocumentsByDocumentId($documentids);
     public function getAnnotationByCorpus($searchData,$corpusData);
 
 

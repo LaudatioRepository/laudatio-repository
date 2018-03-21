@@ -209,6 +209,8 @@ class CorpusController extends Controller
 
     /**
      * @param Corpus $corpus
+     * @param string $path
+     * @param string $show
      * @return $this
      */
     public function show(Corpus $corpus,$path = "",$show = "")
@@ -219,6 +221,9 @@ class CorpusController extends Controller
         $corpusProjects = $corpus->corpusprojects()->get();
         $corpusProject_directory_path = '';
 
+        $pathArray = explode("/",$path);
+        end($pathArray);
+        $last_id=key($pathArray);
 
         if(count($corpusProjects) == 1) {
             $corpusProject_directory_path = $corpusProjects->first()->directory_path;
@@ -252,11 +257,11 @@ class CorpusController extends Controller
             "headerDataFolder" => "",
             "folderType" => ""
         );
+
         $folder = "";
         $folderType = "";
         $user_roles = array();
         if(strpos($corpusPath,"Untitled") === false){
-            $pathArray = explode("/",$corpusPath);
             $corpusBasePath = $pathArray[0]."/".$pathArray[1];
             if(strpos($corpusPath,"CORPUS-DATA") !== false && strpos($corpusPath,"TEI-HEADERS") === false){
                 $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath);
@@ -304,6 +309,7 @@ class CorpusController extends Controller
         return view("project.corpus.show",["corpus" => $corpus, "corpusproject_directory_path" => $corpusProject_directory_path, "fileData" => $fileData])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user_roles',$user_roles)
+            ->with('header', ucfirst($pathArray[$last_id]))
             ->with('user',$user);
     }
 

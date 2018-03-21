@@ -959,6 +959,40 @@ class ElasticService implements ElasticsearchInterface
         );
     }
 
+    public function getDocumentsByDocumentId($documentids) {
+        $resultData = array();
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $documentIdParameters = array();
+        $qs = "\r";
+        $results = null;
+
+
+        foreach($documentids as $queryData){
+                if($queryData != ""){
+                    $qs .= '{"query": {"match": {"document_id": "'.$queryData.'"}}, "size": 1000, "_source": ["document_title","document_size_extent","document_publication_publishing_date","document_id","document_history_original_place","document_list_of_annotations_id","_id"]}'."\n";
+
+                }
+
+        }
+
+        $resultset = $this->curlRequest($qs,'document/_msearch');
+        $results = $resultset['resultdata'];
+       // dd($resultset);
+        $results = json_decode($results,true);
+        if(isset($results['responses'])){
+            foreach ($results['responses'] as $result){
+                if(count($result['hits']['hits']) > 0){
+                    array_push($resultData,$result['hits']['hits'][0]);
+                }
+            }
+        }
+
+
+
+        return $resultData;
+    }
+
     public function getDocumentsByAnnotation($searchData,$annotationData){
         $resultData = array();
         $queryBuilder = new QueryBuilder();

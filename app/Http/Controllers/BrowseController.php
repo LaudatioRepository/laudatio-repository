@@ -41,6 +41,8 @@ class BrowseController extends Controller
                     array($corpusId)
                 );
 
+                $allDocumentsResult = $this->ElasticService->getDocumentsByDocumentId($data['result']['corpus_documents']);
+               //dd($data['result']['corpus_documents']);
                 $corpusDocuments = array();
 
                 $documentcount = 0;
