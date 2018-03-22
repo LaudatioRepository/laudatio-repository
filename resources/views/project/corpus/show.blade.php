@@ -165,27 +165,6 @@
             </div>
         </div>
     </div>
-    <!-- Modal -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Add new format</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="input-group">
-                        <span class="input-group-addon" id="sizing-addon">Format Name</span>
-                        <input type="text" name="format_name" id="format_name" class="form-control" aria-describedby="sizing-addon">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="saveFormatButton">Save changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
     <script language="JavaScript">
         $("#checkAll").click(function () {
             $(".check").prop('checked', $(this).prop('checked'));
@@ -255,6 +234,129 @@
                     console.log("error!!!!");
                 }
             }); //end of ajax
+        });
+
+        function getValidationData(postData) {
+            return new Promise(function(resolve, reject) {
+
+                var token = $('#_token').val();
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                $.ajax({
+                    url: '/api/adminapi/validateHeaders',
+                    type:"POST",
+                    data: postData,
+                    async: true,
+                    statusCode: {
+                        500: function () {
+                            alert("server down");
+                        }
+                    },
+                    success: function(data) {
+                        resolve(data) // Resolve promise and go to then()
+                    },
+                    error: function(err) {
+                        reject(err) // Reject the promise and go to catch()
+                    }
+                })
+            });
+        }
+
+        $("#validateCorpusButton").click(function () {
+            var postData = {}
+            postData.corpusid = $('#corpusid').val();
+            postData.corpuspath = $('#corpuspath').val()
+
+            getValidationData(postData).then(function(data) {
+                var json = JSON.parse(data.msg);
+
+                var newModaltitle = "Validation results for corpus/"+json.corpusheader;
+                $('#myModalLabelValidation').html(newModaltitle);
+                $('#myValidatorModal').modal('show');
+
+                var html = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
+
+                html += '<div class="panel panel-default">';
+                html += '<div class="panel-heading" role="tab" id="documentHeading">';
+                html += '<h4 class="panel-title"><a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#documentsInCorpus" aria-expanded="false" aria-controls="documentsInCorpus">Documents in corpus</a></h4></div>'
+                html += '<div id="documentsInCorpus" class="panel-collapse collapse" role="tabpanel" aria-labelledby="documentHeading"><div class="list-group">';
+                html +='<ul class="list-group">';
+                for(var i = 0; i < json.found_documents.length; i++){
+                    html += '<li class="list-group-item">'+json.found_documents[i].title+' <i class="material-icons pull-right">check_circle</i></li>';
+                }
+
+                var not_found_documents = json.not_found_documents_in_corpus.sort()
+
+                for(var j = 0; j < not_found_documents.length; j++){
+                    html += '<li class="list-group-item">'+not_found_documents[j]+' <i class="material-icons pull-right">warning</i></li>';
+                }
+                html += '</ul>';
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+
+                html += '<div class="panel panel-default">';
+                html += '<div class="panel-heading" role="tab" id="annotationHeading">';
+                html += '<h4 class="panel-title"><a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#annotationsInCorpus" aria-expanded="false" aria-controls="annotationsInCorpus">Annotations in corpus</a></h4></div>'
+                html += '<div id="annotationsInCorpus" class="panel-collapse collapse" role="tabpanel" aria-labelledby="annotationHeading"><div class="list-group">'
+
+                html +='<ul class="list-group">';
+
+                for(var k = 0; k < json.found_annotations_in_corpus.length; k++){
+                    html += '<li class="list-group-item">'+json.found_annotations_in_corpus[k]+' <i class="material-icons pull-right">check_circle</i></li>';
+                }
+
+                var not_found_annotations = json.not_found_annotations_in_corpus.sort()
+                for(var l = 0; l < not_found_annotations.length; l++){
+                    html += '<li class="list-group-item">'+not_found_annotations[l]+' <i class="material-icons pull-right">warning</i></li>';
+                }
+
+
+                html += '</ul>';
+
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+
+                html += '</div>';
+                $('.modal-body').html(html);
+            }).catch(function(err) {
+                // Run this when promise was rejected via reject()
+                console.log(err)
+            })
+/*
+            $.ajax({
+                url: '/api/adminapi/validateHeaders',
+                type:"POST",
+                data: postData,
+                async: true,
+                statusCode: {
+                    500: function () {
+                        alert("server down");
+                    }
+                },
+                success:function(data){
+                    return data;
+                },
+                complete: function() {
+                    var json = JSON.parse(data.msg);
+                    console.log("DATA: "+json.corpusheader);
+                    var modalTitle = $('#myModalLabel').val();
+                    $('#myModalLabel').val(modalTitle+" "+json.corpusheader)
+                    $('#myValidatorModal').modal('show');
+                    var html = "";
+
+                    $('.modal-body').html(html);
+                }
+                ,error:function(){
+                    console.log("error!!!!");
+                }
+            }); //end of ajax
+            */
         });
 
         $("#deleteCheckedButton").click(function() {

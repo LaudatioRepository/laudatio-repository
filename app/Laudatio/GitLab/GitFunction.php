@@ -669,4 +669,21 @@ class GitFunction
         }
         return array_filter($listOfFiles);
     }
+
+    public function checkForMissingCorpusFiles($path){
+        $result = null;
+        $pythonScript = $this->scriptPath.'/src/validateHeaders.py';
+        $process = new Process("python ".$pythonScript." -p ".$path);
+        $process->run();
+
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $result = $process->getOutput();
+        }
+        return $result;
+    }
 }

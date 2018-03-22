@@ -615,4 +615,5 @@ class CorpusController extends Controller
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
+
 }

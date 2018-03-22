@@ -98,6 +98,26 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Add new format</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group">
+                            <span class="input-group-addon" id="sizing-addon">Format Name</span>
+                            <input type="text" name="format_name" id="format_name" class="form-control" aria-describedby="sizing-addon">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="saveFormatButton">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endif
         @if($fileData["corpusDataFolder"] == "CORPUS-DATA")
             <span class="btn btn-sm btn-primary fa fa-file-code-o" data-toggle="modal" data-target="#myModal"> Add new format</span>

@@ -72,6 +72,13 @@ class GitRepoService implements GitRepoInterface
         return $flysystem->has($this->basePath."/".$corpusProjectPath."/".$corpusPath);
     }
 
+
+    public function checkForMissingCorpusFiles($path) {
+        $gitFunction = new GitFunction();
+        $fullPath = $this->basePath.'/'.$path;
+        return $gitFunction->checkForMissingCorpusFiles($fullPath);
+    }
+
     public function updateCorpusFileStructure($flysystem,$corpusProjectPath,$oldCorpusPath,$corpusName){
         $corpusPath = "";
         $normalizedCorpusName = $this->normalizeString($corpusName);

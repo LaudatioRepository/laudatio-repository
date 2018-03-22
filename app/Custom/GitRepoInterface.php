@@ -14,6 +14,7 @@ interface GitRepoInterface {
     public function updateCorpusFileStructure($flysystem,$corpusProjectPath,$oldCorpusPath,$corpusName);
     public function commitStagedFiles($corpusPath);
     public function hasCorpusFileStructure($flysystem , $corpusProjectPath, $corpusPath);
+    public function checkForMissingCorpusFiles($path);
     public function deleteCorpusFileStructure($flysystem, $path);
     public function deleteProjectFileStructure($flysystem, $path);
     public function getCorpusFiles($flysystem,$path = "");

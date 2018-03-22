@@ -260,9 +260,7 @@ class GitRepoController extends Controller
                 ));
 
                 if(count($deleteParams) > 0){
-                    Log::info("DELETEPARAMS: ".print_r($deleteParams,1 ));
                     $this->elasticService->deleteIndexedObject($dirArray[3],$deleteParams);
-                    Log::info("RESULT: ".print_r($result,1 ));
                 }
             }
             else{
@@ -482,7 +480,6 @@ class GitRepoController extends Controller
         $dirArray = explode("/",$path);
 
         if(count($dirArray) == 4){
-            Log::info("IS FOLDER: ".print_r($dirArray,1));
             $isFolder = true;
         }
 
@@ -490,8 +487,6 @@ class GitRepoController extends Controller
         $type = $dirArray[3];
 
         $directoryPath = implode("/",array_slice($dirArray, 0, 4));
-        Log::info("directoryPath: ".print_r($directoryPath,1));
-
 
         $corpus = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
         $result = $this->GitRepoService->deleteUntrackedFile($this->flysystem,$path);
@@ -525,68 +520,9 @@ class GitRepoController extends Controller
         return redirect()->route('project.corpora.show',['path' => $directoryPath,'corpus' => $corpus[0]->id]);
     }
 
-    /**
-     * @param Request $request
-     * API method
-     */
-    public function deleteMultipleFiles(Request $request)
-    {
-        $input =$request ->all();
-        $msg = "";
-        if ($request->ajax()){
-            $msg .= "<p>Deleted the following files </p>";
-            $filesForDeletion = $input['filesForDeletion'];
-            $msg .= "<ul>";
-            foreach($filesForDeletion as $fileForDeletion) {
-                $result = $this->GitRepoService->deleteFile($this->flysystem,$fileForDeletion);
-                if($result) {
-                    $msg .= "<li>".$fileForDeletion."</li>";
-                }
-
-            }
-            $msg .= "</ul>";
-        }
-
-        $response = array(
-            'status' => 'success',
-            'msg' => $msg,
-        );
 
 
-        return Response::json($response);
 
-    }
-
-    /**
-     * @param Request $request
-     * API Method
-     */
-    public function createFormatFolder(Request $request){
-        $input =$request ->all();
-        $msg = "";
-        if ($request->ajax()){
-            $msg .= "<p>Created the following format folder:  </p>";
-            $formatName = $input['formatName'];
-            $path = $input['path'];
-            $gitFunction = new GitFunction();
-            //$created = $gitFunction->makeDirectory($path,$formatName);
-            $created = $this->flysystem->createDir($path."/".$formatName);
-
-            $msg .= "<ul>";
-            if($created){
-                $msg .= "<li>".$created."</li>";
-            }
-            $msg .= "</ul>";
-        }
-
-        $response = array(
-            'status' => 'success',
-            'msg' => $msg,
-        );
-
-
-        return Response::json($response);
-    }
 
     /**
      * Perform modification to file in git
@@ -635,6 +571,97 @@ class GitRepoController extends Controller
         $returnPath = $this->GitRepoService->commitFiles($dirname,$commitmessage,$corpusid);
         return redirect()->route('project.corpora.show',['path' => $returnPath,'corpus' => $corpusid]);
     }
+
+
+    /**
+     * API FUNCTIONS
+     */
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function validateCorpus(Request $request) {
+        $msg = "";
+        $result = null;
+        $corpusid = $request->input('corpusid');
+        $corpuspath = $request->input('corpuspath');
+
+        $result = $this->GitRepoService->checkForMissingCorpusFiles($corpuspath."/TEI-HEADERS");
+        $response = array(
+            'status' => 'success',
+            'msg' => $result,
+        );
+
+
+        return Response::json($response);
+    }
+
+
+    /**
+     * @param Request $request
+     * API method
+     */
+    public function deleteMultipleFiles(Request $request)
+    {
+        $input =$request ->all();
+        $msg = "";
+        if ($request->ajax()){
+            $msg .= "<p>Deleted the following files </p>";
+            $filesForDeletion = $input['filesForDeletion'];
+            $msg .= "<ul>";
+            foreach($filesForDeletion as $fileForDeletion) {
+                $result = $this->GitRepoService->deleteFile($this->flysystem,$fileForDeletion);
+                if($result) {
+                    $msg .= "<li>".$fileForDeletion."</li>";
+                }
+
+            }
+            $msg .= "</ul>";
+        }
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $msg,
+        );
+
+
+        return Response::json($response);
+
+    }
+
+
+    /**
+     * @param Request $request
+     * API Method
+     */
+    public function createFormatFolder(Request $request){
+        $input =$request ->all();
+        $msg = "";
+        if ($request->ajax()){
+            $msg .= "<p>Created the following format folder:  </p>";
+            $formatName = $input['formatName'];
+            $path = $input['path'];
+            $gitFunction = new GitFunction();
+            //$created = $gitFunction->makeDirectory($path,$formatName);
+            $created = $this->flysystem->createDir($path."/".$formatName);
+
+            $msg .= "<ul>";
+            if($created){
+                $msg .= "<li>".$created."</li>";
+            }
+            $msg .= "</ul>";
+        }
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $msg,
+        );
+
+
+        return Response::json($response);
+    }
+
 
     /**
      * HELPERS
