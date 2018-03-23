@@ -543,7 +543,7 @@
                         documentObject.date = theHeaderData.documents[i].document_publication_publishing_date[0];
                         documentObject.place = theHeaderData.documents[i].document_history_original_place[0];
                         documentObject.annotations = theHeaderData.documents[i].document_list_of_annotations_id.length;
-                        documentObject.document_id = theHeaderData.in_documents[i];
+                        documentObject.document_id = theHeaderData.documents[i].document_indexid;
                         documentArray.push(documentObject);
                     }
 
@@ -551,8 +551,6 @@
               return documentArray;
             },
             goToDocument: function(row, index) {
-                console.log("ROW: "+JSON.stringify(row)); //the object for the row that was clicked on
-                console.log("INDIX: "+index); // index of the row that was clicked on
                 document.location = "/browse/document/"+row.document_id
                 return index;
 
@@ -581,7 +579,7 @@
 
         },
         mounted() {
-            console.log('DocumentMetadataBlockBody mounted.')
+            console.log('AnnotationMetadataBlockBody mounted.')
         }
     }
 </script>

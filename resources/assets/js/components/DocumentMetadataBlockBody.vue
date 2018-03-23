@@ -113,31 +113,23 @@
                             </tr>
                         </table>
                     </div>
-                    <div class="tab-pane fade" id="license">
-                        <h2>LIcense / REVISION</h2>
-                        <table class="table table-striped">
-                            <thead>
-                            <tr>
-                                <th>Version</th>
-                                <th>Publishing Date</th>
-                                <th>Revision Description</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(versionData, index) in headerdata.revision_document_version">
-                                    <td>{{versionData}}</td>
-                                    <td>{{headerdata.revision_publishing_date[index]}}</td>
-                                    <td>{{headerdata.revision_description[index]}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="tab-pane fade" id="license" v-if="header == 'document'">
+                        <h2>LICENSE / REVISION</h2>
+                         <vue-good-table
+                             title=""
+                             :columns="licenseColumns"
+                             :rows=licenseRows()
+                             :paginate="true"
+                             :lineNumbers="false"
+                             styleClass="table table-striped"/>
+
                     </div>
                 </div>
               </div>
             </div>
 
         </div>
-        <div class="tab-pane fade" id="annotationMetadata">
+        <div class="tab-pane fade" id="annotationMetadata" v-if="header == 'document'">
         <div class="row">
               <div class="col-sm-3">
 
@@ -199,6 +191,23 @@
                 annotators: [],
                 revisions: [],
                 documentsByAnnotation: [],
+                licenseColumns: [
+                    {
+                        label: 'Version',
+                        field: 'version',
+                        filterable: true
+                    },
+                    {
+                        label: 'Publishing date',
+                        field: 'date',
+                        filterable: true
+                    },
+                    {
+                        label: 'Revision description',
+                        field: 'description',
+                        filterable: true
+                    }
+                ],
                 allAnnotationColumns: [
                     {
                         label: 'Annotation title',
@@ -336,6 +345,31 @@
 
                 return annotationArray;
             },
+            licenseRows: function() {
+                var licenseArray = []
+                var theHeaderData = this.headerdata;
+
+                if( typeof theHeaderData.revision_document_version != 'undefined' &&
+                    typeof theHeaderData.revision_publishing_date != 'undefined' &&
+                    typeof theHeaderData.revision_description != 'undefined' &&
+                    this.hasSameLength([
+                        theHeaderData.revision_document_version,
+                        theHeaderData.revision_publishing_date,
+                        theHeaderData.revision_description
+                    ])
+
+                ) {
+                    for (var i = 0; i < theHeaderData.revision_document_version.length; i++) {
+                        var licenseObject = {}
+                        licenseObject.version = theHeaderData.revision_document_version[i];
+                        licenseObject.date = theHeaderData.revision_publishing_date[i];
+                        licenseObject.description = theHeaderData.revision_description[i];
+
+                        licenseArray.push(licenseObject);
+                    }
+                }
+                return licenseArray;
+            },
             groupCount: function(key) {
                 var data = this.headerdata.annotationGroups;
                 if(typeof  data != 'undefined' && typeof data[key] != 'undefined') {
@@ -346,6 +380,23 @@
                 document.location = "/browse/annotation/"+row.preparation_annotation_id
                 return index;
 
+            },
+            hasSameLength: function(attributes) {
+                var hasSameLength = false;
+                var lastLength = 0;
+                for(var i = 0; i < attributes.length; i++) {
+                    if(lastLength != 0){
+
+                        if(lastLength == attributes[i].length){
+                            hasSameLength = true;
+                        }
+                        else{
+                            hasSameLength = false;
+                        }
+                    }
+                    lastLength = attributes[i].length;
+                }
+                return hasSameLength;
             }
 
         },

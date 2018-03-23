@@ -956,6 +956,8 @@ class ElasticService implements ElasticsearchInterface
             $result = Elasticsearch::search($params);
 
             if(count($result['hits']['hits']) > 0){
+                $document_indexid =  $result['hits']['hits'][0]['_id'];
+                $result['hits']['hits'][0]['_source']['document_indexid'] = $document_indexid;
                 array_push($resultData,$result['hits']['hits'][0]['_source']);
             }
         }

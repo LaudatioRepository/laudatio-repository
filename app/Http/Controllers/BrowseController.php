@@ -215,6 +215,7 @@ class BrowseController extends Controller
 
                     if(count($data['result']['in_documents']) > 0){
                         $documentsByAnnotation = $this->ElasticService->getDocumentsByAnnotationAndCorpusId($data['result']['in_documents'],$corpusId);
+                        //dd($documentsByAnnotation);
                         $data['result']['documents'] = $documentsByAnnotation['results'];
                         $data['result']['annotationdocumentcount'] = count($documentsByAnnotation['results']);
                     }

@@ -51744,14 +51744,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -51760,6 +51752,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             annotators: [],
             revisions: [],
             documentsByAnnotation: [],
+            licenseColumns: [{
+                label: 'Version',
+                field: 'version',
+                filterable: true
+            }, {
+                label: 'Publishing date',
+                field: 'date',
+                filterable: true
+            }, {
+                label: 'Revision description',
+                field: 'description',
+                filterable: true
+            }],
             allAnnotationColumns: [{
                 label: 'Annotation title',
                 field: 'title',
@@ -51873,6 +51878,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             return annotationArray;
         },
+        licenseRows: function licenseRows() {
+            var licenseArray = [];
+            var theHeaderData = this.headerdata;
+
+            if (typeof theHeaderData.revision_document_version != 'undefined' && typeof theHeaderData.revision_publishing_date != 'undefined' && typeof theHeaderData.revision_description != 'undefined' && this.hasSameLength([theHeaderData.revision_document_version, theHeaderData.revision_publishing_date, theHeaderData.revision_description])) {
+                for (var i = 0; i < theHeaderData.revision_document_version.length; i++) {
+                    var licenseObject = {};
+                    licenseObject.version = theHeaderData.revision_document_version[i];
+                    licenseObject.date = theHeaderData.revision_publishing_date[i];
+                    licenseObject.description = theHeaderData.revision_description[i];
+
+                    licenseArray.push(licenseObject);
+                }
+            }
+            return licenseArray;
+        },
         groupCount: function groupCount(key) {
             var data = this.headerdata.annotationGroups;
             if (typeof data != 'undefined' && typeof data[key] != 'undefined') {
@@ -51882,6 +51903,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         goToAnnotation: function goToAnnotation(row, index) {
             document.location = "/browse/annotation/" + row.preparation_annotation_id;
             return index;
+        },
+        hasSameLength: function hasSameLength(attributes) {
+            var hasSameLength = false;
+            var lastLength = 0;
+            for (var i = 0; i < attributes.length; i++) {
+                if (lastLength != 0) {
+
+                    if (lastLength == attributes[i].length) {
+                        hasSameLength = true;
+                    } else {
+                        hasSameLength = false;
+                    }
+                }
+                lastLength = attributes[i].length;
+            }
+            return hasSameLength;
         }
 
     },
@@ -52273,230 +52310,23 @@ var render = function() {
                         ]
                       ),
                       _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass: "tab-pane fade",
-                          attrs: { id: "license" }
-                        },
-                        [
-                          _c("h2", [_vm._v("LIcense / REVISION")]),
-                          _vm._v(" "),
-                          _c("table", { staticClass: "table table-striped" }, [
-                            _vm._m(1),
-                            _vm._v(" "),
-                            _c(
-                              "tbody",
-                              _vm._l(
-                                _vm.headerdata.revision_document_version,
-                                function(versionData, index) {
-                                  return _c("tr", [
-                                    _c("td", [_vm._v(_vm._s(versionData))]),
-                                    _vm._v(" "),
-                                    _c("td", [
-                                      _vm._v(
-                                        _vm._s(
-                                          _vm.headerdata
-                                            .revision_publishing_date[index]
-                                        )
-                                      )
-                                    ]),
-                                    _vm._v(" "),
-                                    _c("td", [
-                                      _vm._v(
-                                        _vm._s(
-                                          _vm.headerdata.revision_description[
-                                            index
-                                          ]
-                                        )
-                                      )
-                                    ])
-                                  ])
-                                }
-                              )
-                            )
-                          ])
-                        ]
-                      )
-                    ])
-                  : _vm._e()
-              ])
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "tab-pane fade", attrs: { id: "annotationMetadata" } },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-sm-3" }, [
-                _c("div", { staticClass: "sidebar-nav" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass:
-                        "navbar-collapse collapse sidebar-navbar-collapse"
-                    },
-                    [
-                      _c(
-                        "ul",
-                        { staticClass: "nav nav-stacked" },
-                        [
-                          _c(
-                            "li",
-                            {
-                              staticClass: "nav-link active",
-                              attrs: { role: "tab" }
-                            },
-                            [
-                              _c(
-                                "a",
-                                {
-                                  attrs: {
-                                    href: "#allAnnotations",
-                                    "data-toggle": "pill"
-                                  }
-                                },
-                                [
-                                  _vm._v(
-                                    "All (" +
-                                      _vm._s(_vm.totalAnnotations()) +
-                                      ")"
-                                  )
-                                ]
-                              )
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _vm._l(_vm.headerdata.allAnnotationGroups, function(
-                            annotationGroup
-                          ) {
-                            return _c(
-                              "li",
-                              {
-                                staticClass: "nav-link",
-                                attrs: { role: "tab" }
-                              },
-                              [
-                                _vm.groupCount(annotationGroup) > 0
-                                  ? _c(
-                                      "a",
-                                      {
-                                        attrs: {
-                                          href: "#".concat(annotationGroup),
-                                          "data-toggle": "pill"
-                                        }
-                                      },
-                                      [
-                                        _vm._v(
-                                          _vm._s(
-                                            _vm._f("touppercase")(
-                                              annotationGroup
-                                            )
-                                          ) +
-                                            " (" +
-                                            _vm._s(
-                                              _vm.groupCount(annotationGroup)
-                                            ) +
-                                            ")"
-                                        )
-                                      ]
-                                    )
-                                  : _c(
-                                      "a",
-                                      {
-                                        staticClass: "disabledLink",
-                                        attrs: {
-                                          href: "#",
-                                          "data-toggle": "pill"
-                                        }
-                                      },
-                                      [
-                                        _vm._v(
-                                          _vm._s(
-                                            _vm._f("touppercase")(
-                                              annotationGroup
-                                            )
-                                          )
-                                        )
-                                      ]
-                                    )
-                              ]
-                            )
-                          })
-                        ],
-                        2
-                      )
-                    ]
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-sm-9" }, [
-                _c(
-                  "div",
-                  { staticClass: "tab-content" },
-                  [
-                    _vm.header == "document"
-                      ? _c(
-                          "div",
-                          {
-                            staticClass: "tab-pane fade in active",
-                            attrs: { id: "allAnnotations" }
-                          },
-                          [
-                            _c("h2", [
-                              _vm._v(
-                                "Annotations - All (" +
-                                  _vm._s(_vm.totalAnnotations()) +
-                                  ")"
-                              )
-                            ]),
-                            _vm._v(" "),
-                            _c("vue-good-table", {
-                              attrs: {
-                                title: "",
-                                columns: _vm.allAnnotationColumns,
-                                rows: _vm.allAnnotationRows,
-                                paginate: true,
-                                lineNumbers: false,
-                                styleClass: "table table-striped"
-                              }
-                            })
-                          ],
-                          1
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _vm._l(_vm.headerdata.allAnnotationGroups, function(
-                      annotationGroup
-                    ) {
-                      return _vm.header == "document"
+                      _vm.header == "document"
                         ? _c(
                             "div",
                             {
                               staticClass: "tab-pane fade",
-                              attrs: { id: annotationGroup }
+                              attrs: { id: "license" }
                             },
                             [
-                              _c("h2", [
-                                _vm._v(
-                                  _vm._s(annotationGroup) +
-                                    "  (" +
-                                    _vm._s(_vm.groupCount(annotationGroup)) +
-                                    ")"
-                                )
-                              ]),
+                              _c("h2", [_vm._v("LICENSE / REVISION")]),
                               _vm._v(" "),
                               _c("vue-good-table", {
                                 attrs: {
                                   title: "",
-                                  columns: _vm.allAnnotationColumns,
-                                  rows: _vm.annotationRows(annotationGroup),
+                                  columns: _vm.licenseColumns,
+                                  rows: _vm.licenseRows(),
                                   paginate: true,
                                   lineNumbers: false,
-                                  onClick: _vm.goToAnnotation,
                                   styleClass: "table table-striped"
                                 }
                               })
@@ -52504,14 +52334,212 @@ var render = function() {
                             1
                           )
                         : _vm._e()
-                    })
-                  ],
-                  2
-                )
+                    ])
+                  : _vm._e()
               ])
             ])
           ]
-        )
+        ),
+        _vm._v(" "),
+        _vm.header == "document"
+          ? _c(
+              "div",
+              {
+                staticClass: "tab-pane fade",
+                attrs: { id: "annotationMetadata" }
+              },
+              [
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col-sm-3" }, [
+                    _c("div", { staticClass: "sidebar-nav" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass:
+                            "navbar-collapse collapse sidebar-navbar-collapse"
+                        },
+                        [
+                          _c(
+                            "ul",
+                            { staticClass: "nav nav-stacked" },
+                            [
+                              _c(
+                                "li",
+                                {
+                                  staticClass: "nav-link active",
+                                  attrs: { role: "tab" }
+                                },
+                                [
+                                  _c(
+                                    "a",
+                                    {
+                                      attrs: {
+                                        href: "#allAnnotations",
+                                        "data-toggle": "pill"
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "All (" +
+                                          _vm._s(_vm.totalAnnotations()) +
+                                          ")"
+                                      )
+                                    ]
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              _vm._l(
+                                _vm.headerdata.allAnnotationGroups,
+                                function(annotationGroup) {
+                                  return _c(
+                                    "li",
+                                    {
+                                      staticClass: "nav-link",
+                                      attrs: { role: "tab" }
+                                    },
+                                    [
+                                      _vm.groupCount(annotationGroup) > 0
+                                        ? _c(
+                                            "a",
+                                            {
+                                              attrs: {
+                                                href: "#".concat(
+                                                  annotationGroup
+                                                ),
+                                                "data-toggle": "pill"
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm._f("touppercase")(
+                                                    annotationGroup
+                                                  )
+                                                ) +
+                                                  " (" +
+                                                  _vm._s(
+                                                    _vm.groupCount(
+                                                      annotationGroup
+                                                    )
+                                                  ) +
+                                                  ")"
+                                              )
+                                            ]
+                                          )
+                                        : _c(
+                                            "a",
+                                            {
+                                              staticClass: "disabledLink",
+                                              attrs: {
+                                                href: "#",
+                                                "data-toggle": "pill"
+                                              }
+                                            },
+                                            [
+                                              _vm._v(
+                                                _vm._s(
+                                                  _vm._f("touppercase")(
+                                                    annotationGroup
+                                                  )
+                                                )
+                                              )
+                                            ]
+                                          )
+                                    ]
+                                  )
+                                }
+                              )
+                            ],
+                            2
+                          )
+                        ]
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-sm-9" }, [
+                    _c(
+                      "div",
+                      { staticClass: "tab-content" },
+                      [
+                        _vm.header == "document"
+                          ? _c(
+                              "div",
+                              {
+                                staticClass: "tab-pane fade in active",
+                                attrs: { id: "allAnnotations" }
+                              },
+                              [
+                                _c("h2", [
+                                  _vm._v(
+                                    "Annotations - All (" +
+                                      _vm._s(_vm.totalAnnotations()) +
+                                      ")"
+                                  )
+                                ]),
+                                _vm._v(" "),
+                                _c("vue-good-table", {
+                                  attrs: {
+                                    title: "",
+                                    columns: _vm.allAnnotationColumns,
+                                    rows: _vm.allAnnotationRows,
+                                    paginate: true,
+                                    lineNumbers: false,
+                                    styleClass: "table table-striped"
+                                  }
+                                })
+                              ],
+                              1
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm._l(_vm.headerdata.allAnnotationGroups, function(
+                          annotationGroup
+                        ) {
+                          return _vm.header == "document"
+                            ? _c(
+                                "div",
+                                {
+                                  staticClass: "tab-pane fade",
+                                  attrs: { id: annotationGroup }
+                                },
+                                [
+                                  _c("h2", [
+                                    _vm._v(
+                                      _vm._s(annotationGroup) +
+                                        "  (" +
+                                        _vm._s(
+                                          _vm.groupCount(annotationGroup)
+                                        ) +
+                                        ")"
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("vue-good-table", {
+                                    attrs: {
+                                      title: "",
+                                      columns: _vm.allAnnotationColumns,
+                                      rows: _vm.annotationRows(annotationGroup),
+                                      paginate: true,
+                                      lineNumbers: false,
+                                      onClick: _vm.goToAnnotation,
+                                      styleClass: "table table-striped"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            : _vm._e()
+                        })
+                      ],
+                      2
+                    )
+                  ])
+                ])
+              ]
+            )
+          : _vm._e()
       ])
     ]),
     _vm._v(" "),
@@ -52562,20 +52590,6 @@ var staticRenderFns = [
             ])
           ]
         )
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("thead", [
-      _c("tr", [
-        _c("th", [_vm._v("Version")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Publishing Date")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Revision Description")])
       ])
     ])
   }
@@ -53227,15 +53241,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     documentObject.date = theHeaderData.documents[i].document_publication_publishing_date[0];
                     documentObject.place = theHeaderData.documents[i].document_history_original_place[0];
                     documentObject.annotations = theHeaderData.documents[i].document_list_of_annotations_id.length;
-                    documentObject.document_id = theHeaderData.in_documents[i];
+                    documentObject.document_id = theHeaderData.documents[i].document_indexid;
                     documentArray.push(documentObject);
                 }
             }
             return documentArray;
         },
         goToDocument: function goToDocument(row, index) {
-            console.log("ROW: " + JSON.stringify(row)); //the object for the row that was clicked on
-            console.log("INDIX: " + index); // index of the row that was clicked on
             document.location = "/browse/document/" + row.document_id;
             return index;
         },
@@ -53259,7 +53271,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     computed: {},
     mounted: function mounted() {
-        console.log('DocumentMetadataBlockBody mounted.');
+        console.log('AnnotationMetadataBlockBody mounted.');
     }
 });
 
