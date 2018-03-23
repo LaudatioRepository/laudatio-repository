@@ -88,7 +88,7 @@
                             </tbody>
                             <tr>
                                 <td><a href="#" id="deleteCheckedButton"><span class="btn btn-sm btn-danger fa fa-trash"></span></a>
-                                <td colspan="6"><input type="hidden" name="corpusid" id="corpusid" value="{{$corpus->id}}" /><input type="hidden" name="corpuspath" id="corpuspath" value="{{$corpusproject_directory_path."/".$corpus->directory_path}}" /><a id="validateCorpusButton" class="btn btn-primary pull-right" href="#" role="button">Check corpus files</a></td>
+                                <td colspan="6"><input type="hidden" name="corpusid" id="corpusid" value="{{$corpus->id}}" /><input type="hidden" name="corpuspath" id="corpuspath" value="{{$corpusproject_directory_path."/".$corpus->directory_path}}" /><!--a id="validateCorpusButton" class="btn btn-primary pull-right" href="#" role="button">Check corpus files</a--> &nbsp; <a id="publishCorpusButton" class="btn btn-primary pull-right" href="#" role="button">Publish corpus</a></td>
                             </table>
                         </form>
                     </div>
@@ -100,18 +100,19 @@
         @endif
 </div>
 <!-- Modal -->
-<div class="modal fade" id="myValidatorModal" tabindex="-2" role="dialog" aria-labelledby="myModalLabelValidation">
+<div class="modal fade" id="publicationModal" tabindex="-1" role="dialog" aria-labelledby="publicationModalLabel">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h2 class="modal-title" id="myModalLabelValidation"></h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
+                <h2 class="modal-title" id="publicationModalLabel"></h2>
             </div>
             <div class="modal-body">
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="cancelPublication" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="doPublish" type="button" class="btn btn-default">Publish</button>
             </div>
         </div>
     </div>

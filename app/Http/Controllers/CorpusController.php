@@ -616,4 +616,82 @@ class CorpusController extends Controller
             ->with('user',$user);
     }
 
+    public function preparePublication(Request $request) {
+
+        $result = array();
+        $corpusid = $request->input('corpusid');
+        $corpus = Corpus::findOrFail($corpusid);
+        $corpuspath = $request->input('corpuspath');
+        $result['title'] = "Publish ".$corpus->name.", Version X";
+        $result['subtitle'] = "The following criteria needs to be met in order to be fulfilled before you can publish a Corpus";
+        $result['waiting'] = "Verification is ongoing...";
+        $result['corpus_header'] = array(
+            "title" => "1 Corpus header uploaded"
+        );
+        $result['document_headers'] = array(
+            "title" => "According number of Document headers"
+        );
+        $result['annotation_headers'] = array(
+            "title" => "According number of Annotation headers"
+        );
+
+
+        if(!$corpus->corpus_id){
+            $result['corpus_header']['corpusHeaderText'] = "Missing corpusheader";
+            $result['corpus_header']['corpusIcon'] = 'warning';
+        }
+        else{
+            $result['corpus_header']['corpusHeaderText'] = "";
+            $result['corpus_header']['corpusIcon'] = 'check_circle';
+        }
+
+        $checkResult = json_decode($this->GitRepoService->checkForMissingCorpusFiles($corpuspath."/TEI-HEADERS"), true);
+
+        $missing_document_count = count($checkResult['not_found_documents_in_corpus']);
+        $document_plural = "";
+        if($missing_document_count > 1){
+            $document_plural = "s";
+        }
+
+        if($missing_document_count > 0) {
+            $result['document_headers']['documentHeaderText'] = $missing_document_count." missing document".$document_plural;
+            $result['document_headers']['documentIcon'] = 'warning';
+        }
+        else{
+            $result['document_headers']['documentHeaderText'] = "";
+            $result['document_headers']['documentIcon'] = 'check_circle';
+        }
+
+        $missing_annotation_count = count($checkResult['not_found_annotations_in_corpus']);
+        $annotation_plural = "";
+        if($missing_annotation_count > 1){
+            $annotation_plural = "s";
+        }
+
+        if($missing_annotation_count > 0) {
+            $result['annotation_headers']['annotationHeaderText'] = $missing_annotation_count." missing annotation".$annotation_plural;
+            $result['annotation_headers']['annotationIcon'] = 'warning';
+        }
+        else{
+            $result['annotation_headers']['annotationHeaderText'] = "";
+            $result['annotation_headers']['annotationIcon'] = 'check_circle';
+        }
+
+
+        /**
+         * @todo
+         * */
+        //corpusdata formats
+
+        //license
+
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $result,
+        );
+
+        return Response::json($response);
+    }
+
 }

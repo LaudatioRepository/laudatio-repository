@@ -52,6 +52,7 @@ Route::group(array('prefix' => 'adminapi'), function() {
     Route::post('deletemultiple','GitRepoController@deleteMultipleFiles');
     Route::post('createFormat','GitRepoController@createFormatFolder');
     Route::post('validateHeaders','GitRepoController@validateCorpus');
+    Route::post('preparePublication','CorpusController@preparePublication');
 });
 
 

@@ -266,6 +266,90 @@
             });
         }
 
+        function getPublishTestData(postData) {
+            return new Promise(function(resolve, reject) {
+
+                var token = $('#_token').val();
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                $.ajax({
+                    url: '/api/adminapi/preparePublication',
+                    type:"POST",
+                    data: postData,
+                    async: true,
+                    statusCode: {
+                        500: function () {
+                            alert("server down");
+                        }
+                    },
+                    success: function(data) {
+                        resolve(data) // Resolve promise and go to then()
+                    },
+                    error: function(err) {
+                        reject(err) // Reject the promise and go to catch()
+                    }
+                })
+            });
+        }
+
+        $("#publishCorpusButton").click(function (){
+            var postPublishData = {}
+            postPublishData.corpusid = $('#corpusid').val();
+            postPublishData.corpuspath = $('#corpuspath').val()
+            getPublishTestData(postPublishData).then(function(publishData){
+                //console.log(JSON.stringify(publishData))
+                //var json = JSON.parse(publishData.msg);
+                var jsonData = publishData.msg
+
+                $('#publicationModalLabel').html(jsonData.title);
+
+                $('#publicationModal').modal('show');
+                var html = '<div id="preparationWrapper">';
+
+                html += '<div id="subtitle">'+jsonData.subtitle+'</div>';
+                html += '<div id="waiting">'+jsonData.waiting+'</div>';
+
+                html += '<ul class="list-group">';
+
+                html += '<li class="list-group-item">';
+                html += ''+jsonData.corpus_header.title+'';
+                if(jsonData.corpus_header.corpusHeaderText != ''){
+                    html += '<br /><span class="has-error>'+jsonData.corpus_header.corpusHeaderText+'</span>';
+                }
+                html += '<i class="material-icons pull-right">'+jsonData.corpus_header.corpusIcon+'</i>';
+                html += '</li>';
+
+
+                html += '<li class="list-group-item">';
+                html += ''+jsonData.document_headers.title+'';
+                if(jsonData.document_headers.documentHeaderText != ''){
+                    html += '<br /><span class="has-error">'+jsonData.document_headers.documentHeaderText+'</span>';
+                }
+                html += '<i class="material-icons pull-right">'+jsonData.document_headers.documentIcon+'</i>';
+                html += '</li>';
+
+                html += '<li class="list-group-item">';
+                html += ''+jsonData.annotation_headers.title+'';
+                if(jsonData.annotation_headers.annotationHeaderText != ''){
+                    html += '<br /><span class="has-error">'+jsonData.annotation_headers.annotationHeaderText+'</span>';
+                }
+                html += '<i class="material-icons pull-right">'+jsonData.annotation_headers.annotationIcon+'</i>';
+                html += '</li>';
+
+                html += '</ul>';
+
+                html += '</div>';
+                $('#publicationModal .modal-dialog .modal-content .modal-body').html(html);
+            }).catch(function(err) {
+                // Run this when promise was rejected via reject()
+                console.log(err)
+            })
+        });
+
         $("#validateCorpusButton").click(function () {
             var postData = {}
             postData.corpusid = $('#corpusid').val();

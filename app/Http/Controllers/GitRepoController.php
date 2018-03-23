@@ -593,7 +593,6 @@ class GitRepoController extends Controller
             'msg' => $result,
         );
 
-
         return Response::json($response);
     }
 

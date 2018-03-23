@@ -40,7 +40,6 @@ Route::get('/project/corpora/{corpus}/delete/{corpusproject_directory_path}',[ '
 Route::get('project/corpora/assignusers/{corpus}',[ 'as' => 'project.corpora.assignusers', 'uses' => 'CorpusController@assignCorpusUsers'])->middleware('auth');;
 Route::get('/project/corpora/{corpus}/{filepath}/show',[ 'as' => 'project.corpora.filepath.show', 'uses' => 'CorpusController@showFilePath'])->where('filepath', '.+')->middleware('auth');
 Route::get('/project/corpora/{corpus}/{path?}',[ 'as' => 'project.corpora.show', 'uses' => 'CorpusController@show'])->where('path', '.+')->middleware('auth');
-Route::get('/project/corpora/{corpus}/{corpuspath}/validate',[ 'as' => 'project.corpora.validate', 'uses' => 'CorpusController@validateCorpus'])->where('corpuspath', '.+')->middleware('auth');
 Route::post('/project/corpora',[ 'as' => 'project.corpora.store', 'uses' => 'CorpusController@store'])->middleware('auth');
 Route::get('/project/corpora/{corpus}/{user}/delete',[ 'as' => 'project.usercorpusroles.destroy', 'uses' => 'CorpusController@destroyCorpusUser'])->middleware('auth');
 Route::patch('/project/corpora/{corpus}',[ 'as' => 'project.corpora.update', 'uses' => 'CorpusController@update'])->middleware('auth');

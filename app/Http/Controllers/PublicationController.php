@@ -7,6 +7,20 @@ use Illuminate\Http\Request;
 
 class PublicationController extends Controller
 {
+
+
+    protected $GitRepoService;
+    protected $laudatioUtils;
+    protected $GitLabService;
+    protected $elasticService;
+    public function __construct(GitRepoInterface $Gitservice,  LaudatioUtilsInterface $laudatioUtils,GitLabInterface $GitLabService, ElasticsearchInterface $elasticService)
+    {
+        $this->GitRepoService = $Gitservice;
+        $this->laudatioUtils = $laudatioUtils;
+        $this->GitLabService = $GitLabService;
+        $this->elasticService = $elasticService;
+
+    }
     /**
      * Display a listing of the resource.
      *
@@ -24,7 +38,22 @@ class PublicationController extends Controller
      */
     public function create()
     {
-        //
+        //First check if we can safely publish
+
+        $result = null;
+        $corpusid = $request->input('corpusid');
+        $corpuspath = $request->input('corpuspath');
+
+        $result = $this->GitRepoService->checkForMissingCorpusFiles($corpuspath."/TEI-HEADERS");
+        dd($result);
+
+
+        //if we can publish, find out what the current publication version is for the corpus
+
+        //create a new index with the right  version
+
+        //ingest
+
     }
 
     /**
