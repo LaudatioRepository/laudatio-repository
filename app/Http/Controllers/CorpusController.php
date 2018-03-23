@@ -639,11 +639,14 @@ class CorpusController extends Controller
         if(!$corpus->corpus_id){
             $result['corpus_header']['corpusHeaderText'] = "Missing corpusheader";
             $result['corpus_header']['corpusIcon'] = 'warning';
+            $canPublish = false;
         }
         else{
             $result['corpus_header']['corpusHeaderText'] = "";
             $result['corpus_header']['corpusIcon'] = 'check_circle';
         }
+
+        $canPublish = true;
 
         $checkResult = json_decode($this->GitRepoService->checkForMissingCorpusFiles($corpuspath."/TEI-HEADERS"), true);
 
@@ -656,6 +659,7 @@ class CorpusController extends Controller
         if($missing_document_count > 0) {
             $result['document_headers']['documentHeaderText'] = $missing_document_count." missing document".$document_plural;
             $result['document_headers']['documentIcon'] = 'warning';
+            $canPublish = false;
         }
         else{
             $result['document_headers']['documentHeaderText'] = "";
@@ -671,13 +675,14 @@ class CorpusController extends Controller
         if($missing_annotation_count > 0) {
             $result['annotation_headers']['annotationHeaderText'] = $missing_annotation_count." missing annotation".$annotation_plural;
             $result['annotation_headers']['annotationIcon'] = 'warning';
+            $canPublish = false;
         }
         else{
             $result['annotation_headers']['annotationHeaderText'] = "";
             $result['annotation_headers']['annotationIcon'] = 'check_circle';
         }
 
-
+        $result['canPublish'] = $canPublish;
         /**
          * @todo
          * */

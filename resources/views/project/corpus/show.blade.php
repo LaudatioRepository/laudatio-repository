@@ -301,7 +301,7 @@
             postPublishData.corpusid = $('#corpusid').val();
             postPublishData.corpuspath = $('#corpuspath').val()
             getPublishTestData(postPublishData).then(function(publishData){
-                //console.log(JSON.stringify(publishData))
+                console.log(JSON.stringify(publishData))
                 //var json = JSON.parse(publishData.msg);
                 var jsonData = publishData.msg
 
@@ -343,6 +343,10 @@
                 html += '</ul>';
 
                 html += '</div>';
+
+                if(jsonData.canPublish == false) {
+                    $('#doPublish').attr("disabled","disabled");
+                }
                 $('#publicationModal .modal-dialog .modal-content .modal-body').html(html);
             }).catch(function(err) {
                 // Run this when promise was rejected via reject()
