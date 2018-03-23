@@ -16,11 +16,13 @@ class GitFunction
 {
     protected $repoId;
     protected $basePath;
+    protected $scriptPath;
 
     public function __construct()
     {
         $this->repoId = config('laudatio.repoid');
         $this->basePath = config('laudatio.basePath');
+        $this->scriptPath = config('laudatio.scriptPath');
     }
 
     public function getStatus($path){
@@ -36,7 +38,6 @@ class GitFunction
     }
 
     public function doAdd($path){
-
         if(is_dir($path)){
             $process = new Process("git add .",$path);
         }
@@ -189,6 +190,7 @@ class GitFunction
     public function addUntracked($pathWithOutAddedFolder, $folder = ""){
         $isAdded = false;
         $status = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
+        Log::info("STATUS: ".$status);
         if($folder == ""){
             if($this->isUntracked($status)){
                 $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder);
@@ -275,6 +277,7 @@ class GitFunction
     }
 
     public function initiateRepository($path){
+
         $isInitiated = false;
         $process = new Process("git init",$this->basePath."/".$path);
         $process->setTimeout(3600);
@@ -296,7 +299,7 @@ class GitFunction
         /*
          * cp ../../../scripts/githooks/* .git
          */
-        $hookProcess = new Process("cp ../../../scripts/githooks/* .git/hooks",$this->basePath."/".$path);
+        $hookProcess = new Process("cp ".$this->scriptPath."/githooks/* .git/hooks",$this->basePath."/".$path);
         $hookProcess->run();
         // executes after the command finishes
         if (!$hookProcess->isSuccessful()) {
@@ -319,7 +322,7 @@ class GitFunction
             throw new ProcessFailedException($makeDirectoryProcess);
         }
         else{
-            $scriptProcess = new Process("cp ../../../scripts/src/* .git/src",$this->basePath."/".$path);
+            $scriptProcess = new Process("cp ".$this->scriptPath."/src/* .git/src",$this->basePath."/".$path);
             $scriptProcess->run();
             // executes after the command finishes
             if (!$scriptProcess->isSuccessful()) {
@@ -665,5 +668,22 @@ class GitFunction
             $listOfFiles = explode("\n", $processOutput);
         }
         return array_filter($listOfFiles);
+    }
+
+    public function checkForMissingCorpusFiles($path){
+        $result = null;
+        $pythonScript = $this->scriptPath.'/src/validateHeaders.py';
+        $process = new Process("python ".$pythonScript." -p ".$path);
+        $process->run();
+
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $result = $process->getOutput();
+        }
+        return $result;
     }
 }

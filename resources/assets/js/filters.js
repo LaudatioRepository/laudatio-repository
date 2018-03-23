@@ -12,7 +12,16 @@ Vue.filter('arrayToString', function (array) {
     else{
         string = array.toString();
     }
+    if(string == "NA"){
+        string = "-";
+    }
     return string;
+});
+
+Vue.filter('touppercase', function (string){
+    if(typeof string != 'undefined') {
+        return string.toUpperCase();
+    }
 });
 
 

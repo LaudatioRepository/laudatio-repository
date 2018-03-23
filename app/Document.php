@@ -6,6 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Document extends Model
 {
+    protected $guarded = array();
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name', 'email', 'oauth_id', 'avatar','password',
+    ];
+
     /**
      * Editors
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany

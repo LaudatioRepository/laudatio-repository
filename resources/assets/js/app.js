@@ -205,9 +205,9 @@ const app = new Vue({
                         })
 
                         for (var ri = 0; ri < res.data.results.length; ri++) {
-                            corpusRefs.push(res.data.results[ri]._id);
+                            corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
                             corpus_ids.push({
-                                'in_corpora': '' + res.data.results[ri]._id + ''
+                                'in_corpora': '' + res.data.results[ri]._source.corpus_id[0] + ''
                             });
                         }
 
@@ -218,8 +218,7 @@ const app = new Vue({
                                 cacheString: this.corpusCacheString
                             }
 
-                            console.log("corpus_ids: " + corpus_ids)
-                            console.log("corpusRefs: " + corpusRefs)
+
 
                             /**
                              * Get all documents contained in the corpora

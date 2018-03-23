@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Annotation extends Model
 {
 
+    protected $guarded = array();
     protected $fillable = ['annotation_id', 'file_name','annotation_size_type', 'annotation_size_value','corpus_id'];
 
     public function annotationvalue()

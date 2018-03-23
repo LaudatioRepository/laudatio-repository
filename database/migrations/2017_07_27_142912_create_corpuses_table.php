@@ -16,11 +16,12 @@ class CreateCorpusesTable extends Migration
         Schema::create('corpuses', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('vid')->nullable();
-            $table->string('name');
+            $table->text('name');
             $table->text('description');
             $table->string('corpus_size_type')->nullable();
             $table->string('corpus_size_value')->nullable();
             $table->string('directory_path');
+            $table->string('corpus_id')->nullable();
             $table->string('file_name')->nullable();
             $table->text('gitlab_group_id')->nullable();
             $table->integer('gitlab_id')->nullable();

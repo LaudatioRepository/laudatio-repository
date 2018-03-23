@@ -5,14 +5,14 @@
         <p class="searchScope">Scope: {{corpusresult.scope}}</p>
         -->
         <div class="panel-group" id="accordion">
-            <div v-if="corpusresult.results.length > 0" class="panel panel-default" v-for="corpusresultdata in corpusresult.results" v-bind:key="corpusresultdata._id">
+            <div v-if="corpusresult.results.length > 0" class="panel panel-default" v-for="(corpusresultdata, index) in corpusresult.results" v-bind:key="corpusresultdata._source.corpus_id[0]">
                 <div class="panel-heading">
-                    <div class="panel-title"  data-toggle="collapse" data-parent="#accordion" v-bind:data-target="corpusresultdata._id | addHash" v-on:click="emitCorpusRelations(corpusresultdata._id)">
+                    <div class="panel-title"  data-toggle="collapse" data-parent="#accordion" v-bind:data-target="corpusresultdata._source.corpus_id[0] | addHash" v-on:click="emitCorpusRelations(corpusresultdata._source.corpus_id[0])">
                     {{ corpusresultdata._source.corpus_title | arrayToString }}
                     <i class="fa fa-expand pull-right" aria-hidden="true"></i>
                     </div>
                  </div>
-                 <div :id="corpusresultdata._id" class="panel-collapse collapse">
+                 <div :id="corpusresultdata._source.corpus_id[0]" class="panel-collapse collapse">
                     <div   class="panel-body">
                         <span class="iconwrapper"><i class="fa fa-university" aria-hidden="true"></i> Published: {{corpusresultdata._source.corpus_publication_publication_date | lastElement}}</span>
                         <span class="iconwrapper"><i class="fa fa-file-text" aria-hidden="true" v-if="typeof corpusresultdata._source.corpus_documents != 'undefined'"></i> Documents: {{corpusresultdata._source.corpus_documents.length}}</span>

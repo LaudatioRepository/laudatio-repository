@@ -1,17 +1,23 @@
 <template lang="html">
-    <div>
-        <ul class="nav nav-pills nav-fill" role="tablist">
-          <li role="tab" class="nav-link active"><a href="#project" data-toggle="pill">Project</a></li>
-          <li role="tab" class="nav-link"><a href="#annotators" data-toggle="pill">Annotators</a></li>
-          <li role="tab" class="nav-link"><a href="#revisions" data-toggle="pill">Revisions</a></li>
-          <li role="tab" class="nav-link"><a href="#annotations" data-toggle="pill">Annotations</a></li>
-        </ul>
+    <div class="headerRow headerNav">
+        <div class="headerColumn left">
+
+        </div>
+        <div class="headerColumn middle">
+            <ul class="nav nav-pills" v-if="header == 'corpus'">
+                <li class="active" role="tab"><a href="#corpusMetadataBody"  data-toggle="pill">CORPUS <i class="material-icons">book</i></a></li>
+                <li role="tab"><a href="#documentMetadataBody" data-toggle="pill">DOCUMENTS <i class="material-icons">description</i> {{headerdata.corpusdocumentcount}}</a></li>
+                <li role="tab"><a href="#annotationMetadataBody" data-toggle="pill">ANNOTATIONS <i class="material-icons">create</i> {{headerdata.totalcorpusannotationcount}}</a></li>
+            </ul>
+        </div>
+        <div class="headerColumn right">
+        </div>
     </div>
 </template>
 
 <script>
     export default {
-        props: ['headerdata'],
+        props: ['headerdata','header'],
         mounted() {
             console.log('CorpusMetadataBlockHeader mounted.')
         }

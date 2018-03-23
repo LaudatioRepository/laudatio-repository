@@ -13,8 +13,9 @@ use ONGR\ElasticsearchDSL\Query\FullText\MatchQuery;
 use ONGR\ElasticsearchDSL\Query\MatchAllQuery;
 use ONGR\ElasticsearchDSL\Query\FullText\MultiMatchQuery;
 use ONGR\ElasticsearchDSL\Query\TermLevel\RangeQuery;
-Use ONGR\ElasticsearchDSL\Aggregation\Bucketing\DateRangeAggregation;
-Use ONGR\ElasticsearchDSL\Aggregation\Bucketing\RangeAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\Bucketing\DateRangeAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\Bucketing\RangeAggregation;
+use ONGR\ElasticsearchDSL\Aggregation\Bucketing\TermsAggregation;
 use ONGR\ElasticsearchDSL\Search;
 use Log;
 
@@ -131,9 +132,7 @@ class QueryBuilder
             "document_size_extent_to" => "document_size_extent"
 
         );
-        //Log::info("fielddata: ".print_r($fielddata,1));
 
-        //Log::info("rangedata: ".print_r($rangedata,1));
 
         foreach($fielddata as $param){
             foreach ($param as $key => $value){
@@ -212,6 +211,34 @@ class QueryBuilder
         $search = new Search();
         $search->addQuery($rangeQuery);
 
+        $queryArray = $search->toArray();
+
+        return $queryArray;
+    }
+
+    public function buildTermsAggregationQuery($data){
+        $termAggregation = new TermsAggregation($data['name']);
+        $termAggregation->setField($data['field']);
+
+        $matchAllQuery = new MatchAllQuery();
+        $search = new Search();
+        $search->addQuery($matchAllQuery);
+
+        $search->addAggregation($termAggregation);
+        $queryArray = $search->toArray();
+
+        return $queryArray;
+    }
+
+    public function buildTermsAggregationQueryByMatchQuery($matchData, $aggregationData){
+        $termAggregation = new TermsAggregation($aggregationData['name']);
+        $termAggregation->setField($aggregationData['field']);
+
+        $matchQuery = new MatchQuery($matchData['field'], $matchData['value']);
+        $search = new Search();
+        $search->addQuery($matchQuery);
+
+        $search->addAggregation($termAggregation);
         $queryArray = $search->toArray();
 
         return $queryArray;

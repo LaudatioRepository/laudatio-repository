@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Corpus;
 use App\CorpusProject;
+use App\Document;
+use App\Annotation;
 use App\Http\Requests\UploadRequest;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use DB;
@@ -11,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Custom\LaudatioUtilsInterface;
 use App\Custom\GitRepoInterface;
 use App\Custom\GitLabInterface;
+use App\Custom\ElasticsearchInterface;
 use App\Laudatio\GitLaB\GitFunction;
 use Log;
 use Flow\JSONPath\JSONPath;
@@ -25,9 +28,10 @@ class UploadController extends Controller
     protected $basePath;
     protected $GitLabService;
     protected $GitRepoService;
+    protected $elasticService;
 
 
-    public function __construct(FlysystemManager $flysystem, LaudatioUtilsInterface $laudatioUtilsService, GitLabInterface $GitLabService,GitRepoInterface $Gitservice)
+    public function __construct(FlysystemManager $flysystem, LaudatioUtilsInterface $laudatioUtilsService, GitLabInterface $GitLabService,GitRepoInterface $Gitservice, ElasticsearchInterface $elasticService)
     {
         $this->flysystem = $flysystem;
         $this->GitRepoService = $Gitservice;
@@ -35,6 +39,7 @@ class UploadController extends Controller
         $this->laudatioUtilsService = $laudatioUtilsService;
         $this->connection = $this->flysystem->getDefaultConnection();
         $this->GitLabService = $GitLabService;
+        $this->elasticService = $elasticService;
     }
 
     public function uploadForm($dirname = "")
@@ -48,14 +53,7 @@ class UploadController extends Controller
         $corpusDB = DB::table('corpuses')->where('directory_path',$corpusPath)->get();
         $corpus = Corpus::with('corpusprojects')->where('id', $corpusDB[0]->id)->get();
 
-        //dd($corpus[0]->name);
-
-        $isCorpusHeader = false;
-        if(strpos($corpus[0]->name,"Untitled") !== false && null == $corpus[0]->file_name){
-            $isCorpusHeader = true;
-        }
-
-        return view('gitLab.uploadform',["dirname" => $dirname,"corpusid" => $corpus[0]->id, "isCorpusHeader" => $isCorpusHeader,"corpusProjectPath" => $dirArray[0]])
+        return view('gitLab.uploadform',["dirname" => $dirname,"corpusid" => $corpus[0]->id])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',\Auth::user());
     }
@@ -73,35 +71,40 @@ class UploadController extends Controller
             ->with('user',\Auth::user());
     }
 
+    /**
+     * @param UploadRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function uploadSubmit(UploadRequest $request)
     {
-        $updated = false;
         $dirPath = $request->directorypath;;
         $dirPathArray = explode("/",$dirPath);
         end($dirPathArray);
         $last_id=key($dirPathArray);
 
         $corpusId = $request->corpusid;
-        $isCorpusHeader = $request->isCorpusHeader;
-        $corpusProjectPath = $request->corpusProjectPath;
+        $corpusProjectPath = $dirPathArray[0];
+        $corpusPath = $dirPathArray[1];
+        $headerPath = $dirPathArray[$last_id];
+
         $corpusProjectDB = DB::table('corpus_projects')->where('directory_path',$corpusProjectPath)->get();
         $corpusProjectId = $corpusProjectDB[0]->gitlab_id;
         $corpus = Corpus::find($corpusId);
 
+        $gitLabCorpusPath = "";
         $filePath = "";
         $currentFilePath = $corpus->directory_path;
-        $corpusPath = $dirPathArray[1];
 
-        $gitLabCorpusPath = "";
 
-        $isUntitled = true;
+        $isVersioned = false;
 
-        if(strpos($dirPathArray[1],"untitled") === false){
-            $isUntitled = false;
-        }
+        $document = null;
+        $annotation = null;
+
+        $documents = array();
+        $annotations = array();
 
         foreach ($request->formats as $format) {
-            $isUpdate = false;
             $fileName = $format->getClientOriginalName();
             $pathContents = $this->flysystem->listContents($dirPath, false);
             foreach ($pathContents as $object) {
@@ -111,6 +114,13 @@ class UploadController extends Controller
                 }
             }
 
+            $canUpload = true;
+            if( $dirPathArray[$last_id] == 'corpus'
+                && $corpus->file_name != $fileName
+                && strpos($corpus->name,"Untitled") === false){
+                $canUpload = false;
+            }
+
             $xmlpath = $format->getRealPath();
 
             if(!empty($xmlpath)){
@@ -118,13 +128,13 @@ class UploadController extends Controller
                 $json = $this->laudatioUtilsService->parseXMLToJson($xmlNode, array());
                 $jsonPath = new JSONPath($json,JSONPath::ALLOW_MAGIC);
 
-                //dd($corpusProjectPath);
-                if($dirPathArray[$last_id] == 'corpus'){
+                if($headerPath == 'corpus'){
+                    $isVersioned = $this->laudatioUtilsService->corpusIsVersioned($corpusId);
                     $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
+                    $corpusDescription = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
                     if($corpusTitle[0]){
-                        if($isUntitled){
+                        if(!$isVersioned){
                             $corpusPath = $this->GitRepoService->updateCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus->directory_path,$corpusTitle[0]);
-                            //dd($corpusPath);
                             $gitLabCorpusPath = substr($corpusPath,strrpos($corpusPath,"/")+1);
                             $this->laudatioUtilsService->updateDirectoryPaths($gitLabCorpusPath,$corpusId);
                             $gitLabResponse = $this->GitLabService->createGitLabProject(
@@ -132,7 +142,7 @@ class UploadController extends Controller
                                 array(
                                     'namespace_id' => $corpusProjectId,
                                     'path' => $gitLabCorpusPath,
-                                    'description' => request('corpus_description'),
+                                    'description' => $corpusDescription[0],
                                     'visibility' => 'public'
                                 ));
 
@@ -150,105 +160,159 @@ class UploadController extends Controller
 
                         }
                         else{
+                            if($canUpload){
+                                $params = array(
+                                    "name" => $corpusTitle[0],
+                                    "file_name" => $fileName,
+                                );
+                                $gitLabCorpusPath = substr($corpusPath,strrpos($corpusPath,"/"));
+                                $this->laudatioUtilsService->updateCorpusAttributes($params,$corpusId);
+                            }
 
-                            $params = array(
-                                "name" => $corpusTitle[0],
-                                "file_name" => $fileName,
-                            );
-                            $gitLabCorpusPath = substr($corpusPath,strrpos($corpusPath,"/"));
-                            $this->laudatioUtilsService->updateCorpusAttributes($params,$corpusId);
                         }
 
 
-                        $isUntitled = false;
-                        $filePath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                        if(!$isVersioned){
+                            $filePath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                        }
+                        else{
+                            $filePath = $corpusProjectPath."/".$corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                        }
+
 
                     }
                 }
-                else if($dirPathArray[$last_id] == 'document'){
+                else if($headerPath == 'document'){
                     $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId,$fileName,false);
+                    if(!array_key_exists($document->id,$documents)){
+                        $documents[$document->id] = array();
+                    }
+                    $idParams = array();
+                    array_push($idParams,array(
+                        "document_id" => $document->document_id
+                    ));
+
+                    array_push($idParams,array(
+                        "in_corpora" => $corpus->corpus_id
+                    ));
+                    $documents[$document->id] = $idParams;
+
+                    $isVersioned = $this->laudatioUtilsService->documentIsVersioned($document->id);
                     $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/document/'.$fileName;
                 }
-                else if($dirPathArray[$last_id] == 'annotation'){
+                else if($headerPath == 'annotation'){
                     $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId,$fileName,false);
+                    if(!array_key_exists($annotation->id,$documents)){
+                        $annotations[$annotation->id] = array();
+                    }
+
+                    $idParams = array();
+                    array_push($idParams, array(
+                        "preparation_annotation_id" => $annotation->annotation_id,
+                    ));
+
+                    array_push($idParams, array(
+                        "in_corpora" => $corpus->corpus_id
+                    ));
+                    $annotations[$annotation->id] = $idParams;
+
+                    $isVersioned = $this->laudatioUtilsService->annotationIsVersioned($annotation->id);
                     $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/annotation/'.$fileName;
                     $preparationSteps = $this->laudatioUtilsService->setPreparationAttributes($json,$annotation->id,$corpusId,false);
-                }
+                }//end if header type
+
+            }//end if xmlpath
+
+            $canUpload = true;
+            if( $dirPathArray[$last_id] == 'corpus'
+                && $corpus->file_name != $fileName
+                && strpos($corpus->name,"Untitled") === false){
+                $canUpload = false;
             }
 
-/*
-            if(!$isCorpusHeader){
-                $filePath = $dirPath."/".$fileName;
-            }
-*/
-            /*
-             * Move the uploaded file to the correct path
-             */
-
-
-            $gitFunction = new GitFunction();
-
-            $exists = $gitFunction->fileExists($filePath);
-
-            if(!$exists){
-                $stream = fopen($format->getRealPath(), 'r+');
-                $this->flysystem->writeStream($filePath, $stream);
-            }
-            else{
-                $stream = fopen($format->getRealPath(), 'r+');
-                $this->flysystem->updateStream($filePath, $stream);
-                $updated = true;
-            }
-
-            if (is_resource($stream)) {
-                fclose($stream);
-            }
-
-
-            if(!$isUntitled){
-
-                $commitPath = "";
-                $addPath = "";
-                if(!$isCorpusHeader){
-                    $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
-                    $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
-                    $corpusPath = $dirPathArray[1];
+            if($canUpload){
+                $gitFunction = new GitFunction();
+                $exists = $gitFunction->fileExists($filePath);
+                $stream = null;
+                if(!$exists){
+                    $stream = fopen($format->getRealPath(), 'r+');
+                    $this->flysystem->writeStream($filePath, $stream);
                 }
                 else{
-                    $addPath = $corpusPath.'/TEI-HEADERS/corpus/';
-                    $commitPath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                    if($isVersioned){
+                        $stream = fopen($format->getRealPath(), 'r+');
+                        $this->flysystem->updateStream($filePath, $stream);
+                    }
+
                 }
 
-
-                // Git Add the file(s)
-                \App::call('App\Http\Controllers\GitRepoController@addFiles',[
-                    'path' => $addPath,
-                    'corpus' => $corpusId
-                ]);
-
-                if(!$isUpdate){
-                    //git commit The files
-                    \App::call('App\Http\Controllers\GitRepoController@commitFiles',[
-                        'dirname' => $commitPath,
-                        'commitmessage' => "Adding files for ".$fileName,
-                        'corpus' => $corpusId
-                    ]);
+                if (is_resource($stream)) {
+                    fclose($stream);
                 }
 
             }
+            else{
+                session()->flash('message', 'The corpus header you tried to upload does not belong to this corpus');
+            }
 
+
+            $commitPath = "";
+            $addPath = "";
+            if($dirPathArray[$last_id] != 'corpus'){
+                $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
+                $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
+                $corpusPath = $dirPathArray[1];
+            }
+            else{
+                $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/';
+                $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/'.$fileName;
+            }
+
+            //if($dirPathArray[$last_id] == 'corpus' && !$isVersioned){
+
+            //add files
+            $this->GitRepoService->addFiles($addPath,$corpusId);
+
+            //git commit The files
+            $this->GitRepoService->commitFiles($commitPath,"Adding files for ".$fileName,$corpusId);
+
+        }// end foreach formats
+
+        if($headerPath == 'corpus'){
 
         }
+        else if($headerPath == 'document'){
+            if(isset($corpus->corpus_id)){
+                $elasticIds = $this->elasticService->getElasticIdByObjectId('document',$documents);
+                foreach ($elasticIds as $documentId => $elasticId){
+                    $documentToBeUpdated = Document::findOrFail($documentId);
+                    $documentToBeUpdated->elasticsearch_id = $elasticIds[$documentId];
+                    $documentToBeUpdated->save();
+                }
+                //$this->laudatioUtilsService->updateDocumentAttributes($updateParams,$document->id);
+            }
+        }
+        else if($headerPath == 'annotation'){
+            if(isset($corpus->corpus_id)){
+                $elasticIds = $this->elasticService->getElasticIdByObjectId('annotation',$annotations);
+                foreach ($elasticIds as $annotationId => $elasticId){
+                    $annotationToBeUpdated = Annotation::findOrFail($annotationId);
+                    $annotationToBeUpdated->elasticsearch_id = $elasticIds[$annotationId];
+                    $annotationToBeUpdated->save();
+                }
+            }
+        }
 
-        if($isCorpusHeader && !$isUntitled) {
+        if($dirPathArray[$last_id] == 'corpus' && !$isVersioned) {
             return redirect()->route('project.corpora.show', ['path' => $corpusProjectPath.'/'.$gitLabCorpusPath . '/TEI-HEADERS', 'corpus' => $corpusId]);
         }
-        else if ($isCorpusHeader && $isUntitled){
+        else if ($dirPathArray[$last_id] == 'corpus' && $isVersioned){
             return redirect()->route('project.corpora.show', ['path' => $dirPath, 'corpus' => $corpusId]);
         }
         else{
-            return redirect()->route('admin.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
+            return redirect()->route('project.corpora.show',['path' => $dirPath,'corpus' => $corpusId]);
         }
+        
     }
 
     public function uploadSubmitFiles(Request $request)

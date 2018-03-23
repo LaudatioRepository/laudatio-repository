@@ -660,6 +660,39 @@ class ElasticController extends Controller
     }
 
 
+    /**
+     * API METHODS
+     */
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function getCorpus(Request $request) {
+        $id = $request->input('id');
+        $apiData = $this->ElasticService->getCorpus($id);
+        $data = json_decode($apiData->getContent(), true);
+        return $data;
+    }
+
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function getDocument(Request $request) {
+        $id = $request->input('id');
+        $apiData = $this->ElasticService->getDocument($id);
+        $data = json_decode($apiData->getContent(), true);
+        return $data;
+    }
+
+    public function getAnnotation(Request $request) {
+        $id = $request->input('id');
+        $apiData = $this->ElasticService->getAnnotation($id);
+        $data = json_decode($apiData->getContent(), true);
+        return $data;
+    }
 
 
 }

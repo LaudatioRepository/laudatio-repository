@@ -9,7 +9,17 @@ namespace App\Custom;
 use Illuminate\Http\Request;
 
 interface ElasticsearchInterface {
-    public function getDocument($index,$type,$id);
+    public function getCorpus($id,$full);
+    public function deleteCorpus($id);
+    public function getDocument($id,$full);
+    public function deleteDocument($id,$corpusId);
+    public function getAnnotation($id,$full);
+    public function deleteAnnotation($title,$corpusId);
+    public function getAnnotationByName($name, $fields);
+    public function getAnnotationGroups();
+    public function getGuidelinesByCorpus($corpusId);
+    public function getGuidelinesByCorpusAndAnnotationId($corpusId,$annotationName);
+    public function getFormatsByCorpus($corpusId);
     public function search($index, $field, $term);
     public function searchGeneral($searchData);
     public function searchCorpusIndex($searchData);
@@ -23,6 +33,8 @@ interface ElasticsearchInterface {
     public function getCorpusTitlesByDocument($searchData,$documentData);
     public function getCorpusByAnnotation($searchData);
     public function getDocumentByCorpus($searchData,$corpusData);
+    public function getDocumentsByAnnotationAndCorpusId($documentList,$corpusId);
+    public function getDocumentsByDocumentId($documentids);
     public function getAnnotationByCorpus($searchData,$corpusData);
 
 
@@ -32,6 +44,8 @@ interface ElasticsearchInterface {
     public function createIndex($name);
     public function deleteIndex($indexId);
     public function truncateIndex($index);
+    public function deleteIndexedObject($index,$params);
+    public function getElasticIdByObjectId($index,$params);
 
     /**
      * Helpers

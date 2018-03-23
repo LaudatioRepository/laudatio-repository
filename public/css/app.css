@@ -8761,3 +8761,12 @@ a.navlink {
   color: #000000;
 }
 
+.notfoundtree {
+  background: url(/images/404tree.jpg?5210947066b8155e980d884aa295f761) no-repeat center center fixed;
+  background-size: cover;
+  min-height: 600px;
+  max-height: 1162px;
+  min-width: 800px;
+  max-width: 2048px;
+}
+

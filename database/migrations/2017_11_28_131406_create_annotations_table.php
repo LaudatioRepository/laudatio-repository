@@ -17,11 +17,12 @@ class CreateAnnotationsTable extends Migration
             $table->increments('id');
             $table->integer('vid')->nullable();
             $table->string('file_name')->nullable();
-            $table->string('annotation_id')->nullable();
+            $table->text('annotation_id')->nullable();
             $table->string('annotation_group')->nullable();
             $table->string('annotation_size_type')->nullable();
             $table->string('annotation_size_value')->nullable();
             $table->integer('corpus_id')->nullable();
+            $table->string('elasticsearch_id')->nullable();
             $table->string('directory_path')->nullable();
             $table->string('gitlab_commit_sha')->nullable();
             $table->dateTime('gitlab_commit_date')->nullable();

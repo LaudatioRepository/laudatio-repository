@@ -15,7 +15,7 @@ class CreateCorpusProjectsTable extends Migration
     {
         Schema::create('corpus_projects', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->text('name');
             $table->text('description');
             $table->text('directory_path');
             $table->text('gitlab_group_path')->nullable();
