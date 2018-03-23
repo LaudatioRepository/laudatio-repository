@@ -13,6 +13,7 @@ use Elasticsearch;
 use Elasticsearch\Endpoints\DeleteByQuery;
 use Log;
 use Cache;
+use Response;
 use Illuminate\Http\Request;
 
 class ElasticService implements ElasticsearchInterface
@@ -71,22 +72,23 @@ class ElasticService implements ElasticsearchInterface
             ];
         }
 
-
         $response = Elasticsearch::get($params);
+        $returned_response = array();
         if(!$full){
-            return array(
-                'error' => false,
+            $returned_response = array(
+                'status' => 'success',
                 'result' => $response['_source']
             );
         }
         else{
-            return array(
-                'error' => false,
+            $returned_response = array(
+                'status' => 'success',
                 'found' => $response['found'],
                 'result' => $response['_source']
             );
         }
 
+        return Response::json($returned_response);
     }
 
     public function deleteCorpus($id){
@@ -135,20 +137,24 @@ class ElasticService implements ElasticsearchInterface
 
 
         $response = Elasticsearch::get($params);
+        $returned_response = array();
+
+
         if(!$full){
-            return array(
-                'error' => false,
+            $returned_response = array(
+                'status' => 'success',
                 'result' => $response['_source']
             );
         }
         else{
-            return array(
-                'error' => false,
+            $returned_response = array(
+                'status' => 'success',
                 'found' => $response['found'],
                 'result' => $response['_source']
             );
         }
 
+        return Response::json($returned_response);
     }
 
 
@@ -207,19 +213,22 @@ class ElasticService implements ElasticsearchInterface
 
 
         $response = Elasticsearch::get($params);
+        $returned_response = array();
         if(!$full){
-            return array(
-                'error' => false,
+            $returned_response = array(
+                'status' => 'success',
                 'result' => $response['_source']
             );
         }
         else{
-            return array(
-                'error' => false,
+            $returned_response = array(
+                'status' => 'success',
                 'found' => $response['found'],
                 'result' => $response['_source']
             );
         }
+
+        return Response::json($returned_response);
 
     }
 
@@ -925,7 +934,7 @@ class ElasticService implements ElasticsearchInterface
 
     public function getDocumentsByAnnotationAndCorpusId($documentList,$corpusId){
         $resultData = array();
-
+        $documentList = is_array($documentList)? $documentList: array($documentList);
         foreach($documentList as $documentId) {
             $queryBuilder = new QueryBuilder();
             $queryBody = $queryBuilder->buildMustQuery(array(

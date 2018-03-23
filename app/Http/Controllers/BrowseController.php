@@ -26,7 +26,9 @@ class BrowseController extends Controller
         $data = null;
         switch ($header){
             case "corpus":
-                $data = $this->ElasticService->getCorpus($id);
+                $apiData = $this->ElasticService->getCorpus($id);
+                $data = json_decode($apiData->getContent(), true);
+
 
                 $corpusId = is_array($data['result']['corpus_id']) ? $data['result']['corpus_id'][0]: $data['result']['corpus_id'];
                 $formatSearchResult = $this->ElasticService->getFormatsByCorpus($corpusId);
@@ -114,7 +116,9 @@ class BrowseController extends Controller
 
                 break;
             case "document":
-                $data = $this->ElasticService->getDocument($id);
+                $apiData = $this->ElasticService->getDocument($id);
+                $data = json_decode($apiData->getContent(), true);
+
                 $corpusId = is_array($data['result']['in_corpora']) ? $data['result']['in_corpora'][0]: $data['result']['in_corpora'];
                 if($corpusId){
                     $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $corpusId)),array($id));
@@ -170,7 +174,8 @@ class BrowseController extends Controller
 
                 break;
             case "annotation":
-                $data = $this->ElasticService->getAnnotation($id);
+                $apiData = $this->ElasticService->getAnnotation($id);
+                $data = json_decode($apiData->getContent(), true);
                 $corpusId = is_array($data['result']['in_corpora']) ? $data['result']['in_corpora'][0]: $data['result']['in_corpora'];
                 if($corpusId){
 
