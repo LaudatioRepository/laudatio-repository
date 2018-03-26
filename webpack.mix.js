@@ -11,8 +11,14 @@ const { mix } = require('laravel-mix');
  |
  */
 
+mix.autoload({
+    'jquery': ['$', 'window.jQuery', "jQuery", "window.$", "jquery", "window.jquery"],
+    'popper.js/dist/umd/popper.js': ['Popper', 'window.Popper'],
+    'dropzone/dist/dropzone.js': ['Dropzone', 'window.Dropzone']
+});
+
 mix.js('resources/assets/js/app.js', 'public/js')
-   .sass('resources/assets/sass/app.scss', 'public/css');
+    .sass('resources/assets/sass/app.scss', 'public/css');
 
 mix.js('node_modules/cropperjs/src/js/cropper.js', 'public/js');
 mix.copy('node_modules/cropperjs/src/css/cropper.css', 'public/css/cropper.css');
