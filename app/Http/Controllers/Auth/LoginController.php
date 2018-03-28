@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Spatie\Permission\Traits\HasRoles;
 use Auth;
 use Log;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -38,14 +39,22 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    protected function authenticated( $user )
-    {
-        if(Auth::user()->hasPermissionTo('Administer the application')){
-            return redirect('/admin');
+    public function doLogin(Request $request){
+        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
+            $redirect = '/dashboard';
+            if(Auth::user()->hasPermissionTo('Administer the application')){
+            $redirect = '/admin';
+            }
+            else{
+                $redirect = '/dashboard';
+            }
+            $response = array('success' => true, 'redirect' => $redirect);
+
+            return response()->json($response);
         }
         else{
-            return redirect('/dashboard');
+            $response = array('success' => false, 'message' => 'Invalid login credentials');
+            return response()->json($response);
         }
-
     }
 }

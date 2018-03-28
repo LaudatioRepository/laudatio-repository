@@ -30,9 +30,7 @@ class RegisterController extends Controller
     protected $redirectTo = '/dashboard';
 
     /**
-     * Create a new controller instance.
-     *
-     * @return void
+     * RegisterController constructor.
      */
     public function __construct()
     {
@@ -40,11 +38,11 @@ class RegisterController extends Controller
     }
 
     /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
+ * Get a validator for an incoming registration request.
+ *
+ * @param  array  $data
+ * @return \Illuminate\Contracts\Validation\Validator
+ */
     protected function validator(array $data)
     {
         return Validator::make($data, [

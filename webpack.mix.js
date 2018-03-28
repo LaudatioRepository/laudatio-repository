@@ -18,7 +18,9 @@ mix.autoload({
 });
 
 mix.js('resources/assets/js/app.js', 'public/js')
-    .sass('resources/assets/sass/app.scss', 'public/css');
+    .js('resources/assets/js/jq.js', 'public/js')
+    .sass('resources/assets/sass/app.scss', 'public/css')
+    .sass('resources/assets/sass/laudatio.scss', 'public/css');
 
 mix.js('node_modules/cropperjs/src/js/cropper.js', 'public/js');
 mix.copy('node_modules/cropperjs/src/css/cropper.css', 'public/css/cropper.css');

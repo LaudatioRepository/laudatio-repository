@@ -12,6 +12,7 @@
     <!-- Styles -->
     <link href="{{ asset('css/ux_style.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/unslider.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/laudatio.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -22,6 +23,7 @@
 </div>
 <script src="{{ asset('js/vendorscripts.js') }}"></script>
 <script src="{{ asset('js/scripts.js') }}"></script>
+<script src="{{ asset('js/jq.js') }}"></script>
 </body>
 
 </html>
