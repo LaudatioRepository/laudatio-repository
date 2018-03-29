@@ -4,9 +4,9 @@
 Auth::routes();
 Route::post('login', 'Auth\LoginController@doLogin');
 
-Route::get('/', ['uses' => 'IndexController@index']);
+Route::get('/', ['as' => 'frontpage', 'uses' => 'IndexController@index']);
 Route::get('/dashboard', ['as' => 'dashboard', 'uses' => 'DashboardController@index'])->middleware('auth');
-Route::get('/admin', ['as' => 'admin', 'uses' => 'AdminController@index'])->middleware('auth');
+Route::get('/admin', ['as' => 'admin', 'uses' => 'AdminController@index']);
 Route::get('/browse', ['as' => 'browse', 'uses' => 'BrowseController@index']);
 Route::get('/publish', ['as' => 'publish', 'uses' => 'IndexController@publish']);
 Route::get('/schema/{path?}',[ 'as' => 'gitRepo.route.schema', 'uses' => 'GitRepoController@listSchema'])->where('path', '.+')->middleware('auth');
