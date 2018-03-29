@@ -18,7 +18,8 @@
 <body>
 <div id="rootContainer" class="container-fluid m-0 p-0">
     @include ('layouts.main_ux_nav')
-        @yield('content')
+    @include ('layouts.admin_ux_breadcrumb')
+    @yield('content')
     @include('layouts.main_ux_footer')
 </div>
 <script src="{{ asset('js/vendorscripts.js') }}"></script>
