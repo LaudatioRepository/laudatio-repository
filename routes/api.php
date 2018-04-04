@@ -53,6 +53,7 @@ Route::group(array('prefix' => 'adminapi'), function() {
     Route::post('createFormat','GitRepoController@createFormatFolder');
     Route::post('validateHeaders','GitRepoController@validateCorpus');
     Route::post('preparePublication','CorpusController@preparePublication');
+    Route::post('updateCorpusProject/{corpusProject}','CorpusProjectController@update');
 });
 
 

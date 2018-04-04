@@ -15,20 +15,20 @@ Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
 
 
 /** CORPUS PROJECTS  **/
-Route::get('/project/corpusprojects',[ 'as' => 'project.corpusProject.index', 'uses' => 'CorpusProjectController@index'])->middleware('auth');
-Route::get('/project/corpusprojects/create',[ 'as' => 'project.corpusProject.create', 'uses' => 'CorpusProjectController@create'])->middleware('auth');
-Route::get('/project/corpusprojects/{corpusproject}',[ 'as' => 'project.corpusProject.show', 'uses' => 'CorpusProjectController@show'])->middleware('auth');
-Route::post('/project/corpusprojects',[ 'as' => 'project.corpusProject.store.', 'uses' => 'CorpusProjectController@store'])->middleware('auth');
-Route::get('/project/corpusprojects/{corpusproject}/edit',[ 'as' => 'project.corpusProject.edit', 'uses' => 'CorpusProjectController@edit'])->middleware('auth');
-Route::get('/project/corpusprojects/{corpusproject}/delete',[ 'as' => 'project.corpusProject.delete', 'uses' => 'CorpusProjectController@delete'])->middleware('auth');
-Route::get('/project/corpusprojects/{corpusproject}/{user}/delete',[ 'as' => 'project.usercorpusroles.destroy', 'uses' => 'CorpusProjectController@destroyCorpusProjectUser'])->middleware('auth');
-Route::patch('/project/corpusprojects/{corpusproject}',[ 'as' => 'project.corpusProject.update', 'uses' => 'CorpusProjectController@update'])->middleware('auth');
-Route::delete('/project/corpusprojects/{corpusproject}',[ 'as' => 'project.corpusProject.destroy', 'uses' => 'CorpusProjectController@destroy'])->middleware('auth');
+Route::get('/corpusprojects',[ 'as' => 'project.corpusProject.index', 'uses' => 'CorpusProjectController@index'])->middleware('auth');
+Route::get('/corpusprojects/create',[ 'as' => 'project.corpusProject.create', 'uses' => 'CorpusProjectController@create'])->middleware('auth');
+Route::get('/corpusprojects/{corpusproject}',[ 'as' => 'project.corpusProject.show', 'uses' => 'CorpusProjectController@show'])->middleware('auth');
+Route::post('/corpusprojects',[ 'as' => 'project.corpusProject.store.', 'uses' => 'CorpusProjectController@store'])->middleware('auth');
+Route::get('/corpusprojects/{corpusproject}/edit',[ 'as' => 'project.corpusProject.edit', 'uses' => 'CorpusProjectController@edit'])->middleware('auth');
+Route::get('/corpusprojects/{corpusproject}/delete',[ 'as' => 'project.corpusProject.delete', 'uses' => 'CorpusProjectController@delete'])->middleware('auth');
+Route::get('/corpusprojects/{corpusproject}/{user}/delete',[ 'as' => 'project.usercorpusroles.destroy', 'uses' => 'CorpusProjectController@destroyCorpusProjectUser'])->middleware('auth');
+Route::patch('/corpusprojects/{corpusproject}',[ 'as' => 'project.corpusProject.update', 'uses' => 'CorpusProjectController@update'])->middleware('auth');
+Route::delete('/corpusprojects/{corpusproject}',[ 'as' => 'project.corpusProject.destroy', 'uses' => 'CorpusProjectController@destroy'])->middleware('auth');
 
-Route::get('/project/corpusprojects/assigncorpora/{corpusproject}',[ 'as' => 'project.corpusProject.assignCorpora', 'uses' => 'CorpusProjectController@assignCorpora'])->middleware('auth');
-Route::post('/project/corpusprojects/{corpusproject}/corpora',[ 'as' => 'project.corpusProject.assign.store.', 'uses' => 'CorpusProjectController@storeCorpusRelations'])->middleware('auth');
-Route::get('/project/corpusprojects/assignusers/{corpusproject}',[ 'as' => 'project.corpusProject.assignusers', 'uses' => 'CorpusProjectController@assignUsers'])->middleware('auth');
-Route::post('/project/corpusprojects/{corpusproject}/users',[ 'as' => 'project.corpusProject.StoreUsers', 'uses' => 'CorpusProjectController@storeUserRelations'])->middleware('auth');
+Route::get('/corpusprojects/assigncorpora/{corpusproject}',[ 'as' => 'project.corpusProject.assignCorpora', 'uses' => 'CorpusProjectController@assignCorpora'])->middleware('auth');
+Route::post('/corpusprojects/{corpusproject}/corpora',[ 'as' => 'project.corpusProject.assign.store.', 'uses' => 'CorpusProjectController@storeCorpusRelations'])->middleware('auth');
+Route::get('/corpusprojects/assignusers/{corpusproject}',[ 'as' => 'project.corpusProject.assignusers', 'uses' => 'CorpusProjectController@assignUsers'])->middleware('auth');
+Route::post('/corpusprojects/{corpusproject}/users',[ 'as' => 'project.corpusProject.StoreUsers', 'uses' => 'CorpusProjectController@storeUserRelations'])->middleware('auth');
 /** END CORPUS PROJECTS  **/
 
 /** HEADERS  **/
@@ -41,7 +41,6 @@ Route::get('/project/corpora/{corpus}/{filepath}/show',[ 'as' => 'project.corpor
 Route::get('/project/corpora/{corpus}/{path?}',[ 'as' => 'project.corpora.show', 'uses' => 'CorpusController@show'])->where('path', '.+')->middleware('auth');
 Route::post('/project/corpora',[ 'as' => 'project.corpora.store', 'uses' => 'CorpusController@store'])->middleware('auth');
 Route::get('/project/corpora/{corpus}/{user}/delete',[ 'as' => 'project.usercorpusroles.destroy', 'uses' => 'CorpusController@destroyCorpusUser'])->middleware('auth');
-Route::patch('/project/corpora/{corpus}',[ 'as' => 'project.corpora.update', 'uses' => 'CorpusController@update'])->middleware('auth');
 Route::delete('/project/corpora/{corpus}/{projectId}',[ 'as' => 'project.corpora.destroy', 'uses' => 'CorpusController@destroy'])->middleware('auth');
 /** END CORPORA  **/
 

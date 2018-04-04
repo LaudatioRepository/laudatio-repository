@@ -17,7 +17,7 @@
                     <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('search') }}">Search</a>
                 </li>
                 <li class="nav-item text-14 font-weight-bold ">
-                    <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('admin') }}">Publish</a>
+                    <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('project.corpusProject.index') }}">Publish</a>
                 </li>
                 <li class="nav-item text-14 font-weight-bold ">
                     <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="#">Help</a>

@@ -415,36 +415,7 @@
             }).catch(function(err) {
                 // Run this when promise was rejected via reject()
                 console.log(err)
-            })
-/*
-            $.ajax({
-                url: '/api/adminapi/validateHeaders',
-                type:"POST",
-                data: postData,
-                async: true,
-                statusCode: {
-                    500: function () {
-                        alert("server down");
-                    }
-                },
-                success:function(data){
-                    return data;
-                },
-                complete: function() {
-                    var json = JSON.parse(data.msg);
-                    console.log("DATA: "+json.corpusheader);
-                    var modalTitle = $('#myModalLabel').val();
-                    $('#myModalLabel').val(modalTitle+" "+json.corpusheader)
-                    $('#myValidatorModal').modal('show');
-                    var html = "";
-
-                    $('.modal-body').html(html);
-                }
-                ,error:function(){
-                    console.log("error!!!!");
-                }
-            }); //end of ajax
-            */
+            });
         });
 
         $("#deleteCheckedButton").click(function() {

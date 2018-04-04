@@ -43,7 +43,7 @@ class LoginController extends Controller
         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){
             $redirect = '/dashboard';
             if(Auth::user()->hasPermissionTo('Administer the application')){
-            $redirect = '/admin';
+                $redirect = '/corpusprojects';
             }
             else{
                 $redirect = '/dashboard';
