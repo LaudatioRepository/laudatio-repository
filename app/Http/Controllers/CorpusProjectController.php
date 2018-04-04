@@ -339,6 +339,7 @@ class CorpusProjectController extends Controller
         return redirect()->route('project.corpusProject.index');
     }
 
+    public function inviteUsers(CorpusProject $corpusProject){}
 
     /**
      * @param CorpusProject $corpusproject

@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white bsh-1 px-1 py-0">
     <div class="container">
-        <a class="navbar-brand" href="{{ route('frontpage') }}">
+        <a class="navbar-brand" href="">
             <img src="{{ asset('images/logo-laudatio.svg') }}" alt="logo laudatio">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNavbar" aria-controls="mainNavbar"
@@ -17,7 +17,7 @@
                     <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('search') }}">Search</a>
                 </li>
                 <li class="nav-item text-14 font-weight-bold ">
-                    <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('project.corpusProject.index') }}">Publish</a>
+                    <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('corpusProject.index') }}">Publish</a>
                 </li>
                 <li class="nav-item text-14 font-weight-bold ">
                     <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="#">Help</a>
