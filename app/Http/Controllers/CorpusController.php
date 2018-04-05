@@ -87,7 +87,8 @@ class CorpusController extends Controller
         $corpus_name = "Untitled_".$corpusProjectId."_".($corpusCount++);
         $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus_name);
 
-
+        $corpus = null;
+        $user_role = array();
         if($corpusPath){
             $corpus = Corpus::create([
                 "name" => $corpus_name,
@@ -96,9 +97,38 @@ class CorpusController extends Controller
             ]);
 
             $corpus->corpusprojects()->attach($corpusproject);
+
+
+            $corpusAdminRole = Role::findById(2);
+            if($user) {
+                if(!$user->roles->contains($corpusAdminRole)){
+                    $user->roles()->attach($corpusAdminRole);
+                }
+
+                $corpus->users()->save($user,['role_id' => 2]);
+                $user_role['user_name'] = $user->name;
+                $user_role['user_id'] = $user->id;
+                $user_role['role_name'] = $corpusAdminRole->name;
+            }
         }
 
-        return redirect()->route('project.corpora.index');
+
+        $filePath = $corpusProjectPath.'/'.$corpus->directory_path;
+
+        $corpus_data = array(
+            'name' => $corpus->name,
+            'project_name' => $corpusproject->name,
+            'filepath' => $filePath,
+            'admin' => $user_role
+
+        );
+
+        return redirect()->route('corpus.edit', compact('corpus'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('corpus_data', $corpus_data)
+            ->with('user',$user);
+
+
     }
 
     /**
@@ -305,12 +335,13 @@ class CorpusController extends Controller
             }
         }
         //dd($corpusUsers );
-
+/*
         return view("project.corpus.show",["corpus" => $corpus, "corpusproject_directory_path" => $corpusProject_directory_path, "fileData" => $fileData])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user_roles',$user_roles)
             ->with('header', ucfirst($pathArray[$last_id]))
             ->with('user',$user);
+*/
     }
 
     /**
@@ -321,8 +352,45 @@ class CorpusController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
+        $corpusProjects = $corpus->corpusprojects()->get();
+        $corpusproject = null;
+        $corpusProject_directory_path = '';
+        if(count($corpusProjects) == 1) {
+            $corpusproject = $corpusProjects->first();
+            $corpusProject_directory_path = $corpusproject->directory_path;
+        }
+        else{
+            // what to do when we can assign corpora to many projects?
+        }
+        $path = $corpusProject_directory_path.'/'.$corpus->directory_path;
+
+        $corpusUsers = $corpus->users()->get();
+        $user_role = array();
+        foreach ($corpusUsers as $corpusUser){
+            $role = Role::find(3);
+            if($role->hasPermissionTo('Can create corpus')){
+                $user_role['user_name'] = $corpusUser->name;
+                $user_role['user_id'] = $corpusUser->id;
+                $user_role['role_name'] = $role->name;
+            }
+        }
+
+        $checkResult = json_decode($this->GitRepoService->checkForCorpusFiles($path."/TEI-HEADERS"), true);
+        $checkResult['corpusheader'] = ($checkResult['corpusheader'] == "") ? 0 : 1;
+
+        //dd($checkResult);
+        $corpus_data = array(
+            'name' => $corpus->name,
+            'project_name' => $corpusproject->name,
+            'filepath' => $path,
+            'admin' => $user_role,
+            'headerdata' => $checkResult
+
+        );
+
         return view('project.corpus.edit', compact('corpus'))
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('corpus_data', $corpus_data)
             ->with('user',$user);
     }
 
@@ -648,7 +716,7 @@ class CorpusController extends Controller
 
         $canPublish = true;
 
-        $checkResult = json_decode($this->GitRepoService->checkForMissingCorpusFiles($corpuspath."/TEI-HEADERS"), true);
+        $checkResult = json_decode($this->GitRepoService->checkForCorpusFiles($corpuspath."/TEI-HEADERS"), true);
 
         $missing_document_count = count($checkResult['not_found_documents_in_corpus']);
         $document_plural = "";

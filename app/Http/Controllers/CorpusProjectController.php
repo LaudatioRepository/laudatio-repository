@@ -73,6 +73,7 @@ class CorpusProjectController extends Controller
                     $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['user_roles'] = array();
                 }
                 $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['name'] = $projectCorpus->name;
+                $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['id'] = $projectCorpus->id;
 
                 $corpusUsers = $projectCorpus->users()->get();
                 foreach ($corpusUsers as $corpusUser){
@@ -151,7 +152,7 @@ class CorpusProjectController extends Controller
             ]);
         }
 
-        return redirect()->route('project.corpusProject.index');
+        return redirect()->route('corpusProject.index');
     }
 
     /**

@@ -6,9 +6,9 @@
                 <div class="row mt-5">
                     <div class="col-3 mt-2">
                         <nav class="sidebar text-14 nav flex-column border-top border-light mt-7" role="navigation">
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active">Corpus projects</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link" href="{{ route('corpusProject.index') }}">Corpus projects</a>
                             <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link" href="{{ route('corpusProject.invitations') }}">Invitations</a>
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link " href="{{ route('corpusProject.create') }}">Initiate Project</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active">Initiate Project</a>
                         </nav>
                     </div>
 
@@ -20,122 +20,53 @@
                             </button>
                         </div>
                         <div class="d-flex justify-content-between  ">
-                            <h3 class="h3 font-weight-normal">Corpus Projects ({{count($corpusProjects)}})</h3>
+                            <h3 class="h3 font-weight-normal">Initiate a new Corpus Project</h3>
                         </div>
-
                         <div class="mt-4">
-                            @foreach($corpusProjects as $corpusProjectId => $corpusProject)
-                                <div id="corpusProject_{{$corpusProjectId}}" class="corpusProject container bg-bluegrey-middark mt-1 mb-1 p-5">
-
-                                    <div class="row corpusProject-save">
-                                        <div class="col">
-                                            <small class="text-14 text-grey">
-                                                Corpus Project
-                                            </small>
-
-                                            <div class="h4 font-weight-bold corpusProject-title" id="corpusProject-title_{{$corpusProjectId}}">
-                                                {{$corpusProject['name']}}
-                                            </div>
-                                            <div class="mt-2">
-                                                @if (count($corpusProject['user_roles']) > 0)
-                                                    @foreach($corpusProject['user_roles'] as $projectRole)
-                                                        <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
-                                                            <i class="material-icons  mr-2">person</i>
-                                                            <span>{{$projectRole['user_name']}} ({{$projectRole['role_name']}})</span>
-                                                        </div>
-                                                    @endforeach
-                                                @endif
-                                            </div>
-
-                                            <p class="mt-3 text-14 mb-0 corpusProject-description" id="corpusProject-description_{{$corpusProjectId}}">
-                                                {{$corpusProject['description']}}
-                                            </p>
-
-                                        </div>
-                                        <div class="col-2 p-0 mr-2">
-                                            <button  class="corpusProject-startEdit btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
-                                                Edit project
-                                            </button>
-                                            <a href="adminEdit_corpus-new.html" class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
-                                                Add Corpus
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <div class="row corpusProject-edit hidden">
-                                        <form id="editCorpusProject_{{$corpusProjectId}}" method="POST" action="api/adminapi/updateCorpusProject/{{$corpusProjectId}}" class="w-100 updateform">
-                                            <div class="form-group">
-                                                <label class="text-14 text-dark-trans mb-1 pl-3" for="corpusproject_name_{{$corpusProjectId}}">
-                                                    <small>Corpus project Title</small>
-                                                </label>
-                                                <input type="text" class="corpusProject-title-edit form-control" name="corpusproject_name_{{$corpusProjectId}}" id="corpusproject_name_{{$corpusProjectId}}" required
-                                                       placeholder="What's the project title?" value="{{$corpusProject['name']}}">
-                                            </div>
-                                            <div class="form-group mt-3">
-                                                <label class="text-14 text-dark-trans mb-1 pl-3" for="corpusproject_description">
-                                                    <small>Corpus Project Description</small>
-                                                </label>
-                                                <textarea id="corpusproject_description_{{$corpusProjectId}}" name="corpusproject_description_{{$corpusProjectId}}" class="corpusProject-description-edit form-control py-3"
-                                                          cols="30" rows="8" placeholder="here you can describe the purpose of your project. We recommend between 300 and max. 500 chars.">{{$corpusProject['description']}}</textarea>
-                                            </div>
-                                            <div class="form-row mt-3">
-                                                <div class="col offset-7">
-                                                    <button class="corpusProject-endEdit btn btn-outline-corpus-mid text-uppercase font-weight-bold rounded w-100">Cancel</button>
-                                                </div>
-                                                <div class="col">
-                                                    <button  class="corpusProject-saveEdit btn btn-primary rounded text-uppercase font-weight-bold w-100">Save</button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-
-                                </div>
-
-
-                                <!-- CORPO-->
-                                @foreach($corpusProject['corpora'] as $corpus)
-                                    <div class="container bg-bluegrey-midlight mt-1 mb-1 p-5">
-                                        <div class="row">
-                                            <div class="col-2 pl-4">
-                                                <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
-                                            </div>
-                                            <div class="col">
-                                                <small class="text-14 text-grey">
-                                                    Corpus
-                                                </small>
-                                                <div class="h4 font-weight-bold">
-                                                    <a class="text-dark" href="adminEdit_corpus.html">
-                                                        {{$corpus['name']}}
-                                                    </a>
-                                                </div>
-                                                @if (count($corpus['user_roles']) > 0)
-                                                    @foreach($corpus['user_roles'] as $corpusRole)
-                                                        <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
-                                                            <i class="material-icons  mr-2">person</i>
-                                                            <span>{{$corpusRole['user_name']}} ({{$corpusRole['role_name']}})</span>
-                                                        </div>
-                                                    @endforeach
-                                                @endif
-                                            </div>
-                                            <div class="col-2 p-0 mr-2">
-                                                <div class="dropdown">
-                                                    <button class="btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4 w-100 text-left"
-                                                            type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                        Edit
-                                                    </button>
-                                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                        <a class="dropdown-item text-14" href="adminEdit_corpus.html">Edit Corpus</a>
-                                                        <a class="dropdown-item text-14" href="adminPreview_corpus.html">Preview Corpus</a>
-                                                        <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#publishCorpusModal">Publish Corpus</a>
-                                                        <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#deleteCorpusModal">Delete Corpus</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @endforeach
+                            <p>
+                                Every Laudatio member is allowed to initiate a new Corpus Project. The Person who is initiating, will
+                                be in the role of a Project Corpus Administrator and will have wide range of editing
+                                rights following resposibilities: Lorem ipsum dolor sit amet, consetetur sadipscing
+                                elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+                                sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+                                <a href="#">more details</a>
+                            </p>
+                            <p>
+                                Please describe your new corpus project. The Laudatio Team will check it and will get in touch with you
+                                for upcoming steps.
+                            </p>
                         </div>
+
+
+                        <div class="card border-0 mt-7">
+                            <div class="card-body bg-bluegrey-dark p-5 ">
+                                <form action="/corpusprojects/createproject" id="editCorpusProject" method="post">
+                                        {{ csrf_field() }}
+                                    <div class="form-group">
+                                        <label class="text-14 text-dark-trans mb-1 pl-3" for="corpusproject_name">
+                                            <small>Corpus Project title</small>
+                                        </label>
+                                        <input type="text" class="form-control" id="corpusproject_name" name="corpusproject_name" required placeholder="What's the project title?">
+                                    </div>
+                                    <div class="form-group mt-3">
+                                        <label class="text-14 text-dark-trans mb-1 pl-3" for="editCorpusProject_Description">
+                                            <small>Corpus Project description</small>
+                                        </label>
+                                        <textarea id="corpusproject_description" name="corpusproject_description" class="form-control py-3" cols="30" rows="8" placeholder="here you can describe the purpose of your project. We recommend between 300 and max. 500 chars."></textarea>
+                                    </div>
+                                    <div class="form-row mt-3">
+                                        <div class="col offset-7">
+                                            <a href="#" class="btn btn-outline-corpus-mid text-uppercase font-weight-bold rounded w-100">Cancel</a>
+                                        </div>
+                                        <div class="col">
+                                            <button type="submit" class="btn btn-primary rounded text-uppercase font-weight-bold w-100">Initiate</button>
+                                            <!--a href="#" class="btn btn-primary rounded text-uppercase font-weight-bold w-100">Initiate</a-->
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

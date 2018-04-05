@@ -670,7 +670,7 @@ class GitFunction
         return array_filter($listOfFiles);
     }
 
-    public function checkForMissingCorpusFiles($path){
+    public function checkForCorpusFiles($path){
         $result = null;
         $pythonScript = $this->scriptPath.'/src/validateHeaders.py';
         $process = new Process("python ".$pythonScript." -p ".$path);

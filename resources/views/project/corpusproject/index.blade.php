@@ -56,7 +56,7 @@
                                         <button  class="corpusProject-startEdit btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
                                             Edit project
                                         </button>
-                                        <a href="adminEdit_corpus-new.html" class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
+                                        <a href="{{ route('corpus.create',['corpusproject' => $corpusProjectId]) }}" class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
                                             Add Corpus
                                         </a>
                                     </div>
@@ -124,7 +124,7 @@
                                                         Edit
                                                     </button>
                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                        <a class="dropdown-item text-14" href="adminEdit_corpus.html">Edit Corpus</a>
+                                                        <a class="dropdown-item text-14" href="{{ route('corpus.edit',['corpus' => $corpus['id']]) }}">Edit Corpus</a>
                                                         <a class="dropdown-item text-14" href="adminPreview_corpus.html">Preview Corpus</a>
                                                         <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#publishCorpusModal">Publish Corpus</a>
                                                         <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#deleteCorpusModal">Delete Corpus</a>
