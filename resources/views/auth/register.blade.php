@@ -37,6 +37,20 @@
                             </div>
                         </div>
 
+                        <div class="form-group{{ $errors->has('affiliation') ? ' has-error' : '' }}">
+                            <label for="affiliation" class="col-md-4 control-label">Affiliation</label>
+
+                            <div class="col-md-6">
+                                <input id="affiliation" type="tex" class="form-control" name="affiliation" value="{{ old('affiliation') }}" required>
+
+                                @if ($errors->has('affiliation'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('affiliation') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
                         <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
                             <label for="password" class="col-md-4 control-label">Password</label>
 

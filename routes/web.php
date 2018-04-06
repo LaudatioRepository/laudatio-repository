@@ -39,7 +39,7 @@ Route::get('/corpusprojects/corpora',[ 'as' => 'corpus.index', 'uses' => 'Corpus
 Route::get('/corpusprojects/corpora/create/{corpusproject}',[ 'as' => 'corpus.create', 'uses' => 'CorpusController@create'])->middleware('auth');
 Route::get('/corpusprojects/corpora/{corpus}/edit/',[ 'as' => 'corpus.edit', 'uses' => 'CorpusController@edit'])->middleware('auth');
 Route::get('/corpusprojects/corpora/{corpus}/delete/{corpusproject_directory_path}',[ 'as' => 'corpus.delete', 'uses' => 'CorpusController@delete'])->middleware('auth');
-Route::get('project/corpora/assignusers/{corpus}',[ 'as' => 'corpus.assignusers', 'uses' => 'CorpusController@assignCorpusUsers'])->middleware('auth');;
+Route::get('/corpusprojects/corpora/assignusers/{corpus}',[ 'as' => 'corpus.assignusers', 'uses' => 'CorpusController@assignCorpusUsers'])->middleware('auth');;
 Route::get('/corpusprojects/corpora/{corpus}/{filepath}/show',[ 'as' => 'corpus.filepath.show', 'uses' => 'CorpusController@showFilePath'])->where('filepath', '.+')->middleware('auth');
 Route::get('/corpusprojects/corpora/{corpus}/{path?}',[ 'as' => 'corpus.show', 'uses' => 'CorpusController@show'])->where('path', '.+')->middleware('auth');
 Route::post('/corpusprojects/corpora',[ 'as' => 'corpus.store', 'uses' => 'CorpusController@store'])->middleware('auth');
