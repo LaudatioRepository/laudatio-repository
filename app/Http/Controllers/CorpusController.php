@@ -365,28 +365,55 @@ class CorpusController extends Controller
         $path = $corpusProject_directory_path.'/'.$corpus->directory_path;
 
         $corpusUsers = $corpus->users()->get();
-        $user_role = array();
+        $corpus_admin = array();
+
+        // get all roles
+        $roleCollection = Role::all();
+        $roles = array();
+        foreach ($roleCollection as $role){
+            $roles[$role->id] = $role->name;
+        }
+        ksort($roles);
+
+
         foreach ($corpusUsers as $corpusUser){
-            $role = Role::find(3);
-            if($role->hasPermissionTo('Can create corpus')){
+            $user_role = array();
+            if(!isset($user_roles[$corpusUser->id])){
+                $user_roles[$corpusUser->id] = array();
+            }
+
+            $role = Role::find($corpusUser->pivot->role_id);
+            if($role){
+                if($role->hasPermissionTo('Can create corpus')){
+                    $corpus_admin['user_name'] = $corpusUser->name;
+                    $corpus_admin['user_id'] = $corpusUser->id;
+                    $corpus_admin['role_name'] = $role->name;
+                    $corpus_admin['role_id'] = $role->id;
+                }
                 $user_role['user_name'] = $corpusUser->name;
+                $user_role['user_affiliation'] = $corpusUser->affiliation;
                 $user_role['user_id'] = $corpusUser->id;
                 $user_role['role_name'] = $role->name;
+                $user_role['role_id'] = $role->id;
+
+                array_push($user_roles[$corpusUser->id],$user_role);
             }
         }
 
         $checkResult = json_decode($this->GitRepoService->checkForCorpusFiles($path."/TEI-HEADERS"), true);
         $checkResult['corpusheader'] = ($checkResult['corpusheader'] == "") ? 0 : 1;
 
-        //dd($checkResult);
         $corpus_data = array(
             'name' => $corpus->name,
             'project_name' => $corpusproject->name,
             'filepath' => $path,
-            'admin' => $user_role,
+            'user_roles' => $user_roles,
+            'roles' => $roles,
+            'corpus_admin' => $corpus_admin,
             'headerdata' => $checkResult
 
         );
+        //dd($corpus_data);
 
         return view('project.corpus.edit', compact('corpus'))
             ->with('isLoggedIn', $isLoggedIn)
