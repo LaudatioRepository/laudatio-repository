@@ -64,10 +64,10 @@
                         </div>
 
                         <div class="nav-item tablink col-auto text-center text-14 font-weight-bold ">
-                            <a class="nav-link tablink text-dark text-uppercase" data-toggle="tab" href="#corpusCollaborators" role="tab">Collaborator
+                            <a class="nav-link tablink text-dark text-uppercase" data-toggle="tab" href="#corpusCollaborators" role="tab">Collaborators
                                 <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
                                     <i class="fa fa-user fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
-                                    <span class="text-primary text-14 font-weight-bold">4</span>
+                                    <span class="text-primary text-14 font-weight-bold">{{count($corpus_data['user_roles'])}}</span>
                                 </div>
                             </a>
                         </div>
