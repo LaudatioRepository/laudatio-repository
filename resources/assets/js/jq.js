@@ -79,14 +79,14 @@ $(function(){
         for(var i=0; i < inputs.length; i++) {
             var inputdata = inputs[i].split("=");
             var field = inputdata[0].substr(0,inputdata[0].lastIndexOf("_"));
-            postdata[field] = inputdata[1];
+            postdata[field] = decodeURIComponent(inputdata[1]);
             var projectid = inputdata[0].substr(inputdata[0].lastIndexOf("_")+1);
-            postdata['projectid'] = projectid
+            postdata['projectid'] = decodeURIComponent(projectid)
             if(field.indexOf("name") > -1) {
-                fielddata['corpusProject-title_'+projectid] = inputdata[1]
+                fielddata['corpusProject-title_'+projectid] = decodeURIComponent(inputdata[1])
             }
             else{
-                fielddata['corpusProject-description_'+projectid] = inputdata[1]
+                fielddata['corpusProject-description_'+projectid] = decodeURIComponent(inputdata[1])
             }
 
         }
@@ -111,6 +111,7 @@ $(function(){
                     });
                 }
                 else if (data.status == "error"){
+                    console.log(data)
                     var message = '<ul>';
                     if(typeof data.message.eloquent_response != 'undefined') {
                         message += '<li>'+data.message.eloquent_response+'</li>';

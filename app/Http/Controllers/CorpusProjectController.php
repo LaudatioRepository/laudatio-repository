@@ -214,8 +214,6 @@ class CorpusProjectController extends Controller
         }
 
 
-
-
         $params = array(
             'name' => $request->input('corpusproject_name'),
             'path' => $corpusproject->gitlab_group_path,
