@@ -2,7 +2,30 @@
  * Created by rolfguescini on 28.03.18.
  */
 $(function(){
+
+
+    /**
+     * Hide error banner initially
+     */
     $("#alert-laudatio").hide();
+
+
+    /**
+     * Make sure that the bootstrap tabs handle active / unactive correctly
+     */
+    $(document).on('click','a.nav-link.tablink',function(e){
+        $.each($('a.nav-link.tablink'),function(){
+            if($(this).hasClass('active')){
+                $(this).removeClass('active');
+                $(this).parent().addClass('active')
+            }
+
+        });
+    });
+
+    /**
+     * Submit the sign in form
+     */
     $(document).on('submit', '#signInForm', function(e) {
         e.preventDefault();
         var token = $('#_token').val();
@@ -36,6 +59,9 @@ $(function(){
             });
     });
 
+    /**
+     * submit corpus project updates
+     */
     $(document).on('submit', '.updateform', function(e) {
         e.preventDefault();
         var token = $('#_token').val();
