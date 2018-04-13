@@ -60,159 +60,68 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 100);
+/******/ 	return __webpack_require__(__webpack_require__.s = 157);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 100:
+/***/ 157:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(101);
+module.exports = __webpack_require__(158);
 
 
 /***/ }),
 
-/***/ 101:
+/***/ 158:
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function($) {/**
- * Created by rolfguescini on 28.03.18.
+/* WEBPACK VAR INJECTION */(function($) {/*!
+ * Start Bootstrap - SB Admin 2 v3.3.7+1 (http://startbootstrap.com/template-overviews/sb-admin-2)
+ * Copyright 2013-2016 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
  */
 $(function () {
+    $('#side-menu').metisMenu();
+});
 
-    /**
-     * Hide error banner initially
-     */
-    $("#alert-laudatio").hide();
-    if ($("nav").find("a[data-headertype ='corpus']").hasClass('active')) {
-        window.Laravel.directorypath += '/TEI-HEADERS/corpus';
-    } else if ($("nav").find("a[data-headertype ='document']").hasClass('active')) {
-        window.Laravel.directorypath += '/TEI-HEADERS/document';
-    } else if ($("nav").find("a[data-headertype ='annotation']").hasClass('active')) {
-        window.Laravel.directorypath += '/TEI-HEADERS/annotation';
-    }
-    //alert(window.Laravel.directorypath)
-    /**
-     * Make sure that the bootstrap tabs handle active / unactive correctly
-     */
-    $(document).on('click', 'a.nav-link.tablink', function (e) {
-        $.each($('a.nav-link.tablink'), function () {
-            if ($(this).hasClass('active')) {
-                $(this).removeClass('active');
-                $(this).parent().addClass('active');
-            }
-        });
-    });
-
-    /**
-     * Submit the sign in form
-     */
-    $(document).on('submit', '#signInForm', function (e) {
-        e.preventDefault();
-        var token = $('#_token').val();
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        $.ajax({
-            method: $(this).attr('method'),
-            url: $(this).attr('action'),
-            data: $(this).serialize(),
-            dataType: "json"
-        }).done(function (data) {
-            console.log(data);
-            if (data.success) {
-                var newUri = window.location.origin + data.redirect;
-                history.pushState({}, null, newUri);
-                location.reload();
-            } else {
-                console.log(data.message);
-                $('#login-error-message').text(data.message);
-                $('#login-error-message').css('display', 'block');
-            }
-        }).fail(function (data) {
-            console.log("FAIL : " + data);
-        });
-    });
-
-    /**
-     * submit corpus project updates
-     */
-    $(document).on('submit', '.updateform', function (e) {
-        e.preventDefault();
-        var token = $('#_token').val();
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-
-        var requestdata = $(this).serialize();
-        var inputs = requestdata.split("&");
-
-        var postdata = {};
-        var fielddata = {};
-        for (var i = 0; i < inputs.length; i++) {
-            var inputdata = inputs[i].split("=");
-            var field = inputdata[0].substr(0, inputdata[0].lastIndexOf("_"));
-            postdata[field] = decodeURIComponent(inputdata[1]);
-            var projectid = inputdata[0].substr(inputdata[0].lastIndexOf("_") + 1);
-            postdata['projectid'] = decodeURIComponent(projectid);
-            if (field.indexOf("name") > -1) {
-                fielddata['corpusProject-title_' + projectid] = decodeURIComponent(inputdata[1]);
-            } else {
-                fielddata['corpusProject-description_' + projectid] = decodeURIComponent(inputdata[1]);
-            }
+//Loads the correct sidebar on window load,
+//collapses the sidebar on window resize.
+// Sets the min-height of #page-wrapper to window size
+$(function () {
+    $(window).bind("load resize", function () {
+        var topOffset = 50;
+        var width = this.window.innerWidth > 0 ? this.window.innerWidth : this.screen.width;
+        if (width < 768) {
+            $('div.navbar-collapse').addClass('collapse');
+            topOffset = 100; // 2-row-menu
+        } else {
+            $('div.navbar-collapse').removeClass('collapse');
         }
 
-        $.ajax({
-            method: $(this).attr('method'),
-            url: $(this).attr('action'),
-            data: postdata,
-            dataType: "json"
-        }).done(function (data) {
-            if (data.status == "success") {
-
-                var message = '<ul>The project data was successfully updated</ul>';
-                $('#alert-laudatio').addClass('alert-success');
-                $('#alert-laudatio .alert-laudatio-message').html(message);
-                $.each(fielddata, function (key, val) {
-                    $('#' + key).html(val);
-                });
-                $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
-                    $("#alert-laudatio").slideUp(500);
-                });
-            } else if (data.status == "error") {
-                console.log(data);
-                var message = '<ul>';
-                if (typeof data.message.eloquent_response != 'undefined') {
-                    message += '<li>' + data.message.eloquent_response + '</li>';
-                }
-
-                if (typeof data.message.gitlab_response != 'undefined') {
-                    message += '<li>' + data.message.gitlab_response + '</li>';
-                }
-                message += '</ul>';
-
-                $('#alert-laudatio').addClass('alert-danger');
-                $('#alert-laudatio .alert-laudatio-message').html(message);
-
-                $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
-                    $("#alert-laudatio").slideUp(500);
-                });
-            }
-        }).fail(function (data) {
-            $('#alert-laudatio').addClass('alert-danger');
-            $('#alert-laudatio .alert-laudatio-message').html("There was an unexpected error. A message has been sent to the site administrator. Please try again later");
-
-            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
-                $("#alert-laudatio").slideUp(500);
-            });
-        });
+        var height = (this.window.innerHeight > 0 ? this.window.innerHeight : this.screen.height) - 1;
+        height = height - topOffset;
+        if (height < 1) height = 1;
+        if (height > topOffset) {
+            $("#page-wrapper").css("min-height", height + "px");
+        }
     });
+
+    var url = window.location;
+    // var element = $('ul.nav a').filter(function() {
+    //     return this.href == url;
+    // }).addClass('active').parent().parent().addClass('in').parent();
+    var element = $('ul.nav a').filter(function () {
+        return this.href == url;
+    }).addClass('active').parent();
+
+    while (true) {
+        if (element.is('li')) {
+            element = element.parent().addClass('in').parent();
+        } else {
+            break;
+        }
+    }
 });
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 

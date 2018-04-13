@@ -60,20 +60,20 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 100);
+/******/ 	return __webpack_require__(__webpack_require__.s = 104);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 100:
+/***/ 104:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(101);
+module.exports = __webpack_require__(105);
 
 
 /***/ }),
 
-/***/ 101:
+/***/ 105:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function($) {/**
@@ -85,14 +85,7 @@ $(function () {
      * Hide error banner initially
      */
     $("#alert-laudatio").hide();
-    if ($("nav").find("a[data-headertype ='corpus']").hasClass('active')) {
-        window.Laravel.directorypath += '/TEI-HEADERS/corpus';
-    } else if ($("nav").find("a[data-headertype ='document']").hasClass('active')) {
-        window.Laravel.directorypath += '/TEI-HEADERS/document';
-    } else if ($("nav").find("a[data-headertype ='annotation']").hasClass('active')) {
-        window.Laravel.directorypath += '/TEI-HEADERS/annotation';
-    }
-    //alert(window.Laravel.directorypath)
+
     /**
      * Make sure that the bootstrap tabs handle active / unactive correctly
      */

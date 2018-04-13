@@ -343,7 +343,6 @@ class GitFunction
      * @return string
      */
     public function writeFiles($dirPath, $fileDataArray,$flySystem,$fileTempPath,$theFilePath){
-
         foreach($fileDataArray as $fileData) {
             $pathsArray = explode("/", $fileData);
             $fileInDirectory = array_pop($pathsArray);
@@ -380,19 +379,32 @@ class GitFunction
 
         //write file if exists
         $fileArray = explode("/", $theFilePath);
-        $fileInDirectory = array_pop($fileArray);
-        $savePath = implode("/",$fileArray);
+        Log::info("theFilePath: ".$theFilePath);
+        $fileInDirectory = "";
+        if(count($fileArray) == 1){
+            $fileInDirectory = array_pop($fileArray);
+        }
+        Log::info("fileInDirectory: ".$fileInDirectory);
 
-        if(file_exists($this->basePath."/".$dirPath."/".$savePath)){
-            $existingFile = $flySystem->has($dirPath."/".$savePath."/".$fileInDirectory);
+        Log::info("fthesaveüath: ".$this->basePath."/".$dirPath."/".$fileInDirectory);
+
+        #if(file_exists($this->basePath."/".$dirPath."/".$fileInDirectory)){
+            $existingFile = $flySystem->has($dirPath."/".$fileInDirectory);
+            $stream = null;
             if(!$existingFile){
+                Log::info("file does not exists: ".$this->basePath."/".$dirPath."/".$fileInDirectory);
                 $stream = fopen($fileTempPath, 'r+');
-                $flySystem->writeStream($dirPath."/".$savePath."/".$fileInDirectory, $stream);
+                $flySystem->writeStream($dirPath."/".$fileInDirectory, $stream);
             }
             else{
+                Log::info("file exists: ".$this->basePath."/".$dirPath."/".$fileInDirectory);
                 $stream = fopen($fileTempPath, 'r+');
-                $flySystem->updateStream($dirPath."/".$savePath."/".$fileInDirectory, $stream);
+                $flySystem->updateStream($dirPath."/".$fileInDirectory, $stream);
             }
+        #}
+
+        if (is_resource($stream)) {
+            fclose($stream);
         }
 
         return $createdDirectoryPath;

@@ -24,6 +24,16 @@
     @include('layouts.main_ux_footer')
 </div>
 <script src="{{ asset('js/vendorscripts.js') }}"></script>
+@if(isset($corpus_data))
+<script>
+    window.Laravel = <?php echo json_encode([
+        'csrfToken' => csrf_token(),
+        'directorypath' => $corpus_data['filepath'],
+        'corpusid' => $corpus->id,
+        'filedata' => []
+    ]); ?>
+</script>
+@endif
 <script src="{{ asset('js/scripts.js') }}"></script>
 <script src="{{ asset('js/jq.js') }}"></script>
 </body>

@@ -8,8 +8,16 @@ $(function(){
      * Hide error banner initially
      */
     $("#alert-laudatio").hide();
-
-
+    if($("nav").find("a[data-headertype ='corpus']").hasClass('active')){
+        window.Laravel.directorypath += '/TEI-HEADERS/corpus';
+    }
+    else if($("nav").find("a[data-headertype ='document']").hasClass('active')){
+        window.Laravel.directorypath += '/TEI-HEADERS/document';
+    }
+    else if($("nav").find("a[data-headertype ='annotation']").hasClass('active')){
+        window.Laravel.directorypath += '/TEI-HEADERS/annotation';
+    }
+    //alert(window.Laravel.directorypath)
     /**
      * Make sure that the bootstrap tabs handle active / unactive correctly
      */
