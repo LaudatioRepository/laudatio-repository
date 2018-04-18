@@ -93,11 +93,12 @@ $(function () {
         window.Laravel.directorypath += '/TEI-HEADERS/annotation';
     }
     //alert(window.Laravel.directorypath)
+
     /**
      * Make sure that the bootstrap tabs handle active / unactive correctly
      */
-    $(document).on('click', 'a.nav-link.tablink', function (e) {
-        $.each($('a.nav-link.tablink'), function () {
+    $(document).on('click', 'a.nav-link.maintablink', function (e) {
+        $.each($('a.nav-link.maintablink'), function () {
             if ($(this).hasClass('active')) {
                 $(this).removeClass('active');
                 $(this).parent().addClass('active');

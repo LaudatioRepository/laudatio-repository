@@ -48,14 +48,14 @@
                 <nav class="navbar navbar-expand-sm navbar-light bg-transparent p-0 container" role="tablist">
 
                     <div class="navbar-nav nav row w-100 px-5">
-                        <div class="nav-item tablink col-2 text-center text-14 font-weight-bold active">
-                            <a class=" nav-link tablink text-dark text-uppercase " data-toggle="tab" href="#editCorpus" role="tab">
+                        <div class="nav-item maintablink col-2 text-center text-14 font-weight-bold active">
+                            <a class=" nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#editCorpus" role="tab">
                                 Upload / Edit
                             </a>
                         </div>
 
-                        <div class="nav-item tablink col-auto text-center text-14 font-weight-bold ">
-                            <a class="nav-link tablink text-dark text-uppercase " data-toggle="tab" href="#messageBoard" role="tab">Message Board
+                        <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold ">
+                            <a class="nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#messageBoard" role="tab">Message Board
                                 <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
                                     <i class="fa fa-comment-o fa-fw fa-edit align-text-top fa-lg text-wine"></i>
                                     <span class="text-primary text-14 font-weight-bold">5</span>
@@ -63,8 +63,8 @@
                             </a>
                         </div>
 
-                        <div class="nav-item tablink col-auto text-center text-14 font-weight-bold ">
-                            <a class="nav-link tablink text-dark text-uppercase" data-toggle="tab" href="#corpusCollaborators" role="tab">Collaborators
+                        <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold ">
+                            <a class="nav-link maintablink text-dark text-uppercase" data-toggle="tab" href="#corpusCollaborators" role="tab">Collaborators
                                 <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
                                     <i class="fa fa-user fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
                                     <span class="text-primary text-14 font-weight-bold">{{count($corpus_data['user_roles'])}}</span>
@@ -84,26 +84,11 @@
     <!-- Tab panes -->
 
     <div class="container-fluid tab-content content">
+
         <div role="tabpanel"  class="tab-pane active" id="editCorpus">
-            <div class="container-fluid">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-2">
-                            <nav class="sidebar text-14 nav flex-column border-top border-light mt-7" role="navigation">
-                                <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active" data-headertype="corpus" href="adminEdit_corpus.html">Corpus ({{$corpus_data['headerdata']['corpusheader']}})</a>
-                                <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link" data-headertype="document" href="adminEdit_documents.html">Documents ({{count($corpus_data['headerdata']['found_documents'])}})</a>
-                                <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link" data-headertype="annotation" href="#">Annotations ({{count($corpus_data['headerdata']['found_annotations_in_corpus'])}})</a>
-                                <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link " href="adminEdit_formatData.html">Format data (4)</a>
-                                <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link " href="adminEdit_logoLicense.html">Logo/License (8)</a>
-                            </nav>
-                        </div>
-                        @include('project.corpus.corpusHeaderFiles')
-                    </div>
-
-                </div>
-
-            </div>
+            @include('project.corpus.headerFiles')
         </div>
+
         <div role="tabpanel"  class="tab-pane fade in" id="messageBoard">
             <div class="container-fluid">
                 <div class="container">

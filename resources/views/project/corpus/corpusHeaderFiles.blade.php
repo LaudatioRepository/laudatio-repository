@@ -1,5 +1,4 @@
-<div class="col" id="corpusHeaderFiles">
-
+<div class="col">
     @if($corpus->gitlab_id == "")
         <div class="d-flex justify-content-between mt-7 mb-3">
             <h3 class="h3 font-weight-normal">File Upload Corpus Header XML</h3>
@@ -134,9 +133,9 @@
                         <td class="text-14 text-grey-light">uploader</td>
                         <td class="text-14 text-grey-light">{{  Carbon\Carbon::parse($fileData['lastupdated'])->format('H:i,M d') }}</td>
                         <td>
-                        <a href="#">
-                            <i class="fa fa-trash-o fa-fw fa-lg text-dark"></i>
-                        </a>
+                            <a href="#">
+                                <i class="fa fa-trash-o fa-fw fa-lg text-dark"></i>
+                            </a>
                         </td>
                     </tr>
                 @endforeach
@@ -149,5 +148,4 @@
             </p>
         </div>
     @endif
-
 </div>
