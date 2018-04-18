@@ -76,6 +76,7 @@ class UploadController extends Controller
      */
     public function uploadSubmit(UploadRequest $request)
     {
+        $user = \Auth::user();
         $dirPath = $request->directorypath;;
         $dirPathArray = explode("/",$dirPath);
         end($dirPathArray);
@@ -224,6 +225,7 @@ class UploadController extends Controller
 
                     $params = array(
                         'corpusId' => $corpusId,
+                        "uid" => $user->id,
                         'corpus_path' => $gitLabCorpusPath,
                         'gitlab_group_id' => $corpusProjectId,
                         'gitlab_id' => $gitLabResponse['id'],
@@ -238,6 +240,7 @@ class UploadController extends Controller
                 else{
                     if($canUpload){
                         $params = array(
+                            "uid" => $user->id,
                             "name" => $corpusTitle[0],
                             "file_name" => $fileName,
                         );
@@ -277,7 +280,7 @@ class UploadController extends Controller
 
             Log::info("commitpath: ".$commitPath);
             //git commit The files
-            $this->GitRepoService->commitFiles($commitPath,"Adding files for ".$fileName,$corpusId);
+            $this->GitRepoService->commitFiles($commitPath,"Adding files for ".$fileName,$corpusId,$user);
         }
         else{
             session()->flash('message', 'The corpus header you tried to upload does not belong to this corpus');

@@ -147,6 +147,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             "description" => $corpusDesc[0],
             "corpus_size_type" => $corpusSizeType[0],
             "corpus_size_value" => $corpusSizeValue[0],
+            'uid' => $params['uid'],
             'gitlab_group_id' => $params['gitlab_group_id'],
             'directory_path' => $params['corpus_path'],
             'corpus_id' => count($corpusId) > 0 ? $corpusId[0] : uniqid('corpus_'),

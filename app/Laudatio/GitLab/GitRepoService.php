@@ -140,7 +140,101 @@ class GitRepoService implements GitRepoInterface
         return $deleted;
     }
 
-    public function getCorpusFiles($flysystem,$path = ""){
+    public function getCorpusFiles($flysystem,$corpusid,$path = ""){
+
+        $corpus = Corpus::find($corpusid);
+
+        $corpusProjects = $corpus->corpusprojects()->get();
+        $corpusProject_directory_path = '';
+
+        $pathArray = explode("/",$path);
+        end($pathArray);
+        $last_id=key($pathArray);
+
+        if(count($corpusProjects) == 1) {
+            $corpusProject_directory_path = $corpusProjects->first()->directory_path;
+        }
+        else{
+            // what to do when we can assign corpora to many projects?
+        }
+
+        $corpusPath = "";
+        $corpus_directory_path = $corpus->directory_path;
+        if($path == ""){
+            $corpusPath = $corpusProject_directory_path."/".$corpus_directory_path;
+        }
+        else{
+            $corpusPath = $path;
+        }
+
+        $corpusBasePath = "";//substr($corpusPath,0,strrpos($corpusPath,"/"));
+
+
+        $fileData = array(
+            "corpusData" => array(
+                'path' => $corpusPath.'/CORPUS-DATA',
+                'hasdir' => false
+            ),
+            "corpusDataFolder" => "",
+            "headerData" => array(
+                'path' => $corpusPath.'/TEI-HEADERS',
+                'hasdir' => false
+            ),
+            "headerDataFolder" => "",
+            "folderType" => ""
+        );
+
+        $folder = "";
+        $folderType = "";
+        $user_roles = array();
+        if(strpos($corpusPath,"Untitled") === false){
+            $corpusBasePath = $pathArray[0]."/".$pathArray[1];
+            if(strpos($corpusPath,"CORPUS-DATA") !== false && strpos($corpusPath,"TEI-HEADERS") === false){
+                $corpusData = $this->getCorpusDataFiles($flysystem,$corpusPath);
+                $headerData = $this->getCorpusFileInfo($flysystem,$corpusBasePath.'/TEI-HEADERS');
+                $folderType = "CORPUS-DATA";
+
+            }
+            else if(strpos($corpusPath,"TEI-HEADERS") !== false && strpos($corpusPath,"CORPUS-DATA") === false){
+                $corpusData = $this->getCorpusDataFiles($flysystem,$corpusBasePath.'/CORPUS-DATA');
+                $headerData = $this->getCorpusFileInfo($flysystem, $corpusPath);
+                $folderType = "TEI-HEADERS";
+            }
+            else{
+                $corpusData = $this->getCorpusDataFiles($flysystem,$corpusPath.'/CORPUS-DATA');
+                $headerData = $this->getCorpusFileInfo($flysystem,$corpusPath.'/TEI-HEADERS');
+            }
+
+            $corpusDataFolder = substr($corpusData['path'],strrpos($corpusData['path'],"/")+1);
+            $headerDataFolder = substr($headerData['path'],strrpos($headerData['path'],"/")+1);
+            $fileData = array(
+                "corpusData" => $corpusData,
+                "corpusDataFolder" => $corpusDataFolder,
+                "headerData" => $headerData,
+                "headerDataFolder" => $headerDataFolder,
+                "folderType" => $folderType
+            );
+
+/*
+            $corpusUsers = $corpus->users()->get();
+
+            foreach ($corpusUsers as $corpusUser){
+                if(!isset($user_roles[$corpusUser->id])){
+                    $user_roles[$corpusUser->id] = array();
+                }
+
+                $role = Role::find($corpusUser->pivot->role_id);
+                if($role){
+                    array_push($user_roles[$corpusUser->id],$role->name);
+                }
+
+            }
+*/
+        }
+        return $fileData;
+    }
+
+    public function getCorpusFileInfo($flysystem, $path = ""){
         $gitFunction = new GitFunction();
         $hasDir = false;
         $projects = array();
@@ -219,7 +313,7 @@ class GitRepoService implements GitRepoInterface
 
 
         return array(
-            "projects" => $projects,
+            "elements" => $projects,
             "headertype" => $pathArray[$last_id],
             "hasdir" => $hasDir,
             "pathcount" => $count,
@@ -261,7 +355,7 @@ class GitRepoService implements GitRepoInterface
 
 
             $projects[$i]['lastupdated'] = Carbon::createFromTimestamp($projects[$i]['timestamp'])->toDateTimeString();
-
+            //Carbon::parse($projects[$i]['timestamp'])->toDateTimeString()->format('H:i, M d');
             if($projects[$i]["type"] == "dir"){
                 $hasDir = true;
             }
@@ -281,6 +375,10 @@ class GitRepoService implements GitRepoInterface
                 $projects[$i]['diffFiles'] = array();
                 array_push($projects[$i]['diffFiles'],$hasDiff);
             }
+
+            $user = User::where('file_name',$projects[$i]['path']);
+            Log::info("JUSER: ".print_r($user, 1));
+            $projects[$i]['user'] = $user->name;
 
         }
 
@@ -357,7 +455,7 @@ class GitRepoService implements GitRepoInterface
     }
 
 
-    public function commitFiles($dirname = "", $commitmessage, $corpusid){
+    public function commitFiles($dirname = "", $commitmessage, $corpusid, $user){
         $isHeader = false;
         if(strpos($dirname,'TEI-HEADER') !== false){
             $isHeader = true;

@@ -17,12 +17,13 @@ interface GitRepoInterface {
     public function checkForCorpusFiles($path);
     public function deleteCorpusFileStructure($flysystem, $path);
     public function deleteProjectFileStructure($flysystem, $path);
-    public function getCorpusFiles($flysystem,$path = "");
+    public function getCorpusFiles($flysystem,$corpusid,$path = "");
+    public function getCorpusFileInfo($flysystem, $path = "");
     public function addFilesToRepository($path,$file);
     public function deleteFile($flysystem, $path);
     public function deleteUntrackedFile($flysystem,$path);
     public function addFiles($path,$corpus);
-    public function commitFiles($dirname, $commitmessage, $corpusid);
+    public function commitFiles($dirname, $commitmessage, $corpusid,$user);
 
     /** HELPERS  **/
     public function filterDottedFiles($array);

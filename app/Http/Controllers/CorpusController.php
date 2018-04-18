@@ -295,18 +295,18 @@ class CorpusController extends Controller
             $corpusBasePath = $pathArray[0]."/".$pathArray[1];
             if(strpos($corpusPath,"CORPUS-DATA") !== false && strpos($corpusPath,"TEI-HEADERS") === false){
                 $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath);
-                $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusBasePath.'/TEI-HEADERS');
+                $headerData = $this->GitRepoService->getCorpusFileInfo($this->flysystem,$corpusBasePath.'/TEI-HEADERS');
                 $folderType = "CORPUS-DATA";
 
             }
             else if(strpos($corpusPath,"TEI-HEADERS") !== false && strpos($corpusPath,"CORPUS-DATA") === false){
                 $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusBasePath.'/CORPUS-DATA');
-                $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
+                $headerData = $this->GitRepoService->getCorpusFileInfo($this->flysystem,$corpusPath);
                 $folderType = "TEI-HEADERS";
             }
             else{
                 $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath.'/CORPUS-DATA');
-                $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath.'/TEI-HEADERS');
+                $headerData = $this->GitRepoService->getCorpusFileInfo($this->flysystem,$corpusPath.'/TEI-HEADERS');
             }
 
             $corpusDataFolder = substr($corpusData['path'],strrpos($corpusData['path'],"/")+1);
@@ -362,6 +362,7 @@ class CorpusController extends Controller
         else{
             // what to do when we can assign corpora to many projects?
         }
+
         $path = $corpusProject_directory_path.'/'.$corpus->directory_path;
 
         $corpusUsers = $corpus->users()->get();
@@ -400,8 +401,16 @@ class CorpusController extends Controller
             }
         }
 
-        $checkResult = json_decode($this->GitRepoService->checkForCorpusFiles($path."/TEI-HEADERS"), true);
+        $checkResult = json_decode($this->GitRepoService->checkForCorpusFiles($path."/TEI-HEADERS/corpus"), true);
         $checkResult['corpusheader'] = ($checkResult['corpusheader'] == "") ? 0 : 1;
+
+
+        //get filedata $flysystem,$corpus,$path = ""
+
+        $folderData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS");
+        $corpusFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/corpus");
+        $documentFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/document");
+        $annotationFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/annotation");
 
         $corpus_data = array(
             'name' => $corpus->name,
@@ -410,7 +419,13 @@ class CorpusController extends Controller
             'user_roles' => $user_roles,
             'roles' => $roles,
             'corpus_admin' => $corpus_admin,
-            'headerdata' => $checkResult
+            'headerdata' => $checkResult,
+            'filedata' => array(
+                'folderData' => $folderData,
+                'corpusFileData' => $corpusFileData,
+                'documentFileData' => $documentFileData,
+                'annotationFileData' => $annotationFileData
+            )
 
         );
         //dd($corpus_data);

@@ -240,7 +240,7 @@ class GitFunction
         return $isAdded;
     }
 
-    public function commitFiles($path, $commitmessage){
+    public function commitFiles($path, $commitmessage, $user){
         $isCommitted = false;
         $process = new Process("git commit -m \"".$commitmessage."\" ",$path);
         $process->setTimeout(3600);
