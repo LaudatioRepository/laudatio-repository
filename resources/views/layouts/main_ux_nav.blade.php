@@ -53,64 +53,65 @@
 
         </div>
     </div>
+    @if (Auth::guest())
+        <div class="modal fade" id="signInModal" tabindex="-1" role="dialog" aria-labelledby="signInModal" aria-hidden="true">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content border-0 rounded-lg bsh-1">
+                    <form class="form-horizontal" id="signInForm" role="form" method="POST" action="{{ route('login') }}">
+                        {{ csrf_field() }}
+                        <div class="modal-body px-4">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <i class="fa fa-close" aria-hidden="true"></i>
+                            </button>
+                            <h3 class="h3 modal-title mt-3">Sign in</h3>
+                            <div id="login-error-message" class="alert alert-danger" role="alert"></div>
+                            <div class="form-group mt-3">
+                                <label for="email" class="text-14 text-dark-trans mb-0 pl-3">
+                                    <small>DFN-AAI or Dariah Username / Email</small>
+                                </label>
+                                <input id="email" type="text" class="toBeValidated form-control" name="email" value="{{ old('email') }}" required autofocus>
 
-    <div class="modal fade" id="signInModal" tabindex="-1" role="dialog" aria-labelledby="signInModal" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="document">
-            <div class="modal-content border-0 rounded-lg bsh-1">
-                <form class="form-horizontal" id="signInForm" role="form" method="POST" action="{{ route('login') }}">
-                    {{ csrf_field() }}
-                    <div class="modal-body px-4">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <i class="fa fa-close" aria-hidden="true"></i>
-                        </button>
-                        <h3 class="h3 modal-title mt-3">Sign in</h3>
-                        <div id="login-error-message" class="alert alert-danger" role="alert"></div>
-                        <div class="form-group mt-3">
-                            <label for="email" class="text-14 text-dark-trans mb-0 pl-3">
-                                <small>DFN-AAI or Dariah Username / Email</small>
-                            </label>
-                            <input id="email" type="text" class="toBeValidated form-control" name="email" value="{{ old('email') }}" required autofocus>
+                            </div>
 
-                        </div>
+                            <div class="form-group mt-2">
+                                <label class="text-14 text-dark-trans mb-0 pl-3" for="password">
+                                    <small>Password</small>
+                                </label>
+                                <input id="password" type="password" class="toBeValidated form-control" name="password" required>
+                            </div>
 
-                        <div class="form-group mt-2">
-                            <label class="text-14 text-dark-trans mb-0 pl-3" for="password">
-                                <small>Password</small>
-                            </label>
-                            <input id="password" type="password" class="toBeValidated form-control" name="password" required>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Remember Me
-                                    </label>
+                            <div class="form-group">
+                                <div class="col-md-6 col-md-offset-4">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}> Remember Me
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <p class="mt-4">
-                                <span>No account yet?
-                                  <a href="{{ route('register') }}">
-                                    Register
-                                  </a>
+                            <p class="mt-4">
+                                    <span>No account yet?
+                                      <a href="{{ route('register') }}">
+                                        Register
+                                      </a>
+                                    </span>
+                                <br />
+                                <span>Forgot Your Password?
+                                    <a class="btn btn-link" href="{{ route('password.request') }}">
+                                        Help
+                                    </a>
                                 </span>
-                            <br />
-                            <span>Forgot Your Password?
-                                <a class="btn btn-link" href="{{ route('password.request') }}">
-                                    Help
-                                </a>
-                            </span>
-                        </p>
-                    </div>
-                    <div class="modal-footer bg-corpus-light px-4 rounded-lg-bt">
-                        <button type="submit" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-30 float-right">
-                            Login
-                        </button>
-                        <!--a href="{{ route('dashboard') }}" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-30 float-right">Login</a-->
-                    </div>
-                </form>
+                            </p>
+                        </div>
+                        <div class="modal-footer bg-corpus-light px-4 rounded-lg-bt">
+                            <button type="submit" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-30 float-right">
+                                Login
+                            </button>
+                            <!--a href="{{ route('dashboard') }}" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-30 float-right">Login</a-->
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+    @endif
 </nav>

@@ -12,6 +12,7 @@ use App\Custom\GitLabInterface;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use Illuminate\Support\Facades\Auth;
 use Response;
+use JavaScript;
 use Log;
 
 class CorpusController extends Controller
@@ -412,6 +413,22 @@ class CorpusController extends Controller
         $documentFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/document");
         $annotationFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/annotation");
 
+        $corpusUpload = false;
+        if($corpus->gitlab_id == ""){
+            $corpusUpload = true;
+        }
+
+        $documentUpload = false;
+        $annotationUpload = false;
+
+        if(count($corpus->annotations) == 0){
+            $annotationUpload = true;
+        }
+
+        if(count($corpus->documents) == 0){
+            $documentUpload = true;
+        }
+
         $corpus_data = array(
             'name' => $corpus->name,
             'project_name' => $corpusproject->name,
@@ -423,12 +440,20 @@ class CorpusController extends Controller
             'filedata' => array(
                 'folderData' => $folderData,
                 'corpusFileData' => $corpusFileData,
+                'corpusUpload' => $corpusUpload,
                 'documentFileData' => $documentFileData,
-                'annotationFileData' => $annotationFileData
+                'documentUpload' => $documentUpload,
+                'annotationFileData' => $annotationFileData,
+                'annotationUpload' => $annotationUpload
             )
 
         );
         //dd($corpus_data);
+        JavaScript::put([
+            'corpusUpload' => $corpusUpload,
+            'documentUpload' => $documentUpload,
+            'annotationUpload' => $annotationUpload
+        ]);
 
         return view('project.corpus.edit', compact('corpus'))
             ->with('isLoggedIn', $isLoggedIn)

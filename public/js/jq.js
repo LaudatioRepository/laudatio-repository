@@ -81,6 +81,24 @@ module.exports = __webpack_require__(101);
  */
 $(function () {
 
+    if (laudatioApp.corpusUpload) {
+        $('#corpusUploader').css('display', 'block');
+    } else {
+        $('#corpusFileList').css('display', 'block');
+    }
+
+    if (laudatioApp.documentUpload) {
+        $('#documentUploader').css('display', 'block');
+    } else {
+        $('#documentFileList').css('display', 'block');
+    }
+
+    if (laudatioApp.annotationUpload) {
+        $('#annotationUploader').css('display', 'block');
+    } else {
+        $('#annotationFileList').css('display', 'block');
+    }
+
     /**
      * Hide error banner initially
      */
@@ -104,6 +122,23 @@ $(function () {
                 $(this).parent().addClass('active');
             }
         });
+    });
+
+    /**
+     * switch between file list and upload view
+     */
+
+    $(document).on('click', '.uploadcontrols', function () {
+        var headerTypeArray = $(this).attr('id').split('_');
+        var headerType = headerTypeArray[0];
+        var headerAction = headerTypeArray[1];
+        if (headerAction.indexOf('Upload') > -1) {
+            $('#' + headerType + 'Uploader').css('display', 'block');
+            $('#' + headerType + 'FileList').css('display', 'none');
+        } else {
+            $('#' + headerType + 'Uploader').css('display', 'none');
+            $('#' + headerType + 'FileList').css('display', 'block');
+        }
     });
 
     /**
