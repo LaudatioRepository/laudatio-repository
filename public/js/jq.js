@@ -81,22 +81,24 @@ module.exports = __webpack_require__(101);
  */
 $(function () {
 
-    if (laudatioApp.corpusUpload) {
-        $('#corpusUploader').css('display', 'block');
-    } else {
-        $('#corpusFileList').css('display', 'block');
-    }
+    if (typeof laudatioApp != 'undefined') {
+        if (laudatioApp.corpusUpload) {
+            $('#corpusUploader').css('display', 'block');
+        } else {
+            $('#corpusFileList').css('display', 'block');
+        }
 
-    if (laudatioApp.documentUpload) {
-        $('#documentUploader').css('display', 'block');
-    } else {
-        $('#documentFileList').css('display', 'block');
-    }
+        if (laudatioApp.documentUpload) {
+            $('#documentUploader').css('display', 'block');
+        } else {
+            $('#documentFileList').css('display', 'block');
+        }
 
-    if (laudatioApp.annotationUpload) {
-        $('#annotationUploader').css('display', 'block');
-    } else {
-        $('#annotationFileList').css('display', 'block');
+        if (laudatioApp.annotationUpload) {
+            $('#annotationUploader').css('display', 'block');
+        } else {
+            $('#annotationFileList').css('display', 'block');
+        }
     }
 
     /**
