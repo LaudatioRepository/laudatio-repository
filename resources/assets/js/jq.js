@@ -32,16 +32,37 @@ $(function(){
      * Hide error banner initially
      */
     $("#alert-laudatio").hide();
-    if($("nav").find("a[data-headertype ='corpus']").hasClass('active')){
+
+    /**
+     * add the correct foldername to the basepath according to which header is active
+     */
+
+    if($("nav.headernav").find("a[data-headertype ='corpus']").hasClass('active')){
         window.Laravel.directorypath += '/TEI-HEADERS/corpus';
     }
-    else if($("nav").find("a[data-headertype ='document']").hasClass('active')){
+    else if($("nav.headernav").find("a[data-headertype ='document']").hasClass('active')){
         window.Laravel.directorypath += '/TEI-HEADERS/document';
+        console.log(window.Laravel.directorypath)
     }
-    else if($("nav").find("a[data-headertype ='annotation']").hasClass('active')){
+    else if($("nav.headernav").find("a[data-headertype ='annotation']").hasClass('active')){
         window.Laravel.directorypath += '/TEI-HEADERS/annotation';
     }
-    //alert(window.Laravel.directorypath)
+
+    $('nav.headernav a[data-headertype ="corpus"]').bind('click', function (e) {
+        window.Laravel.directorypath += '/TEI-HEADERS/corpus';
+        console.log(window.Laravel.directorypath)
+    });
+
+    $('nav.headernav a[data-headertype ="document"]').bind('click', function (e) {
+        window.Laravel.directorypath += '/TEI-HEADERS/document';
+        console.log(window.Laravel.directorypath)
+    });
+
+    $('nav.headernav a[data-headertype ="document"]').bind('click', function (e) {
+        window.Laravel.directorypath += '/TEI-HEADERS/annotation';
+        console.log(window.Laravel.directorypath)
+    });
+    
 
     /**
      * Make sure that the bootstrap tabs handle active / unactive correctly
