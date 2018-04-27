@@ -112,26 +112,33 @@ $(function () {
 
     if ($("nav.headernav").find("a[data-headertype ='corpus']").hasClass('active')) {
         window.Laravel.directorypath += '/TEI-HEADERS/corpus';
-    } else if ($("nav.headernav").find("a[data-headertype ='document']").hasClass('active')) {
-        window.Laravel.directorypath += '/TEI-HEADERS/document';
-        console.log(window.Laravel.directorypath);
-    } else if ($("nav.headernav").find("a[data-headertype ='annotation']").hasClass('active')) {
-        window.Laravel.directorypath += '/TEI-HEADERS/annotation';
     }
 
     $('nav.headernav a[data-headertype ="corpus"]').bind('click', function (e) {
-        window.Laravel.directorypath += '/TEI-HEADERS/corpus';
+        var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
+        window.Laravel.directorypath = oldPath + '/TEI-HEADERS/corpus';
         console.log(window.Laravel.directorypath);
+        var previews = $('#previews').detach();
+        previews.html("");
+        previews.appendTo($('#tabcontainer'));
     });
 
     $('nav.headernav a[data-headertype ="document"]').bind('click', function (e) {
-        window.Laravel.directorypath += '/TEI-HEADERS/document';
+        var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
+        window.Laravel.directorypath = oldPath + '/TEI-HEADERS/document';
         console.log(window.Laravel.directorypath);
+        var previews = $('#previews').detach();
+        previews.html("");
+        previews.appendTo($('#tabcontainer'));
     });
 
-    $('nav.headernav a[data-headertype ="document"]').bind('click', function (e) {
-        window.Laravel.directorypath += '/TEI-HEADERS/annotation';
+    $('nav.headernav a[data-headertype ="annotation"]').bind('click', function (e) {
+        var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
+        window.Laravel.directorypath = oldPath + '/TEI-HEADERS/annotation';
         console.log(window.Laravel.directorypath);
+        var previews = $('#previews').detach();
+        previews.html("");
+        previews.appendTo($('#tabcontainer'));
     });
 
     /**
@@ -155,10 +162,15 @@ $(function () {
         var headerType = headerTypeArray[0];
         var headerAction = headerTypeArray[1];
         if (headerAction.indexOf('Upload') > -1) {
+            var previews = $('#previews').detach();
+            previews.appendTo($('#' + headerType + 'UploadPreview'));
             $('#' + headerType + 'Uploader').css('display', 'block');
             $('#' + headerType + 'FileList').css('display', 'none');
         } else {
             $('#' + headerType + 'Uploader').css('display', 'none');
+            var previews = $('#previews').detach();
+            previews.html("");
+            previews.appendTo($('#tabcontainer'));
             $('#' + headerType + 'FileList').css('display', 'block');
         }
     });

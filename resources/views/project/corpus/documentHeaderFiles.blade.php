@@ -40,32 +40,7 @@
             </div>
         </div>
         <!-- CARD END  -->
-        <div id="previews">
-
-            <div id="documentUploadTemplate" class="uploadItem p-3 mt-3 bg-bluegrey-light">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="font-weight-bold" data-dz-name></span>
-                    <div class="uploadStatusIcons">
-                        <i class="uploadSuccessIcon hidden fa fa-check-circle text-success fa-fw fa-lg pr-5"></i>
-                        <i class="uploadErrorIcon hidden fa fa-exclamation-triangle text-danger fa-fw fa-lg pr-5"></i>
-                        <button class="uploadCancel hidden btn btn-text bg-transparent p-2">
-                            <i class="uploadCancelIcon fa fa-close text-dark fa-fw fa-lg"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="mb-2">
-                    <p class="size hidden" data-dz-size></p>
-                    <span class="uploadStatusText text-14 text-grey"></span>
-                    <span class="error text-14 text-danger" data-dz-errormessage></span>
-                </div>
-
-                <div class="progress progress-striped active w-90 mb-3" role="progressbar" aria-valuemin="0" aria-valuemax="100"
-                     aria-valuenow="0">
-                    <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
-                </div>
-
-            </div>
-        </div>
+        <div id="documentUploadPreview"></div>
         <p class="mt-5">
             It seems that you just added a new document. The name of the new document will be defined through the according
             .xml file.
