@@ -1,6 +1,7 @@
 #corpusUploader,
 #documentUploader,
-#annotationUploader {
+#annotationUploader,
+#formatUploader {
   display: none;
 }
 

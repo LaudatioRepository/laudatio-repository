@@ -193,13 +193,11 @@ $(function () {
             data: $(this).serialize(),
             dataType: "json"
         }).done(function (data) {
-            console.log(data);
             if (data.success) {
                 var newUri = window.location.origin + data.redirect;
                 history.pushState({}, null, newUri);
                 location.reload();
             } else {
-                console.log(data.message);
                 $('#login-error-message').text(data.message);
                 $('#login-error-message').css('display', 'block');
             }

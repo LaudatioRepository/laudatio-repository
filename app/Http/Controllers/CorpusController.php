@@ -402,7 +402,7 @@ class CorpusController extends Controller
             }
         }
 
-        $checkResult = json_decode($this->GitRepoService->checkForCorpusFiles($path."/TEI-HEADERS/corpus"), true);
+        $checkResult = json_decode($this->GitRepoService->checkForCorpusFiles($path."/TEI-HEADERS"), true);
         $checkResult['corpusheader'] = ($checkResult['corpusheader'] == "") ? 0 : 1;
 
 
@@ -412,6 +412,9 @@ class CorpusController extends Controller
         $corpusFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/corpus");
         $documentFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/document");
         $annotationFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/annotation");
+
+        $corpusFormatData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$path."/CORPUS-DATA");
+        //dd($corpusFormatData);
 
         $corpusUpload = false;
         if($corpus->gitlab_id == ""){
@@ -445,7 +448,8 @@ class CorpusController extends Controller
                 'documentUpload' => $documentUpload,
                 'annotationFileData' => $annotationFileData,
                 'annotationUpload' => $annotationUpload
-            )
+            ),
+            'corpusFormatData' => $corpusFormatData
 
         );
         //dd($corpus_data);

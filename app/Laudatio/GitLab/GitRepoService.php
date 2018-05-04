@@ -375,11 +375,11 @@ class GitRepoService implements GitRepoInterface
                 $projects[$i]['diffFiles'] = array();
                 array_push($projects[$i]['diffFiles'],$hasDiff);
             }
-
+/*
             $user = User::where('file_name',$projects[$i]['path']);
             Log::info("JUSER: ".print_r($user, 1));
             $projects[$i]['user'] = $user->name;
-
+*/
         }
 
         $patharray = explode("/",$path);
