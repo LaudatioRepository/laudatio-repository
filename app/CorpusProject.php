@@ -23,4 +23,12 @@ class CorpusProject extends Model
     public function users() {
         return $this->belongsToMany(User::class)->withPivot('role_id');
     }
+
+    /**
+     * Get assigned messageboard
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function messageboard() {
+        return $this->hasOne(MessageBoard::class);
+    }
 }

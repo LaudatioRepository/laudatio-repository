@@ -86,6 +86,9 @@ class UploadController extends Controller
         $corpusProjectPath = $dirPathArray[0];
         $corpusPath = $dirPathArray[1];
         $headerPath = $dirPathArray[$last_id];
+        Log::info("corpusProjectPath; ".print_r($corpusProjectPath,1));
+        Log::info("headerPath; ".print_r($headerPath,1));
+
 
         $corpusProjectDB = DB::table('corpus_projects')->where('directory_path',$corpusProjectPath)->get();
         $corpusProjectId = $corpusProjectDB[0]->gitlab_id;
@@ -103,10 +106,20 @@ class UploadController extends Controller
 
         $documents = array();
         $annotations = array();
+        Log::info("FORMATS; ".print_r($request->formats,1));
 
         $fileName = $request->formats->getClientOriginalName();
         $pathname = $request->formats->getPathName();
+        Log::info("fileName; ".print_r($fileName,1));
+        Log::info("pathname; ".print_r($pathname,1));
         $xmlpath =  $request->formats->getRealPath();
+        Log::info("realpath; ".print_r($xmlpath,1));
+        $directoryPath = $this->laudatioUtilsService->getDirectoryPath(array($fileName),$fileName);
+        Log::info("directoryPath: ".$directoryPath);
+
+
+            Log::info("_FILES: ".print_r($_FILES,1));
+        Log::info("_POST: ".print_r($_POST,1));
         $json = null;
         $jsonPath = null;
         $xmlNode = null;

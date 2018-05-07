@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\MessageBoardObject;
+use App\MessageBoard;
 use Illuminate\Http\Request;
 
-class MessageBoard extends Controller
+class MessageBoardController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +41,10 @@ class MessageBoard extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\MessageBoardObject  $messageBoard
+     * @param  \App\MessageBoard  $messageBoard
      * @return \Illuminate\Http\Response
      */
-    public function show(MessageBoard $messageBoard)
+    public function show(MessageBoardController $messageBoard)
     {
         //
     }
@@ -52,10 +52,10 @@ class MessageBoard extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\MessageBoardObject  $messageBoard
+     * @param  \App\MessageBoard  $messageBoard
      * @return \Illuminate\Http\Response
      */
-    public function edit(MessageBoard $messageBoard)
+    public function edit(MessageBoardController $messageBoard)
     {
         //
     }
@@ -64,10 +64,10 @@ class MessageBoard extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\MessageBoardObject  $messageBoard
+     * @param  \App\MessageBoard  $messageBoard
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, MessageBoard $messageBoard)
+    public function update(Request $request, MessageBoardController $messageBoard)
     {
         //
     }
@@ -75,10 +75,10 @@ class MessageBoard extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\MessageBoardObject  $messageBoard
+     * @param  \App\MessageBoard  $messageBoard
      * @return \Illuminate\Http\Response
      */
-    public function destroy(MessageBoard $messageBoard)
+    public function destroy(MessageBoardController $messageBoard)
     {
         //
     }
