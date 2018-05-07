@@ -36,15 +36,34 @@ class MessageBoardController extends Controller
             $corpusproject = CorpusProject::findOrFail($request->input('project_id'));
             $messageboard = MessageBoard::where(['corpus_project_id' => $corpusproject->id])->get();
 
-            $boardmessage = new BoardMessage();
-            $boardmessage->message_board_id = $messageboard[0]->id;
-            $boardmessage->user_id = $request->input('user_id');
-            $boardmessage->message = $request->input('message');
-            $boardmessage->status = 1;
+            if(count($messageboard) == 0){
+                $messageboard = new MessageBoard();
+                $messageboard->corpus_project_id = $corpusproject->id;
+                $messageboard->save();
 
-            $boardmessage->save();
+                $boardmessage = new BoardMessage();
+                $boardmessage->message_board_id = $messageboard->id;
+                $boardmessage->user_id = $request->input('user_id');
+                $boardmessage->message = $request->input('message');
+                $boardmessage->status = 1;
 
-            $messageboard[0]->boardmessages()->save($boardmessage);
+                $boardmessage->save();
+                
+                $messageboard->boardmessages()->save($boardmessage);
+            }
+            else {
+                $boardmessage = new BoardMessage();
+                $boardmessage->message_board_id = $messageboard[0]->id;
+                $boardmessage->user_id = $request->input('user_id');
+                $boardmessage->message = $request->input('message');
+                $boardmessage->status = 1;
+
+                $boardmessage->save();
+
+                $messageboard[0]->boardmessages()->save($boardmessage);
+            }
+
+
 
             $result['messageboard_response']  = "Message was successfully registered";
             $status = "success";
