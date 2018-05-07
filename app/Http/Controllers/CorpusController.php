@@ -436,21 +436,24 @@ class CorpusController extends Controller
 
         // Get the messageboard for the CorpusProject this corpus is assigned to
         $messageboard = MessageBoard::where(['corpus_project_id' => $corpusproject->id])->get();
-        $boardmessages = $messageboard[0]->boardmessages()->get();
-
         $messages = array();
+        if($messageboard){
 
-        foreach ($boardmessages as $boardmessage) {
-            $messageuser = User::findOrFail($boardmessage->user_id);
-            $message = array(
-                'user_name' => $messageuser->name,
-                'user_id' => $messageuser->id,
-                'message' => $boardmessage->message,
-                'last_updated' => $boardmessage->updated_at,
-                'status' => $boardmessage->getStatus($boardmessage->status)
-            );
-            array_push($messages,$message);
+            $boardmessages = $messageboard[0]->boardmessages()->get();
+
+            foreach ($boardmessages as $boardmessage) {
+                $messageuser = User::findOrFail($boardmessage->user_id);
+                $message = array(
+                    'user_name' => $messageuser->name,
+                    'user_id' => $messageuser->id,
+                    'message' => $boardmessage->message,
+                    'last_updated' => $boardmessage->updated_at,
+                    'status' => $boardmessage->getStatus($boardmessage->status)
+                );
+                array_push($messages,$message);
+            }
         }
+
 
         $corpus_data = array(
             'name' => $corpus->name,
