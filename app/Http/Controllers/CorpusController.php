@@ -437,7 +437,7 @@ class CorpusController extends Controller
         // Get the messageboard for the CorpusProject this corpus is assigned to
         $messageboard = MessageBoard::where(['corpus_project_id' => $corpusproject->id])->get();
         $messages = array();
-        if($messageboard){
+        if(count($messageboard) > 0){
 
             $boardmessages = $messageboard[0]->boardmessages()->get();
 
