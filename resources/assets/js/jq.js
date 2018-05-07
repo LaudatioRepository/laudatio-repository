@@ -246,10 +246,21 @@ $(function(){
             .done(function(data) {
                 if(data.status == "success"){
                     console.log(data.message.messageboard_response)
-                    location.reload();
+                    $('#alert-laudatio').addClass('alert-success');
+                    $('#alert-laudatio .alert-laudatio-message').html(data.message.messageboard_response)
+                    $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
+                        $("#alert-laudatio").slideUp(500);
+                        location.reload()
+                    });
                 }
                 else if (data.status == "error"){
                     console.log(data.message.messageboard_response)
+                    $('#alert-laudatio').addClass('alert-danger');
+                    $('#alert-laudatio .alert-laudatio-message').html(data.message.messageboard_response)
+
+                    $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
+                        $("#alert-laudatio").slideUp(500);
+                    });
                 }
             })
             .fail(function(data) {

@@ -3,6 +3,12 @@
         <div class="row mt-5">
 
             <div class="col">
+                <div class="alert alert-dismissible fade show" role="alert" id="alert-laudatio">
+                    <span class="alert-laudatio-message"></span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
                 <div class="d-flex justify-content-between mt-2 ">
                     <h3 class="h3 font-weight-normal">Corpus Message Board</h3>
                 </div>
@@ -36,9 +42,9 @@
                                 </p>
                             </div>
                             <div class="col-2 text-right">
-                                          <span class="text-grey-light text-14">
-                                           {{$boardmessage['last_updated']->diffForHumans()}}
-                                          </span>
+                              <span class="text-grey-light text-14">
+                               {{$boardmessage['last_updated']->diffForHumans()}}
+                              </span>
                             </div>
                         </div>
                         <div class="row">
