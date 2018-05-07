@@ -222,7 +222,39 @@ $(function(){
                     $("#alert-laudatio").slideUp(500);
                 });
             });
-
-
     });
+
+    $(document).on('click', '#sendMessageButton', function(e) {
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        var postdata = {};
+        postdata['project_id'] = $('#project_id').val();
+        postdata['message'] = $('#created_boardmessage').val();
+        postdata['user_id'] = $('#user_id').val();
+        console.log(postdata);
+        $.ajax({
+            method: 'POST',
+            url: '/api/adminapi/postMessage',
+            data: postdata,
+            dataType: "json"
+        })
+            .done(function(data) {
+                if(data.status == "success"){
+                    console.log(data.message.messageboard_response)
+                    location.reload();
+                }
+                else if (data.status == "error"){
+                    console.log(data.message.messageboard_response)
+                }
+            })
+            .fail(function(data) {
+                console.log("FAIL : "+data)
+            });
+    });
+
 })

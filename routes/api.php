@@ -54,6 +54,9 @@ Route::group(array('prefix' => 'adminapi'), function() {
     Route::post('validateHeaders','GitRepoController@validateCorpus');
     Route::post('preparePublication','CorpusController@preparePublication');
     Route::post('updateCorpusProject/{corpusProject}','CorpusProjectController@update');
+    Route::post('postMessage','MessageBoardController@create');
+    Route::post('updateMessage','MessageBoardController@update');
+    Route::post('deleteMessage','MessageBoardController@destroy');
 });
 
 

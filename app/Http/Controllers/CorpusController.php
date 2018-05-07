@@ -447,7 +447,7 @@ class CorpusController extends Controller
                 'user_id' => $messageuser->id,
                 'message' => $boardmessage->message,
                 'last_updated' => $boardmessage->updated_at,
-                'status' => $boardmessage->status
+                'status' => $boardmessage->getStatus($boardmessage->status)
             );
             array_push($messages,$message);
         }
@@ -455,6 +455,7 @@ class CorpusController extends Controller
         $corpus_data = array(
             'name' => $corpus->name,
             'project_name' => $corpusproject->name,
+            'project_id' => $corpusproject->id,
             'filepath' => $path,
             'user_roles' => $user_roles,
             'roles' => $roles,

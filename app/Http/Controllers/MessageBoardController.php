@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\BoardMessage;
 use App\MessageBoard;
+use App\CorpusProject;
+use Response;
 use Illuminate\Http\Request;
+use Log;
 
 class MessageBoardController extends Controller
 {
@@ -22,9 +26,43 @@ class MessageBoardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $status = "success";
+
+        $result = array();
+
+        try{
+            $corpusproject = CorpusProject::findOrFail($request->input('project_id'));
+            $messageboard = MessageBoard::where(['corpus_project_id' => $corpusproject->id])->get();
+
+            $boardmessage = new BoardMessage();
+            $boardmessage->message_board_id = $messageboard[0]->id;
+            $boardmessage->user_id = $request->input('user_id');
+            $boardmessage->message = $request->input('message');
+            $boardmessage->status = 1;
+
+            $boardmessage->save();
+
+            $messageboard[0]->boardmessages()->save($boardmessage);
+
+            $result['messageboard_response']  = "Message was successfully registered";
+            $status = "success";
+        }
+        catch (\Exception $e) {
+            $status = "error";
+            $result['messageboard_response']  = "There was a problem creating the Board message. A message has been sent to the site administrator. Please try again later";
+            //$e->getMessage();
+
+        }
+
+
+        $response = array(
+            'status' => $status,
+            'message' => $result,
+        );
+
+        return Response::json($response);
     }
 
     /**
