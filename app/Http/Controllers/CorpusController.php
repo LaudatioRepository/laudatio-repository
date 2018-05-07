@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Corpus;
 use App\CorpusProject;
+use App\MessageBoard;
 use App\User;
 use App\Role;
 use App\Custom\GitRepoInterface;
@@ -356,6 +357,7 @@ class CorpusController extends Controller
         $corpusProjects = $corpus->corpusprojects()->get();
         $corpusproject = null;
         $corpusProject_directory_path = '';
+
         if(count($corpusProjects) == 1) {
             $corpusproject = $corpusProjects->first();
             $corpusProject_directory_path = $corpusproject->directory_path;
@@ -432,6 +434,24 @@ class CorpusController extends Controller
             $documentUpload = true;
         }
 
+        // Get the messageboard for the CorpusProject this corpus is assigned to
+        $messageboard = MessageBoard::where(['corpus_project_id' => $corpusproject->id])->get();
+        $boardmessages = $messageboard[0]->boardmessages()->get();
+
+        $messages = array();
+
+        foreach ($boardmessages as $boardmessage) {
+            $messageuser = User::findOrFail($boardmessage->user_id);
+            $message = array(
+                'user_name' => $messageuser->name,
+                'user_id' => $messageuser->id,
+                'message' => $boardmessage->message,
+                'last_updated' => $boardmessage->updated_at,
+                'status' => $boardmessage->status
+            );
+            array_push($messages,$message);
+        }
+
         $corpus_data = array(
             'name' => $corpus->name,
             'project_name' => $corpusproject->name,
@@ -449,10 +469,11 @@ class CorpusController extends Controller
                 'annotationFileData' => $annotationFileData,
                 'annotationUpload' => $annotationUpload
             ),
-            'corpusFormatData' => $corpusFormatData
+            'corpusFormatData' => $corpusFormatData,
+            'boardmessages' => $messages
 
         );
-        //dd($corpus_data);
+        //dd($corpus_data['boardmessages']);
         JavaScript::put([
             'corpusUpload' => $corpusUpload,
             'documentUpload' => $documentUpload,
