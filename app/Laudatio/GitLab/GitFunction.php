@@ -190,7 +190,7 @@ class GitFunction
     public function addUntracked($pathWithOutAddedFolder, $folder = ""){
         $isAdded = false;
         $status = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
-        Log::info("STATUS: ".$status);
+
         if($folder == ""){
             if($this->isUntracked($status)){
                 $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder);
@@ -458,25 +458,21 @@ class GitFunction
 
         //write file if exists
         $fileArray = explode("/", $theFilePath);
-        Log::info("theFilePath: ".$theFilePath);
+
         $fileInDirectory = "";
         if(count($fileArray) == 1){
             $fileInDirectory = array_pop($fileArray);
         }
-        Log::info("fileInDirectory: ".$fileInDirectory);
 
-        Log::info("fthesaveüath: ".$this->basePath."/".$dirPath."/".$fileInDirectory);
 
         #if(file_exists($this->basePath."/".$dirPath."/".$fileInDirectory)){
             $existingFile = $flySystem->has($dirPath."/".$fileInDirectory);
             $stream = null;
             if(!$existingFile){
-                Log::info("file does not exists: ".$this->basePath."/".$dirPath."/".$fileInDirectory);
                 $stream = fopen($fileTempPath, 'r+');
                 $flySystem->writeStream($dirPath."/".$fileInDirectory, $stream);
             }
             else{
-                Log::info("file exists: ".$this->basePath."/".$dirPath."/".$fileInDirectory);
                 $stream = fopen($fileTempPath, 'r+');
                 $flySystem->updateStream($dirPath."/".$fileInDirectory, $stream);
             }
@@ -486,7 +482,7 @@ class GitFunction
         if (is_resource($stream)) {
             fclose($stream);
         }
-        Log::info("UPLOADED T IS: ".$this->basePath."/".$dirPath."/".$fileInDirectory);
+
         return $createdDirectoryPath;
     }
 
@@ -598,8 +594,6 @@ class GitFunction
             $folder = $path;
         }
 
-        Log::info("FOLDER: ".print_r($folder, 1));
-        Log::info("cwdPath: ".print_r($cwdPath, 1));
         $process = null;
         if($isFile){
             $process = new Process("rm $folder",$cwdPath);

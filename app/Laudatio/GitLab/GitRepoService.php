@@ -50,11 +50,11 @@ class GitRepoService implements GitRepoInterface
             $flysystem->createDir($dirPath);
             $flysystem->createDir($dirPath."/TEI-HEADERS");
             $flysystem->createDir($dirPath."/TEI-HEADERS/corpus");
-            $flysystem->write($dirPath."/TEI-HEADERS/corpus/.info","Corpus header files for ".$corpusName);
+            $flysystem->write($dirPath."/TEI-HEADERS/corpus/README.md","#CORPUS HEADERS# \n This folder holds Corpus header meta data");
             $flysystem->createDir($dirPath."/TEI-HEADERS/document");
-            $flysystem->write($dirPath."/TEI-HEADERS/document/.info","Document header file structure for ".$corpusName);
+            $flysystem->write($dirPath."/TEI-HEADERS/document/README.md","#DOCUMENT HEADERS# \n This folder holds Document header meta data");
             $flysystem->createDir($dirPath."/TEI-HEADERS/annotation");
-            $flysystem->write($dirPath."/TEI-HEADERS/annotation/.info","Annotation header file structure for ".$corpusName);
+            $flysystem->write($dirPath."/TEI-HEADERS/annotation/README.md","#ANNOTATION HEADERS# \n This folder holds Document header meta data");
             $flysystem->createDir($dirPath."/CORPUS-DATA");
 
             $initiated = $this->initiateRepository($dirPath);
