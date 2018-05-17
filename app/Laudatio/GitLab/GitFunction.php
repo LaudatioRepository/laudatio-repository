@@ -260,6 +260,85 @@ class GitFunction
         return $isCommitted;
     }
 
+    public function addRemote($origin,$path) {
+        $addedRemote = false;
+        $shouldAdd = false;
+
+        $askForOriginProcess = new Process("git remote -v",$this->basePath."/".$path);
+        $askForOriginProcess->setTimeout(3600);
+        $askForOriginProcess->run();
+
+
+        if (!$askForOriginProcess->isSuccessful()) {
+            throw new ProcessFailedException($askForOriginProcess);
+        }
+        else{
+            $askForOriginProcessOutput = $askForOriginProcess->getOutput();
+            if(empty($askForOriginProcessOutput)){
+                $shouldAdd = true;
+            }
+        }
+
+
+
+        if($shouldAdd){
+            //Log::info("trying to: git remote add origin ".$origin." => ".$this->basePath."/".$path);
+            $process = new Process("git remote add origin ".$origin,$this->basePath."/".$path);
+            $process->setTimeout(3600);
+            $process->run();
+        }
+        else{
+            //Log::info("trying to: git remote set-url origin ".$origin." => ".$this->basePath."/".$path);
+            $process = new Process("git remote set-url origin ".$origin,$this->basePath."/".$path);
+            $process->setTimeout(3600);
+            $process->run();
+        }
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            $addedRemote = true;
+        }
+        return $addedRemote;
+    }
+
+    public function initialPush($path,$user){
+        //git push --set-upstream origin master
+        $isPushed = false;
+        $process = new Process("git push --set-upstream origin master",$this->basePath."/".$path);
+        $process->setTimeout(3600);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            $isPushed = true;
+        }
+        return $isPushed;
+    }
+
+    public function pushFiles($path,$corpusid) {
+        $isPushed = false;
+        $process = new Process("git push",$this->basePath."/".$path);
+        $process->setTimeout(3600);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            $isPushed = true;
+        }
+        return $isPushed;
+    }
 
 
     public function addFileUpdate($path, $file){
@@ -402,11 +481,12 @@ class GitFunction
                 $flySystem->updateStream($dirPath."/".$fileInDirectory, $stream);
             }
         #}
+        array_push($createdDirectoryPath,$this->basePath."/".$dirPath."/".$fileInDirectory);
 
         if (is_resource($stream)) {
             fclose($stream);
         }
-
+        Log::info("UPLOADED T IS: ".$this->basePath."/".$dirPath."/".$fileInDirectory);
         return $createdDirectoryPath;
     }
 

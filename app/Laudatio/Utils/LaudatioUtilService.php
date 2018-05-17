@@ -153,6 +153,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             'corpus_id' => count($corpusId) > 0 ? $corpusId[0] : uniqid('corpus_'),
             'gitlab_id' => $params['gitlab_id'],
             'gitlab_web_url' => $params['gitlab_web_url'],
+            'gitlab_ssh_url' => $params['gitlab_ssh_url'],
             'gitlab_namespace_path' => $params['gitlab_name_with_namespace'],
             "file_name" => $params['fileName']
         ]);

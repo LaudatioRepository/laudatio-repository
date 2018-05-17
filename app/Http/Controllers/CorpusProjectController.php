@@ -141,7 +141,7 @@ class CorpusProjectController extends Controller
             Log::info("gitLabResponse: CorpusProject ".print_r($gitLabResponse,1));
 
 
-            CorpusProject::create([
+            $corpusproject = CorpusProject::create([
                 'name' => request('corpusproject_name'),
                 'description' => request('corpusproject_description'),
                 'directory_path' => $filePath,
@@ -150,6 +150,11 @@ class CorpusProjectController extends Controller
                 'gitlab_web_url' => $gitLabResponse['web_url'],
                 'gitlab_parent_id' => $gitLabResponse['parent_id']
             ]);
+
+            /*
+            $user = \Auth::user();
+            $corpusp->users()->save($user,['role_id' => 2]);
+            */
         }
 
         return redirect()->route('corpusProject.index');

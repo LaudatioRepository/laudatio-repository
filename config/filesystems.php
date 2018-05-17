@@ -50,7 +50,7 @@ return [
 
         'gitlocal' => [
             'driver' => 'local',
-            'root' => storage_path('/Users/rolfguescini/source/gitfiles/laudatiofiles/projects'),
+            'root' => storage_path('/Users/rolfguescini/source/gitfiles/projects'),
             //'path' => '/Users/rolfguescini/source/laudatiofiles/projects',
         ],
         'public' => [

@@ -27,6 +27,7 @@ class CreateCorpusesTable extends Migration
             $table->text('gitlab_group_id')->nullable();
             $table->integer('gitlab_id')->nullable();
             $table->text('gitlab_web_url')->nullable();
+            $table->text('gitlab_ssh_url')->nullable();
             $table->text('gitlab_namespace_path')->nullable();
             $table->string('gitlab_commit_sha')->nullable();
             $table->dateTime('gitlab_commit_date')->nullable();

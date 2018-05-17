@@ -455,6 +455,17 @@ class GitRepoService implements GitRepoInterface
     }
 
 
+
+    public function pushFiles($dirname,$corpusid,$user){
+        $gitFunction = new  GitFunction();
+        return $gitFunction->pushFiles($dirname,$corpusid);
+    }
+
+    public function initialPush($path,$user) {
+        $gitFunction = new  GitFunction();
+        return $gitFunction->initialPush($path,$user);
+    }
+
     public function commitFiles($dirname = "", $commitmessage, $corpusid, $user){
         $isHeader = false;
         if(strpos($dirname,'TEI-HEADER') !== false){
@@ -548,6 +559,14 @@ class GitRepoService implements GitRepoInterface
         $gitFunction = new GitFunction();
         $isInitiated = $gitFunction->initiateRepository($path);
         return $isInitiated;
+    }
+
+    public function addRemote($origin,$path){
+        $gitFunction = new GitFunction();
+        //git@gitlab.com:Username/Project.git
+
+        $isRemoteAdded = $gitFunction->addRemote($origin,$path);
+        return $isRemoteAdded;
     }
 
     public function copyGitHooks($path){

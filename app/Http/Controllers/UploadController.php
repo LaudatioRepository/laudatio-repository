@@ -99,11 +99,8 @@ class UploadController extends Controller
         $currentFilePath = $corpus->directory_path;
 
 
-        $isVersioned = false;
-
         $document = null;
         $annotation = null;
-
         $documents = array();
         $annotations = array();
         Log::info("FORMATS; ".print_r($request->formats,1));
@@ -124,9 +121,14 @@ class UploadController extends Controller
         $jsonPath = null;
         $xmlNode = null;
 
-        $commitPath = "";
+
         $addPath = "";
+        $commitPath = "";
+        $pushPath = "";
+
+        $isVersioned = false;
         $canUpload = true;
+        $pushCorpusStructure = false;
 
         if(!empty($xmlpath)) {
             $xmlNode = simplexml_load_file($xmlpath);
@@ -220,6 +222,8 @@ class UploadController extends Controller
             $isVersioned = $this->laudatioUtilsService->corpusIsVersioned($corpusId);
             $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
             $corpusDescription = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
+            $gitLabResponse = null;
+            $remoteRepoUrl = "";
             if($corpusTitle[0]){
                 if(!$isVersioned){
                     $corpusPath = $this->GitRepoService->updateCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus->directory_path,$corpusTitle[0]);
@@ -236,6 +240,8 @@ class UploadController extends Controller
                             'visibility' => 'public'
                         ));
 
+                    Log::info('gitlabresponse: '.print_r($gitLabResponse,1));
+                    $remoteRepoUrl = $gitLabResponse['ssh_url_to_repo'];
                     $params = array(
                         'corpusId' => $corpusId,
                         "uid" => $user->id,
@@ -243,12 +249,13 @@ class UploadController extends Controller
                         'gitlab_group_id' => $corpusProjectId,
                         'gitlab_id' => $gitLabResponse['id'],
                         'gitlab_web_url' => $gitLabResponse['web_url'],
+                        'gitlab_ssh_url' => $remoteRepoUrl,
                         'gitlab_name_with_namespace' => $gitLabResponse['name_with_namespace'],
                         'fileName' => $fileName
                     );
 
                     $corpus = $this->laudatioUtilsService->setCorpusAttributes($json,$params);
-
+                    $pushCorpusStructure = true;
                 }
                 else{
                     if($canUpload){
@@ -268,11 +275,13 @@ class UploadController extends Controller
                     $filePath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
                     $addPath = $corpusPath.'/TEI-HEADERS/corpus/';
                     $commitPath = $corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                    $initialPushPath = $corpusPath;
                 }
                 else{
                     $filePath = $corpusProjectPath."/".$corpusPath.'/TEI-HEADERS/corpus/'.$fileName;
                     $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/';
                     $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/'.$fileName;
+
                 }
             }
 
@@ -283,22 +292,31 @@ class UploadController extends Controller
         if($canUpload){
             $gitFunction = new GitFunction();
             $directoryPath = $this->laudatioUtilsService->getDirectoryPath(array($fileName),$fileName);
-            Log::info("dirPath: ".$dirPath);
-            Log::info("gitlabcorpuspath: ".$gitLabCorpusPath);
+
+            $pushPath = $corpusProjectPath.'/'.$corpus->directory_path;
 
             $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
-            Log::info("addpath: ".$addPath);
+
             //add files
             $this->GitRepoService->addFiles($addPath,$corpusId);
 
-            Log::info("commitpath: ".$commitPath);
             //git commit The files
             $this->GitRepoService->commitFiles($commitPath,"Adding files for ".$fileName,$corpusId,$user);
+
+            //we have added a corpus, and push the corpus file structure to gitlab
+            if($pushCorpusStructure && !empty($initialPushPath) && $remoteRepoUrl){
+                $this->GitRepoService->addRemote($remoteRepoUrl,$initialPushPath);
+                $this->GitRepoService->initialPush($initialPushPath,$user);
+            }
+            else {
+                $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);
+            }
+
+
         }
         else{
             session()->flash('message', 'The corpus header you tried to upload does not belong to this corpus');
         }
-
 
 
 

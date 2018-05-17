@@ -48,7 +48,7 @@ class MessageBoardController extends Controller
                 $boardmessage->status = 1;
 
                 $boardmessage->save();
-                
+
                 $messageboard->boardmessages()->save($boardmessage);
             }
             else {

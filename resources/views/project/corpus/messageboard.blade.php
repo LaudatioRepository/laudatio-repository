@@ -9,10 +9,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="d-flex justify-content-between mt-2 ">
-                    <h3 class="h3 font-weight-normal">Corpus Message Board</h3>
-                </div>
-
+                @if (Auth::user()->can('Can create corpus project') || Auth::user()->can('Can create corpus'))
                 <div class="card border-0 mt-5">
                     <div class="card-body bg-bluegrey-dark p-5">
                         <form id="sendMessageBoard" class="form-inline">
@@ -24,7 +21,7 @@
                         </form>
                     </div>
                 </div>
-
+                @endif
                 @foreach($corpus_data['boardmessages'] as $boardmessage)
                     <div class="container bg-bluegrey-midlight mt-1 mb-1 p-5">
                         <div class="row">
@@ -42,19 +39,42 @@
                                 </p>
                             </div>
                             <div class="col-2 text-right">
-                              <span class="text-grey-light text-14">
-                               {{$boardmessage['last_updated']->diffForHumans()}}
-                              </span>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4 w-100 text-left"
+                                            type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Edit
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        @can('Can edit corpus')
+                                            <a class="dropdown-item text-14" href="#" id="messageAssignButton">Assign to me</a>
+                                            <a class="dropdown-item text-14" href="#" id="completeMessageButton">Mark as completed</a>
+                                        @endcan
+                                        @can('Can create corpus project')
+                                            <a class="dropdown-item text-14" href="#" id="deleteMessageButton">Delete Message</a>
+                                        @endcan
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-2 text-right">
+                            <div class="col">
                                 <div class="text-grey-light text-14">{{$boardmessage['status']}}</div>
+                            </div>
+                            <div class="col-2 text-right">
+                                <span class="text-grey-light text-14">
+                                 {{$boardmessage['last_updated']->diffForHumans()}}
+                                 </span>
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
+        </div>
+        <div class="row">
+            @can('Can create corpus project')
+                <p>POOPS</p>
+            @endcan
+
         </div>
     </div>
 </div>
