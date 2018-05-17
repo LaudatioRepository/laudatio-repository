@@ -43,6 +43,7 @@ class MessageBoardController extends Controller
 
                 $boardmessage = new BoardMessage();
                 $boardmessage->message_board_id = $messageboard->id;
+                $boardmessage->corpus_id = $request->input('corpus_id');
                 $boardmessage->user_id = $request->input('user_id');
                 $boardmessage->message = $request->input('message');
                 $boardmessage->status = 1;
@@ -54,6 +55,7 @@ class MessageBoardController extends Controller
             else {
                 $boardmessage = new BoardMessage();
                 $boardmessage->message_board_id = $messageboard[0]->id;
+                $boardmessage->corpus_id = $request->input('corpus_id');
                 $boardmessage->user_id = $request->input('user_id');
                 $boardmessage->message = $request->input('message');
                 $boardmessage->status = 1;

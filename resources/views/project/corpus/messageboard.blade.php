@@ -17,6 +17,7 @@
                             <!-- <button type="submit" disabled class="btn btn-primary rounded text-uppercase font-weight-bold w-15 ml-6">Send</button> -->
                             <a href="#" id="sendMessageButton" class="btn btn-primary rounded text-uppercase font-weight-bold w-15 ml-auto">Send</a>
                             <input type="hidden" id="project_id"  name="project_id" value="{{$corpus_data['project_id']}}" />
+                            <input type="hidden" id="corpus_id"  name="corpus_id" value="{{$corpus->id}}" />
                             <input type="hidden" id="user_id"  name="project_id" value="{{$user->id}}" />
                         </form>
                     </div>
@@ -46,7 +47,11 @@
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                         @can('Can edit corpus')
-                                            <a class="dropdown-item text-14" href="#" id="messageAssignButton">Assign to me</a>
+                                            @if($user->id != $boardmessage['user_id'])
+                                                <a class="dropdown-item text-14" href="#" data-message-assign="{{$user->id}}" id="messageAssignButton">Assign to me</a>
+                                            @else
+                                                <a class="dropdown-item text-14 disabled" href="javascript:void(0)"  id="messageAssignButton">Assign to me</a>
+                                            @endif
                                             <a class="dropdown-item text-14" href="#" id="completeMessageButton">Mark as completed</a>
                                         @endcan
                                         @can('Can create corpus project')
@@ -58,11 +63,31 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                <div class="text-grey-light text-14">{{$boardmessage['status']}}</div>
+                                <div class="text-grey-light text-14">Status: {{$boardmessage['status']}}</div>
                             </div>
                             <div class="col-2 text-right">
                                 <span class="text-grey-light text-14">
                                  {{$boardmessage['last_updated']->diffForHumans()}}
+                                 </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="text-grey-light text-14">Assigned to: {{$boardmessage['user_name']}}</div>
+                            </div>
+                            <div class="col-2 text-right">
+                                <span class="text-grey-light text-14">
+
+                                 </span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div class="text-grey-light text-14">Corpus: {{$boardmessage['corpus_name']}}</div>
+                            </div>
+                            <div class="col-2 text-right">
+                                <span class="text-grey-light text-14">
+
                                  </span>
                             </div>
                         </div>

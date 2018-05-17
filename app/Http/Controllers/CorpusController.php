@@ -436,21 +436,32 @@ class CorpusController extends Controller
 
         // Get the messageboard for the CorpusProject this corpus is assigned to
         $messageboard = MessageBoard::where(['corpus_project_id' => $corpusproject->id])->get();
-        $messages = array();
+        $allMessages = array();
+        $corpusMessages = array();
+        $messagecount = 0;
         if(count($messageboard) > 0){
 
             $boardmessages = $messageboard[0]->boardmessages()->get();
 
             foreach ($boardmessages as $boardmessage) {
                 $messageuser = User::findOrFail($boardmessage->user_id);
+                $messageCorpus = Corpus::findOrFail($boardmessage->corpus_id);
                 $message = array(
                     'user_name' => $messageuser->name,
                     'user_id' => $messageuser->id,
+                    'corpus_id' => $boardmessage->corpus_id,
+                    'corpus_name' => $messageCorpus->name,
                     'message' => $boardmessage->message,
                     'last_updated' => $boardmessage->updated_at,
                     'status' => $boardmessage->getStatus($boardmessage->status)
                 );
-                array_push($messages,$message);
+                if($corpus->id == $boardmessage->corpus_id){
+                    $messagecount++;
+                    array_push($corpusMessages,$message);
+                }
+
+
+                array_push($allMessages,$message);
             }
         }
 
@@ -474,7 +485,9 @@ class CorpusController extends Controller
                 'annotationUpload' => $annotationUpload
             ),
             'corpusFormatData' => $corpusFormatData,
-            'boardmessages' => $messages
+            'boardmessages' => $corpusMessages,
+            'allBoardMessages' => $allMessages,
+            'messagecount' => $messagecount
 
         );
         //dd($corpus_data['boardmessages']);

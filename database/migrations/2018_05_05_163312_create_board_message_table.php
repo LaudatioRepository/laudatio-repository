@@ -16,6 +16,7 @@ class CreateBoardMessageTable extends Migration
         Schema::create('board_messages', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('message_board_id');
+            $table->integer('corpus_id');
             $table->integer('user_id');
             $table->text('message');
             $table->integer('status');

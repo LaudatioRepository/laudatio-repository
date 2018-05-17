@@ -58,7 +58,7 @@
                             <a class="nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#messageBoard" role="tab">Message Board
                                 <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
                                     <i class="fa fa-comment-o fa-fw fa-edit align-text-top fa-lg text-wine"></i>
-                                    <span class="text-primary text-14 font-weight-bold">5</span>
+                                    <span class="text-primary text-14 font-weight-bold">{{$corpus_data['messagecount']}}</span>
                                 </div>
                             </a>
                         </div>
