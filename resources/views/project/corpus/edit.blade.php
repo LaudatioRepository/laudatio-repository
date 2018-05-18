@@ -100,9 +100,13 @@
                         <div class="col">
                             <div class="d-flex justify-content-between mt-7 mb-3">
                                 <h3 class="h3 font-weight-normal">Corpus Collaborator</h3>
+                                @if (Auth::user()->can('Can assign users to corpus'))
                                 <a href="#" class="btn btn-primary font-weight-bold text-uppercase rounded">
                                     Invite Collaborator
                                 </a>
+                                @else
+                                    &nbsp;
+                                @endif
                             </div>
 
                             <table class="documents-table table table-bluegrey-dark  table-striped">
@@ -111,7 +115,11 @@
                                     <th scope="col">Collaborator</th>
                                     <th scope="col">Role</th>
                                     <th scope="col">Institute</th>
-                                    <th scope="col">Delete</th>
+                                    @if (Auth::user()->can('Can assign users to corpus'))
+                                        <th scope="col">Delete</th>
+                                    @else
+                                        <th scope="col" colspan="2">&nbsp;</th>
+                                    @endif
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -119,23 +127,46 @@
                                     @foreach($role_datas as $role_data)
                                 <tr>
                                     <td>
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="corpusEditItem_0001">
+                                        @if (Auth::user()->can('Can assign users to corpus'))
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="corpusEditItem_0001">
+
+                                                <label class="custom-control-label font-weight-bold" for="corpusEditItem_0001">
+                                                    <i class="fa fa-user fa-fw"></i>
+                                                    {{$role_data['user_name']}}
+                                                </label>
+                                            </div>
+                                        @else
                                             <label class="custom-control-label font-weight-bold" for="corpusEditItem_0001">
                                                 <i class="fa fa-user fa-fw"></i>
                                                 {{$role_data['user_name']}}
                                             </label>
-                                        </div>
+                                        @endif
                                     </td>
-                                    <td>
-                                        {{ Form::select('role', $corpus_data['roles'], $role_data['role_id'],['class' => 'custom-select custom-select-sm font-weight-bold text-uppercase']) }}
-                                    </td>
+
+                                    @if (Auth::user()->can('Can assign users to corpus'))
+                                        <td>
+                                            {{ Form::select('role', $corpus_data['roles'], $role_data['role_id'],['class' => 'custom-select custom-select-sm font-weight-bold text-uppercase']) }}
+                                        </td>
+                                    @else
+                                        <td>
+                                            <span class="font-weight-bold text-uppercase">{{$corpus_data['roles'][$role_data['role_id']]}}</span>
+                                        </td>
+                                    @endif
                                     <td class="text-14 text-grey-light">{{$role_data['user_affiliation']}}</td>
-                                    <td>
-                                        <a href="#">
-                                            <i class="fa fa-trash-o fa-fw fa-lg text-dark"></i>
-                                        </a>
-                                    </td>
+                                    @if (Auth::user()->can('Can assign users to corpus'))
+                                        <td>
+                                            <a href="#">
+                                                <i class="fa fa-trash-o fa-fw fa-lg text-dark"></i>
+                                            </a>
+                                        </td>
+                                    @else
+                                        <td>
+                                            <a href="#">
+                                                &nbsp;
+                                            </a>
+                                        </td>
+                                    @endif
                                 </tr>
                                     @endforeach
                                 @endforeach
@@ -143,17 +174,26 @@
                                 <tfoot class="bg-bluegrey-mid">
                                 <tr>
                                     <td colspan="2">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="selectAll_corpusEdit">
-                                            <label class="custom-control-label text-14" for="selectAll_corpusEdit">
-                                                Select all
-                                            </label>
-                                        </div>
+                                        @if (Auth::user()->can('Can assign users to corpus'))
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="selectAll_corpusEdit">
+                                                <label class="custom-control-label text-14" for="selectAll_corpusEdit">
+                                                    Select all
+                                                </label>
+                                            </div>
+                                        @else
+                                            <div class="custom-control custom-checkbox">&nbsp;</div>
+                                        @endif
                                     </td>
                                     <td colspan="2">
-                                        <button class="float-right disabled btn btn-outline-corpus-dark font-weight-bold text-uppercase btn-sm">
-                                            Delete Selected Files
-                                        </button>
+                                        @if (Auth::user()->can('Can assign users to corpus'))
+                                            <button class="float-right disabled btn btn-outline-corpus-dark font-weight-bold text-uppercase btn-sm">
+                                                Delete Selected Files
+                                            </button>
+                                        @else
+                                            &nbsp;
+                                        @endif
+
                                     </td>
                                 </tr>
                                 </tfoot>

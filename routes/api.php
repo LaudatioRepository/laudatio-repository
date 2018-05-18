@@ -55,8 +55,10 @@ Route::group(array('prefix' => 'adminapi'), function() {
     Route::post('preparePublication','CorpusController@preparePublication');
     Route::post('updateCorpusProject/{corpusProject}','CorpusProjectController@update');
     Route::post('postMessage','MessageBoardController@create');
-    Route::post('updateMessage','MessageBoardController@update');
-    Route::post('deleteMessage','MessageBoardController@destroy');
+    Route::post('assignMessage','MessageController@assignMessage');
+    Route::post('completeMessage','MessageController@completeMessage');
+    Route::post('deleteMessage','MessageController@destroyMessage');
+
 });
 
 

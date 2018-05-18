@@ -40,6 +40,7 @@
                                 </p>
                             </div>
                             <div class="col-2 text-right">
+                                @if($boardmessage['status_id'] <= 2)
                                 <div class="dropdown">
                                     <button class="btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4 w-100 text-left"
                                             type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -48,17 +49,31 @@
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                         @can('Can edit corpus')
                                             @if($user->id != $boardmessage['user_id'])
-                                                <a class="dropdown-item text-14" href="#" data-message-assign="{{$user->id}}" id="messageAssignButton">Assign to me</a>
-                                            @else
-                                                <a class="dropdown-item text-14 disabled" href="javascript:void(0)"  id="messageAssignButton">Assign to me</a>
+                                                <a class="dropdown-item text-14" href="#" data-message-assign="{{$user->id}}" data-message-id="{{$boardmessage['messageid']}}" id="messageAssignButton">Assign to me</a>
                                             @endif
-                                            <a class="dropdown-item text-14" href="#" id="completeMessageButton">Mark as completed</a>
+
+                                            @if($boardmessage['status_id'] == 2 && $boardmessage['user_id'] == $user->id)
+                                                <a class="dropdown-item text-14" href="javascript:void(0)" data-message-id="{{$boardmessage['messageid']}}" id="messageCompleteButton">Mark as completed</a>
+                                             @endif
                                         @endcan
                                         @can('Can create corpus project')
-                                            <a class="dropdown-item text-14" href="#" id="deleteMessageButton">Delete Message</a>
+                                            <a class="dropdown-item text-14" href="javascript:void(0)" data-message-id="{{$boardmessage['messageid']}}"  id="deleteMessageButton">Delete Message</a>
                                         @endcan
                                     </div>
                                 </div>
+                                @elseif($boardmessage['status_id'] == 3 && Auth::user()->can('Can create corpus project'))
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4 w-100 text-left"
+                                                type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Edit
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item text-14" href="javascript:void(0)" data-message-id="{{$boardmessage['messageid']}}"  id="deleteMessageButton">Delete Message</a>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div>&nbsp; </div>
+                                @endif
                             </div>
                         </div>
                         <div class="row">
@@ -66,40 +81,34 @@
                                 <div class="text-grey-light text-14">Status: {{$boardmessage['status']}}</div>
                             </div>
                             <div class="col-2 text-right">
-                                <span class="text-grey-light text-14">
-                                 {{$boardmessage['last_updated']->diffForHumans()}}
-                                 </span>
+                                &nbsp;
                             </div>
                         </div>
+                        @if($boardmessage['status_id'] > 1)
                         <div class="row">
                             <div class="col">
                                 <div class="text-grey-light text-14">Assigned to: {{$boardmessage['user_name']}}</div>
                             </div>
                             <div class="col-2 text-right">
                                 <span class="text-grey-light text-14">
-
+                                    &nbsp;
                                  </span>
                             </div>
                         </div>
+                        @endif
                         <div class="row">
                             <div class="col">
                                 <div class="text-grey-light text-14">Corpus: {{$boardmessage['corpus_name']}}</div>
                             </div>
                             <div class="col-2 text-right">
-                                <span class="text-grey-light text-14">
-
+                               <span class="text-grey-light text-14">
+                                 {{$boardmessage['last_updated']->diffForHumans()}}
                                  </span>
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
-        </div>
-        <div class="row">
-            @can('Can create corpus project')
-                <p>POOPS</p>
-            @endcan
-
         </div>
     </div>
 </div>

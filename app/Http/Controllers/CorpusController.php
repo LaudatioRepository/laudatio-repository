@@ -357,7 +357,6 @@ class CorpusController extends Controller
         $corpusProjects = $corpus->corpusprojects()->get();
         $corpusproject = null;
         $corpusProject_directory_path = '';
-
         if(count($corpusProjects) == 1) {
             $corpusproject = $corpusProjects->first();
             $corpusProject_directory_path = $corpusproject->directory_path;
@@ -440,10 +439,9 @@ class CorpusController extends Controller
         $corpusMessages = array();
         $messagecount = 0;
         if(count($messageboard) > 0){
-
             $boardmessages = $messageboard[0]->boardmessages()->get();
-
             foreach ($boardmessages as $boardmessage) {
+
                 $messageuser = User::findOrFail($boardmessage->user_id);
                 $messageCorpus = Corpus::findOrFail($boardmessage->corpus_id);
                 $message = array(
@@ -452,14 +450,16 @@ class CorpusController extends Controller
                     'corpus_id' => $boardmessage->corpus_id,
                     'corpus_name' => $messageCorpus->name,
                     'message' => $boardmessage->message,
+                    'messageid' => $boardmessage->id,
                     'last_updated' => $boardmessage->updated_at,
-                    'status' => $boardmessage->getStatus($boardmessage->status)
+                    'status' => $boardmessage->getStatus($boardmessage->status),
+                    'status_id' => $boardmessage->status
                 );
+
                 if($corpus->id == $boardmessage->corpus_id){
                     $messagecount++;
                     array_push($corpusMessages,$message);
                 }
-
 
                 array_push($allMessages,$message);
             }
@@ -490,7 +490,7 @@ class CorpusController extends Controller
             'messagecount' => $messagecount
 
         );
-        //dd($corpus_data['boardmessages']);
+
         JavaScript::put([
             'corpusUpload' => $corpusUpload,
             'documentUpload' => $documentUpload,

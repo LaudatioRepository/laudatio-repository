@@ -269,4 +269,132 @@ $(function(){
             });
     });
 
+    $(document).on('click', '#messageAssignButton', function(e) {
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        var postdata = {};
+        postdata['message_id'] = $(this).data('message-id');
+        postdata['user_id'] =  $(this).data('message-assign');
+        console.log(postdata);
+        $.ajax({
+            method: 'POST',
+            url: '/api/adminapi/assignMessage',
+            data: postdata,
+            dataType: "json"
+        })
+            .done(function(data) {
+                if(data.status == "success"){
+                    console.log(data.message.message_assign_response)
+                    $('#alert-laudatio').addClass('alert-success');
+                    $('#alert-laudatio .alert-laudatio-message').html(data.message.message_assign_response)
+                    $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
+                        $("#alert-laudatio").slideUp(500);
+                        location.reload()
+                    });
+                }
+                else if (data.status == "error"){
+                    console.log(data.message.message_assign_response)
+                    $('#alert-laudatio').addClass('alert-danger');
+                    $('#alert-laudatio .alert-laudatio-message').html(data.message.message_assign_response)
+
+                    $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
+                        $("#alert-laudatio").slideUp(500);
+                    });
+                }
+            })
+            .fail(function(data) {
+                console.log("FAIL : "+data)
+            });
+    });
+
+    $(document).on('click', '#messageCompleteButton', function(e) {
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        var postdata = {};
+        postdata['message_id'] = $(this).data('message-id');
+        console.log(postdata);
+        $.ajax({
+            method: 'POST',
+            url: '/api/adminapi/completeMessage',
+            data: postdata,
+            dataType: "json"
+        })
+            .done(function(data) {
+                if(data.status == "success"){
+                    console.log(data.message.message_complete_response)
+                    $('#alert-laudatio').addClass('alert-success');
+                    $('#alert-laudatio .alert-laudatio-message').html(data.message.message_complete_response)
+                    $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
+                        $("#alert-laudatio").slideUp(500);
+                        location.reload()
+                    });
+                }
+                else if (data.status == "error"){
+                    console.log(data.message.message_complete_response)
+                    $('#alert-laudatio').addClass('alert-danger');
+                    $('#alert-laudatio .alert-laudatio-message').html(data.message.message_complete_response)
+
+                    $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
+                        $("#alert-laudatio").slideUp(500);
+                    });
+                }
+            })
+            .fail(function(data) {
+                console.log("FAIL : "+data)
+            });
+    });
+
+    $(document).on('click', '#deleteMessageButton', function(e) {
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        var postdata = {};
+        postdata['message_id'] = $(this).data('message-id');
+        console.log(postdata);
+        $.ajax({
+            method: 'POST',
+            url: '/api/adminapi/deleteMessage',
+            data: postdata,
+            dataType: "json"
+        })
+            .done(function(data) {
+                if(data.status == "success"){
+                    console.log(data.message.message_delete_response)
+                    $('#alert-laudatio').addClass('alert-success');
+                    $('#alert-laudatio .alert-laudatio-message').html(data.message.message_delete_response)
+                    $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
+                        $("#alert-laudatio").slideUp(500);
+                        location.reload()
+                    });
+                }
+                else if (data.status == "error"){
+                    console.log(data.message.message_delete_response)
+                    $('#alert-laudatio').addClass('alert-danger');
+                    $('#alert-laudatio .alert-laudatio-message').html(data.message.message_delete_response)
+
+                    $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
+                        $("#alert-laudatio").slideUp(500);
+                    });
+                }
+            })
+            .fail(function(data) {
+                console.log("FAIL : "+data)
+            });
+    });
+
+
 })
