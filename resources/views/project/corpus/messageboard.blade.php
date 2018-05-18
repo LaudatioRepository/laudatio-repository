@@ -48,11 +48,11 @@
                                     </button>
                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                         @can('Can edit corpus')
-                                            @if($user->id != $boardmessage['user_id'])
+                                            @if($user->id != $boardmessage['user_id'] || ($user->id == $boardmessage['user_id'] && $boardmessage['status_id'] < 2))
                                                 <a class="dropdown-item text-14" href="#" data-message-assign="{{$user->id}}" data-message-id="{{$boardmessage['messageid']}}" id="messageAssignButton">Assign to me</a>
                                             @endif
 
-                                            @if($boardmessage['status_id'] == 2 && $boardmessage['user_id'] == $user->id)
+                                            @if($boardmessage['status_id'] <= 2 && $boardmessage['user_id'] == $user->id)
                                                 <a class="dropdown-item text-14" href="javascript:void(0)" data-message-id="{{$boardmessage['messageid']}}" id="messageCompleteButton">Mark as completed</a>
                                              @endif
                                         @endcan

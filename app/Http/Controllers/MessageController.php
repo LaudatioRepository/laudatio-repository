@@ -50,7 +50,6 @@ class MessageController extends Controller
 
         try{
             $boardmessage = BoardMessage::findOrFail($request->input('message_id'));
-            $boardmessage->user_id = $request->input('message_id');
             $boardmessage->status = 3;
 
             $boardmessage->save();
