@@ -190,7 +190,7 @@ class GitFunction
     public function addUntracked($pathWithOutAddedFolder, $folder = ""){
         $isAdded = false;
         $status = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
-        Log::info("STATUS: ".$status);
+
         if($folder == ""){
             if($this->isUntracked($status)){
                 $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder);
@@ -240,7 +240,7 @@ class GitFunction
         return $isAdded;
     }
 
-    public function commitFiles($path, $commitmessage){
+    public function commitFiles($path, $commitmessage, $user){
         $isCommitted = false;
         $process = new Process("git commit -m \"".$commitmessage."\" ",$path);
         $process->setTimeout(3600);
@@ -260,6 +260,85 @@ class GitFunction
         return $isCommitted;
     }
 
+    public function addRemote($origin,$path) {
+        $addedRemote = false;
+        $shouldAdd = false;
+
+        $askForOriginProcess = new Process("git remote -v",$this->basePath."/".$path);
+        $askForOriginProcess->setTimeout(3600);
+        $askForOriginProcess->run();
+
+
+        if (!$askForOriginProcess->isSuccessful()) {
+            throw new ProcessFailedException($askForOriginProcess);
+        }
+        else{
+            $askForOriginProcessOutput = $askForOriginProcess->getOutput();
+            if(empty($askForOriginProcessOutput)){
+                $shouldAdd = true;
+            }
+        }
+
+
+
+        if($shouldAdd){
+            //Log::info("trying to: git remote add origin ".$origin." => ".$this->basePath."/".$path);
+            $process = new Process("git remote add origin ".$origin,$this->basePath."/".$path);
+            $process->setTimeout(3600);
+            $process->run();
+        }
+        else{
+            //Log::info("trying to: git remote set-url origin ".$origin." => ".$this->basePath."/".$path);
+            $process = new Process("git remote set-url origin ".$origin,$this->basePath."/".$path);
+            $process->setTimeout(3600);
+            $process->run();
+        }
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            $addedRemote = true;
+        }
+        return $addedRemote;
+    }
+
+    public function initialPush($path,$user){
+        //git push --set-upstream origin master
+        $isPushed = false;
+        $process = new Process("git push --set-upstream origin master",$this->basePath."/".$path);
+        $process->setTimeout(3600);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            $isPushed = true;
+        }
+        return $isPushed;
+    }
+
+    public function pushFiles($path,$corpusid) {
+        $isPushed = false;
+        $process = new Process("git push",$this->basePath."/".$path);
+        $process->setTimeout(3600);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            $isPushed = true;
+        }
+        return $isPushed;
+    }
 
 
     public function addFileUpdate($path, $file){
@@ -343,7 +422,6 @@ class GitFunction
      * @return string
      */
     public function writeFiles($dirPath, $fileDataArray,$flySystem,$fileTempPath,$theFilePath){
-
         foreach($fileDataArray as $fileData) {
             $pathsArray = explode("/", $fileData);
             $fileInDirectory = array_pop($pathsArray);
@@ -380,19 +458,29 @@ class GitFunction
 
         //write file if exists
         $fileArray = explode("/", $theFilePath);
-        $fileInDirectory = array_pop($fileArray);
-        $savePath = implode("/",$fileArray);
 
-        if(file_exists($this->basePath."/".$dirPath."/".$savePath)){
-            $existingFile = $flySystem->has($dirPath."/".$savePath."/".$fileInDirectory);
+        $fileInDirectory = "";
+        if(count($fileArray) == 1){
+            $fileInDirectory = array_pop($fileArray);
+        }
+
+
+        #if(file_exists($this->basePath."/".$dirPath."/".$fileInDirectory)){
+            $existingFile = $flySystem->has($dirPath."/".$fileInDirectory);
+            $stream = null;
             if(!$existingFile){
                 $stream = fopen($fileTempPath, 'r+');
-                $flySystem->writeStream($dirPath."/".$savePath."/".$fileInDirectory, $stream);
+                $flySystem->writeStream($dirPath."/".$fileInDirectory, $stream);
             }
             else{
                 $stream = fopen($fileTempPath, 'r+');
-                $flySystem->updateStream($dirPath."/".$savePath."/".$fileInDirectory, $stream);
+                $flySystem->updateStream($dirPath."/".$fileInDirectory, $stream);
             }
+        #}
+        array_push($createdDirectoryPath,$this->basePath."/".$dirPath."/".$fileInDirectory);
+
+        if (is_resource($stream)) {
+            fclose($stream);
         }
 
         return $createdDirectoryPath;
@@ -506,8 +594,6 @@ class GitFunction
             $folder = $path;
         }
 
-        Log::info("FOLDER: ".print_r($folder, 1));
-        Log::info("cwdPath: ".print_r($cwdPath, 1));
         $process = null;
         if($isFile){
             $process = new Process("rm $folder",$cwdPath);
@@ -670,9 +756,10 @@ class GitFunction
         return array_filter($listOfFiles);
     }
 
-    public function checkForMissingCorpusFiles($path){
+    public function checkForCorpusFiles($path){
         $result = null;
         $pythonScript = $this->scriptPath.'/src/validateHeaders.py';
+
         $process = new Process("python ".$pythonScript." -p ".$path);
         $process->run();
 

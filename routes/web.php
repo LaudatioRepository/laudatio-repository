@@ -2,12 +2,13 @@
 
 
 Auth::routes();
-Route::get('/auth/{social}',['as' => 'auth.social.login', 'uses' => 'Auth\LoginController@socialLogin'])->where('social','twitter|facebook|linkedin|google|github|bitbucket|gitlab');
-Route::get('/auth/{social}/callback',['as' => 'auth.social.callback', 'uses' => 'Auth\LoginController@handleProviderCallback'])->where('social','twitter|facebook|linkedin|google|github|bitbucket|gitlab');
+Route::post('login', ['as' => 'login', 'uses' => 'Auth\LoginController@doLogin']);
+Route::get('signin', ['as' => 'signin', 'uses' => 'Auth\LoginController@signin']);
 
-Route::get('/', ['uses' => 'IndexController@index'])->middleware('auth');
+
+Route::get('/', ['as' => 'frontpage', 'uses' => 'IndexController@index']);
 Route::get('/dashboard', ['as' => 'dashboard', 'uses' => 'DashboardController@index'])->middleware('auth');
-Route::get('/admin', ['as' => 'admin', 'uses' => 'AdminController@index'])->middleware('auth');
+Route::get('/admin', ['as' => 'admin', 'uses' => 'AdminController@index']);
 Route::get('/browse', ['as' => 'browse', 'uses' => 'BrowseController@index']);
 Route::get('/publish', ['as' => 'publish', 'uses' => 'IndexController@publish']);
 Route::get('/schema/{path?}',[ 'as' => 'gitRepo.route.schema', 'uses' => 'GitRepoController@listSchema'])->where('path', '.+')->middleware('auth');
@@ -16,44 +17,43 @@ Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
 
 
 /** CORPUS PROJECTS  **/
-Route::get('/project/corpusprojects',[ 'as' => 'project.corpusProject.index', 'uses' => 'CorpusProjectController@index'])->middleware('auth');
-Route::get('/project/corpusprojects/create',[ 'as' => 'project.corpusProject.create', 'uses' => 'CorpusProjectController@create'])->middleware('auth');
-Route::get('/project/corpusprojects/{corpusproject}',[ 'as' => 'project.corpusProject.show', 'uses' => 'CorpusProjectController@show'])->middleware('auth');
-Route::post('/project/corpusprojects',[ 'as' => 'project.corpusProject.store.', 'uses' => 'CorpusProjectController@store'])->middleware('auth');
-Route::get('/project/corpusprojects/{corpusproject}/edit',[ 'as' => 'project.corpusProject.edit', 'uses' => 'CorpusProjectController@edit'])->middleware('auth');
-Route::get('/project/corpusprojects/{corpusproject}/delete',[ 'as' => 'project.corpusProject.delete', 'uses' => 'CorpusProjectController@delete'])->middleware('auth');
-Route::get('/project/corpusprojects/{corpusproject}/{user}/delete',[ 'as' => 'project.usercorpusroles.destroy', 'uses' => 'CorpusProjectController@destroyCorpusProjectUser'])->middleware('auth');
-Route::patch('/project/corpusprojects/{corpusproject}',[ 'as' => 'project.corpusProject.update', 'uses' => 'CorpusProjectController@update'])->middleware('auth');
-Route::delete('/project/corpusprojects/{corpusproject}',[ 'as' => 'project.corpusProject.destroy', 'uses' => 'CorpusProjectController@destroy'])->middleware('auth');
+Route::get('/corpusprojects',[ 'as' => 'corpusProject.index', 'uses' => 'CorpusProjectController@index'])->middleware('auth');
+Route::get('/corpusprojects/create',[ 'as' => 'corpusProject.create', 'uses' => 'CorpusProjectController@create'])->middleware('auth');
+Route::get('/corpusprojects/{corpusproject}',[ 'as' => 'corpusProject.show', 'uses' => 'CorpusProjectController@show'])->middleware('auth');
+Route::post('/corpusprojects/createproject',[ 'as' => 'corpusProject.store.', 'uses' => 'CorpusProjectController@store'])->middleware('auth');
+Route::get('/corpusprojects/{corpusproject}/edit',[ 'as' => 'corpusProject.edit', 'uses' => 'CorpusProjectController@edit'])->middleware('auth');
+Route::get('/corpusprojects/{corpusproject}/delete',[ 'as' => 'corpusProject.delete', 'uses' => 'CorpusProjectController@delete'])->middleware('auth');
+Route::get('/corpusprojects/{corpusproject}/{user}/delete',[ 'as' => 'project.usercorpusroles.destroy', 'uses' => 'CorpusProjectController@destroyCorpusProjectUser'])->middleware('auth');
+Route::patch('/corpusprojects/{corpusproject}',[ 'as' => 'corpusProject.update', 'uses' => 'CorpusProjectController@update'])->middleware('auth');
+Route::delete('/corpusprojects/{corpusproject}',[ 'as' => 'corpusProject.destroy', 'uses' => 'CorpusProjectController@destroy'])->middleware('auth');
 
-Route::get('/project/corpusprojects/assigncorpora/{corpusproject}',[ 'as' => 'project.corpusProject.assignCorpora', 'uses' => 'CorpusProjectController@assignCorpora'])->middleware('auth');
-Route::post('/project/corpusprojects/{corpusproject}/corpora',[ 'as' => 'project.corpusProject.assign.store.', 'uses' => 'CorpusProjectController@storeCorpusRelations'])->middleware('auth');
-Route::get('/project/corpusprojects/assignusers/{corpusproject}',[ 'as' => 'project.corpusProject.assignusers', 'uses' => 'CorpusProjectController@assignUsers'])->middleware('auth');
-Route::post('/project/corpusprojects/{corpusproject}/users',[ 'as' => 'project.corpusProject.StoreUsers', 'uses' => 'CorpusProjectController@storeUserRelations'])->middleware('auth');
+Route::get('/corpusprojects/assigncorpora/{corpusproject}',[ 'as' => 'corpusProject.assignCorpora', 'uses' => 'CorpusProjectController@assignCorpora'])->middleware('auth');
+Route::post('/corpusprojects/{corpusproject}/corpora',[ 'as' => 'corpusProject.assign.store.', 'uses' => 'CorpusProjectController@storeCorpusRelations'])->middleware('auth');
+Route::get('/corpusprojects/inviteusers',[ 'as' => 'corpusProject.invitations', 'uses' => 'CorpusProjectController@inviteUsers'])->middleware('auth');
+Route::get('/corpusprojects/assignusers/{corpusproject}',[ 'as' => 'corpusProject.assignusers', 'uses' => 'CorpusProjectController@assignUsers'])->middleware('auth');
+Route::post('/corpusprojects/{corpusproject}/users',[ 'as' => 'corpusProject.StoreUsers', 'uses' => 'CorpusProjectController@storeUserRelations'])->middleware('auth');
 /** END CORPUS PROJECTS  **/
 
 /** HEADERS  **/
-Route::get('/project/corpora',[ 'as' => 'project.corpora.index', 'uses' => 'CorpusController@index'])->middleware('auth');
-Route::get('/project/corpora/create/{corpusproject}',[ 'as' => 'project.corpora.create', 'uses' => 'CorpusController@create'])->middleware('auth');
-Route::get('/project/corpora/{corpus}/edit',[ 'as' => 'project.corpora.edit', 'uses' => 'CorpusController@edit'])->middleware('auth');
-Route::get('/project/corpora/{corpus}/delete/{corpusproject_directory_path}',[ 'as' => 'project.corpora.delete', 'uses' => 'CorpusController@delete'])->middleware('auth');
-Route::get('project/corpora/assignusers/{corpus}',[ 'as' => 'project.corpora.assignusers', 'uses' => 'CorpusController@assignCorpusUsers'])->middleware('auth');;
-Route::get('/project/corpora/{corpus}/{filepath}/show',[ 'as' => 'project.corpora.filepath.show', 'uses' => 'CorpusController@showFilePath'])->where('filepath', '.+')->middleware('auth');
-Route::get('/project/corpora/{corpus}/{path?}',[ 'as' => 'project.corpora.show', 'uses' => 'CorpusController@show'])->where('path', '.+')->middleware('auth');
-Route::get('/project/corpora/{corpus}/{corpuspath}/validate',[ 'as' => 'project.corpora.validate', 'uses' => 'CorpusController@validateCorpus'])->where('corpuspath', '.+')->middleware('auth');
-Route::post('/project/corpora',[ 'as' => 'project.corpora.store', 'uses' => 'CorpusController@store'])->middleware('auth');
-Route::get('/project/corpora/{corpus}/{user}/delete',[ 'as' => 'project.usercorpusroles.destroy', 'uses' => 'CorpusController@destroyCorpusUser'])->middleware('auth');
-Route::patch('/project/corpora/{corpus}',[ 'as' => 'project.corpora.update', 'uses' => 'CorpusController@update'])->middleware('auth');
-Route::delete('/project/corpora/{corpus}/{projectId}',[ 'as' => 'project.corpora.destroy', 'uses' => 'CorpusController@destroy'])->middleware('auth');
+Route::get('/corpusprojects/corpora',[ 'as' => 'corpus.index', 'uses' => 'CorpusController@index'])->middleware('auth');
+Route::get('/corpusprojects/corpora/create/{corpusproject}',[ 'as' => 'corpus.create', 'uses' => 'CorpusController@create'])->middleware('auth');
+Route::get('/corpusprojects/corpora/{corpus}/edit/',[ 'as' => 'corpus.edit', 'uses' => 'CorpusController@edit'])->middleware('auth');
+Route::get('/corpusprojects/corpora/{corpus}/delete/{corpusproject_directory_path}',[ 'as' => 'corpus.delete', 'uses' => 'CorpusController@delete'])->middleware('auth');
+Route::get('/corpusprojects/corpora/assignusers/{corpus}',[ 'as' => 'corpus.assignusers', 'uses' => 'CorpusController@assignCorpusUsers'])->middleware('auth');;
+Route::get('/corpusprojects/corpora/{corpus}/{filepath}/show',[ 'as' => 'corpus.filepath.show', 'uses' => 'CorpusController@showFilePath'])->where('filepath', '.+')->middleware('auth');
+Route::get('/corpusprojects/corpora/{corpus}/{path?}',[ 'as' => 'corpus.show', 'uses' => 'CorpusController@show'])->where('path', '.+')->middleware('auth');
+Route::post('/corpusprojects/corpora',[ 'as' => 'corpus.store', 'uses' => 'CorpusController@store'])->middleware('auth');
+Route::get('/corpusprojects/corpora/{corpus}/{user}/delete',[ 'as' => 'project.usercorpusroles.destroy', 'uses' => 'CorpusController@destroyCorpusUser'])->middleware('auth');
+Route::delete('/corpusprojects/corpora/{corpus}/{projectId}',[ 'as' => 'corpus.destroy', 'uses' => 'CorpusController@destroy'])->middleware('auth');
 /** END CORPORA  **/
 
 
 
 /** UPLOAD **/
-Route::get('/project/upload/{dirname?}',['as' => 'gitRepo.upload.get', 'uses' => 'UploadController@uploadForm'])->where('dirname', '.+')->middleware('auth');
-Route::get('/project/uploadFiles/{dirname?}',['as' => 'gitRepo.uploadFiles.get', 'uses' => 'UploadController@uploadDataForm'])->where('dirname', '.+')->middleware('auth');
-Route::post('/project/upload',['as' => 'gitRepo.upload.post', 'uses' => 'UploadController@uploadSubmit'])->middleware('auth');
-Route::post('/project/uploadFiles',['as' => 'gitRepo.uploadFiles.post', 'uses' => 'UploadController@uploadSubmitFiles'])->middleware('auth');
+Route::get('/corpusprojects/upload/{dirname?}',['as' => 'gitRepo.upload.get', 'uses' => 'UploadController@uploadForm'])->where('dirname', '.+')->middleware('auth');
+Route::get('/corpusprojects/uploadFiles/{dirname?}',['as' => 'gitRepo.uploadFiles.get', 'uses' => 'UploadController@uploadDataForm'])->where('dirname', '.+')->middleware('auth');
+Route::post('/corpusprojects/upload',['as' => 'gitRepo.upload.post', 'uses' => 'UploadController@uploadSubmit'])->middleware('auth');
+Route::post('/corpusprojects/uploadFiles',['as' => 'gitRepo.uploadFiles.post', 'uses' => 'UploadController@uploadSubmitFiles'])->middleware('auth');
 /** END UPLOAD **/
 
 
@@ -84,18 +84,18 @@ Route::group(array('prefix' => 'admin'), function() {
 
 
 Route::get('/viewFile/{path}',[ 'as' => 'gitRepo.readFile.route', 'uses' => 'GitRepoController@readFile'])->where('path', '.+')->middleware('auth');
-Route::get('/project/deleteFile/{path}',[ 'as' => 'gitRepo.deleteFile.route', 'uses' => 'GitRepoController@deleteFile'])->where('path', '.+')->middleware('auth');
-Route::get('/project/deleteDataFile/{path}',[ 'as' => 'gitRepo.deleteDataFile.route', 'uses' => 'GitRepoController@deleteDataFile'])->where('path', '.+')->middleware('auth');
-Route::get('/project/deleteUntrackedFile/{path}',[ 'as' => 'gitRepo.deleteUntrackedFile.route', 'uses' => 'GitRepoController@deleteUntrackedFile'])->where('path', '.+')->middleware('auth');
-Route::get('/project/deleteUntrackedDataFile/{path}',[ 'as' => 'gitRepo.deleteUntrackedDataFile.route', 'uses' => 'GitRepoController@deleteUntrackedDataFile'])->where('path', '.+')->middleware('auth');
+Route::get('/corpusprojects/deleteFile/{path}',[ 'as' => 'gitRepo.deleteFile.route', 'uses' => 'GitRepoController@deleteFile'])->where('path', '.+')->middleware('auth');
+Route::get('/corpusprojects/deleteDataFile/{path}',[ 'as' => 'gitRepo.deleteDataFile.route', 'uses' => 'GitRepoController@deleteDataFile'])->where('path', '.+')->middleware('auth');
+Route::get('/corpusprojects/deleteUntrackedFile/{path}',[ 'as' => 'gitRepo.deleteUntrackedFile.route', 'uses' => 'GitRepoController@deleteUntrackedFile'])->where('path', '.+')->middleware('auth');
+Route::get('/corpusprojects/deleteUntrackedDataFile/{path}',[ 'as' => 'gitRepo.deleteUntrackedDataFile.route', 'uses' => 'GitRepoController@deleteUntrackedDataFile'])->where('path', '.+')->middleware('auth');
 Route::get('/updateFile/{path}',[ 'as' => 'gitRepo.updateFile.route', 'uses' => 'GitRepoController@updateFileVersion'])->where('path', '.+')->middleware('auth');
 
 
 /** GIT **/
-Route::get('/project/addFiles/{path}/{corpus}',[ 'as' => 'gitRepo.addFile.route', 'uses' => 'GitRepoController@addFiles'])->where('path', '.+')->middleware('auth');
+Route::get('/corpusprojects/addFiles/{path}/{corpus}',[ 'as' => 'gitRepo.addFile.route', 'uses' => 'GitRepoController@addFiles'])->where('path', '.+')->middleware('auth');
 Route::get('/commitFiles/{dirname}/{commitmessage}/{corpus}',[ 'as' => 'gitRepo.commitFiles.route', 'uses' => 'GitRepoController@commitFiles'])->where('dirname', '.+')->middleware('auth');
 Route::get('/commitMessage/{dirname}',[ 'as' => 'gitRepo.commit.route', 'uses' => 'CommitController@commitForm'])->where('dirname', '.+')->middleware('auth');
-Route::post('/project/commit',['as' => 'gitRepo.commit.post', 'uses' => 'CommitController@commitSubmit'])->middleware('auth');
+Route::post('/corpusprojects/commit',['as' => 'gitRepo.commit.post', 'uses' => 'CommitController@commitSubmit'])->middleware('auth');
 
 /** END GIT **/
 

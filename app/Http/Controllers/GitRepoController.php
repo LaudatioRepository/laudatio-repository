@@ -587,12 +587,11 @@ class GitRepoController extends Controller
         $corpusid = $request->input('corpusid');
         $corpuspath = $request->input('corpuspath');
 
-        $result = $this->GitRepoService->checkForMissingCorpusFiles($corpuspath."/TEI-HEADERS");
+        $result = $this->GitRepoService->checkForCorpusFiles($corpuspath."/TEI-HEADERS");
         $response = array(
             'status' => 'success',
             'msg' => $result,
         );
-
 
         return Response::json($response);
     }

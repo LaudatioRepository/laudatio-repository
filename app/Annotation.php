@@ -55,5 +55,12 @@ class Annotation extends Model
         return $this->belongsTo(Corpus::class);
     }
 
+    /**
+     * The publications that belong to the Annotation.
+     */
+    public function publications()
+    {
+        return $this->hasMany(Publication::class);
+    }
 
 }

@@ -1,0 +1,19 @@
+#corpusUploader,
+#documentUploader,
+#annotationUploader,
+#formatUploader {
+  display: none;
+}
+
+#corpusFileList {
+  display: none;
+}
+
+#login-error-message {
+  display: none;
+}
+
+.alert-laudatio {
+  display: none;
+}
+

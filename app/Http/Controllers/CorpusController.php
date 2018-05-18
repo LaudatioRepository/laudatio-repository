@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Corpus;
 use App\CorpusProject;
+use App\MessageBoard;
 use App\User;
 use App\Role;
 use App\Custom\GitRepoInterface;
@@ -12,6 +13,7 @@ use App\Custom\GitLabInterface;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use Illuminate\Support\Facades\Auth;
 use Response;
+use JavaScript;
 use Log;
 
 class CorpusController extends Controller
@@ -87,7 +89,8 @@ class CorpusController extends Controller
         $corpus_name = "Untitled_".$corpusProjectId."_".($corpusCount++);
         $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus_name);
 
-
+        $corpus = null;
+        $user_role = array();
         if($corpusPath){
             $corpus = Corpus::create([
                 "name" => $corpus_name,
@@ -96,9 +99,38 @@ class CorpusController extends Controller
             ]);
 
             $corpus->corpusprojects()->attach($corpusproject);
+
+
+            $corpusAdminRole = Role::findById(2);
+            if($user) {
+                if(!$user->roles->contains($corpusAdminRole)){
+                    $user->roles()->attach($corpusAdminRole);
+                }
+
+                $corpus->users()->save($user,['role_id' => 2]);
+                $user_role['user_name'] = $user->name;
+                $user_role['user_id'] = $user->id;
+                $user_role['role_name'] = $corpusAdminRole->name;
+            }
         }
 
-        return redirect()->route('project.corpora.index');
+
+        $filePath = $corpusProjectPath.'/'.$corpus->directory_path;
+
+        $corpus_data = array(
+            'name' => $corpus->name,
+            'project_name' => $corpusproject->name,
+            'filepath' => $filePath,
+            'admin' => $user_role
+
+        );
+
+        return redirect()->route('corpus.edit', compact('corpus'))
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('corpus_data', $corpus_data)
+            ->with('user',$user);
+
+
     }
 
     /**
@@ -265,18 +297,18 @@ class CorpusController extends Controller
             $corpusBasePath = $pathArray[0]."/".$pathArray[1];
             if(strpos($corpusPath,"CORPUS-DATA") !== false && strpos($corpusPath,"TEI-HEADERS") === false){
                 $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath);
-                $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusBasePath.'/TEI-HEADERS');
+                $headerData = $this->GitRepoService->getCorpusFileInfo($this->flysystem,$corpusBasePath.'/TEI-HEADERS');
                 $folderType = "CORPUS-DATA";
 
             }
             else if(strpos($corpusPath,"TEI-HEADERS") !== false && strpos($corpusPath,"CORPUS-DATA") === false){
                 $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusBasePath.'/CORPUS-DATA');
-                $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath);
+                $headerData = $this->GitRepoService->getCorpusFileInfo($this->flysystem,$corpusPath);
                 $folderType = "TEI-HEADERS";
             }
             else{
                 $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath.'/CORPUS-DATA');
-                $headerData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpusPath.'/TEI-HEADERS');
+                $headerData = $this->GitRepoService->getCorpusFileInfo($this->flysystem,$corpusPath.'/TEI-HEADERS');
             }
 
             $corpusDataFolder = substr($corpusData['path'],strrpos($corpusData['path'],"/")+1);
@@ -305,12 +337,13 @@ class CorpusController extends Controller
             }
         }
         //dd($corpusUsers );
-
+/*
         return view("project.corpus.show",["corpus" => $corpus, "corpusproject_directory_path" => $corpusProject_directory_path, "fileData" => $fileData])
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user_roles',$user_roles)
             ->with('header', ucfirst($pathArray[$last_id]))
             ->with('user',$user);
+*/
     }
 
     /**
@@ -321,8 +354,152 @@ class CorpusController extends Controller
     {
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
+        $corpusProjects = $corpus->corpusprojects()->get();
+        $corpusproject = null;
+        $corpusProject_directory_path = '';
+        if(count($corpusProjects) == 1) {
+            $corpusproject = $corpusProjects->first();
+            $corpusProject_directory_path = $corpusproject->directory_path;
+        }
+        else{
+            // what to do when we can assign corpora to many projects?
+        }
+
+        $path = $corpusProject_directory_path.'/'.$corpus->directory_path;
+
+        $corpusUsers = $corpus->users()->get();
+        $corpus_admin = array();
+
+        // get all roles
+        $roleCollection = Role::all();
+        $roles = array();
+        foreach ($roleCollection as $role){
+            $roles[$role->id] = $role->name;
+        }
+        ksort($roles);
+
+
+        foreach ($corpusUsers as $corpusUser){
+            $user_role = array();
+            if(!isset($user_roles[$corpusUser->id])){
+                $user_roles[$corpusUser->id] = array();
+            }
+
+            $role = Role::find($corpusUser->pivot->role_id);
+            if($role){
+                if($role->hasPermissionTo('Can create corpus')){
+                    $corpus_admin['user_name'] = $corpusUser->name;
+                    $corpus_admin['user_id'] = $corpusUser->id;
+                    $corpus_admin['role_name'] = $role->name;
+                    $corpus_admin['role_id'] = $role->id;
+                }
+                $user_role['user_name'] = $corpusUser->name;
+                $user_role['user_affiliation'] = $corpusUser->affiliation;
+                $user_role['user_id'] = $corpusUser->id;
+                $user_role['role_name'] = $role->name;
+                $user_role['role_id'] = $role->id;
+
+                array_push($user_roles[$corpusUser->id],$user_role);
+            }
+        }
+
+        $checkResult = json_decode($this->GitRepoService->checkForCorpusFiles($path."/TEI-HEADERS"), true);
+        $checkResult['corpusheader'] = ($checkResult['corpusheader'] == "") ? 0 : 1;
+
+
+        //get filedata $flysystem,$corpus,$path = ""
+
+        $folderData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS");
+        $corpusFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/corpus");
+        $documentFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/document");
+        $annotationFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/annotation");
+
+        $corpusFormatData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$path."/CORPUS-DATA");
+        //dd($corpusFormatData);
+
+        $corpusUpload = false;
+        if($corpus->gitlab_id == ""){
+            $corpusUpload = true;
+        }
+
+        $documentUpload = false;
+        $annotationUpload = false;
+
+        if(count($corpus->annotations) == 0){
+            $annotationUpload = true;
+        }
+
+        if(count($corpus->documents) == 0){
+            $documentUpload = true;
+        }
+
+        // Get the messageboard for the CorpusProject this corpus is assigned to
+        $messageboard = MessageBoard::where(['corpus_project_id' => $corpusproject->id])->get();
+        $allMessages = array();
+        $corpusMessages = array();
+        $messagecount = 0;
+        if(count($messageboard) > 0){
+            $boardmessages = $messageboard[0]->boardmessages()->get();
+            foreach ($boardmessages as $boardmessage) {
+
+                $messageuser = User::findOrFail($boardmessage->user_id);
+                $messageCorpus = Corpus::findOrFail($boardmessage->corpus_id);
+                $message = array(
+                    'user_name' => $messageuser->name,
+                    'user_id' => $messageuser->id,
+                    'corpus_id' => $boardmessage->corpus_id,
+                    'corpus_name' => $messageCorpus->name,
+                    'message' => $boardmessage->message,
+                    'messageid' => $boardmessage->id,
+                    'last_updated' => $boardmessage->updated_at,
+                    'status' => $boardmessage->getStatus($boardmessage->status),
+                    'status_id' => $boardmessage->status
+                );
+
+                if($corpus->id == $boardmessage->corpus_id){
+                    $messagecount++;
+                    array_push($corpusMessages,$message);
+                }
+
+                array_push($allMessages,$message);
+            }
+        }
+
+
+        $corpus_data = array(
+            'name' => $corpus->name,
+            'project_name' => $corpusproject->name,
+            'project_id' => $corpusproject->id,
+            'filepath' => $path,
+            'user_roles' => $user_roles,
+            'roles' => $roles,
+            'corpus_admin' => $corpus_admin,
+            'headerdata' => $checkResult,
+            'filedata' => array(
+                'folderData' => $folderData,
+                'corpusFileData' => $corpusFileData,
+                'corpusUpload' => $corpusUpload,
+                'documentFileData' => $documentFileData,
+                'documentUpload' => $documentUpload,
+                'annotationFileData' => $annotationFileData,
+                'annotationUpload' => $annotationUpload
+            ),
+            'corpusFormatData' => $corpusFormatData,
+            'boardmessages' => $corpusMessages,
+            'allBoardMessages' => $allMessages,
+            'messagecount' => $messagecount
+
+        );
+
+        JavaScript::put([
+            'corpusUpload' => $corpusUpload,
+            'documentUpload' => $documentUpload,
+            'annotationUpload' => $annotationUpload
+        ]);
+
         return view('project.corpus.edit', compact('corpus'))
             ->with('isLoggedIn', $isLoggedIn)
+            ->with('corpus_data', $corpus_data)
             ->with('user',$user);
     }
 
@@ -614,6 +791,89 @@ class CorpusController extends Controller
         return view('project.useradmin.roles.index', compact('roles'))
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
+    }
+
+    public function preparePublication(Request $request) {
+
+        $result = array();
+        $corpusid = $request->input('corpusid');
+        $corpus = Corpus::findOrFail($corpusid);
+        $corpuspath = $request->input('corpuspath');
+        $result['title'] = "Publish ".$corpus->name.", Version X";
+        $result['subtitle'] = "The following criteria needs to be met in order to be fulfilled before you can publish a Corpus";
+        $result['waiting'] = "Verification is ongoing...";
+        $result['corpus_header'] = array(
+            "title" => "1 Corpus header uploaded"
+        );
+        $result['document_headers'] = array(
+            "title" => "According number of Document headers"
+        );
+        $result['annotation_headers'] = array(
+            "title" => "According number of Annotation headers"
+        );
+
+
+        if(!$corpus->corpus_id){
+            $result['corpus_header']['corpusHeaderText'] = "Missing corpusheader";
+            $result['corpus_header']['corpusIcon'] = 'warning';
+            $canPublish = false;
+        }
+        else{
+            $result['corpus_header']['corpusHeaderText'] = "";
+            $result['corpus_header']['corpusIcon'] = 'check_circle';
+        }
+
+        $canPublish = true;
+
+        $checkResult = json_decode($this->GitRepoService->checkForCorpusFiles($corpuspath."/TEI-HEADERS"), true);
+
+        $missing_document_count = count($checkResult['not_found_documents_in_corpus']);
+        $document_plural = "";
+        if($missing_document_count > 1){
+            $document_plural = "s";
+        }
+
+        if($missing_document_count > 0) {
+            $result['document_headers']['documentHeaderText'] = $missing_document_count." missing document".$document_plural;
+            $result['document_headers']['documentIcon'] = 'warning';
+            $canPublish = false;
+        }
+        else{
+            $result['document_headers']['documentHeaderText'] = "";
+            $result['document_headers']['documentIcon'] = 'check_circle';
+        }
+
+        $missing_annotation_count = count($checkResult['not_found_annotations_in_corpus']);
+        $annotation_plural = "";
+        if($missing_annotation_count > 1){
+            $annotation_plural = "s";
+        }
+
+        if($missing_annotation_count > 0) {
+            $result['annotation_headers']['annotationHeaderText'] = $missing_annotation_count." missing annotation".$annotation_plural;
+            $result['annotation_headers']['annotationIcon'] = 'warning';
+            $canPublish = false;
+        }
+        else{
+            $result['annotation_headers']['annotationHeaderText'] = "";
+            $result['annotation_headers']['annotationIcon'] = 'check_circle';
+        }
+
+        $result['canPublish'] = $canPublish;
+        /**
+         * @todo
+         * */
+        //corpusdata formats
+
+        //license
+
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $result,
+        );
+
+        return Response::json($response);
     }
 
 }

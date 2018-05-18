@@ -13,7 +13,7 @@ return [
     | Example: 'footer' or ['footer', 'bottom']
     |
     */
-    'bind_js_vars_to_this_view' => 'layouts/footer',
+    'bind_js_vars_to_this_view' => ['layouts/footer','layouts/main_ux_footer'],
 
     /*
     |--------------------------------------------------------------------------
@@ -25,6 +25,6 @@ return [
     | That way, you can access vars, like "SomeNamespace.someVariable."
     |
     */
-    'js_namespace' => 'browseApp'
+    'js_namespace' => 'laudatioApp'
 
 ];

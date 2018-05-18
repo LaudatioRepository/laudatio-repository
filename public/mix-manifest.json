@@ -1,14 +1,11 @@
 {
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
+    "/css/laudatio.css": "/css/laudatio.css",
     "/css/adminFileUpload.css": "/css/adminFileUpload.css",
     "/css/browseapp.css": "/css/browseapp.css",
-    "/css/sb-admin.css": "/css/sb-admin.css",
-    "/css/admin.css": "/css/admin.css",
     "/js/browseapp.js": "/js/browseapp.js",
     "/js/adminFileUpload.js": "/js/adminFileUpload.js",
-    "/js/cropper.js": "/js/cropper.js",
-    "/js/sb-admin.js": "/js/sb-admin.js",
-    "/js/metisMenu.js": "/js/metisMenu.js",
+    "/js/jq.js": "/js/jq.js",
     "/css/cropper.css": "/css/cropper.css"
 }

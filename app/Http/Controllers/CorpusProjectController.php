@@ -39,7 +39,61 @@ class CorpusProjectController extends Controller
         $user = \Auth::user();
         $CorpusProjects = CorpusProject::latest()->get();
 
-        return view('project.corpusproject.index', compact('CorpusProjects'))
+        $corpus_projects = array();
+
+
+        foreach ($CorpusProjects as $corpusProject){
+            if(!array_key_exists($corpusProject->id, $corpus_projects)){
+                $corpus_projects[$corpusProject->id] = array();
+                $corpus_projects[$corpusProject->id]['user_roles'] = array();
+                $corpus_projects[$corpusProject->id]['corpora'] = array();
+            }
+
+            $corpus_projects[$corpusProject->id]['name'] = $corpusProject->name;
+            $corpus_projects[$corpusProject->id]['description'] = $corpusProject->description;
+
+
+            $corpusProjectUsers = $corpusProject->users()->get();
+
+            foreach ($corpusProjectUsers as $corpusProjectUser){
+                $user_role = array();
+                $role = Role::find($corpusProjectUser->pivot->role_id);
+                if($role){
+                    $user_role['user_name'] = $corpusProjectUser->name;
+                    $user_role['user_id'] = $corpusProjectUser->id;
+
+                    $user_role['role_name'] = $role->name;
+                    array_push($corpus_projects[$corpusProject->id]['user_roles'],$user_role);
+                }
+            }
+
+            foreach ($corpusProject->corpora()->get() as $projectCorpus){
+                if(!array_key_exists($projectCorpus->id, $corpus_projects[$corpusProject->id]['corpora'])){
+                    $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id] = array();
+                    $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['user_roles'] = array();
+                }
+                $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['name'] = $projectCorpus->name;
+                $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['id'] = $projectCorpus->id;
+
+                $corpusUsers = $projectCorpus->users()->get();
+                foreach ($corpusUsers as $corpusUser){
+                    $user_role = array();
+                    $role = Role::find($corpusUser->pivot->role_id);
+                    if($role){
+                        $user_role['user_name'] = $corpusUser->name;
+                        $user_role['user_id'] = $corpusUser->id;
+                        $user_role['role_name'] = $role->name;
+                        array_push($corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['user_roles'],$user_role);
+                    }
+
+                }
+
+            }
+        }
+
+        //dd($corpus_projects);
+        return view('project.corpusproject.index')
+            ->with('corpusProjects',$corpus_projects)
             ->with('isLoggedIn', $isLoggedIn)
             ->with('user',$user);
     }
@@ -87,7 +141,7 @@ class CorpusProjectController extends Controller
             Log::info("gitLabResponse: CorpusProject ".print_r($gitLabResponse,1));
 
 
-            CorpusProject::create([
+            $corpusproject = CorpusProject::create([
                 'name' => request('corpusproject_name'),
                 'description' => request('corpusproject_description'),
                 'directory_path' => $filePath,
@@ -96,9 +150,14 @@ class CorpusProjectController extends Controller
                 'gitlab_web_url' => $gitLabResponse['web_url'],
                 'gitlab_parent_id' => $gitLabResponse['parent_id']
             ]);
+
+            /*
+            $user = \Auth::user();
+            $corpusp->users()->save($user,['role_id' => 2]);
+            */
         }
 
-        return redirect()->route('project.corpusProject.index');
+        return redirect()->route('corpusProject.index');
     }
 
     /**
@@ -132,48 +191,62 @@ class CorpusProjectController extends Controller
             ->with('user',$user);
     }
 
-
-    /**
-     * @param CorpusProject $corpusproject
-     * @return $this
-     */
-    public function edit(CorpusProject $corpusproject)
-    {
-        $isLoggedIn = \Auth::check();
-        $user = \Auth::user();
-        return view('project.corpusproject.edit', compact('corpusproject'))
-            ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',$user);
-    }
-
     /**
      * @param Request $request
-     * @param CorpusProject $corpusproject
      * @return $this
      */
-    public function update(Request $request, CorpusProject $corpusproject)
+    public function update(Request $request)
     {
-        $isLoggedIn = \Auth::check();
-        $user = \Auth::user();
 
-        $corpusproject->update([
-            "name" => request('corpusproject_name'),
-            "description" => request('corpusproject_description')
-        ]);
+        $status = "success";
+
+        $result = array();
+        $corpusproject = CorpusProject::findOrFail($request->input('projectid'));
+
+        try{
+            $corpusproject->update([
+                "name" => $request->input('corpusproject_name'),
+                "description" => $request->input('corpusproject_description')
+            ]);
+            $result['eloquent_response']  = "Project was successfully updated";
+            $status = "success";
+        }
+        catch (\Exception $e) {
+            $status = "error";
+            $result['eloquent_response']  = "There was a problem updating the Project data. A message has been sent to the site administrator. Please try again later";
+            //$e->getMessage();
+
+        }
+
 
         $params = array(
-            'name' => request('corpusproject_name'),
+            'name' => $request->input('corpusproject_name'),
             'path' => $corpusproject->gitlab_group_path,
-            'description' => request('corpusproject_description'),
-            'visibility' => 'internal'
+            'description' => $request->input('corpusproject_description'),
+            'visibility' => 'public'
         );
-        $this->GitLabService->updateGitLabGroup($corpusproject->gitlab_id,$params);
-        $corpora = $corpusproject->corpora()->get();
 
-        return view('project.corpusproject.show', compact('corpusproject'))
-            ->with('isLoggedIn', $isLoggedIn)
-            ->with('corpora',$corpora)
-            ->with('user',$user);
+        try{
+            $gitLabResponse = $this->GitLabService->updateGitLabGroup($corpusproject->gitlab_id,$params);
+            if($status != 'error'){
+                $status = "success";
+                $result['gitlab_response']  = "Project was successfully versioned";
+            }
+
+
+        }
+        catch (\Exception $e) {
+            $status = "error";
+            $result['gitlab_response'] =  "There was a problem versioning the Project data. A message has been sent to the site administrator. Please try again later";//$e->getMessage();
+        }
+
+
+        $response = array(
+            'status' => $status,
+            'message' => $result,
+        );
+
+        return Response::json($response);
     }
 
     /**
@@ -270,6 +343,7 @@ class CorpusProjectController extends Controller
         return redirect()->route('project.corpusProject.index');
     }
 
+    public function inviteUsers(CorpusProject $corpusProject){}
 
     /**
      * @param CorpusProject $corpusproject

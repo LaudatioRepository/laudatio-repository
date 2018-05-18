@@ -16,6 +16,7 @@ class CreateCorpusesTable extends Migration
         Schema::create('corpuses', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('vid')->nullable();
+            $table->integer('uid')->nullable();
             $table->text('name');
             $table->text('description');
             $table->string('corpus_size_type')->nullable();
@@ -26,6 +27,7 @@ class CreateCorpusesTable extends Migration
             $table->text('gitlab_group_id')->nullable();
             $table->integer('gitlab_id')->nullable();
             $table->text('gitlab_web_url')->nullable();
+            $table->text('gitlab_ssh_url')->nullable();
             $table->text('gitlab_namespace_path')->nullable();
             $table->string('gitlab_commit_sha')->nullable();
             $table->dateTime('gitlab_commit_date')->nullable();

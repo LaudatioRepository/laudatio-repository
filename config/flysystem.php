@@ -114,7 +114,7 @@ return [
 
         'gitlocal' => [
             'driver' => 'local',
-            'path' => '/Users/rolfguescini/source/gitfiles/laudatiofiles/projects',
+            'path' => '/Users/rolfguescini/source/gitfiles/projects',
         ],
 
         'schemalocal' => [

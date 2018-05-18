@@ -147,11 +147,13 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             "description" => $corpusDesc[0],
             "corpus_size_type" => $corpusSizeType[0],
             "corpus_size_value" => $corpusSizeValue[0],
+            'uid' => $params['uid'],
             'gitlab_group_id' => $params['gitlab_group_id'],
             'directory_path' => $params['corpus_path'],
             'corpus_id' => count($corpusId) > 0 ? $corpusId[0] : uniqid('corpus_'),
             'gitlab_id' => $params['gitlab_id'],
             'gitlab_web_url' => $params['gitlab_web_url'],
+            'gitlab_ssh_url' => $params['gitlab_ssh_url'],
             'gitlab_namespace_path' => $params['gitlab_name_with_namespace'],
             "file_name" => $params['fileName']
         ]);
@@ -719,6 +721,8 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     }
 
     public function getDirectoryPath($paths,$fileName){
+        Log::info("?ATHS: ".print_r($paths, 1));
+        Log::info("?FNAM: ".print_r($fileName, 1));
         $directoryPath = "";
         foreach ($paths as $path) {
             if (strpos($path,$fileName) !== false){

@@ -1,553 +1,404 @@
-@extends('layouts.admin', ['isLoggedIn' => $isLoggedIn])
+@extends('layouts.admin_ux', ['isLoggedIn' => $isLoggedIn])
 
 @section('content')
-    <div class="row">
-        <div class="col-lg-12">
-            <h1 class="page-header">Dashboard</h1>
+    @if(Auth::guest())
+        <div class="container-fluid">
+            <div class="container">
+                <div class="row">
+                    <div class="col-7 offset-2">
+
+
+                        <div class="d-flex justify-content-between mt-7 mb-3">
+                            <h3 class="h3 font-weight-normal">Corpus Projects</h3>
+                        </div>
+
+                        <p class="mt-6">
+                            Please
+                            <a href="#" data-toggle="modal" data-target="#signInModal">SIGN IN</a> or
+                            <a href="registration_start.html">REGISTER</a> to be able to initiate Corpus Projects or have access to your active projects.
+                        </p>
+                        <p class="mt-6">
+                        <h5 class="h5">
+                            <b>Take part subheadline</b>
+                        </h5>
+                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+                        et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+                        dolores et ea rebum.
+                        </p>
+                        <p>
+                            Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor
+                            sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore
+                            et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo
+                            dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
+                            dolor sit amet.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- /.col-lg-12 -->
-    </div>
-    <!-- /.row -->
-    <div class="row">
-        <!--
-       <div class="col-lg-3 col-md-6">
-           <div class="panel panel-primary">
-               <div class="panel-heading">
-                   <div class="row">
-                       <div class="col-xs-3">
-                           <i class="fa fa-comments fa-5x"></i>
-                       </div>
-                       <div class="col-xs-9 text-right">
-                           <div class="huge">26</div>
-                           <div>New Comments!</div>
-                       </div>
-                   </div>
-               </div>
-               <a href="#">
-                   <div class="panel-footer">
-                       <span class="pull-left">View Details</span>
-                       <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                       <div class="clearfix"></div>
-                   </div>
-               </a>
-           </div>
-       </div>
-       <div class="col-lg-3 col-md-6">
-           <div class="panel panel-green">
-               <div class="panel-heading">
-                   <div class="row">
-                       <div class="col-xs-3">
-                           <i class="fa fa-tasks fa-5x"></i>
-                       </div>
-                       <div class="col-xs-9 text-right">
-                           <div class="huge">12</div>
-                           <div>New Tasks!</div>
-                       </div>
-                   </div>
-               </div>
-               <a href="#">
-                   <div class="panel-footer">
-                       <span class="pull-left">View Details</span>
-                       <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                       <div class="clearfix"></div>
-                   </div>
-               </a>
-           </div>
-       </div>
-       <div class="col-lg-3 col-md-6">
-           <div class="panel panel-yellow">
-               <div class="panel-heading">
-                   <div class="row">
-                       <div class="col-xs-3">
-                           <i class="fa fa-shopping-cart fa-5x"></i>
-                       </div>
-                       <div class="col-xs-9 text-right">
-                           <div class="huge">124</div>
-                           <div>New Orders!</div>
-                       </div>
-                   </div>
-               </div>
-               <a href="#">
-                   <div class="panel-footer">
-                       <span class="pull-left">View Details</span>
-                       <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                       <div class="clearfix"></div>
-                   </div>
-               </a>
-           </div>
-       </div>
-       <div class="col-lg-3 col-md-6">
-           <div class="panel panel-red">
-               <div class="panel-heading">
-                   <div class="row">
-                       <div class="col-xs-3">
-                           <i class="fa fa-support fa-5x"></i>
-                       </div>
-                       <div class="col-xs-9 text-right">
-                           <div class="huge">13</div>
-                           <div>Support Tickets!</div>
-                       </div>
-                   </div>
-               </div>
-               <a href="#">
-                   <div class="panel-footer">
-                       <span class="pull-left">View Details</span>
-                       <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
-                       <div class="clearfix"></div>
-                   </div>
-               </a>
-           </div>
-       </div>
-       -->
-    </div>
-    <!-- /.row -->
-    <div class="row">
-            <div class="col-lg-8">
+    @else
+    <div class="container-fluid">
+        <div class="container">
+            <div class="row mt-5">
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Welcome {{$user->name}}
-                    <div class="pull-right">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                Actions
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu pull-right" role="menu">
-                                <li><a href="#">Action</a>
-                                </li>
-                                <li><a href="#">Another action</a>
-                                </li>
-                                <li><a href="#">Something else here</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="col-3 mt-2">
+                    <nav class="sidebar text-14 nav flex-column border-top border-light mt-7" role="navigation">
+                        <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active" href="publish_projects.html">Corpus projects</a>
+                        <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link" href="publish_invitations.html">Invitations</a>
+                        <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link " href="publish_initiate.html">Initiate Project</a>
+                    </nav>
                 </div>
-                <!-- /.panel-heading -->
-                <div class="panel-body">
-                    <div id="morris-area-chart"></div>
-                </div>
-                <!-- /.panel-body -->
-            </div>
 
-            <!-- /.panel -->
-            <!--div class="panel panel-default">
-                <!--div class="panel-heading">
-                    <i class="fa fa-bar-chart-o fa-fw"></i> Bar Chart Example
-                    <div class="pull-right">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                Actions
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu pull-right" role="menu">
-                                <li><a href="#">Action</a>
-                                </li>
-                                <li><a href="#">Another action</a>
-                                </li>
-                                <li><a href="#">Something else here</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li><a href="#">Separated link</a>
-                                </li>
-                            </ul>
-                        </div>
+                <div class="col">
+                    <div class="d-flex justify-content-between  ">
+                        <h3 class="h3 font-weight-normal">Corpus Projects (2)</h3>
                     </div>
-                </div-->
-                <!-- /.panel-heading -->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i class="fa fa-bell fa-fw"></i> DINGS
-                    </div>
-                <div class="panel-body">
 
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Amount</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>3326</td>
-                                        <td>10/21/2013</td>
-                                        <td>3:29 PM</td>
-                                        <td>$321.33</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3325</td>
-                                        <td>10/21/2013</td>
-                                        <td>3:20 PM</td>
-                                        <td>$234.34</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3324</td>
-                                        <td>10/21/2013</td>
-                                        <td>3:03 PM</td>
-                                        <td>$724.17</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3323</td>
-                                        <td>10/21/2013</td>
-                                        <td>3:00 PM</td>
-                                        <td>$23.71</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3322</td>
-                                        <td>10/21/2013</td>
-                                        <td>2:49 PM</td>
-                                        <td>$8345.23</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3321</td>
-                                        <td>10/21/2013</td>
-                                        <td>2:23 PM</td>
-                                        <td>$245.12</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3320</td>
-                                        <td>10/21/2013</td>
-                                        <td>2:15 PM</td>
-                                        <td>$5663.54</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3319</td>
-                                        <td>10/21/2013</td>
-                                        <td>2:13 PM</td>
-                                        <td>$943.45</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!-- /.table-responsive -->
-                        </div>
-                        <!-- /.col-lg-4 (nested) -->
-                        <div class="col-lg-8">
-                            <div id="morris-bar-chart"></div>
-                        </div>
-                        <!-- /.col-lg-8 (nested) -->
-                    </div>
-                </div>
-                    <!-- /.row -->
-                </div>
-                <!-- /.panel-body -->
-            </div>
-            <!-- /.panel -->
-            <!--div class="panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-clock-o fa-fw"></i> Responsive Timeline
-                </div>
-                <!-- /.panel-heading -->
-                <!--div class="panel-body">
-                    <ul class="timeline">
-                        <li>
-                            <div class="timeline-badge"><i class="fa fa-check"></i>
-                            </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4 class="timeline-title">Lorem ipsum dolor</h4>
-                                    <p><small class="text-muted"><i class="fa fa-clock-o"></i> 11 hours ago via Twitter</small>
+                    <div class="mt-4">
+                        <div id="corpusProject_0001" class="corpusProject container bg-bluegrey-middark mt-1 mb-1 p-5">
+                            <div class="row corpusProject-save">
+                                <div class="col">
+                                    <small class="text-14 text-grey">
+                                        Corpus Project
+                                    </small>
+
+                                    <h4 class="h4 font-weight-bold corpusProject-title">
+                                        Register in Diachronic German Science
+                                    </h4>
+                                    <div class="mt-2">
+                                        <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                                            <i class="fa fa-user fa-lg mr-2"></i>
+                                            <span>
+    Amir Zeldes (Corpus Project Administrator)
+  </span>
+                                        </div></div>
+
+                                    <p class="mt-3 text-14 mb-0 corpusProject-description">
+                                        Morbi lobortis rhoncus risus nec faucibus. Morbi a aliquam ligula. Maecenas placerat, lorem ac mollis
+                                        suscipit, ante ex convallis massa, id mollis magna lacus vitae odio. Morbi eget augue ante. Nullam
+                                        sit amet hendrerit enim, a hendrerit mauris. Morbi sem elit, ultrices vitae convallis vitae,
+                                        ultricies ut arcu. Vestibulum feugiat faucibus ex, eget vehicula libero. Donec mattis magna vitae
+                                        risus porta, et fermentum diam suscipit. Duis a tempor justo, vel facilisis orci. Etiam pulviar
+                                        dolor non felis gravida tristique. In hac habitasse platea dictumst.
                                     </p>
+
                                 </div>
-                                <div class="timeline-body">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero laboriosam dolor perspiciatis omnis exercitationem. Beatae, officia pariatur? Est cum veniam excepturi. Maiores praesentium, porro voluptas suscipit facere rem dicta, debitis.</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="timeline-inverted">
-                            <div class="timeline-badge warning"><i class="fa fa-credit-card"></i>
-                            </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4 class="timeline-title">Lorem ipsum dolor</h4>
-                                </div>
-                                <div class="timeline-body">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Autem dolorem quibusdam, tenetur commodi provident cumque magni voluptatem libero, quis rerum. Fugiat esse debitis optio, tempore. Animi officiis alias, officia repellendus.</p>
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laudantium maiores odit qui est tempora eos, nostrum provident explicabo dignissimos debitis vel! Adipisci eius voluptates, ad aut recusandae minus eaque facere.</p>
+                                <div class="col-2 p-0 mr-2">
+                                    <button class="corpusProject-startEdit btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
+                                        Edit project
+                                    </button>
+                                    <a href="adminEdit_corpus-new.html" class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
+                                        Add Corpus
+                                    </a>
                                 </div>
                             </div>
-                        </li>
-                        <li>
-                            <div class="timeline-badge danger"><i class="fa fa-bomb"></i>
+                            <div class="row corpusProject-edit hidden">
+                                <form id="editCorpusProject" class="w-100">
+                                    <div class="form-group">
+                                        <label class="text-14 text-dark-trans mb-1 pl-3" for="editCorpusProject_Title">
+                                            <small>Corpus Project title</small>
+                                        </label>
+                                        <input type="text" class="corpusProject-title-edit form-control" id="editCorpusProject_Title" required
+                                               placeholder="What's the project title?">
+                                    </div>
+                                    <div class="form-group mt-3">
+                                        <label class="text-14 text-dark-trans mb-1 pl-3" for="editCorpusProject_Description">
+                                            <small>Corpus Project description</small>
+                                        </label>
+                                        <textarea id="editCorpusProject_Description" class="corpusProject-description-edit form-control py-3"
+                                                  cols="30" rows="8" placeholder="here you can describe the purpose of your project. We recommend between 300 and max. 500 chars."></textarea>
+                                    </div>
+                                    <div class="form-row mt-3">
+                                        <div class="col offset-7">
+                                            <button class="corpusProject-endEdit btn btn-outline-corpus-mid text-uppercase font-weight-bold rounded w-100">Cancel</button>
+                                        </div>
+                                        <div class="col">
+                                            <button class="corpusProject-saveEdit btn btn-primary rounded text-uppercase font-weight-bold w-100">Save</button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4 class="timeline-title">Lorem ipsum dolor</h4>
+
+                        </div> <div class="container bg-bluegrey-midlight mt-1 mb-1 p-5">
+                            <div class="row">
+                                <div class="col-2 pl-4">
+                                    <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
                                 </div>
-                                <div class="timeline-body">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Repellendus numquam facilis enim eaque, tenetur nam id qui vel velit similique nihil iure molestias aliquam, voluptatem totam quaerat, magni commodi quisquam.</p>
+                                <div class="col">
+                                    <small class="text-14 text-grey">
+                                        Corpus
+                                    </small>
+                                    <h4 class="h4 font-weight-bold">
+                                        <a class="text-dark" href="adminEdit_corpus.html">
+                                            RIDGES-Herbology Version 9.0
+                                        </a>
+                                    </h4>
+                                    <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                                        <i class="fa fa-user fa-lg mr-2"></i>
+                                        <span>
+    Amir Zeldes (Corpus Project Administrator)
+  </span>
+                                    </div>
+
                                 </div>
-                            </div>
-                        </li>
-                        <li class="timeline-inverted">
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4 class="timeline-title">Lorem ipsum dolor</h4>
-                                </div>
-                                <div class="timeline-body">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptates est quaerat asperiores sapiente, eligendi, nihil. Itaque quos, alias sapiente rerum quas odit! Aperiam officiis quidem delectus libero, omnis ut debitis!</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="timeline-badge info"><i class="fa fa-save"></i>
-                            </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4 class="timeline-title">Lorem ipsum dolor</h4>
-                                </div>
-                                <div class="timeline-body">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nobis minus modi quam ipsum alias at est molestiae excepturi delectus nesciunt, quibusdam debitis amet, beatae consequuntur impedit nulla qui! Laborum, atque.</p>
-                                    <hr>
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
-                                            <i class="fa fa-gear"></i> <span class="caret"></span>
+                                <div class="col-2 p-0 mr-2">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4 w-100 text-left"
+                                                type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Edit
                                         </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            <li><a href="#">Action</a>
-                                            </li>
-                                            <li><a href="#">Another action</a>
-                                            </li>
-                                            <li><a href="#">Something else here</a>
-                                            </li>
-                                            <li class="divider"></li>
-                                            <li><a href="#">Separated link</a>
-                                            </li>
-                                        </ul>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item text-14" href="adminEdit_corpus.html">Edit Corpus</a>
+                                            <a class="dropdown-item text-14" href="adminPreview_corpus.html">Preview Corpus</a>
+                                            <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#publishCorpusModal">Publish Corpus</a>
+                                            <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#deleteCorpusModal">Delete Corpus</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </li>
-                        <li>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4 class="timeline-title">Lorem ipsum dolor</h4>
+
+                        </div> <div class="container bg-bluegrey-midlight mt-1 mb-1 p-5">
+                            <div class="row">
+                                <div class="col-2 pl-4">
+                                    <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
                                 </div>
-                                <div class="timeline-body">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sequi fuga odio quibusdam. Iure expedita, incidunt unde quis nam! Quod, quisquam. Officia quam qui adipisci quas consequuntur nostrum sequi. Consequuntur, commodi.</p>
+                                <div class="col">
+                                    <small class="text-14 text-grey">
+                                        Corpus
+                                    </small>
+                                    <h4 class="h4 font-weight-bold">
+                                        <a class="text-dark" href="adminEdit_corpus.html">
+                                            RIDGES-Herbology Version 9.0
+                                        </a>
+                                    </h4>
+                                    <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                                        <i class="fa fa-user fa-lg mr-2"></i>
+                                        <span>
+    Amir Zeldes (Corpus Project Administrator)
+  </span>
+                                    </div>
+
+                                </div>
+                                <div class="col-2 p-0 mr-2">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4 w-100 text-left"
+                                                type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Edit
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item text-14" href="adminEdit_corpus.html">Edit Corpus</a>
+                                            <a class="dropdown-item text-14" href="adminPreview_corpus.html">Preview Corpus</a>
+                                            <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#publishCorpusModal">Publish Corpus</a>
+                                            <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#deleteCorpusModal">Delete Corpus</a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </li>
-                        <li class="timeline-inverted">
-                            <div class="timeline-badge success"><i class="fa fa-graduation-cap"></i>
-                            </div>
-                            <div class="timeline-panel">
-                                <div class="timeline-heading">
-                                    <h4 class="timeline-title">Lorem ipsum dolor</h4>
+
+                        </div> <div class="container bg-bluegrey-midlight mt-1 mb-1 p-5">
+                            <div class="row">
+                                <div class="col-2 pl-4">
+                                    <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
                                 </div>
-                                <div class="timeline-body">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt obcaecati, quaerat tempore officia voluptas debitis consectetur culpa amet, accusamus dolorum fugiat, animi dicta aperiam, enim incidunt quisquam maxime neque eaque.</p>
+                                <div class="col">
+                                    <small class="text-14 text-grey">
+                                        Corpus
+                                    </small>
+                                    <h4 class="h4 font-weight-bold">
+                                        <a class="text-wine-trans" href="adminEdit_corpus-new.html">
+                                            no name defined yet
+                                        </a>
+                                    </h4>
+                                    <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                                        <i class="fa fa-user fa-lg mr-2"></i>
+                                        <span>
+    Amir Zeldes (Corpus Project Administrator)
+  </span>
+                                    </div>
+
+                                </div>
+                                <div class="col-2 p-0 mr-2">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4 w-100 text-left"
+                                                type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Edit
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item text-14" href="adminEdit_corpus-new.html">Edit Corpus</a>
+                                            <a class="dropdown-item text-14" href="adminPreview_corpus.html">Preview Corpus</a>
+                                            <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#publishCorpusModal">Publish Corpus</a>
+                                            <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#deleteCorpusModal">Delete Corpus</a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </li>
-                    </ul>
-                </div-->
-                <!-- /.panel-body -->
-            </div-->
-            <!-- /.panel -->
-        </div>
-        <!-- /.col-lg-8 -->
-        <div class="col-lg-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-bell fa-fw"></i> Message Board
-                </div>
-                <!-- /.panel-heading -->
-                <div class="panel-body">
-                    <div class="list-group">
-                        <a href="#" class="list-group-item">
-                            <i class="fa fa-comment fa-fw"></i> New Comment
-                            <span class="pull-right text-muted small"><em>4 minutes ago</em>
-                                    </span>
-                        </a>
-                        <a href="#" class="list-group-item">
-                            <i class="fa fa-twitter fa-fw"></i> 3 New Followers
-                            <span class="pull-right text-muted small"><em>12 minutes ago</em>
-                                    </span>
-                        </a>
-                        <a href="#" class="list-group-item">
-                            <i class="fa fa-envelope fa-fw"></i> Message Sent
-                            <span class="pull-right text-muted small"><em>27 minutes ago</em>
-                                    </span>
-                        </a>
-                        <a href="#" class="list-group-item">
-                            <i class="fa fa-tasks fa-fw"></i> New Task
-                            <span class="pull-right text-muted small"><em>43 minutes ago</em>
-                                    </span>
-                        </a>
-                        <a href="#" class="list-group-item">
-                            <i class="fa fa-upload fa-fw"></i> Server Rebooted
-                            <span class="pull-right text-muted small"><em>11:32 AM</em>
-                                    </span>
-                        </a>
-                        <a href="#" class="list-group-item">
-                            <i class="fa fa-bolt fa-fw"></i> Server Crashed!
-                            <span class="pull-right text-muted small"><em>11:13 AM</em>
-                                    </span>
-                        </a>
-                        <a href="#" class="list-group-item">
-                            <i class="fa fa-warning fa-fw"></i> Server Not Responding
-                            <span class="pull-right text-muted small"><em>10:57 AM</em>
-                                    </span>
-                        </a>
-                        <a href="#" class="list-group-item">
-                            <i class="fa fa-shopping-cart fa-fw"></i> New Order Placed
-                            <span class="pull-right text-muted small"><em>9:49 AM</em>
-                                    </span>
-                        </a>
-                        <a href="#" class="list-group-item">
-                            <i class="fa fa-money fa-fw"></i> Payment Received
-                            <span class="pull-right text-muted small"><em>Yesterday</em>
-                                    </span>
-                        </a>
+
+                        </div>
                     </div>
-                    <!-- /.list-group -->
-                    <!--a href="#" class="btn btn-default btn-block">View All Alerts</a-->
-                </div>
-                <!-- /.panel-body -->
-                <div class="panel-footer">
-                    <div class="input-group">
-                        <input id="btn-input" type="text" class="form-control input-sm" placeholder="Type your message here..." />
-                        <span class="input-group-btn">
-                                    <button class="btn btn-warning btn-sm" id="btn-chat">
-                                        Send
-                                    </button>
-                                </span>
+
+                    <div class="mt-10">
+                        <div class="container bg-bluegrey-middark mt-1 mb-1 p-5">
+                            <div class="row">
+                                <div class="col-9">
+                                    <small class="text-14 text-grey">
+                                        Corpus Project
+                                    </small>
+                                    <h4 class="h4 font-weight-bold">
+                                        Register in Diachronic German Science
+                                    </h4>
+                                    <div class="mt-2">
+                                        <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                                            <i class="fa fa-user fa-lg mr-2"></i>
+                                            <span>
+    Amir Zeldes (Corpus Project Administrator)
+  </span>
+                                        </div></div>
+
+                                    <p class="mt-3 text-14 mb-0">
+                                        Morbi lobortis rhoncus risus nec faucibus. Morbi a aliquam ligula. Maecenas placerat, lorem ac mollis
+                                        suscipit, ante ex convallis massa, id mollis magna lacus vitae odio. Morbi eget augue ante. Nullam
+                                        sit amet hendrerit enim, a hendrerit mauris. Morbi sem elit, ultrices vitae convallis vitae,
+                                        ultricies ut arcu. Vestibulum feugiat faucibus ex, eget vehicula libero. Donec mattis magna vitae
+                                        risus porta, et fermentum diam suscipit. Duis a tempor justo, vel facilisis orci. Etiam pulvinar
+                                        dolor non felis gravida tristique. In hac habitasse platea dictumst.
+                                    </p>
+
+                                </div>
+                            </div>
+
+                        </div> <div class="container bg-bluegrey-midlight mt-1 mb-1 p-5">
+                            <div class="row">
+                                <div class="col-2 pl-4">
+                                    <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
+                                </div>
+                                <div class="col">
+                                    <small class="text-14 text-grey">
+                                        Corpus
+                                    </small>
+                                    <h4 class="h4 font-weight-bold">
+                                        <a class="text-dark" href="adminEdit_corpus.html">
+                                            RIDGES-Herbology Version 9.0
+                                        </a>
+                                    </h4>
+                                    <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                                        <i class="fa fa-user fa-lg mr-2"></i>
+                                        <span>
+    Amir Zeldes (Corpus Project Administrator)
+  </span>
+                                    </div>
+
+                                </div>
+                                <div class="col-2 p-0 mr-2">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4 w-100 text-left"
+                                                type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Edit
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item text-14" href="adminEdit_corpus.html">Edit Corpus</a>
+                                            <a class="dropdown-item text-14" href="adminPreview_corpus.html">Preview Corpus</a>
+                                            <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#publishCorpusModal">Publish Corpus</a>
+                                            <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#deleteCorpusModal">Delete Corpus</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div> <div class="container bg-bluegrey-midlight mt-1 mb-1 p-5">
+                            <div class="row">
+                                <div class="col-2 pl-4">
+                                    <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
+                                </div>
+                                <div class="col">
+                                    <small class="text-14 text-grey">
+                                        Corpus
+                                    </small>
+                                    <h4 class="h4 font-weight-bold">
+                                        <a class="text-dark" href="adminEdit_corpus.html">
+                                            RIDGES-Herbology Version 9.0
+                                        </a>
+                                    </h4>
+                                    <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                                        <i class="fa fa-user fa-lg mr-2"></i>
+                                        <span>
+    Amir Zeldes (Corpus Project Administrator)
+  </span>
+                                    </div>
+
+                                </div>
+                                <div class="col-2 p-0 mr-2">
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4 w-100 text-left"
+                                                type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Edit
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a class="dropdown-item text-14" href="adminEdit_corpus.html">Edit Corpus</a>
+                                            <a class="dropdown-item text-14" href="adminPreview_corpus.html">Preview Corpus</a>
+                                            <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#publishCorpusModal">Publish Corpus</a>
+                                            <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#deleteCorpusModal">Delete Corpus</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
+
                 </div>
             </div>
-            <!-- /.panel -->
 
-            <!-- /.panel -->
-            <!ivclass="chat-panel panel panel-default">
-                <div class="panel-heading">
-                    <i class="fa fa-comments fa-fw"></i> Chat
-                    <div class="btn-group pull-right">
-                        <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                            <i class="fa fa-chevron-down"></i>
-                        </button>
-                        <ul class="dropdown-menu slidedown">
-                            <li>
-                                <a href="#">
-                                    <i class="fa fa-refresh fa-fw"></i> Refresh
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <i class="fa fa-check-circle fa-fw"></i> Available
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <i class="fa fa-times fa-fw"></i> Busy
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <i class="fa fa-clock-o fa-fw"></i> Away
-                                </a>
-                            </li>
-                            <li class="divider"></li>
-                            <li>
-                                <a href="#">
-                                    <i class="fa fa-sign-out fa-fw"></i> Sign Out
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <!-- /.panel-heading -->
-                <div class="panel-body">
-                    <ul class="chat">
-                        <li class="left clearfix">
-                                    <span class="chat-img pull-left">
-                                        <img src="http://placehold.it/50/55C1E7/fff" alt="User Avatar" class="img-circle" />
-                                    </span>
-                            <div class="chat-body clearfix">
-                                <div class="header">
-                                    <strong class="primary-font">Jack Sparrow</strong>
-                                    <small class="pull-right text-muted">
-                                        <i class="fa fa-clock-o fa-fw"></i> 12 mins ago
-                                    </small>
-                                </div>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.
-                                </p>
-                            </div>
+        </div>
+
+    </div>
+    <div class="modal fade" id="deleteCorpusModal" tabindex="-1" role="dialog" aria-labelledby="deleteCorpusModal"
+         aria-hidden="true">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content border-0 rounded-lg bsh-1">
+
+                <div class="modal-body px-5">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fa fa-close" aria-hidden="true"></i>
+                    </button>
+                    <h3 class="h3 modal-title mt-3">
+                        Do you really want to delete corpus "no name defined yet" ?
+                    </h3>
+
+                    <p class="mt-3 mb-1">
+                        It includes:
+                    </p>
+
+                    <ul class="list-group list-group-flush mb-3">
+                        <li class="list-group-item">
+                            <b>(0) Corpus Header</b>
                         </li>
-                        <li class="right clearfix">
-                                    <span class="chat-img pull-right">
-                                        <img src="http://placehold.it/50/FA6F57/fff" alt="User Avatar" class="img-circle" />
-                                    </span>
-                            <div class="chat-body clearfix">
-                                <div class="header">
-                                    <small class=" text-muted">
-                                        <i class="fa fa-clock-o fa-fw"></i> 13 mins ago</small>
-                                    <strong class="pull-right primary-font">Bhaumik Patel</strong>
-                                </div>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.
-                                </p>
-                            </div>
+                        <li class="list-group-item">
+                            <b>(0) Document Header</b>
                         </li>
-                        <li class="left clearfix">
-                                    <span class="chat-img pull-left">
-                                        <img src="http://placehold.it/50/55C1E7/fff" alt="User Avatar" class="img-circle" />
-                                    </span>
-                            <div class="chat-body clearfix">
-                                <div class="header">
-                                    <strong class="primary-font">Jack Sparrow</strong>
-                                    <small class="pull-right text-muted">
-                                        <i class="fa fa-clock-o fa-fw"></i> 14 mins ago</small>
-                                </div>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.
-                                </p>
-                            </div>
+                        <li class="list-group-item">
+                            <b>(0) Annotation Header</b>
                         </li>
-                        <li class="right clearfix">
-                                    <span class="chat-img pull-right">
-                                        <img src="http://placehold.it/50/FA6F57/fff" alt="User Avatar" class="img-circle" />
-                                    </span>
-                            <div class="chat-body clearfix">
-                                <div class="header">
-                                    <small class=" text-muted">
-                                        <i class="fa fa-clock-o fa-fw"></i> 15 mins ago</small>
-                                    <strong class="pull-right primary-font">Bhaumik Patel</strong>
-                                </div>
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur bibendum ornare dolor, quis ullamcorper ligula sodales.
-                                </p>
-                            </div>
+                        <li class="list-group-item">
+                            <b>(0) Corpus Data Format</b>
+                        </li>
+                        <li class="list-group-item">
+                            <b>(0) Defined License</b>
                         </li>
                     </ul>
+
                 </div>
-                <!-- /.panel-body -->
-                <div class="panel-footer">
-                    <div class="input-group">
-                        <input id="btn-input" type="text" class="form-control input-sm" placeholder="Type your message here..." />
-                        <span class="input-group-btn">
-                                    <button class="btn btn-warning btn-sm" id="btn-chat">
-                                        Send
-                                    </button>
-                                </span>
-                    </div>
+                <div class="modal-footer bg-corpus-light px-4 rounded-lg-bt">
+                    <button class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded px-5" data-dismiss="modal"
+                            aria-label="Close">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary font-weight-bold text-uppercase rounded px-5">
+                        Delete
+                    </button>
                 </div>
-                <!-- /.panel-footer -->
-            </div-->
-            <!-- /.panel .chat-panel -->
+            </div>
         </div>
-        <!-- /.col-lg-4 -->
     </div>
-    <!-- /.row -->
+    @endif
 @endsection
