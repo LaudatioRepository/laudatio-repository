@@ -84,14 +84,14 @@
 
                     <div class="navbar-nav nav row w-100 px-5">
                         <div class="nav-item maintablink col-2 text-center text-14 font-weight-bold active">
-                            <a class=" nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#editCorpus" role="tab">
+                            <a class=" nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#corpusMetadataBody" role="tab">
                                 CORPUS
                             </a>
                         </div>
 
 
                         <div class="nav-item col-auto text-center text-14 font-weight-bold ">
-                              <a class="nav-link  text-dark text-uppercase " href="adminPreview_documents.html">
+                              <a class="nav-link  text-dark text-uppercase " href="#documentMetadataBody">
                                 Documents <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1">
                           <i class="fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"></i>
                           <span class="text-primary text-14 font-weight-bold">{{headerdata.corpusdocumentcount}}</span>
@@ -103,7 +103,7 @@
 
 
                         <div class="nav-item col-auto text-center text-14 font-weight-bold ">
-                          <a class="nav-link  text-dark text-uppercase " href="adminPreview_annotations.html">
+                          <a class="nav-link  text-dark text-uppercase " href="#annotationMetadataBody">
                             Annotations <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
                       <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
                       <span class="text-primary text-14 font-weight-bold">{{headerdata.totalcorpusannotationcount}}</span>
