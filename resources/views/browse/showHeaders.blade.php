@@ -1,8 +1,8 @@
-@extends('layouts.browse')
+@extends('layouts.admin_ux')
 
 @section('content')
 
-    <div class="HolyGrail">
+    <div class="HolyGrail" id="browseapp">
         <breadcrumb :headerdata="headerdata" :header="header"></breadcrumb>
         <header class="HolyGrail-header">
             <div class="overlay">
@@ -16,9 +16,9 @@
                     <annotationheader :headerdata="headerdata" :header="header"></annotationheader>
                 </div>
             </div>
-            <div class="Corpus-MetadataBlock-header" v-show="header == 'corpus'">
+            <!--div class="Corpus-MetadataBlock-header" v-show="header == 'corpus'">
                 <metadata-block-header-corpus :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-header-corpus>
-            </div>
+            </div-->
             <div class="Corpus-MetadataBlock-header" v-show="header == 'document'">
                 <metadata-block-header-document :headerdata="headerdata" :headerid="headerid" :header="header"></metadata-block-header-document>
             </div>

@@ -13,7 +13,7 @@ Vue.component('breadcrumb', require('./components/BreadCrumb.vue'));
 Vue.component('corpusheader', require('./components/CorpusHeader.vue'));
 Vue.component('documentheader', require('./components/DocumentHeader.vue'));
 Vue.component('annotationheader', require('./components/AnnotationHeader.vue'));
-Vue.component('metadata-block-header-corpus', require('./components/CorpusMetadataBlockHeader.vue'));
+
 Vue.component('metadata-block-body-corpus', require('./components/CorpusMetadataBlockBody.vue'));
 Vue.component('metadata-block-header-document', require('./components/DocumentMetadataBlockHeader.vue'));
 Vue.component('metadata-block-body-document', require('./components/DocumentMetadataBlockBody.vue'));
@@ -23,8 +23,8 @@ Vue.component('metadata-block-body-annotation', require('./components/Annotation
 const browseApp = new Vue({
     el: '#browseapp',
     data: {
-        header: window.browseApp.header,
-        headerid: window.browseApp.header_id,
-        headerdata: window.browseApp.header_data.result
+        header: window.laudatioApp.header,
+        headerid: window.laudatioApp.header_id,
+        headerdata: window.laudatioApp.header_data.result
     }
 });

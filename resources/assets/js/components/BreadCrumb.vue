@@ -1,28 +1,32 @@
 <template lang="html">
- <div class="resultbar" role="breadcrumb">
-            <div class="headerBreadCrumb">HOME |  PUBLISHED CORPORA
-                <span v-if="header == 'corpus'"> |  {{ headerdata.corpus_title | arrayToString | touppercase }}</span>
-                <span v-if="header == 'document'"><span v-if="headerdata.documentCorpusdata  != 'undefined'"> |  {{ headerdata.documentCorpusdata.corpus_title | arrayToString | touppercase}}</span> |  {{ headerdata.document_title | arrayToString | arrayToString | touppercase }}</span>
-                <span v-if="header == 'annotation'"><span  v-if="headerdata.annotationCorpusdata  != 'undefined'"> |  {{ headerdata.annotationCorpusdata.corpus_title | arrayToString | touppercase}}</span> |  {{ headerdata.preparation_title | arrayToString | arrayToString | touppercase }}</span>
-            </div>
-            <div class="prevNextBreadCrumb">
-                <span v-show="header == 'corpus'">
-                    <span>PREVIOUS CORPUS | </span>
-                    <span> 10 / 10</span>
-                    <span> | NEXT CORPUS</span>
-                </span>
-                <span v-show="header == 'document'">
-                    <span>PREVIOUS DOCUMENT | </span>
-                    <span> 10 / 10</span>
-                    <span> | NEXT DOCUMENT</span>
-                </span>
-                <span v-show="header == 'annotation'">
-                    <span>PREVIOUS ANNOTAION | </span>
-                    <span> 10 / 10</span>
-                    <span> | NEXT ANNOTATION</span>
-                </span>
-            </div>
-        </div>
+<div class="container-fluid bg-bluegrey-dark">
+    <div class="py-2 container d-flex justify-content-between align-items-center">
+
+        <nav aria-label="breadcrumb" class="breadcrumbs">
+            <ol class="breadcrumb bg-transparent">
+                <li class="text-12 text-uppercase breadcrumb-item">
+                    <a class="text-dark" href="#">Home</a>
+                </li>
+                <li class="text-12 text-uppercase breadcrumb-item">
+                    <a class="text-dark" href="#">Publish</a>
+                </li>
+                <li class="text-12 text-uppercase breadcrumb-item text-wine-trans active" aria-current="page">Corpus projects</li>
+                <li class="text-12 text-uppercase breadcrumb-item" v-if="header == 'corpus'">
+                    <a class="text-dark" href="#">{{ headerdata.corpus_title | arrayToString | touppercase }}</a>
+                </li>
+                 <li class="text-12 text-uppercase breadcrumb-item" v-if="header == 'document' && headerdata.documentCorpusdata  != 'undefined'">
+                    <a class="text-dark" href="#">{{ headerdata.documentCorpusdata.corpus_title | arrayToString | touppercase}}</a> |  {{ headerdata.document_title | arrayToString | arrayToString | touppercase }}</a>
+                </li>
+
+                <li class="text-12 text-uppercase breadcrumb-item" v-if="header == 'annotation' && headerdata.annotationCorpusdata  != 'undefined'">
+                    <a class="text-dark" href="#">{{ headerdata.annotationCorpusdata.corpus_title | arrayToString | touppercase}}</a> |  {{ headerdata.preparation_title | arrayToString | arrayToString | touppercase }}</a>
+                </li>
+
+            </ol>
+        </nav>
+
+    </div>
+</div>
 </template>
 <script>
     export default {
