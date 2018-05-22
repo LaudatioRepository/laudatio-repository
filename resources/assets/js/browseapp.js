@@ -13,7 +13,6 @@ Vue.component('breadcrumb', require('./components/BreadCrumb.vue'));
 Vue.component('corpusheader', require('./components/CorpusHeader.vue'));
 Vue.component('documentheader', require('./components/DocumentHeader.vue'));
 Vue.component('annotationheader', require('./components/AnnotationHeader.vue'));
-
 Vue.component('metadata-block-body-corpus', require('./components/CorpusMetadataBlockBody.vue'));
 Vue.component('metadata-block-header-document', require('./components/DocumentMetadataBlockHeader.vue'));
 Vue.component('metadata-block-body-document', require('./components/DocumentMetadataBlockBody.vue'));
