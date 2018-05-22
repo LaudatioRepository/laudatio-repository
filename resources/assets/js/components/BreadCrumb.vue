@@ -1,5 +1,5 @@
 <template lang="html">
-<div class="container-fluid bg-bluegrey-dark">
+<div v-bind:class="[containerClass, backgroundClass]">
     <div class="py-2 container d-flex justify-content-between align-items-center">
 
         <nav aria-label="breadcrumb" class="breadcrumbs">
@@ -30,7 +30,7 @@
 </template>
 <script>
     export default {
-        props: ['headerdata','header'],
+        props: ['headerdata','header','user','isloggedin'],
         methods: {
             corpusAuthors: function(){
                 var authorString = "";
@@ -42,6 +42,12 @@
                 }
                 authorString = authorString.substring(0,authorString.lastIndexOf(","));
                 return authorString;
+            }
+        },
+        data: function(){
+            return {
+                containerClass: 'container-fluid',
+                backgroundClass: this.isloggedin ? 'bg-bluegrey-dark': 'bg-corpus-mid',
             }
         },
         mounted() {

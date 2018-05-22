@@ -60,20 +60,20 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 100);
+/******/ 	return __webpack_require__(__webpack_require__.s = 101);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 100:
+/***/ 101:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(101);
+module.exports = __webpack_require__(102);
 
 
 /***/ }),
 
-/***/ 101:
+/***/ 102:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function($) {/**
@@ -111,34 +111,42 @@ $(function () {
      */
 
     if ($("nav.headernav").find("a[data-headertype ='corpus']").hasClass('active')) {
-        window.Laravel.directorypath += '/TEI-HEADERS/corpus';
+        if (typeof window.Laravel != 'undefined') {
+            window.Laravel.directorypath += '/TEI-HEADERS/corpus';
+        }
     }
 
     $('nav.headernav a[data-headertype ="corpus"]').bind('click', function (e) {
-        var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
-        window.Laravel.directorypath = oldPath + '/TEI-HEADERS/corpus';
-        console.log(window.Laravel.directorypath);
-        var previews = $('#previews').detach();
-        previews.html("");
-        previews.appendTo($('#tabcontainer'));
+        if (typeof window.Laravel != 'undefined') {
+            var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
+            window.Laravel.directorypath = oldPath + '/TEI-HEADERS/corpus';
+            console.log(window.Laravel.directorypath);
+            var previews = $('#previews').detach();
+            previews.html("");
+            previews.appendTo($('#tabcontainer'));
+        }
     });
 
     $('nav.headernav a[data-headertype ="document"]').bind('click', function (e) {
-        var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
-        window.Laravel.directorypath = oldPath + '/TEI-HEADERS/document';
-        console.log(window.Laravel.directorypath);
-        var previews = $('#previews').detach();
-        previews.html("");
-        previews.appendTo($('#tabcontainer'));
+        if (typeof window.Laravel != 'undefined') {
+            var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
+            window.Laravel.directorypath = oldPath + '/TEI-HEADERS/document';
+            console.log(window.Laravel.directorypath);
+            var previews = $('#previews').detach();
+            previews.html("");
+            previews.appendTo($('#tabcontainer'));
+        }
     });
 
     $('nav.headernav a[data-headertype ="annotation"]').bind('click', function (e) {
-        var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
-        window.Laravel.directorypath = oldPath + '/TEI-HEADERS/annotation';
-        console.log(window.Laravel.directorypath);
-        var previews = $('#previews').detach();
-        previews.html("");
-        previews.appendTo($('#tabcontainer'));
+        if (typeof window.Laravel != 'undefined') {
+            var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
+            window.Laravel.directorypath = oldPath + '/TEI-HEADERS/annotation';
+            console.log(window.Laravel.directorypath);
+            var previews = $('#previews').detach();
+            previews.html("");
+            previews.appendTo($('#tabcontainer'));
+        }
     });
 
     /**
@@ -146,6 +154,15 @@ $(function () {
      */
     $(document).on('click', 'a.nav-link.maintablink', function (e) {
         $.each($('a.nav-link.maintablink'), function () {
+            if ($(this).hasClass('active')) {
+                $(this).removeClass('active');
+                $(this).parent().addClass('active');
+            }
+        });
+    });
+
+    $(document).on('click', 'a.nav-link.maintablink', function (e) {
+        $.each($('a.nav-item.maintablink'), function () {
             if ($(this).hasClass('active')) {
                 $(this).removeClass('active');
                 $(this).parent().addClass('active');

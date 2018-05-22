@@ -48,6 +48,7 @@
                 <nav class="navbar navbar-expand-sm navbar-light bg-transparent p-0 container" role="tablist">
 
                     <div class="navbar-nav nav row w-100 px-5">
+
                         <div class="nav-item maintablink col-2 text-center text-14 font-weight-bold active">
                             <a class=" nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#editCorpus" role="tab">
                                 Upload / Edit

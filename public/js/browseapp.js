@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 110);
+/******/ 	return __webpack_require__(__webpack_require__.s = 111);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -33291,19 +33291,20 @@ if (typeof Object.create === 'function') {
 /* 107 */,
 /* 108 */,
 /* 109 */,
-/* 110 */
+/* 110 */,
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(111);
+module.exports = __webpack_require__(112);
 
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_good_table__ = __webpack_require__(112);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_good_table__ = __webpack_require__(113);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_good_table___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue_good_table__);
 /**
  * Created by rolfguescini on 07.07.17.
@@ -33316,10 +33317,10 @@ var util = __webpack_require__(13);
 
 window.Vue.use(__WEBPACK_IMPORTED_MODULE_0_vue_good_table___default.a);
 
-Vue.component('breadcrumb', __webpack_require__(113));
-Vue.component('corpusheader', __webpack_require__(116));
-Vue.component('documentheader', __webpack_require__(119));
-Vue.component('annotationheader', __webpack_require__(122));
+Vue.component('breadcrumb', __webpack_require__(114));
+Vue.component('corpusheader', __webpack_require__(117));
+Vue.component('documentheader', __webpack_require__(122));
+Vue.component('annotationheader', __webpack_require__(125));
 
 Vue.component('metadata-block-body-corpus', __webpack_require__(128));
 Vue.component('metadata-block-header-document', __webpack_require__(131));
@@ -33332,12 +33333,14 @@ var browseApp = new Vue({
     data: {
         header: window.laudatioApp.header,
         headerid: window.laudatioApp.header_id,
-        headerdata: window.laudatioApp.header_data.result
+        headerdata: window.laudatioApp.header_data.result,
+        user: window.laudatioApp.user,
+        isloggedin: window.laudatioApp.isLoggedIn
     }
 });
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -48484,15 +48487,15 @@ module.exports = __webpack_require__(86);
 });
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(114)
+var __vue_script__ = __webpack_require__(115)
 /* template */
-var __vue_template__ = __webpack_require__(115)
+var __vue_template__ = __webpack_require__(116)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -48531,7 +48534,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48568,7 +48571,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header'],
+    props: ['headerdata', 'header', 'user', 'isloggedin'],
     methods: {
         corpusAuthors: function corpusAuthors() {
             var authorString = "";
@@ -48579,20 +48582,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return authorString;
         }
     },
+    data: function data() {
+        return {
+            containerClass: 'container-fluid',
+            backgroundClass: this.isloggedin ? 'bg-bluegrey-dark' : 'bg-corpus-mid'
+        };
+    },
     mounted: function mounted() {
         console.log('CorpusMetadataBlockHeader mounted.');
     }
 });
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container-fluid bg-bluegrey-dark" }, [
+  return _c("div", { class: [_vm.containerClass, _vm.backgroundClass] }, [
     _c(
       "div",
       {
@@ -48756,15 +48765,15 @@ if (false) {
 }
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(117)
+var __vue_script__ = __webpack_require__(118)
 /* template */
-var __vue_template__ = __webpack_require__(118)
+var __vue_template__ = __webpack_require__(121)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -48803,7 +48812,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -48929,118 +48938,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header'],
+    props: ['headerdata', 'header', 'user', 'isloggedin'],
     methods: {
         corpusAuthors: function corpusAuthors() {
             var authorString = "";
@@ -49051,258 +48951,255 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return authorString;
         }
     },
+    data: function data() {
+        return {
+            containerClass: 'container-fluid',
+            backgroundClass: this.isloggedin ? 'bg-bluegrey-mid' : 'bg-corpus-light',
+            bsh1: 'bsh-1'
+        };
+    },
     mounted: function mounted() {
         console.log('CorpusMetadataBlockHeader mounted.');
     }
 });
 
 /***/ }),
-/* 118 */
+/* 119 */,
+/* 120 */,
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c("div", { staticClass: "container-fluid bg-bluegrey-mid bsh-1" }, [
-      _c("div", { staticClass: "container pt-5" }, [
-        _c("div", { staticClass: "row" }, [
-          _vm._m(0),
+  return _c("div", { staticClass: "container pt-5" }, [
+    _c("div", { staticClass: "row" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("div", { staticClass: "col pr-5" }, [
+        _c("h3", { staticClass: "h3 font-weight-bold" }, [
+          _vm._v(
+            "\n       " +
+              _vm._s(_vm._f("arrayToString")(_vm.headerdata.corpus_title)) +
+              "\n      "
+          )
+        ]),
+        _vm._v(" "),
+        _c("p", { staticClass: "text-wine text-14" }, [
+          _vm._v("\n        " + _vm._s(_vm.corpusAuthors()) + "\n      ")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "row mt-2" }, [
+          _vm._m(1),
           _vm._v(" "),
-          _c("div", { staticClass: "col pr-5" }, [
-            _c("h3", { staticClass: "h3 font-weight-bold" }, [
-              _vm._v(
-                "\n               " +
-                  _vm._s(_vm._f("arrayToString")(_vm.headerdata.corpus_title)) +
-                  "\n              "
-              )
-            ]),
-            _vm._v(" "),
-            _c("p", { staticClass: "text-wine text-14" }, [
-              _vm._v(
-                "\n                " +
-                  _vm._s(_vm.corpusAuthors()) +
-                  "\n              "
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "row mt-2" }, [
-              _vm._m(1),
-              _vm._v(" "),
-              _c("div", { staticClass: "col col-auto mr-2" }, [
-                _c(
-                  "div",
-                  {
-                    staticClass:
-                      "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                  },
-                  [
-                    _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
-                    _vm._v(" "),
-                    _c("span", [
-                      _vm._v(
-                        _vm._s(_vm.headerdata.corpus_languages_language[0])
-                      )
-                    ])
-                  ]
-                ),
+          _c("div", { staticClass: "col col-auto mr-2" }, [
+            _c(
+              "div",
+              {
+                staticClass:
+                  "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+              },
+              [
+                _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
                 _vm._v(" "),
-                _c(
-                  "div",
-                  {
-                    staticClass:
-                      "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                  },
-                  [
-                    _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                    _vm._v(" "),
-                    _c("span", [
-                      _vm._v(
-                        "\n    " +
-                          _vm._s(
-                            _vm._f("arrayToString")(
-                              _vm.headerdata.corpus_size_value
-                            )
-                          ) +
-                          " Tokens\n  "
-                      )
-                    ])
-                  ]
-                )
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col col-auto mr-2 align-self-end" }, [
-                _c(
-                  "div",
-                  {
-                    staticClass:
-                      "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 pl-2 flex-nowrap"
-                  },
-                  [
-                    _c("i", {
-                      staticClass:
-                        "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
-                    }),
-                    _vm._v(" "),
-                    _c("span", [
-                      _vm._v(
-                        "\n                      Working Version (" +
-                          _vm._s(
-                            _vm._f("lastElement")(
-                              _vm.headerdata.corpus_publication_publication_date
-                            )
-                          ) +
-                          ")\n                    "
-                      )
-                    ])
-                  ]
-                )
-              ])
-            ]),
+                _c("span", [
+                  _vm._v(_vm._s(_vm.headerdata.corpus_languages_language[0]))
+                ])
+              ]
+            ),
             _vm._v(" "),
-            _c("div", { staticClass: "mt-3 mb-3 mr-5" }, [
-              _c("div", { staticClass: "text-wine text-14" }, [
-                _c("img", {
-                  staticClass: "pr-1",
-                  attrs: {
-                    src: "/images/logo-laudatio-mini.svg",
-                    alt: "copyright-logo"
-                  }
+            _c(
+              "div",
+              {
+                staticClass:
+                  "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+              },
+              [
+                _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
+                _vm._v(" "),
+                _c("span", [
+                  _vm._v(
+                    "\n            " +
+                      _vm._s(
+                        _vm._f("arrayToString")(
+                          _vm.headerdata.corpus_size_value
+                        )
+                      ) +
+                      " Tokens\n          "
+                  )
+                ])
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col col-auto mr-2 align-self-end" }, [
+            _c(
+              "div",
+              {
+                staticClass:
+                  "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 pl-2 flex-nowrap"
+              },
+              [
+                _c("i", {
+                  staticClass:
+                    "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
                 }),
                 _vm._v(" "),
                 _c("span", [
                   _vm._v(
-                    _vm._s(_vm.corpusAuthors()) +
-                      ";\n                    " +
+                    "\n              Working Version (" +
                       _vm._s(
-                        _vm._f("arrayToString")(_vm.headerdata.corpus_title)
+                        _vm._f("lastElement")(
+                          _vm.headerdata.corpus_publication_publication_date
+                        )
                       ) +
-                      ";\n                    " +
-                      _vm._s(_vm.headerdata.corpus_publication_publisher[0]) +
-                      ";\n                    Homepage: " +
-                      _vm._s(
-                        _vm.headerdata.corpus_encoding_project_homepage[0]
-                      ) +
-                      ";\n                    Corpus-Link: "
-                  ),
-                  _c("a", { attrs: { href: "http://handle" } }, [
-                    _vm._v("http://handle.net/xxx")
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("b", [_vm._v("Homepage: ")]),
-                _vm._v(" "),
-                _c("a", { attrs: { href: "#" } }, [_vm._v("Link")]),
-                _vm._v(" "),
-                _c("b", [_vm._v("Corpus-Link: ")]),
-                _vm._v(" "),
-                _c("a", { attrs: { href: "#" } }, [_vm._v("Link")])
-              ])
-            ])
-          ]),
-          _vm._v(" "),
-          _vm._m(2)
+                      ")\n            "
+                  )
+                ])
+              ]
+            )
+          ])
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "row mt-5" }, [
-          _c(
-            "nav",
-            {
-              staticClass:
-                "navbar navbar-expand-sm navbar-light bg-transparent p-0 container",
-              attrs: { role: "tablist" }
-            },
-            [
-              _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-                _vm._m(3),
-                _vm._v(" "),
+        _c("div", { staticClass: "mt-3 mb-3 mr-5" }, [
+          _c("div", { staticClass: "text-wine text-14" }, [
+            _c("img", {
+              staticClass: "pr-1",
+              attrs: {
+                src: "/images/logo-laudatio-mini.svg",
+                alt: "copyright-logo"
+              }
+            }),
+            _vm._v(" "),
+            _c("span", [
+              _vm._v(
+                _vm._s(_vm.corpusAuthors()) +
+                  ";\n                            " +
+                  _vm._s(_vm._f("arrayToString")(_vm.headerdata.corpus_title)) +
+                  ";\n                            " +
+                  _vm._s(_vm.headerdata.corpus_publication_publisher[0]) +
+                  ";\n                            Homepage: " +
+                  _vm._s(_vm.headerdata.corpus_encoding_project_homepage[0]) +
+                  ";\n                            Corpus-Link: "
+              ),
+              _c("a", { attrs: { href: "http://handle" } }, [
+                _vm._v("http://handle.net/xxx")
+              ])
+            ]),
+            _vm._v(" "),
+            _c("b", [_vm._v("Homepage: ")]),
+            _vm._v(" "),
+            _c("a", { attrs: { href: "#" } }, [_vm._v("Link")]),
+            _vm._v(" "),
+            _c("b", [_vm._v("Corpus-Link: ")]),
+            _vm._v(" "),
+            _c("a", { attrs: { href: "#" } }, [_vm._v("Link")])
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _vm._m(2)
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "row mt-5" }, [
+      _c(
+        "nav",
+        {
+          staticClass:
+            "navbar navbar-expand-sm navbar-light bg-transparent p-0 container",
+          attrs: { role: "tablist" }
+        },
+        [
+          _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
+            _vm._m(3),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass:
+                  "nav-item maintablink col-auto text-center text-14 font-weight-bold "
+              },
+              [
                 _c(
-                  "div",
+                  "a",
                   {
                     staticClass:
-                      "nav-item col-auto text-center text-14 font-weight-bold "
+                      "nav-link maintablink text-dark text-uppercase ",
+                    attrs: {
+                      "data-toggle": "tab",
+                      href: "#documentMetadataBody",
+                      role: "tab"
+                    }
                   },
                   [
+                    _vm._v("Documents\n                        "),
                     _c(
-                      "a",
+                      "div",
                       {
-                        staticClass: "nav-link  text-dark text-uppercase ",
-                        attrs: { href: "#documentMetadataBody" }
+                        staticClass:
+                          "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 "
                       },
                       [
-                        _vm._v("\n                                Documents "),
+                        _c("i", {
+                          staticClass:
+                            "fa fa-comment-o fa-fw fa-edit align-text-top fa-lg text-wine"
+                        }),
+                        _vm._v(" "),
                         _c(
-                          "div",
+                          "span",
                           {
-                            staticClass:
-                              "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1"
+                            staticClass: "text-primary text-14 font-weight-bold"
                           },
-                          [
-                            _c("i", {
-                              staticClass:
-                                "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                            }),
-                            _vm._v(" "),
-                            _c(
-                              "span",
-                              {
-                                staticClass:
-                                  "text-primary text-14 font-weight-bold"
-                              },
-                              [
-                                _vm._v(
-                                  _vm._s(_vm.headerdata.corpusdocumentcount)
-                                )
-                              ]
-                            )
-                          ]
+                          [_vm._v(_vm._s(_vm.headerdata.corpusdocumentcount))]
                         )
                       ]
                     )
                   ]
-                ),
-                _vm._v(" "),
+                )
+              ]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass:
+                  "nav-item maintablink col-auto text-center text-14 font-weight-bold "
+              },
+              [
                 _c(
-                  "div",
+                  "a",
                   {
                     staticClass:
-                      "nav-item col-auto text-center text-14 font-weight-bold "
+                      "nav-link maintablink text-dark text-uppercase ",
+                    attrs: {
+                      "data-toggle": "tab",
+                      href: "#annotationMetadataBody",
+                      role: "tab"
+                    }
                   },
                   [
+                    _vm._v("Annotations\n                        "),
                     _c(
-                      "a",
+                      "div",
                       {
-                        staticClass: "nav-link  text-dark text-uppercase ",
-                        attrs: { href: "#annotationMetadataBody" }
+                        staticClass:
+                          "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 "
                       },
                       [
-                        _vm._v("\n                            Annotations "),
+                        _c("i", {
+                          staticClass:
+                            "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                        }),
+                        _vm._v(" "),
                         _c(
-                          "div",
+                          "span",
                           {
-                            staticClass:
-                              "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 "
+                            staticClass: "text-primary text-14 font-weight-bold"
                           },
                           [
-                            _c("i", {
-                              staticClass:
-                                "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                            }),
-                            _vm._v(" "),
-                            _c(
-                              "span",
-                              {
-                                staticClass:
-                                  "text-primary text-14 font-weight-bold"
-                              },
-                              [
-                                _vm._v(
-                                  _vm._s(
-                                    _vm.headerdata.totalcorpusannotationcount
-                                  )
-                                )
-                              ]
+                            _vm._v(
+                              _vm._s(_vm.headerdata.totalcorpusannotationcount)
                             )
                           ]
                         )
@@ -49310,14 +49207,12 @@ var render = function() {
                     )
                   ]
                 )
-              ])
-            ]
-          )
-        ])
-      ])
-    ]),
-    _vm._v(" "),
-    _vm._m(4)
+              ]
+            )
+          ])
+        ]
+      )
+    ])
   ])
 }
 var staticRenderFns = [
@@ -49346,7 +49241,7 @@ var staticRenderFns = [
         [
           _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
           _vm._v(" "),
-          _c("span", [_vm._v("\n    D. from 1945 - 1950\n  ")])
+          _c("span", [_vm._v("\n            D. from 1945 - 1950\n          ")])
         ]
       ),
       _vm._v(" "),
@@ -49359,7 +49254,7 @@ var staticRenderFns = [
         [
           _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
           _vm._v(" "),
-          _c("span", [_vm._v("\n    Herbology\n  ")])
+          _c("span", [_vm._v("\n            Herbology\n          ")])
         ]
       )
     ])
@@ -49376,7 +49271,7 @@ var staticRenderFns = [
             staticClass:
               "corpus-title h6 text-uppercase text-12 text-wine-trans"
           },
-          [_vm._v("\n    Corpus\n  ")]
+          [_vm._v("\n            Corpus\n          ")]
         ),
         _vm._v(" "),
         _c("div", { staticClass: "card-body d-flex flex-column" }, [
@@ -49387,7 +49282,7 @@ var staticRenderFns = [
                 " btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded small",
               attrs: { href: "adminEdit_corpus.html" }
             },
-            [_vm._v("\n      Edit\n    ")]
+            [_vm._v("\n              Edit\n            ")]
           ),
           _vm._v(" "),
           _c(
@@ -49400,7 +49295,7 @@ var staticRenderFns = [
                 "data-target": "#publishCorpusModal"
               }
             },
-            [_vm._v("\n      Publish\n    ")]
+            [_vm._v("\n              Publish\n            ")]
           )
         ])
       ])
@@ -49427,167 +49322,10 @@ var staticRenderFns = [
               role: "tab"
             }
           },
-          [
-            _vm._v(
-              "\n                                CORPUS\n                            "
-            )
-          ]
+          [_vm._v("\n                        CORPUS\n                    ")]
         )
       ]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container-fluid tab-content content" }, [
-      _c("div", {
-        staticClass: "tab-pane active",
-        attrs: { role: "tabpanel", id: "editCorpus" }
-      }),
-      _vm._v(" "),
-      _c("div", {
-        staticClass: "tab-pane fade in",
-        attrs: { role: "tabpanel", id: "messageBoard" }
-      }),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "tab-pane fade in",
-          attrs: { role: "tabpanel", id: "corpusCollaborators" }
-        },
-        [
-          _c("div", { staticClass: "container-fluid" }, [
-            _c("div", { staticClass: "container" }, [
-              _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "col" }, [
-                  _c(
-                    "div",
-                    { staticClass: "d-flex justify-content-between mt-7 mb-3" },
-                    [
-                      _c("h3", { staticClass: "h3 font-weight-normal" }, [
-                        _vm._v("Corpus Collaborator")
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "table",
-                    {
-                      staticClass:
-                        "documents-table table table-bluegrey-dark  table-striped"
-                    },
-                    [
-                      _c("thead", { staticClass: "bg-bluegrey-mid" }, [
-                        _c("tr", { staticClass: "text-14 text-grey-light" }, [
-                          _c("th", { attrs: { scope: "col" } }, [
-                            _vm._v("Collaborator")
-                          ]),
-                          _vm._v(" "),
-                          _c("th", { attrs: { scope: "col" } }, [
-                            _vm._v("Role")
-                          ]),
-                          _vm._v(" "),
-                          _c("th", { attrs: { scope: "col" } }, [
-                            _vm._v("Institute")
-                          ]),
-                          _vm._v(" "),
-                          _c("th", { attrs: { scope: "col" } }, [
-                            _vm._v("Delete")
-                          ]),
-                          _vm._v(" "),
-                          _c("th", { attrs: { scope: "col", colspan: "2" } }, [
-                            _vm._v(" ")
-                          ])
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("tbody", [
-                        _c("tr", [
-                          _c("td", [
-                            _c(
-                              "div",
-                              { staticClass: "custom-control custom-checkbox" },
-                              [
-                                _c("input", {
-                                  staticClass: "custom-control-input",
-                                  attrs: {
-                                    type: "checkbox",
-                                    id: "corpusEditItem_0001"
-                                  }
-                                }),
-                                _vm._v(" "),
-                                _c(
-                                  "label",
-                                  {
-                                    staticClass:
-                                      "custom-control-label font-weight-bold",
-                                    attrs: { for: "corpusEditItem_0001" }
-                                  },
-                                  [_c("i", { staticClass: "fa fa-user fa-fw" })]
-                                )
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "label",
-                              {
-                                staticClass:
-                                  "custom-control-label font-weight-bold",
-                                attrs: { for: "corpusEditItem_0001" }
-                              },
-                              [_c("i", { staticClass: "fa fa-user fa-fw" })]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c("td"),
-                          _vm._v(" "),
-                          _c("td", [
-                            _c("span", {
-                              staticClass: "font-weight-bold text-uppercase"
-                            })
-                          ]),
-                          _vm._v(" "),
-                          _c("td", { staticClass: "text-14 text-grey-light" }, [
-                            _vm._v("df")
-                          ]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _c("a", { attrs: { href: "#" } }, [
-                              _c("i", {
-                                staticClass:
-                                  "fa fa-trash-o fa-fw fa-lg text-dark"
-                              })
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("td", [
-                            _c("a", { attrs: { href: "#" } }, [
-                              _vm._v(
-                                "\n                                                 \n                                            "
-                              )
-                            ])
-                          ])
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("tfoot", { staticClass: "bg-bluegrey-mid" }, [
-                        _c("tr", [
-                          _c("td", { attrs: { colspan: "2" } }),
-                          _vm._v(" "),
-                          _c("td", { attrs: { colspan: "2" } })
-                        ])
-                      ])
-                    ]
-                  )
-                ])
-              ])
-            ])
-          ])
-        ]
-      )
-    ])
   }
 ]
 render._withStripped = true
@@ -49600,15 +49338,15 @@ if (false) {
 }
 
 /***/ }),
-/* 119 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(120)
+var __vue_script__ = __webpack_require__(123)
 /* template */
-var __vue_template__ = __webpack_require__(121)
+var __vue_template__ = __webpack_require__(124)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -49647,7 +49385,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 120 */
+/* 123 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -49755,7 +49493,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 121 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -50079,15 +49817,15 @@ if (false) {
 }
 
 /***/ }),
-/* 122 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = __webpack_require__(123)
+var __vue_script__ = __webpack_require__(126)
 /* template */
-var __vue_template__ = __webpack_require__(124)
+var __vue_template__ = __webpack_require__(127)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -50126,7 +49864,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 123 */
+/* 126 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -50233,7 +49971,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 124 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -50482,9 +50220,6 @@ if (false) {
 }
 
 /***/ }),
-/* 125 */,
-/* 126 */,
-/* 127 */,
 /* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -50537,6 +50272,60 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -50872,14 +50661,266 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container tab-content" }, [
+  return _c("div", { staticClass: "container-fluid tab-content content" }, [
     _c(
       "div",
       {
         staticClass: "tab-pane active",
         attrs: { role: "tabpanel", id: "corpusMetadataBody" }
       },
-      [_vm._v("corpusMetadataBody")]
+      [
+        _c("div", { staticClass: "container-fluid" }, [
+          _c("div", { staticClass: "container" }, [
+            _c("div", { staticClass: "row" }, [
+              _c("div", { staticClass: "col-2" }, [
+                _c(
+                  "nav",
+                  {
+                    staticClass:
+                      "headernav sidebar text-14 nav flex-column border-top border-light mt-7",
+                    attrs: { role: "tablist" }
+                  },
+                  [
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active",
+                        attrs: {
+                          "data-toggle": "tab",
+                          role: "tab",
+                          "data-headertype": "corpus",
+                          href: "#corpusDescription"
+                        }
+                      },
+                      [_vm._v("DESCRIPTION")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink collapsed",
+                        attrs: {
+                          href: "#",
+                          "data-toggle": "collapse",
+                          "data-target": "#authorship",
+                          "aria-expanded": "false"
+                        }
+                      },
+                      [_vm._v("AUTHORSHIP")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "ul",
+                      {
+                        staticClass: "nav nav-stacked collapse",
+                        attrs: { id: "authorship" }
+                      },
+                      [
+                        _c(
+                          "li",
+                          { staticClass: "nav-link", attrs: { role: "tab" } },
+                          [
+                            this.corpusEditorRows().length > 0
+                              ? _c(
+                                  "a",
+                                  {
+                                    attrs: {
+                                      href: "#editors",
+                                      "data-toggle": "pill"
+                                    }
+                                  },
+                                  [_vm._v("CORPUS EDITORS")]
+                                )
+                              : _vm._e()
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "li",
+                          { staticClass: "nav-link", attrs: { role: "tab" } },
+                          [
+                            this.corpusAnnotatorRows().length > 0
+                              ? _c(
+                                  "a",
+                                  {
+                                    attrs: {
+                                      href: "#annotators",
+                                      "data-toggle": "pill"
+                                    }
+                                  },
+                                  [_vm._v("ANNOTATORS")]
+                                )
+                              : _vm._e()
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "li",
+                          { staticClass: "nav-link", attrs: { role: "tab" } },
+                          [
+                            this.corpusTranscriptionRows().length > 0
+                              ? _c(
+                                  "a",
+                                  {
+                                    attrs: {
+                                      href: "#transcription",
+                                      "data-toggle": "pill"
+                                    }
+                                  },
+                                  [_vm._v("TRANSCRIPTION")]
+                                )
+                              : _vm._e()
+                          ]
+                        ),
+                        _vm._v(" "),
+                        this.corpusInfrastructureRows().length > 0
+                          ? _c(
+                              "li",
+                              {
+                                staticClass: "nav-link",
+                                attrs: { role: "tab" }
+                              },
+                              [
+                                _c(
+                                  "a",
+                                  {
+                                    attrs: {
+                                      href: "#infrastructure",
+                                      "data-toggle": "pill"
+                                    }
+                                  },
+                                  [_vm._v("INFRASTRUCTURE")]
+                                )
+                              ]
+                            )
+                          : _vm._e()
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
+                        attrs: {
+                          "data-toggle": "tab",
+                          role: "tab",
+                          "data-headertype": "annotation",
+                          href: "#corpusVersions"
+                        }
+                      },
+                      [_vm._v("VERSIONS")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
+                        attrs: {
+                          "data-toggle": "tab",
+                          role: "tab",
+                          "data-headertype": "formatdata",
+                          href: "#corpusLicense"
+                        }
+                      },
+                      [_vm._v("LICENSE / REVISION")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
+                        attrs: {
+                          "data-toggle": "tab",
+                          role: "tab",
+                          "data-headertype": "license",
+                          href: "#corpusFormats"
+                        }
+                      },
+                      [_vm._v("FORMATS")]
+                    )
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col" }, [
+                _c(
+                  "div",
+                  {
+                    staticClass: "container-fluid tab-content content",
+                    attrs: { id: "tabcontainer" }
+                  },
+                  [
+                    _vm.header == "corpus"
+                      ? _c(
+                          "div",
+                          {
+                            staticClass: "tab-pane active",
+                            attrs: { role: "tabpanel", id: "corpusDescription" }
+                          },
+                          [
+                            _c("h2", [_vm._v(" CORPUS DESCRIPTION")]),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "panel-body" }, [
+                              _vm._v(
+                                _vm._s(
+                                  _vm._f("lastElement")(
+                                    _vm.headerdata
+                                      .corpus_encoding_project_description
+                                  )
+                                )
+                              )
+                            ])
+                          ]
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        staticClass: "tab-pane fade in",
+                        attrs: { role: "tabpanel", id: "corpusAuthorship" }
+                      },
+                      [
+                        _vm._v(
+                          "\n                        docu\n                    "
+                        )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        staticClass: "tab-pane fade in",
+                        attrs: { role: "tabpanel", id: "corpusVersions" }
+                      },
+                      [
+                        _vm._v(
+                          "\n                        anno\n                    "
+                        )
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c("div", {
+                      staticClass: "tab-pane fade in",
+                      attrs: { role: "tabpanel", id: "corpusLicense" }
+                    }),
+                    _vm._v(" "),
+                    _c("div", {
+                      staticClass: "tab-pane fade in",
+                      attrs: { role: "tabpanel", id: "corpusFormats" }
+                    })
+                  ]
+                )
+              ])
+            ])
+          ])
+        ])
+      ]
     ),
     _vm._v(" "),
     _vm.header == "corpus"

@@ -1,18 +1,35 @@
 <template lang="html">
-    <div class="headerRow headerNav">
-        <div class="headerColumn left">
+     <div class="row mt-5">
+            <nav class="navbar navbar-expand-sm navbar-light bg-transparent p-0 container" role="tablist">
 
+                <div class="navbar-nav nav row w-100 px-5">
+                    <div class="nav-item maintablink col-2 text-center text-14 font-weight-bold active">
+                        <a class=" nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#corpusMetadataBody" role="tab">
+                            CORPUS
+                        </a>
+                    </div>
+
+                    <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold ">
+                          <a class="nav-link maintablink  text-dark text-uppercase " href="#documentMetadataBody">
+                            Documents <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1">
+                      <i class="fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"></i>
+                      <span class="text-primary text-14 font-weight-bold">{{headerdata.corpusdocumentcount}}</span>
+                    </div>
+                    </a>
+                    </div>
+
+                    <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold ">
+                      <a class="nav-link maintablink  text-dark text-uppercase " href="#annotationMetadataBody">
+                        Annotations
+                        <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
+                            <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
+                            <span class="text-primary text-14 font-weight-bold">{headerdata.totalcorpusannotationcount}}</span>
+                        </div>
+                      </a>
+                    </div>
+                </div>
+            </nav>
         </div>
-        <div class="headerColumn middle">
-            <ul class="nav nav-pills" v-if="header == 'corpus'">
-                <li class="active" role="tab"><a href="#corpusMetadataBody"  data-toggle="pill">CORPUS <i class="material-icons">book</i></a></li>
-                <li role="tab"><a href="#documentMetadataBody" data-toggle="pill">DOCUMENTS <i class="material-icons">description</i> {{headerdata.corpusdocumentcount}}</a></li>
-                <li role="tab"><a href="#annotationMetadataBody" data-toggle="pill">ANNOTATIONS <i class="material-icons">create</i> {{headerdata.totalcorpusannotationcount}}</a></li>
-            </ul>
-        </div>
-        <div class="headerColumn right">
-        </div>
-    </div>
 </template>
 
 <script>

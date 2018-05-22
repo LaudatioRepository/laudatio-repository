@@ -24,6 +24,8 @@ class BrowseController extends Controller
      */
     public function index($header,$id){
         $data = null;
+        $isLoggedIn = \Auth::check();
+        $user = \Auth::user();
         switch ($header){
             case "corpus":
                 $apiData = $this->ElasticService->getCorpus($id);
@@ -227,14 +229,18 @@ class BrowseController extends Controller
                 }
                 break;
         }
-        //dd($data);
+        //dd($isLoggedIn);
 
         JavaScript::put([
             "header" => $header,
             "header_id" => $id,
-            "header_data" => $data
+            "header_data" => $data,
+            "user" => $user,
+            "isLoggedIn" => $isLoggedIn
         ]);
-        return view('browse.showHeaders');
+        return view('browse.showHeaders')
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('user',$user);
     }
 
 }

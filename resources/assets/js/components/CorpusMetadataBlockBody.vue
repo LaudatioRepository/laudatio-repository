@@ -1,8 +1,62 @@
 <template lang="html">
-    <div class="container tab-content">
-        <div role="tabpanel"  class="tab-pane active" id="corpusMetadataBody">corpusMetadataBody</div>
-        <div role="tabpanel"  class="tab-pane fade in"  id="documentMetadataBody" v-if="header == 'corpus'">documentMetadataBody</div>
-        <div role="tabpanel"  class="tab-pane fade in"  id="annotationMetadataBody" v-if="header == 'corpus'">annotationMetadataBody</div>
+   <div class="container-fluid tab-content content">
+        <div role="tabpanel"  class="tab-pane active" id="corpusMetadataBody">
+        <div class="container-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="col-2">
+                <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#corpusDescription">DESCRIPTION</a>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink collapsed"  href="#" data-toggle="collapse" data-target="#authorship" aria-expanded="false">AUTHORSHIP</a>
+                    <ul class="nav nav-stacked collapse" id="authorship">
+                            <li role="tab" class="nav-link"><a href="#editors" data-toggle="pill" v-if="this.corpusEditorRows().length > 0">CORPUS EDITORS</a></li>
+                            <li role="tab" class="nav-link"><a href="#annotators" data-toggle="pill" v-if="this.corpusAnnotatorRows().length > 0">ANNOTATORS</a></li>
+                            <li role="tab" class="nav-link"><a href="#transcription" data-toggle="pill" v-if="this.corpusTranscriptionRows().length > 0">TRANSCRIPTION</a></li>
+                            <li role="tab" class="nav-link" v-if="this.corpusInfrastructureRows().length > 0"><a href="#infrastructure" data-toggle="pill">INFRASTRUCTURE</a></li>
+                          </ul>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#corpusVersions">VERSIONS</a>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="formatdata" href="#corpusLicense">LICENSE / REVISION</a>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="license" href="#corpusFormats">FORMATS</a>
+                </nav>
+            </div>
+            <div class="col">
+                <div id="tabcontainer" class="container-fluid tab-content content">
+
+
+                    <div role="tabpanel"  class="tab-pane active" id="corpusDescription" v-if="header == 'corpus'">
+                        <h2> CORPUS DESCRIPTION</h2>
+                        <div class="panel-body">{{headerdata.corpus_encoding_project_description | lastElement}}</div>
+                    </div>
+
+                    <div role="tabpanel"  class="tab-pane fade in" id="corpusAuthorship">
+                        docu
+                    </div>
+
+                    <div role="tabpanel"  class="tab-pane fade in" id="corpusVersions">
+                        anno
+                    </div>
+
+                    <div role="tabpanel"  class="tab-pane fade in" id="corpusLicense">
+
+                    </div>
+
+                    <div role="tabpanel"  class="tab-pane fade in" id="corpusFormats">
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+
+
+
+
+
+        <div role="tabpanel"  class="tab-pane fade in" id="documentMetadataBody" v-if="header == 'corpus'">documentMetadataBody</div>
+        <div role="tabpanel"  class="tab-pane fade in" id="annotationMetadataBody" v-if="header == 'corpus'">annotationMetadataBody</div>
     </div>
 </template>
 
