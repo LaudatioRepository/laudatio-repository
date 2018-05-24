@@ -53278,6 +53278,44 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin'],
@@ -53437,7 +53475,33 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _vm._m(2)
+      _c("div", { staticClass: "col-2" }, [
+        this.isloggedin
+          ? _c("div", { staticClass: "card text-white bg-transparent" }, [
+              _c(
+                "h6",
+                {
+                  staticClass:
+                    "corpus-title h6 text-uppercase text-12 text-wine-trans"
+                },
+                [_vm._v("\n            Corpus\n          ")]
+              ),
+              _vm._v(" "),
+              _vm._m(2)
+            ])
+          : _c("div", { staticClass: "card text-white bg-transparent" }, [
+              _c(
+                "h6",
+                {
+                  staticClass:
+                    "corpus-title h6 text-uppercase text-12 text-wine"
+                },
+                [_vm._v("\n            Corpus\n          ")]
+              ),
+              _vm._v(" "),
+              _vm._m(3)
+            ])
+      ])
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "row mt-5" }, [
@@ -53450,7 +53514,7 @@ var render = function() {
         },
         [
           _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-            _vm._m(3),
+            _vm._m(4),
             _vm._v(" "),
             _c(
               "div",
@@ -53601,42 +53665,173 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-2" }, [
-      _c("div", { staticClass: "card text-white bg-transparent" }, [
+    return _c("div", { staticClass: "card-body d-flex flex-column" }, [
+      _c(
+        "a",
+        {
+          staticClass:
+            " btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded small",
+          attrs: { href: "adminEdit_corpus.html" }
+        },
+        [_vm._v("\n              Edit\n            ")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass:
+            " btn btn-primary font-weight-bold text-uppercase rounded small mt-3",
+          attrs: {
+            "data-toggle": "modal",
+            "data-target": "#publishCorpusModal"
+          }
+        },
+        [_vm._v("\n              Publish\n            ")]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "card-body d-flex flex-column" }, [
+      _c("div", { staticClass: "dropdown mb-3" }, [
         _c(
-          "h6",
+          "button",
           {
             staticClass:
-              "corpus-title h6 text-uppercase text-12 text-wine-trans"
+              " w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small",
+            attrs: {
+              type: "button",
+              id: "corpusMainActions-Download",
+              "data-toggle": "dropdown",
+              "aria-haspopup": "true",
+              "aria-expanded": "false"
+            }
           },
-          [_vm._v("\n            Corpus\n          ")]
+          [_vm._v("\n                Download\n              ")]
         ),
         _vm._v(" "),
-        _c("div", { staticClass: "card-body d-flex flex-column" }, [
-          _c(
-            "a",
-            {
-              staticClass:
-                " btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded small",
-              attrs: { href: "adminEdit_corpus.html" }
-            },
-            [_vm._v("\n              Edit\n            ")]
-          ),
+        _c(
+          "div",
+          {
+            staticClass: "dropdown-menu",
+            attrs: { "aria-labelledby": "dropdownMenuButton" }
+          },
+          [
+            _c(
+              "a",
+              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+              [_vm._v("TEI-Header")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+              [_vm._v("EXCEL")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+              [_vm._v("PAULA")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+              [_vm._v("ANNIS")]
+            )
+          ]
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass:
+            " btn btn-primary font-weight-bold text-uppercase rounded mb-3 small"
+        },
+        [_vm._v("\n              Open in Annis\n            ")]
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "dropdown" }, [
+        _c(
+          "button",
+          {
+            staticClass:
+              " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
+            attrs: {
+              type: "button",
+              id: "corpusMainActions-Choice",
+              "data-toggle": "dropdown",
+              "aria-haspopup": "true",
+              "aria-expanded": "false"
+            }
+          },
+          [_vm._v("\n                CITE\n              ")]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "dropdown-menu",
+            attrs: { "aria-labelledby": "dropdownMenuButton" }
+          },
+          [
+            _c(
+              "a",
+              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+              [_vm._v("Menuitem 1")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+              [_vm._v("Menuitem 2")]
+            ),
+            _vm._v(" "),
+            _c(
+              "a",
+              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+              [_vm._v("Menuitem 3")]
+            )
+          ]
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "w-100 d-flex justify-content-start align-items-center"
+        },
+        [
+          _c("img", {
+            staticClass: "py-1",
+            attrs: { src: "/images/license-cc.svg", alt: "license cc" }
+          }),
           _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass:
-                " btn btn-primary font-weight-bold text-uppercase rounded small mt-3",
-              attrs: {
-                "data-toggle": "modal",
-                "data-target": "#publishCorpusModal"
-              }
-            },
-            [_vm._v("\n              Publish\n            ")]
-          )
-        ])
-      ])
+          _c("img", {
+            staticClass: "py-1",
+            attrs: { src: "/images/license-sa.svg", alt: "license sa" }
+          }),
+          _vm._v(" "),
+          _c("img", {
+            staticClass: "py-1",
+            attrs: { src: "/images/license-by.svg", alt: "license by" }
+          }),
+          _vm._v(" "),
+          _c("img", {
+            staticClass: "py-1",
+            attrs: { src: "/images/license-nd.svg", alt: "license nd" }
+          }),
+          _vm._v(" "),
+          _c("img", {
+            staticClass: "py-1",
+            attrs: { src: "/images/license-nc.svg", alt: "license nc" }
+          })
+        ]
+      )
     ])
   },
   function() {
@@ -54812,6 +55007,69 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -55057,13 +55315,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
             return count;
         },
-        goToDocument: function goToDocument(row, index) {
-            document.location = "/browse/document/" + row.document_id;
-            return index;
+        goToDocument: function goToDocument(params) {
+            document.location = "/browse/document/" + params.row.document_id;
+            return params.pageIndex;
         },
-        goToAnnotation: function goToAnnotation(row, index) {
-            document.location = "/browse/annotation/" + row.preparation_annotation_id;
-            return index;
+        goToAnnotation: function goToAnnotation(params) {
+            document.location = "/browse/annotation/" + params.row.preparation_annotation_id;
+            return params.pageIndex;
         },
         hasSameLength: function hasSameLength(attributes) {
             var hasSameLength = false;
@@ -55576,7 +55834,6 @@ var render = function() {
                         columns: _vm.documentColumns,
                         rows: _vm.documentRows(),
                         lineNumbers: false,
-                        onClick: _vm.goToDocument,
                         "search-options": {
                           enabled: true
                         },
@@ -55586,7 +55843,108 @@ var render = function() {
                         },
                         styleClass:
                           "custom-table documents-table table table-corpus-mid  table-striped"
-                      }
+                      },
+                      on: { "on-row-click": _vm.goToDocument },
+                      scopedSlots: _vm._u([
+                        {
+                          key: "table-row",
+                          fn: function(props) {
+                            return [
+                              props.column.field == "place"
+                                ? _c("span", [
+                                    _c("i", {
+                                      staticClass: "fa fa-fw fa-map-marker mr-1"
+                                    }),
+                                    _vm._v(
+                                      " " +
+                                        _vm._s(
+                                          props.formattedRow[props.column.field]
+                                        ) +
+                                        "\n                              "
+                                    )
+                                  ])
+                                : props.column.field == "date"
+                                  ? _c("span", [
+                                      _c("i", {
+                                        staticClass: "fa fa-fw fa-clock-o mr-1"
+                                      }),
+                                      _vm._v(
+                                        " " +
+                                          _vm._s(
+                                            props.formattedRow[
+                                              props.column.field
+                                            ]
+                                          ) +
+                                          "\n                              "
+                                      )
+                                    ])
+                                  : props.column.field == "title"
+                                    ? _c("span", [
+                                        _c(
+                                          "span",
+                                          {
+                                            staticClass: "hover-mouse-pointer"
+                                          },
+                                          [
+                                            _vm._v(
+                                              _vm._s(
+                                                props.formattedRow[
+                                                  props.column.field
+                                                ]
+                                              )
+                                            )
+                                          ]
+                                        )
+                                      ])
+                                    : props.column.field == "annotations"
+                                      ? _c("span", [
+                                          _c(
+                                            "a",
+                                            {
+                                              staticClass:
+                                                "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                                              attrs: { href: "#" }
+                                            },
+                                            [
+                                              _c("i", {
+                                                staticClass:
+                                                  "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                                              }),
+                                              _vm._v(" "),
+                                              _c(
+                                                "span",
+                                                {
+                                                  staticClass:
+                                                    "text-14 font-weight-bold"
+                                                },
+                                                [
+                                                  _vm._v(
+                                                    _vm._s(
+                                                      props.formattedRow[
+                                                        props.column.field
+                                                      ]
+                                                    )
+                                                  )
+                                                ]
+                                              )
+                                            ]
+                                          )
+                                        ])
+                                      : _c("span", [
+                                          _vm._v(
+                                            "\n                                " +
+                                              _vm._s(
+                                                props.formattedRow[
+                                                  props.column.field
+                                                ]
+                                              ) +
+                                              "\n                               "
+                                          )
+                                        ])
+                            ]
+                          }
+                        }
+                      ])
                     })
                   ],
                   1
@@ -55727,7 +56085,6 @@ var render = function() {
                                   columns: _vm.annotationColumns,
                                   rows: _vm.allAnnotationRows(),
                                   lineNumbers: false,
-                                  onClick: _vm.goToAnnotation,
                                   "search-options": {
                                     enabled: true
                                   },
@@ -55737,7 +56094,130 @@ var render = function() {
                                   },
                                   styleClass:
                                     "custom-table table table-corpus-mid table-striped"
-                                }
+                                },
+                                on: { "on-row-click": _vm.goToAnnotation },
+                                scopedSlots: _vm._u([
+                                  {
+                                    key: "table-row",
+                                    fn: function(props) {
+                                      return [
+                                        props.column.field == "title"
+                                          ? _c("span", [
+                                              _c(
+                                                "span",
+                                                {
+                                                  staticClass:
+                                                    "hover-mouse-pointer"
+                                                },
+                                                [
+                                                  _vm._v(
+                                                    _vm._s(
+                                                      props.formattedRow[
+                                                        props.column.field
+                                                      ]
+                                                    )
+                                                  )
+                                                ]
+                                              )
+                                            ])
+                                          : props.column.field == "guidelines"
+                                            ? _c("span", [
+                                                _c(
+                                                  "a",
+                                                  {
+                                                    attrs: {
+                                                      href: "/browse/annotation/"
+                                                        .concat(
+                                                          props.row
+                                                            .preparation_annotation_id
+                                                        )
+                                                        .concat("#guidelines")
+                                                    }
+                                                  },
+                                                  [
+                                                    _c("i", {
+                                                      staticClass:
+                                                        "fa fa-fw fa-lg fa-angle-right"
+                                                    })
+                                                  ]
+                                                )
+                                              ])
+                                            : props.column.field == "prep"
+                                              ? _c("span", [
+                                                  _c(
+                                                    "a",
+                                                    {
+                                                      attrs: {
+                                                        href: "/browse/annotation/"
+                                                          .concat(
+                                                            props.row
+                                                              .preparation_annotation_id
+                                                          )
+                                                          .concat(
+                                                            "#preparationSteps"
+                                                          )
+                                                      }
+                                                    },
+                                                    [
+                                                      _c("i", {
+                                                        staticClass:
+                                                          "fa fa-fw fa-lg fa-angle-right"
+                                                      })
+                                                    ]
+                                                  )
+                                                ])
+                                              : props.column.field ==
+                                                "document_count"
+                                                ? _c("span", [
+                                                    _c(
+                                                      "a",
+                                                      {
+                                                        staticClass:
+                                                          "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                                                        attrs: { href: "#" }
+                                                      },
+                                                      [
+                                                        _c("i", {
+                                                          staticClass:
+                                                            "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                                                        }),
+                                                        _vm._v(" "),
+                                                        _c(
+                                                          "span",
+                                                          {
+                                                            staticClass:
+                                                              "text-14 font-weight-bold"
+                                                          },
+                                                          [
+                                                            _vm._v(
+                                                              _vm._s(
+                                                                props
+                                                                  .formattedRow[
+                                                                  props.column
+                                                                    .field
+                                                                ]
+                                                              )
+                                                            )
+                                                          ]
+                                                        )
+                                                      ]
+                                                    )
+                                                  ])
+                                                : _c("span", [
+                                                    _vm._v(
+                                                      "\n                                    " +
+                                                        _vm._s(
+                                                          props.formattedRow[
+                                                            props.column.field
+                                                          ]
+                                                        ) +
+                                                        "\n                                    "
+                                                    )
+                                                  ])
+                                      ]
+                                    }
+                                  }
+                                ])
                               })
                             ],
                             1
@@ -55794,7 +56274,130 @@ var render = function() {
                                     onClick: _vm.goToAnnotation,
                                     styleClass:
                                       "custom-table table table-corpus-mid table-striped"
-                                  }
+                                  },
+                                  on: { "on-row-click": _vm.goToAnnotation },
+                                  scopedSlots: _vm._u([
+                                    {
+                                      key: "table-row",
+                                      fn: function(props) {
+                                        return [
+                                          props.column.field == "title"
+                                            ? _c("span", [
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticClass:
+                                                      "hover-mouse-pointer"
+                                                  },
+                                                  [
+                                                    _vm._v(
+                                                      _vm._s(
+                                                        props.formattedRow[
+                                                          props.column.field
+                                                        ]
+                                                      )
+                                                    )
+                                                  ]
+                                                )
+                                              ])
+                                            : props.column.field == "guidelines"
+                                              ? _c("span", [
+                                                  _c(
+                                                    "a",
+                                                    {
+                                                      attrs: {
+                                                        href: "/browse/annotation/"
+                                                          .concat(
+                                                            props.row
+                                                              .preparation_annotation_id
+                                                          )
+                                                          .concat("#guidelines")
+                                                      }
+                                                    },
+                                                    [
+                                                      _c("i", {
+                                                        staticClass:
+                                                          "fa fa-fw fa-lg fa-angle-right"
+                                                      })
+                                                    ]
+                                                  )
+                                                ])
+                                              : props.column.field == "prep"
+                                                ? _c("span", [
+                                                    _c(
+                                                      "a",
+                                                      {
+                                                        attrs: {
+                                                          href: "/browse/annotation/"
+                                                            .concat(
+                                                              props.row
+                                                                .preparation_annotation_id
+                                                            )
+                                                            .concat(
+                                                              "#preparationSteps"
+                                                            )
+                                                        }
+                                                      },
+                                                      [
+                                                        _c("i", {
+                                                          staticClass:
+                                                            "fa fa-fw fa-lg fa-angle-right"
+                                                        })
+                                                      ]
+                                                    )
+                                                  ])
+                                                : props.column.field ==
+                                                  "document_count"
+                                                  ? _c("span", [
+                                                      _c(
+                                                        "a",
+                                                        {
+                                                          staticClass:
+                                                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                                                          attrs: { href: "#" }
+                                                        },
+                                                        [
+                                                          _c("i", {
+                                                            staticClass:
+                                                              "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                                                          }),
+                                                          _vm._v(" "),
+                                                          _c(
+                                                            "span",
+                                                            {
+                                                              staticClass:
+                                                                "text-14 font-weight-bold"
+                                                            },
+                                                            [
+                                                              _vm._v(
+                                                                _vm._s(
+                                                                  props
+                                                                    .formattedRow[
+                                                                    props.column
+                                                                      .field
+                                                                  ]
+                                                                )
+                                                              )
+                                                            ]
+                                                          )
+                                                        ]
+                                                      )
+                                                    ])
+                                                  : _c("span", [
+                                                      _vm._v(
+                                                        "\n                                    " +
+                                                          _vm._s(
+                                                            props.formattedRow[
+                                                              props.column.field
+                                                            ]
+                                                          ) +
+                                                          "\n                                    "
+                                                      )
+                                                    ])
+                                        ]
+                                      }
+                                    }
+                                  ])
                                 })
                               ],
                               1

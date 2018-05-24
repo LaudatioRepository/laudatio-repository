@@ -125,7 +125,7 @@
                           :columns="documentColumns"
                           :rows=documentRows()
                           :lineNumbers="false"
-                          :onClick="goToDocument"
+                          @on-row-click="goToDocument"
                           :search-options="{
                             enabled: true,
                           }"
@@ -133,8 +133,28 @@
                             enabled: true,
                             perPage: 10,
                           }"
-
-                          styleClass="custom-table documents-table table table-corpus-mid  table-striped"/>
+                          styleClass="custom-table documents-table table table-corpus-mid  table-striped">
+                          <template slot="table-row" slot-scope="props">
+                              <span v-if="props.column.field == 'place'">
+                                <i class="fa fa-fw fa-map-marker mr-1"></i> {{props.formattedRow[props.column.field]}}
+                              </span>
+                              <span v-else-if="props.column.field == 'date'">
+                                 <i class="fa fa-fw fa-clock-o mr-1"></i> {{props.formattedRow[props.column.field]}}
+                              </span>
+                              <span v-else-if="props.column.field == 'title'">
+                                <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
+                              </span>
+                              <span v-else-if="props.column.field == 'annotations'">
+                                    <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
+                                        <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
+                                        <span class="text-14 font-weight-bold">{{props.formattedRow[props.column.field]}}</span>
+                                    </a>
+                                </span>
+                              <span v-else>
+                                {{props.formattedRow[props.column.field]}}
+                               </span>
+                           </template>
+                    </vue-good-table>
                 </div>
               </div>
           </div>
@@ -159,18 +179,39 @@
                                 <div class="h3 font-weight-normal">Annotations - All ({{groupCount("all")}})</div>
                             </div>
                             <vue-good-table
-	                                     :columns="annotationColumns"
-	                                     :rows=allAnnotationRows()
-	                                     :lineNumbers="false"
-	                                     :onClick="goToAnnotation"
-	                                     :search-options="{
-                                            enabled: true,
-                                          }"
-                                          :pagination-options="{
-                                            enabled: true,
-                                            perPage: 10,
-                                          }"
-	                                     styleClass="custom-table table table-corpus-mid table-striped"/>
+                                 :columns="annotationColumns"
+                                 :rows=allAnnotationRows()
+                                 :lineNumbers="false"
+                                 @on-row-click="goToAnnotation"
+                                 :search-options="{
+                                    enabled: true,
+                                  }"
+                                  :pagination-options="{
+                                    enabled: true,
+                                    perPage: 10,
+                                  }"
+                                 styleClass="custom-table table table-corpus-mid table-striped">
+                                <template slot="table-row" slot-scope="props">
+                                    <span v-if="props.column.field == 'title'">
+                                     <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'guidelines'">
+                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#guidelines')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'prep'">
+                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#preparationSteps')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'document_count'">
+                                        <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
+                                            <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
+                                            <span class="text-14 font-weight-bold">{{props.formattedRow[props.column.field]}}</span>
+                                        </a>
+                                    </span>
+                                    <span v-else>
+                                    {{props.formattedRow[props.column.field]}}
+                                    </span>
+                                </template>
+                            </vue-good-table>
                         </div>
 
                         <div role="tabpanel"  class="tab-pane active" v-for="(annotationGroup) in headerdata.allAnnotationGroups" :id="annotationGroup" v-if="header == 'corpus'">
@@ -180,6 +221,7 @@
                             <vue-good-table
                               :columns="annotationColumns"
                               :rows=annotationRows(annotationGroup)
+                              @on-row-click="goToAnnotation"
                               :search-options="{
                                 enabled: true,
                               }"
@@ -189,7 +231,28 @@
                               }"
                               :lineNumbers="false"
                               :onClick="goToAnnotation"
-                              styleClass="custom-table table table-corpus-mid table-striped"/>
+                              styleClass="custom-table table table-corpus-mid table-striped">
+                                <template slot="table-row" slot-scope="props">
+                                    <span v-if="props.column.field == 'title'">
+                                     <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'guidelines'">
+                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#guidelines')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'prep'">
+                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#preparationSteps')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'document_count'">
+                                        <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
+                                            <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
+                                            <span class="text-14 font-weight-bold">{{props.formattedRow[props.column.field]}}</span>
+                                        </a>
+                                    </span>
+                                    <span v-else>
+                                    {{props.formattedRow[props.column.field]}}
+                                    </span>
+                                </template>
+                            </vue-good-table>
                          </div>
 
                     </div>
@@ -520,14 +583,14 @@
                 }
                 return count;
             },
-            goToDocument: function(row, index) {
-                document.location = "/browse/document/"+row.document_id
-                return index;
+            goToDocument: function(params) {
+                document.location = "/browse/document/"+params.row.document_id
+                return params.pageIndex;
 
             },
-            goToAnnotation: function(row, index) {
-                document.location = "/browse/annotation/"+row.preparation_annotation_id
-                return index;
+            goToAnnotation: function(params) {
+                document.location = "/browse/annotation/"+params.row.preparation_annotation_id
+                return params.pageIndex;
 
             },
             hasSameLength: function(attributes) {
