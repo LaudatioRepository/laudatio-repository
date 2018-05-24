@@ -24,24 +24,83 @@
 
 
                     <div role="tabpanel"  class="tab-pane active" id="corpusDescription" v-if="header == 'corpus'">
-                        <h2> CORPUS DESCRIPTION</h2>
-                        <div class="panel-body">{{headerdata.corpus_encoding_project_description | lastElement}}</div>
+                        <div class="d-flex justify-content-between mt-7 mb-3">
+                            <div class="h3 font-weight-normal">CORPUS DESCRIPTION</div>
+                        </div>
+                        <div class="panel-body"><p class="mb-7">{{headerdata.corpus_encoding_project_description | lastElement}}</p></div>
                     </div>
 
-                    <div role="tabpanel"  class="tab-pane fade in" id="corpusAuthorship">
+                    <div role="tabpanel"  class="tab-pane fade in" id="corpusAuthorship" v-if="header == 'corpus'">
                         docu
                     </div>
 
-                    <div role="tabpanel"  class="tab-pane fade in" id="corpusVersions">
-                        anno
+                    <div class="tab-pane fade" id="editors" v-if="header == 'corpus' && this.corpusEditorRows().length > 0">
+                    <h2> CORPUS EDITORS</h2>
+                    <vue-good-table
+                      title=""
+                      :columns="authorshipColumns"
+                      :rows=corpusEditorRows()
+                      :paginate="true"
+                      :lineNumbers="false"
+                      styleClass="table table-striped"/>
+                </div>
+
+                <div class="tab-pane fade" id="annotators" v-if="header == 'corpus' && this.corpusAnnotatorRows().length > 0">
+                    <h2>ANNOTATORS</h2>
+                    <vue-good-table
+                      title=""
+                      :columns="authorshipColumns"
+                      :rows=corpusAnnotatorRows()
+                      :paginate="true"
+                      :lineNumbers="false"
+                      styleClass="table table-striped"/>
+                </div>
+
+                <div class="tab-pane fade" id="transcription" v-if="header == 'corpus' && this.corpusTranscriptionRows().length > 0">
+                    <h2>TRANSCRIPTION</h2>
+                    <vue-good-table
+                      title=""
+                      :columns="authorshipColumns"
+                      :rows=corpusTranscriptionRows()
+                      :paginate="true"
+                      :lineNumbers="false"
+                      styleClass="table table-striped"/>
+                </div>
+
+                <div class="tab-pane fade" id="infrastructure" v-if="header == 'corpus' && this.corpusInfrastructureRows().length > 0">
+                    <h2>INFRASTRUCTURE</h2>
+                    <vue-good-table
+                      title=""
+                      :columns="authorshipColumns"
+                      :rows=corpusInfrastructureRows()
+                      :paginate="true"
+                      :lineNumbers="false"
+                      styleClass="table table-striped"/>
+                </div>
+
+                    <div role="tabpanel"  class="tab-pane fade in" id="corpusVersions" v-if="header == 'corpus'">
+                        <h2>VERSIONS</h2>
+                    <vue-good-table
+                      title=""
+                      :columns="versionColumns"
+                      :rows=getRevisions()
+                      :paginate="true"
+                      :lineNumbers="false"
+                      styleClass="table table-striped"/>
                     </div>
 
-                    <div role="tabpanel"  class="tab-pane fade in" id="corpusLicense">
-
+                    <div role="tabpanel"  class="tab-pane fade in" id="corpusLicense" v-if="header == 'corpus'">
+                        {{headerdata.corpus_publication_license_description  | arrayToString }}
                     </div>
 
-                    <div role="tabpanel"  class="tab-pane fade in" id="corpusFormats">
-
+                    <div role="tabpanel"  class="tab-pane fade in" id="corpusFormats" v-if="header == 'corpus'">
+                        <vue-good-table
+                          title=""
+                          :columns="formatColumns"
+                          :rows=getFormats()
+                          :paginate="true"
+                          :lineNumbers="false"
+                          styleClass="table table-striped"/>
                     </div>
 
                 </div>
@@ -55,8 +114,89 @@
 
 
 
-        <div role="tabpanel"  class="tab-pane fade in" id="documentMetadataBody" v-if="header == 'corpus'">documentMetadataBody</div>
-        <div role="tabpanel"  class="tab-pane fade in" id="annotationMetadataBody" v-if="header == 'corpus'">annotationMetadataBody</div>
+        <div role="tabpanel"  class="tab-pane fade in" id="documentMetadataBody" v-if="header == 'corpus'">
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  <div class="d-flex justify-content-between align-items-center mt-7 mb-3 w-100">
+                      <div class="h3 font-weight-normal">Documents</div>
+                    </div>
+                    <vue-good-table
+                          :columns="documentColumns"
+                          :rows=documentRows()
+                          :lineNumbers="false"
+                          :onClick="goToDocument"
+                          :search-options="{
+                            enabled: true,
+                          }"
+                          :pagination-options="{
+                            enabled: true,
+                            perPage: 10,
+                          }"
+
+                          styleClass="custom-table documents-table table table-corpus-mid  table-striped"/>
+                </div>
+              </div>
+          </div>
+        </div>
+
+        <div role="tabpanel"  class="tab-pane fade in" id="annotationMetadataBody" v-if="header == 'corpus'">
+             <div class="container">
+              <div class="row">
+                <div class="col-2">
+                    <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
+                        <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#allAnnotations">All ({{groupCount("all")}})</a>
+                        <span v-for="(annotationGroup) in headerdata.allAnnotationGroups">
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="corpus" v-if="groupCount(annotationGroup) > 0 " v-bind:href="('#').concat(annotationGroup)">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink disabledLink" data-toggle="tab" role="tab" data-headertype="corpus" v-else>{{annotationGroup | touppercase}}</a>
+                        </span>
+                    </nav>
+                </div>
+                <div class="col">
+                    <div id="tabcontainer" class="container-fluid tab-content content">
+                        <div role="tabpanel"  class="tab-pane active" id="allAnnotations" v-if="header == 'corpus'">
+                            <div class="d-flex justify-content-between mt-7 mb-3">
+                                <div class="h3 font-weight-normal">Annotations - All ({{groupCount("all")}})</div>
+                            </div>
+                            <vue-good-table
+	                                     :columns="annotationColumns"
+	                                     :rows=allAnnotationRows()
+	                                     :lineNumbers="false"
+	                                     :onClick="goToAnnotation"
+	                                     :search-options="{
+                                            enabled: true,
+                                          }"
+                                          :pagination-options="{
+                                            enabled: true,
+                                            perPage: 10,
+                                          }"
+	                                     styleClass="custom-table table table-corpus-mid table-striped"/>
+                        </div>
+
+                        <div role="tabpanel"  class="tab-pane active" v-for="(annotationGroup) in headerdata.allAnnotationGroups" :id="annotationGroup" v-if="header == 'corpus'">
+                            <div class="d-flex justify-content-between mt-7 mb-3">
+                                <div class="h3 font-weight-normal">{{annotationGroup}}  ({{groupCount(annotationGroup)}})</div>
+                            </div>
+                            <vue-good-table
+                              :columns="annotationColumns"
+                              :rows=annotationRows(annotationGroup)
+                              :search-options="{
+                                enabled: true,
+                              }"
+                              :pagination-options="{
+                                enabled: true,
+                                perPage: 10,
+                              }"
+                              :lineNumbers="false"
+                              :onClick="goToAnnotation"
+                              styleClass="custom-table table table-corpus-mid table-striped"/>
+                         </div>
+
+                    </div>
+                </div>
+               </div>
+             </div>
+        </div>
     </div>
 </template>
 

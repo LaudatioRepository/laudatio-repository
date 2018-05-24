@@ -7,7 +7,9 @@ window.Vue = require('vue');
 const util = require('util');
 
 import VueGoodTable from 'vue-good-table';
+import 'vue-good-table/dist/vue-good-table.css'
 window.Vue.use(VueGoodTable);
+
 
 Vue.component('breadcrumb', require('./components/BreadCrumb.vue'));
 Vue.component('corpusheader', require('./components/CorpusHeader.vue'));
