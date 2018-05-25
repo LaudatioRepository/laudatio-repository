@@ -1,184 +1,49 @@
 <template lang="html">
-    <div class="headerRow headerNav">
-        <div class="bodyColumn left">
-
-        </div>
-        <div class="bodyColumn middle">
-          <div class="container tab-content">
-        <div class="tab-pane fade in active" id="documentMetadata">
-            <div class="row">
-              <div class="col-sm-3">
-                <div class="sidebar-nav">
-                    <div class="navbar-collapse collapse sidebar-navbar-collapse">
-                      <ul class="nav nav-stacked">
-                          <li role="tab" class="nav-link active"><a href="#description" data-toggle="pill">DESCRIPTION</a></li>
-                          <li role="tab" class="nav-link"><a href="#sourcedescription" data-toggle="pill">SOURCE DESCRIPTION</a></li>
-                          <li role="tab" class="nav-link"><a href="#license" data-toggle="pill">LICENSE / REVISION</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-9">
-                <div class="tab-content" v-if="header == 'document'">
-                    <div class="tab-pane fade in active" id="description">
-                        <h2>DESCRIPTION</h2>
-                        <table class="table table-condensed">
-                            <tr>
-                                <th>Title: </th>
-                                <td> {{  headerdata.document_title  | arrayToString }} </td>
-                            </tr>
-                            <tr>
-                                <th>Author: </th>
-                                <td> {{  documentAuthors() }} </td>
-                            </tr>
-                            <tr>
-                                <th>Editor: </th>
-                                <td> {{  documentEditors() }} </td>
-                            </tr>
-                            <tr>
-                                <th>Register: </th>
-                                <td> {{  headerdata.document_genre  | arrayToString }} </td>
-                            </tr>
-                            <tr>
-                                <th>Publisher: </th>
-                                <td> {{  documentPublisher() }} </td>
-                            </tr>
-                            <tr>
-                                <th>Place: </th>
-                                <td> {{  headerdata.document_publication_place  | arrayToString }} </td>
-                            </tr>
-                            <tr>
-                                <th>Publication: </th>
-                                <td> {{ publication()  }} </td>
-                            </tr>
-                            <tr>
-                                <th>Series: </th>
-                                <td> {{ headerdata.document_publication_series | arrayToString }} </td>
-                            </tr>
-                            <tr>
-                                <th>Scope</th>
-                                <td>{{ headerdata.document_publication_pages | arrayToString }}</td>
-                            </tr>
-                            <tr>
-                                <th>Document size</th>
-                                <td>{{ headerdata.document_size_extent | arrayToString }} {{ headerdata.document_size_type | arrayToString }}</td>
-                            </tr>
-                        </table>
-                        <h2>Language</h2>
-                         <table class="table table-condensed">
-                            <tr v-for="(languageData, index) in headerdata.document_languages_style">
-                                <th>{{languageData.concat(': ')}}</th>
-                                <td>{{headerdata.document_languages_language[index]}}</td>
-                            </tr>
-                         </table>
-                    </div>
-                    <div class="tab-pane fade" id="sourcedescription">
-                        <h2>SOURCE DESCRIPTION</h2>
-                        <table class="table table-condensed">
-                            <tr>
-                                <th>Title: </th>
-                                <td> {{ headerdata.document_history_title  | arrayToString }} </td>
-                            </tr>
-                            <tr>
-                                <th>Original Title: </th>
-                                <td> {{ headerdata.document_history_original_title  | arrayToString }} </td>
-                            </tr>
-                            <tr>
-                                <th>Type: </th>
-                                <td> {{ headerdata.document_history_document_type  | arrayToString }} </td>
-                            </tr>
-                            <tr>
-                                <th>Date: </th>
-                                <td> {{headerdata.document_history_not_before | arrayToString }} : {{ headerdata.document_history_not_after | arrayToString }}</td>
-                            </tr>
-                            <tr>
-                                <th>Place: </th>
-                                <td> {{ headerdata.document_history_original_place | arrayToString }} </td>
-                            </tr>
-                            <tr>
-                                <th>Location in manuscript: </th>
-                                <td> {{ headerdata.document_history_location_in_manuscript | arrayToString }} </td>
-                            </tr>
-                            <tr>
-                                <th>Collection: </th>
-                                <td> {{ headerdata.document_history_collection | arrayToString }} </td>
-                            </tr>
-                            <tr>
-                                <th>Repository: </th>
-                                <td> {{ headerdata.document_history_repo | arrayToString }} </td>
-                            </tr>
-                            <tr>
-                                <th>Faximile: </th>
-                                <td> {{ headerdata.document_history_faximile_link | arrayToString }} </td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="tab-pane fade" id="license" v-if="header == 'document'">
-                        <h2>LICENSE / REVISION</h2>
-                         <vue-good-table
-                             title=""
-                             :columns="licenseColumns"
-                             :rows=licenseRows()
-                             :paginate="true"
-                             :lineNumbers="false"
-                             styleClass="table table-striped"/>
-
-                    </div>
-                </div>
-              </div>
-            </div>
-
-        </div>
-        <div class="tab-pane fade" id="annotationMetadata" v-if="header == 'document'">
+    <div class="container-fluid tab-content content">
+    <div role="tabpanel"  class="tab-pane active" id="corpusMetadataBody">
+    <div class="container-fluid">
+    <div class="container">
         <div class="row">
-              <div class="col-sm-3">
-
-                <div class="sidebar-nav">
-                    <div class="navbar-collapse collapse sidebar-navbar-collapse">
-                      <ul class="nav nav-stacked">
-                        <li class="nav-link active" role="tab">
-                            <a href="#allAnnotations" data-toggle="pill">All ({{totalAnnotations()}})</a>
-                        </li>
-                        <li v-for="(annotationGroup) in headerdata.allAnnotationGroups" class="nav-link" role="tab">
-                            <a v-bind:href="('#').concat(annotationGroup)" data-toggle="pill" v-if="groupCount(annotationGroup) > 0 ">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
-                            <a href="#" data-toggle="pill" v-else class="disabledLink">{{annotationGroup | touppercase}}</a>
-                        </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-9">
-               <div class="tab-content">
-               <div class="tab-pane fade in active" id="allAnnotations" v-if="header == 'document'">
-                 <h2>Annotations - All ({{totalAnnotations()}})</h2>
-
-                 <vue-good-table
-                  title=""
-                  :columns="allAnnotationColumns"
-                  :rows="allAnnotationRows"
-                  :paginate="true"
-                  :lineNumbers="false"
-                  styleClass="table table-striped"/>
-
-                </div>
-                 <div class="tab-pane fade" v-for="(annotationGroup) in headerdata.allAnnotationGroups" :id="annotationGroup" v-if="header == 'document'">
-                    <h2>{{annotationGroup}}  ({{groupCount(annotationGroup)}})</h2>
-                    <vue-good-table
-                      title=""
-                      :columns="allAnnotationColumns"
-                      :rows=annotationRows(annotationGroup)
-                      :paginate="true"
-                      :lineNumbers="false"
-                      :onClick="goToAnnotation"
-                      styleClass="table table-striped"/>
-                </div>
-                </div>
-              </div>
+            <div class="col-2">
+                <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
+                     <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active" href="#">Description</a>
+  <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link" href="#">Source Description</a>
+  <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link" href="#">License / Revision</a>
+                </nav>
             </div>
-         </div>
-    </div>
+            <div class="col">
+                <div id="tabcontainer" class="container-fluid tab-content content">
+
+
+
+                </div>
+            </div>
         </div>
-        <div class="bodyColumn right">
+    </div>
+</div>
+        </div>
+
+
+        <div role="tabpanel"  class="tab-pane fade in" id="annotationMetadataBody" v-if="header == 'document'">
+             <div class="container">
+              <div class="row">
+                <div class="col-2">
+                    <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
+                        <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#allAnnotations">All ({{groupCount("all")}})</a>
+                        <span v-for="(annotationGroup) in headerdata.allAnnotationGroups">
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="corpus" v-if="groupCount(annotationGroup) > 0 " v-bind:href="('#').concat(annotationGroup)">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink disabledLink" data-toggle="tab" role="tab" data-headertype="corpus" v-else>{{annotationGroup | touppercase}}</a>
+                        </span>
+                    </nav>
+                </div>
+                <div class="col">
+                    <div id="tabcontainer" class="container-fluid tab-content content">
+
+
+                    </div>
+                </div>
+               </div>
+             </div>
         </div>
     </div>
 </template>

@@ -1,5 +1,5 @@
 <template lang="html">
-    <div class="container pt-5">
+    <div class="container pt-5"  v-if="header == 'corpus'">
         <div class="row">
         <div class="col-2">
           <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
@@ -62,7 +62,7 @@
           </div>
         </div>
         <div class="col-2">
-          <div class="card text-white bg-transparent" v-if="this.isloggedin">
+          <div class="card text-white bg-transparent">
               <h6 class="corpus-title h6 text-uppercase text-12 text-wine-trans">
                 Corpus
               </h6>
@@ -77,7 +77,7 @@
               </div>
             </div>
 
-            <div class="card text-white bg-transparent" v-else>
+            <div class="card text-white bg-transparent">
               <h6 class="corpus-title h6 text-uppercase text-12 text-wine">
                 Corpus
               </h6>

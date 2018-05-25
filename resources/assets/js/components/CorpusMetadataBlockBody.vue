@@ -1,7 +1,7 @@
 <template lang="html">
    <div class="container-fluid tab-content content">
-        <div role="tabpanel"  class="tab-pane active" id="corpusMetadataBody">
-        <div class="container-fluid">
+    <div role="tabpanel"  class="tab-pane active" id="corpusMetadataBody">
+    <div class="container-fluid">
     <div class="container">
         <div class="row">
             <div class="col-2">

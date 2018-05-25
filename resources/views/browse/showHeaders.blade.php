@@ -9,7 +9,7 @@
             <documentheader :headerdata="headerdata" :header="header" :user="user" :isloggedin="isloggedin" v-show="header == 'document'"></documentheader>
             <annotationheader :headerdata="headerdata" :header="header" :user="user" :isloggedin="isloggedin" v-show="header == 'annotation'"></annotationheader>
 
-            <metadata-block-header-document :headerdata="headerdata" :headerid="headerid" :header="header" :user="user" :isloggedin="isloggedin" v-show="header == 'document'"></metadata-block-header-document>
+
             <metadata-block-header-annotation :headerdata="headerdata" :headerid="headerid" :header="header" :user="user" :isloggedin="isloggedin" v-show="header == 'annotation'"></metadata-block-header-annotation>
         </div>
 

@@ -53349,259 +53349,250 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container pt-5" }, [
-    _c("div", { staticClass: "row" }, [
-      _vm._m(0),
-      _vm._v(" "),
-      _c("div", { staticClass: "col pr-5" }, [
-        _c("h3", { staticClass: "h3 font-weight-bold" }, [
-          _vm._v(
-            "\n       " +
-              _vm._s(_vm._f("arrayToString")(_vm.headerdata.corpus_title)) +
-              "\n      "
-          )
-        ]),
-        _vm._v(" "),
-        _c("p", { staticClass: "text-wine text-14" }, [
-          _vm._v("\n        " + _vm._s(_vm.corpusAuthors()) + "\n      ")
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "row mt-2" }, [
-          _vm._m(1),
+  return _vm.header == "corpus"
+    ? _c("div", { staticClass: "container pt-5" }, [
+        _c("div", { staticClass: "row" }, [
+          _vm._m(0),
           _vm._v(" "),
-          _c("div", { staticClass: "col col-auto mr-2" }, [
-            _c(
-              "div",
-              {
-                staticClass:
-                  "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-              },
-              [
-                _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
-                _vm._v(" "),
-                _c("span", [
-                  _vm._v(_vm._s(_vm.headerdata.corpus_languages_language[0]))
-                ])
-              ]
-            ),
+          _c("div", { staticClass: "col pr-5" }, [
+            _c("h3", { staticClass: "h3 font-weight-bold" }, [
+              _vm._v(
+                "\n       " +
+                  _vm._s(_vm._f("arrayToString")(_vm.headerdata.corpus_title)) +
+                  "\n      "
+              )
+            ]),
             _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-              },
-              [
-                _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
+            _c("p", { staticClass: "text-wine text-14" }, [
+              _vm._v("\n        " + _vm._s(_vm.corpusAuthors()) + "\n      ")
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "row mt-2" }, [
+              _vm._m(1),
+              _vm._v(" "),
+              _c("div", { staticClass: "col col-auto mr-2" }, [
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                  },
+                  [
+                    _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
+                    _vm._v(" "),
+                    _c("span", [
+                      _vm._v(
+                        _vm._s(_vm.headerdata.corpus_languages_language[0])
+                      )
+                    ])
+                  ]
+                ),
                 _vm._v(" "),
-                _c("span", [
-                  _vm._v(
-                    "\n            " +
-                      _vm._s(
-                        _vm._f("arrayToString")(
-                          _vm.headerdata.corpus_size_value
-                        )
-                      ) +
-                      " Tokens\n          "
-                  )
-                ])
-              ]
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col col-auto mr-2 align-self-end" }, [
-            _c(
-              "div",
-              {
-                staticClass:
-                  "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 pl-2 flex-nowrap"
-              },
-              [
-                _c("i", {
-                  staticClass:
-                    "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                  },
+                  [
+                    _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
+                    _vm._v(" "),
+                    _c("span", [
+                      _vm._v(
+                        "\n            " +
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              _vm.headerdata.corpus_size_value
+                            )
+                          ) +
+                          " Tokens\n          "
+                      )
+                    ])
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "col col-auto mr-2 align-self-end" }, [
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 pl-2 flex-nowrap"
+                  },
+                  [
+                    _c("i", {
+                      staticClass:
+                        "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
+                    }),
+                    _vm._v(" "),
+                    _c("span", [
+                      _vm._v(
+                        "\n              Working Version (" +
+                          _vm._s(
+                            _vm._f("lastElement")(
+                              _vm.headerdata.corpus_publication_publication_date
+                            )
+                          ) +
+                          ")\n            "
+                      )
+                    ])
+                  ]
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "mt-3 mb-3 mr-5" }, [
+              _c("div", { staticClass: "text-wine text-14" }, [
+                _c("img", {
+                  staticClass: "pr-1",
+                  attrs: {
+                    src: "/images/logo-laudatio-mini.svg",
+                    alt: "copyright-logo"
+                  }
                 }),
                 _vm._v(" "),
                 _c("span", [
                   _vm._v(
-                    "\n              Working Version (" +
+                    _vm._s(_vm.corpusAuthors()) +
+                      ";\n                            " +
                       _vm._s(
-                        _vm._f("lastElement")(
-                          _vm.headerdata.corpus_publication_publication_date
-                        )
+                        _vm._f("arrayToString")(_vm.headerdata.corpus_title)
                       ) +
-                      ")\n            "
-                  )
-                ])
-              ]
-            )
-          ])
+                      ";\n                            " +
+                      _vm._s(_vm.headerdata.corpus_publication_publisher[0]) +
+                      ";\n                            Homepage: " +
+                      _vm._s(
+                        _vm.headerdata.corpus_encoding_project_homepage[0]
+                      ) +
+                      ";\n                            Corpus-Link: "
+                  ),
+                  _c("a", { attrs: { href: "http://handle" } }, [
+                    _vm._v("http://handle.net/xxx")
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("b", [_vm._v("Homepage: ")]),
+                _vm._v(" "),
+                _c("a", { attrs: { href: "#" } }, [_vm._v("Link")]),
+                _vm._v(" "),
+                _c("b", [_vm._v("Corpus-Link: ")]),
+                _vm._v(" "),
+                _c("a", { attrs: { href: "#" } }, [_vm._v("Link")])
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _vm._m(2)
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "mt-3 mb-3 mr-5" }, [
-          _c("div", { staticClass: "text-wine text-14" }, [
-            _c("img", {
-              staticClass: "pr-1",
-              attrs: {
-                src: "/images/logo-laudatio-mini.svg",
-                alt: "copyright-logo"
-              }
-            }),
-            _vm._v(" "),
-            _c("span", [
-              _vm._v(
-                _vm._s(_vm.corpusAuthors()) +
-                  ";\n                            " +
-                  _vm._s(_vm._f("arrayToString")(_vm.headerdata.corpus_title)) +
-                  ";\n                            " +
-                  _vm._s(_vm.headerdata.corpus_publication_publisher[0]) +
-                  ";\n                            Homepage: " +
-                  _vm._s(_vm.headerdata.corpus_encoding_project_homepage[0]) +
-                  ";\n                            Corpus-Link: "
-              ),
-              _c("a", { attrs: { href: "http://handle" } }, [
-                _vm._v("http://handle.net/xxx")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("b", [_vm._v("Homepage: ")]),
-            _vm._v(" "),
-            _c("a", { attrs: { href: "#" } }, [_vm._v("Link")]),
-            _vm._v(" "),
-            _c("b", [_vm._v("Corpus-Link: ")]),
-            _vm._v(" "),
-            _c("a", { attrs: { href: "#" } }, [_vm._v("Link")])
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-2" }, [
-        this.isloggedin
-          ? _c("div", { staticClass: "card text-white bg-transparent" }, [
-              _c(
-                "h6",
-                {
-                  staticClass:
-                    "corpus-title h6 text-uppercase text-12 text-wine-trans"
-                },
-                [_vm._v("\n            Corpus\n          ")]
-              ),
-              _vm._v(" "),
-              _vm._m(2)
-            ])
-          : _c("div", { staticClass: "card text-white bg-transparent" }, [
-              _c(
-                "h6",
-                {
-                  staticClass:
-                    "corpus-title h6 text-uppercase text-12 text-wine"
-                },
-                [_vm._v("\n            Corpus\n          ")]
-              ),
-              _vm._v(" "),
-              _vm._m(3)
-            ])
-      ])
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "row mt-5" }, [
-      _c(
-        "nav",
-        {
-          staticClass:
-            "navbar navbar-expand-sm navbar-light bg-transparent p-0 container",
-          attrs: { role: "tablist" }
-        },
-        [
-          _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-            _vm._m(4),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "nav-item maintablink col-auto text-center text-14 font-weight-bold "
-              },
-              [
+        _c("div", { staticClass: "row mt-5" }, [
+          _c(
+            "nav",
+            {
+              staticClass:
+                "navbar navbar-expand-sm navbar-light bg-transparent p-0 container",
+              attrs: { role: "tablist" }
+            },
+            [
+              _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
+                _vm._m(3),
+                _vm._v(" "),
                 _c(
-                  "a",
+                  "div",
                   {
                     staticClass:
-                      "nav-link maintablink text-dark text-uppercase ",
-                    attrs: {
-                      "data-toggle": "tab",
-                      href: "#documentMetadataBody",
-                      role: "tab"
-                    }
+                      "nav-item maintablink col-auto text-center text-14 font-weight-bold "
                   },
                   [
-                    _vm._v("Documents\n                        "),
                     _c(
-                      "div",
+                      "a",
                       {
                         staticClass:
-                          "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 "
+                          "nav-link maintablink text-dark text-uppercase ",
+                        attrs: {
+                          "data-toggle": "tab",
+                          href: "#documentMetadataBody",
+                          role: "tab"
+                        }
                       },
                       [
-                        _c("i", {
-                          staticClass:
-                            "fa fa-comment-o fa-fw fa-edit align-text-top fa-lg text-wine"
-                        }),
-                        _vm._v(" "),
+                        _vm._v("Documents\n                        "),
                         _c(
-                          "span",
+                          "div",
                           {
-                            staticClass: "text-primary text-14 font-weight-bold"
+                            staticClass:
+                              "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 "
                           },
-                          [_vm._v(_vm._s(_vm.headerdata.corpusdocumentcount))]
+                          [
+                            _c("i", {
+                              staticClass:
+                                "fa fa-comment-o fa-fw fa-edit align-text-top fa-lg text-wine"
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "span",
+                              {
+                                staticClass:
+                                  "text-primary text-14 font-weight-bold"
+                              },
+                              [
+                                _vm._v(
+                                  _vm._s(_vm.headerdata.corpusdocumentcount)
+                                )
+                              ]
+                            )
+                          ]
                         )
                       ]
                     )
                   ]
-                )
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "nav-item maintablink col-auto text-center text-14 font-weight-bold "
-              },
-              [
+                ),
+                _vm._v(" "),
                 _c(
-                  "a",
+                  "div",
                   {
                     staticClass:
-                      "nav-link maintablink text-dark text-uppercase ",
-                    attrs: {
-                      "data-toggle": "tab",
-                      href: "#annotationMetadataBody",
-                      role: "tab"
-                    }
+                      "nav-item maintablink col-auto text-center text-14 font-weight-bold "
                   },
                   [
-                    _vm._v("Annotations\n                        "),
                     _c(
-                      "div",
+                      "a",
                       {
                         staticClass:
-                          "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 "
+                          "nav-link maintablink text-dark text-uppercase ",
+                        attrs: {
+                          "data-toggle": "tab",
+                          href: "#annotationMetadataBody",
+                          role: "tab"
+                        }
                       },
                       [
-                        _c("i", {
-                          staticClass:
-                            "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                        }),
-                        _vm._v(" "),
+                        _vm._v("Annotations\n                        "),
                         _c(
-                          "span",
+                          "div",
                           {
-                            staticClass: "text-primary text-14 font-weight-bold"
+                            staticClass:
+                              "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 "
                           },
                           [
-                            _vm._v(
-                              _vm._s(_vm.headerdata.totalcorpusannotationcount)
+                            _c("i", {
+                              staticClass:
+                                "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "span",
+                              {
+                                staticClass:
+                                  "text-primary text-14 font-weight-bold"
+                              },
+                              [
+                                _vm._v(
+                                  _vm._s(
+                                    _vm.headerdata.totalcorpusannotationcount
+                                  )
+                                )
+                              ]
                             )
                           ]
                         )
@@ -53609,13 +53600,12 @@ var render = function() {
                     )
                   ]
                 )
-              ]
-            )
-          ])
-        ]
-      )
-    ])
-  ])
+              ])
+            ]
+          )
+        ])
+      ])
+    : _vm._e()
 }
 var staticRenderFns = [
   function() {
@@ -53665,173 +53655,212 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-body d-flex flex-column" }, [
-      _c(
-        "a",
-        {
-          staticClass:
-            " btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded small",
-          attrs: { href: "adminEdit_corpus.html" }
-        },
-        [_vm._v("\n              Edit\n            ")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass:
-            " btn btn-primary font-weight-bold text-uppercase rounded small mt-3",
-          attrs: {
-            "data-toggle": "modal",
-            "data-target": "#publishCorpusModal"
-          }
-        },
-        [_vm._v("\n              Publish\n            ")]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-body d-flex flex-column" }, [
-      _c("div", { staticClass: "dropdown mb-3" }, [
+    return _c("div", { staticClass: "col-2" }, [
+      _c("div", { staticClass: "card text-white bg-transparent" }, [
         _c(
-          "button",
+          "h6",
           {
             staticClass:
-              " w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small",
-            attrs: {
-              type: "button",
-              id: "corpusMainActions-Download",
-              "data-toggle": "dropdown",
-              "aria-haspopup": "true",
-              "aria-expanded": "false"
-            }
+              "corpus-title h6 text-uppercase text-12 text-wine-trans"
           },
-          [_vm._v("\n                Download\n              ")]
+          [_vm._v("\n            Corpus\n          ")]
         ),
         _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "dropdown-menu",
-            attrs: { "aria-labelledby": "dropdownMenuButton" }
-          },
-          [
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("TEI-Header")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("EXCEL")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("PAULA")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("ANNIS")]
-            )
-          ]
-        )
+        _c("div", { staticClass: "card-body d-flex flex-column" }, [
+          _c(
+            "a",
+            {
+              staticClass:
+                " btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded small",
+              attrs: { href: "adminEdit_corpus.html" }
+            },
+            [_vm._v("\n              Edit\n            ")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass:
+                " btn btn-primary font-weight-bold text-uppercase rounded small mt-3",
+              attrs: {
+                "data-toggle": "modal",
+                "data-target": "#publishCorpusModal"
+              }
+            },
+            [_vm._v("\n              Publish\n            ")]
+          )
+        ])
       ]),
       _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass:
-            " btn btn-primary font-weight-bold text-uppercase rounded mb-3 small"
-        },
-        [_vm._v("\n              Open in Annis\n            ")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "dropdown" }, [
+      _c("div", { staticClass: "card text-white bg-transparent" }, [
         _c(
-          "button",
-          {
-            staticClass:
-              " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
-            attrs: {
-              type: "button",
-              id: "corpusMainActions-Choice",
-              "data-toggle": "dropdown",
-              "aria-haspopup": "true",
-              "aria-expanded": "false"
-            }
-          },
-          [_vm._v("\n                CITE\n              ")]
+          "h6",
+          { staticClass: "corpus-title h6 text-uppercase text-12 text-wine" },
+          [_vm._v("\n            Corpus\n          ")]
         ),
         _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "dropdown-menu",
-            attrs: { "aria-labelledby": "dropdownMenuButton" }
-          },
-          [
+        _c("div", { staticClass: "card-body d-flex flex-column" }, [
+          _c("div", { staticClass: "dropdown mb-3" }, [
             _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("Menuitem 1")]
+              "button",
+              {
+                staticClass:
+                  " w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small",
+                attrs: {
+                  type: "button",
+                  id: "corpusMainActions-Download",
+                  "data-toggle": "dropdown",
+                  "aria-haspopup": "true",
+                  "aria-expanded": "false"
+                }
+              },
+              [_vm._v("\n                Download\n              ")]
             ),
             _vm._v(" "),
             _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("Menuitem 2")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("Menuitem 3")]
+              "div",
+              {
+                staticClass: "dropdown-menu",
+                attrs: { "aria-labelledby": "dropdownMenuButton" }
+              },
+              [
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("TEI-Header")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("EXCEL")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("PAULA")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("ANNIS")]
+                )
+              ]
             )
-          ]
-        )
-      ]),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "w-100 d-flex justify-content-start align-items-center"
-        },
-        [
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-cc.svg", alt: "license cc" }
-          }),
+          ]),
           _vm._v(" "),
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-sa.svg", alt: "license sa" }
-          }),
+          _c(
+            "button",
+            {
+              staticClass:
+                " btn btn-primary font-weight-bold text-uppercase rounded mb-3 small"
+            },
+            [_vm._v("\n              Open in Annis\n            ")]
+          ),
           _vm._v(" "),
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-by.svg", alt: "license by" }
-          }),
+          _c("div", { staticClass: "dropdown" }, [
+            _c(
+              "button",
+              {
+                staticClass:
+                  " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
+                attrs: {
+                  type: "button",
+                  id: "corpusMainActions-Choice",
+                  "data-toggle": "dropdown",
+                  "aria-haspopup": "true",
+                  "aria-expanded": "false"
+                }
+              },
+              [_vm._v("\n                CITE\n              ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass: "dropdown-menu",
+                attrs: { "aria-labelledby": "dropdownMenuButton" }
+              },
+              [
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("Menuitem 1")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("Menuitem 2")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("Menuitem 3")]
+                )
+              ]
+            )
+          ]),
           _vm._v(" "),
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-nd.svg", alt: "license nd" }
-          }),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-nc.svg", alt: "license nc" }
-          })
-        ]
-      )
+          _c(
+            "div",
+            {
+              staticClass:
+                "w-100 d-flex justify-content-start align-items-center"
+            },
+            [
+              _c("img", {
+                staticClass: "py-1",
+                attrs: { src: "/images/license-cc.svg", alt: "license cc" }
+              }),
+              _vm._v(" "),
+              _c("img", {
+                staticClass: "py-1",
+                attrs: { src: "/images/license-sa.svg", alt: "license sa" }
+              }),
+              _vm._v(" "),
+              _c("img", {
+                staticClass: "py-1",
+                attrs: { src: "/images/license-by.svg", alt: "license by" }
+              }),
+              _vm._v(" "),
+              _c("img", {
+                staticClass: "py-1",
+                attrs: { src: "/images/license-nd.svg", alt: "license nd" }
+              }),
+              _vm._v(" "),
+              _c("img", {
+                staticClass: "py-1",
+                attrs: { src: "/images/license-nc.svg", alt: "license nc" }
+              })
+            ]
+          )
+        ])
+      ])
     ])
   },
   function() {
@@ -53999,9 +54028,58 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header'],
+    props: ['headerdata', 'header', 'user', 'isloggedin'],
     computed: {
         concatLanguages: function concatLanguages() {
             return this.headerdata.document_languages_language.join();
@@ -54010,15 +54088,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         facsimileUri: function facsimileUri(id) {
             return this.headerdata.document_history_faximile_link;
-        },
-        corpusAuthors: function corpusAuthors() {
+        }
+        /*
+        corpusAuthors: function(){
             var authorString = "";
-            for (var i = 0; i < this.headerdata.documentCorpusdata.corpus_editor_forename.length; i++) {
-                authorString += this.headerdata.documentCorpusdata.corpus_editor_forename[i].concat(' ').concat(this.headerdata.documentCorpusdata.corpus_editor_surname[i]).concat(',');
+            for(var i=0; i < this.headerdata.documentCorpusdata.corpus_editor_forename.length;i++) {
+                authorString += this.headerdata.documentCorpusdata.corpus_editor_forename[i]
+                    .concat(' ')
+                    .concat(this.headerdata.documentCorpusdata.corpus_editor_surname[i])
+                    .concat(',');
             }
-            authorString = authorString.substring(0, authorString.lastIndexOf(","));
+            authorString = authorString.substring(0,authorString.lastIndexOf(","));
             return authorString;
         }
+        */
     },
     mounted: function mounted() {
         console.log('DocumentMetadataBlockHeader mounted.');
@@ -54034,175 +54117,231 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _vm.header == "document"
-    ? _c("div", { attrs: { id: "documentheader" } }, [
-        _c("div", { staticClass: "headerRow" }, [
-          _c("div", { staticClass: "headerColumn left" }),
+    ? _c("div", { staticClass: "container pt-5" }, [
+        _c("div", { staticClass: "row" }, [
+          _vm._m(0),
           _vm._v(" "),
-          _c("div", { staticClass: "headerColumn middle" }, [
-            _c("h1", { staticClass: "documentTitle" }, [
+          _c("div", { staticClass: "col pr-5" }, [
+            _c("h3", { staticClass: "h3 font-weight-bold" }, [
               _vm._v(
-                _vm._s(_vm._f("arrayToString")(_vm.headerdata.document_title))
+                "\n         " +
+                  _vm._s(
+                    _vm._f("arrayToString")(_vm.headerdata.document_title)
+                  ) +
+                  "\n        "
               )
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "corpusAffiliationHeader" }, [
+            _c("p", { staticClass: "text-wine" }, [
               _vm._v(
-                "Document in " +
+                "\n          Document in Corpus " +
                   _vm._s(
                     _vm._f("arrayToString")(
                       _vm.headerdata.documentCorpusdata.corpus_title
                     )
-                  )
+                  ) +
+                  "\n        "
               )
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "autorHeader" }, [
+            _c("p", { staticClass: "text-wine" }, [
               _vm._v(
-                _vm._s(
-                  _vm._f("arrayToString")(
-                    _vm.headerdata.document_author_forename
-                  )
-                ) +
+                "\n          " +
+                  _vm._s(
+                    _vm._f("arrayToString")(
+                      _vm.headerdata.document_author_forename
+                    )
+                  ) +
                   " " +
                   _vm._s(
                     _vm._f("arrayToString")(
                       _vm.headerdata.document_author_surname
                     )
-                  )
+                  ) +
+                  "\n        "
               )
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "clearfix pull-left" }, [
-              typeof _vm.headerdata.document_publication_publishing_date !=
-              "undefined"
-                ? _c("span", [
+            typeof _vm.headerdata.document_publication_publishing_date !=
+            "undefined"
+              ? _c("div", { staticClass: "row mt-2" }, [
+                  _c("div", { staticClass: "col col-auto mr-2" }, [
                     _c(
-                      "i",
+                      "div",
                       {
-                        staticClass: "material-icons",
-                        attrs: { "aria-hidden": "true" }
+                        staticClass:
+                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
                       },
-                      [_vm._v("access_time")]
-                    ),
-                    _vm._v(
-                      " " +
-                        _vm._s(
-                          _vm._f("arrayToString")(
-                            _vm.headerdata.document_publication_publishing_date
+                      [
+                        _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
+                        _vm._v(" "),
+                        _c("span", [
+                          _vm._v(
+                            "\n                " +
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  _vm.headerdata
+                                    .document_publication_publishing_date
+                                )
+                              ) +
+                              "\n              "
                           )
-                        )
+                        ])
+                      ]
                     )
-                  ])
-                : _vm._e(),
-              _vm._v(" "),
-              typeof _vm.headerdata.document_publication_place != "undefined"
-                ? _c("span", [
-                    _c(
-                      "i",
-                      {
-                        staticClass: "material-icons",
-                        attrs: { "aria-hidden": "true" }
-                      },
-                      [_vm._v("language")]
-                    ),
-                    _vm._v(" " + _vm._s(_vm.concatLanguages) + " ")
-                  ])
-                : _vm._e(),
-              _vm._v(" "),
-              typeof _vm.headerdata.document_size_extent != "undefined"
-                ? _c("span", [
-                    _c(
-                      "i",
-                      {
-                        staticClass: "material-icons",
-                        attrs: { "aria-hidden": "true" }
-                      },
-                      [_vm._v("code")]
-                    ),
-                    _vm._v(
-                      " " +
-                        _vm._s(
-                          _vm._f("arrayToString")(
-                            _vm.headerdata.document_size_extent
-                          )
-                        ) +
-                        " Tokens"
-                    )
-                  ])
-                : _vm._e(),
-              _vm._v(" "),
-              typeof _vm.headerdata.document_languages_language != "undefined"
-                ? _c("span", [
-                    _c("i", { staticClass: "material-icons" }, [
-                      _vm._v("location_on")
-                    ]),
-                    _vm._v(
-                      " " +
-                        _vm._s(
-                          _vm._f("arrayToString")(
-                            _vm.headerdata.document_publication_place
-                          )
-                        ) +
-                        " "
-                    )
-                  ])
-                : _vm._e(),
-              _vm._v(" "),
-              typeof _vm.headerdata.document_history_faximile_link !=
-              "undefined"
-                ? _c("span", [
-                    _c("a", { attrs: { href: _vm.facsimileUri() } }, [
-                      _c(
-                        "i",
-                        {
-                          staticClass: "material-icons",
-                          attrs: { "aria-hidden": "true" }
-                        },
-                        [_vm._v("facsimile")]
-                      )
-                    ])
-                  ])
-                : _vm._e()
-            ]),
-            _vm._v(" "),
-            _c(
-              "blockquote",
-              { staticClass: "headerCitation clearfix pull-left" },
-              [
-                _c("span", { staticClass: "citation" }, [
-                  _c("i", { staticClass: "material-icons" }, [
-                    _vm._v("format_quote")
                   ]),
-                  _vm._v(
-                    "\n                " +
-                      _vm._s(_vm.corpusAuthors()) +
-                      ";\n                " +
-                      _vm._s(
-                        _vm._f("arrayToString")(
-                          _vm.headerdata.documentCorpusdata.corpus_title
+                  _vm._v(" "),
+                  typeof _vm.headerdata.document_languages_language !=
+                  "undefined"
+                    ? _c("div", { staticClass: "col col-auto mr-2" }, [
+                        _c(
+                          "div",
+                          {
+                            staticClass:
+                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
+                            _vm._v(" "),
+                            _c("span", [
+                              _vm._v(
+                                "\n                " +
+                                  _vm._s(_vm.concatLanguages) +
+                                  "\n              "
+                              )
+                            ])
+                          ]
                         )
-                      ) +
-                      ";\n                " +
-                      _vm._s(
-                        _vm.headerdata.documentCorpusdata
-                          .corpus_publication_publisher[0]
-                      ) +
-                      ";\n                Homepage: " +
-                      _vm._s(
-                        _vm.headerdata.documentCorpusdata
-                          .corpus_encoding_project_homepage[0]
-                      ) +
-                      ";\n                Corpus-Link: "
-                  ),
-                  _c("a", { attrs: { href: "http://handle" } }, [
-                    _vm._v("http://handle.net/xxx")
-                  ])
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  typeof _vm.headerdata.document_size_extent != "undefined"
+                    ? _c("div", { staticClass: "col col-auto mr-2" }, [
+                        _c(
+                          "div",
+                          {
+                            staticClass:
+                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
+                            _vm._v(" "),
+                            _c("span", [
+                              _vm._v(
+                                "\n                " +
+                                  _vm._s(
+                                    _vm._f("arrayToString")(
+                                      _vm.headerdata.document_size_extent
+                                    )
+                                  ) +
+                                  " Tokens\n              "
+                              )
+                            ])
+                          ]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  typeof _vm.headerdata.document_publication_place !=
+                  "undefined"
+                    ? _c("div", { staticClass: "col col-auto mr-2" }, [
+                        _c(
+                          "div",
+                          {
+                            staticClass:
+                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                          },
+                          [
+                            _c("i", {
+                              staticClass: "fa fa-fw fa-map-marker mr-1"
+                            }),
+                            _vm._v(" "),
+                            _c("span", [
+                              _vm._v(
+                                "\n                " +
+                                  _vm._s(
+                                    _vm._f("arrayToString")(
+                                      _vm.headerdata.document_publication_place
+                                    )
+                                  ) +
+                                  "\n              "
+                              )
+                            ])
+                          ]
+                        )
+                      ])
+                    : _vm._e()
                 ])
-              ]
-            )
+              : _vm._e(),
+            _vm._v(" "),
+            _vm._m(1)
           ]),
           _vm._v(" "),
-          _vm._m(0)
+          _vm._m(2)
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "row mt-5" }, [
+          _c(
+            "nav",
+            {
+              staticClass:
+                "navbar navbar-expand-sm navbar-light bg-transparent p-0 container",
+              attrs: { role: "navigation" }
+            },
+            [
+              _c("div", { staticClass: "navbar-nav row w-100" }, [
+                _vm._m(3),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "nav-item col-2 text-center text-14 font-weight-bold "
+                  },
+                  [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "nav-link  text-dark text-uppercase ",
+                        attrs: { href: "#annotationMetadataBody" }
+                      },
+                      [
+                        _vm._v("\n                Annotations "),
+                        _c(
+                          "div",
+                          {
+                            staticClass:
+                              "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 "
+                          },
+                          [
+                            _c("i", {
+                              staticClass:
+                                "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                            }),
+                            _vm._v(" "),
+                            _c(
+                              "span",
+                              {
+                                staticClass:
+                                  "text-primary text-14 font-weight-bold"
+                              },
+                              [
+                                _vm._v(
+                                  _vm._s(
+                                    _vm.headerdata.totaldocumentannotationcount
+                                  )
+                                )
+                              ]
+                            )
+                          ]
+                        )
+                      ]
+                    )
+                  ]
+                )
+              ])
+            ]
+          )
         ])
       ])
     : _vm._e()
@@ -54212,132 +54351,240 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "headerColumn right" }, [
-      _c("aside", { attrs: { id: "info-block" } }, [
-        _c("section", { staticClass: "file-marker" }, [
-          _c("div", [
-            _c("div", { staticClass: "box-title" }, [_vm._v("CORPUS")]),
+    return _c("div", { staticClass: "col-2" }, [
+      _c("img", {
+        staticClass: "w-100",
+        attrs: { src: "/images/placeholder_circle.svg", alt: "circle-image" }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "mt-3 mb-3 mr-5" }, [
+      _c("div", { staticClass: "text-wine text-14" }, [
+        _c("img", {
+          staticClass: "pr-1",
+          attrs: {
+            src: "/images/logo-laudatio-mini.svg",
+            alt: "copyright-logo"
+          }
+        }),
+        _vm._v(" "),
+        _c("span", [
+          _vm._v(
+            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat ad quod culpa molestias ab. Enim quo\n    nesciunt sequi commodi quos nihil suscipit, beatae similique hic animi eius, doloremque, et corporis."
+          )
+        ]),
+        _vm._v(" "),
+        _c("b", [_vm._v("Homepage: ")]),
+        _vm._v(" "),
+        _c("a", { attrs: { href: "#" } }, [_vm._v("Link")]),
+        _vm._v(" "),
+        _c("b", [_vm._v("Corpus-Link: ")]),
+        _vm._v(" "),
+        _c("a", { attrs: { href: "#" } }, [_vm._v("Link")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col col-auto" }, [
+      _c("div", { staticClass: "card text-white bg-transparent" }, [
+        _c(
+          "h6",
+          { staticClass: "corpus-title h6 text-uppercase text-12 text-wine" },
+          [_vm._v("\n    Corpus\n  ")]
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-body d-flex flex-column" }, [
+          _c("div", { staticClass: "dropdown mb-3" }, [
+            _c(
+              "button",
+              {
+                staticClass:
+                  " w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small",
+                attrs: {
+                  type: "button",
+                  id: "corpusMainActions-Download",
+                  "data-toggle": "dropdown",
+                  "aria-haspopup": "true",
+                  "aria-expanded": "false"
+                }
+              },
+              [_vm._v("\n        Download\n      ")]
+            ),
             _vm._v(" "),
-            _c("div", { staticClass: "box-contents" }, [
-              _c("div", { attrs: { id: "download" } }, [
-                _c("div", { staticClass: "btn-group  btn-group-xs" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-danger dropdown-toggle",
-                      attrs: {
-                        type: "button",
-                        "data-toggle": "dropdown",
-                        "aria-haspopup": "true",
-                        "aria-expanded": "false"
-                      }
-                    },
-                    [
-                      _vm._v(
-                        "\n                                        DOWNLOAD "
-                      ),
-                      _c("span", { staticClass: "caret" })
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("ul", { staticClass: "dropdown-menu" }, [
-                    _c("li", [
-                      _c("a", { attrs: { href: "#" } }, [_vm._v("Action")])
-                    ]),
-                    _vm._v(" "),
-                    _c("li", [
-                      _c("a", { attrs: { href: "#" } }, [
-                        _vm._v("Another action")
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("li", [
-                      _c("a", { attrs: { href: "#" } }, [
-                        _vm._v("Something else here")
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("li", {
-                      staticClass: "divider",
-                      attrs: { role: "separator" }
-                    }),
-                    _vm._v(" "),
-                    _c("li", [
-                      _c("a", { attrs: { href: "#" } }, [
-                        _vm._v("Separated link")
-                      ])
-                    ])
-                  ])
-                ]),
+            _c(
+              "div",
+              {
+                staticClass: "dropdown-menu",
+                attrs: { "aria-labelledby": "dropdownMenuButton" }
+              },
+              [
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("TEI-Header")]
+                ),
                 _vm._v(" "),
-                _c("div", { staticClass: "btn-group  btn-group-xs" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-xs btn-danger",
-                      attrs: { type: "button" }
-                    },
-                    [_vm._v("OPEN IN ANNIS")]
-                  )
-                ]),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("EXCEL")]
+                ),
                 _vm._v(" "),
-                _c("div", { staticClass: "btn-group btn-group-xs" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-default dropdown-toggle",
-                      attrs: {
-                        type: "button",
-                        "data-toggle": "dropdown",
-                        "aria-haspopup": "true",
-                        "aria-expanded": "false"
-                      }
-                    },
-                    [
-                      _vm._v("\n                                        CITE "),
-                      _c("span", { staticClass: "caret" })
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("ul", { staticClass: "dropdown-menu" }, [
-                    _c("li", [
-                      _c("a", { attrs: { href: "#" } }, [_vm._v("Action")])
-                    ]),
-                    _vm._v(" "),
-                    _c("li", [
-                      _c("a", { attrs: { href: "#" } }, [
-                        _vm._v("Another action")
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("li", [
-                      _c("a", { attrs: { href: "#" } }, [
-                        _vm._v("Something else here")
-                      ])
-                    ]),
-                    _vm._v(" "),
-                    _c("li", {
-                      staticClass: "divider",
-                      attrs: { role: "separator" }
-                    }),
-                    _vm._v(" "),
-                    _c("li", [
-                      _c("a", { attrs: { href: "#" } }, [
-                        _vm._v("Separated link")
-                      ])
-                    ])
-                  ])
-                ]),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("PAULA")]
+                ),
                 _vm._v(" "),
-                _c("div", { staticClass: "license" }, [
-                  _c("i", { staticClass: "cc cc-BY cc-lg" })
-                ])
-              ])
-            ])
-          ])
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("ANNIS")]
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass:
+                " btn btn-primary font-weight-bold text-uppercase rounded mb-3 small"
+            },
+            [_vm._v("\n      Open in Annis\n    ")]
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "dropdown" }, [
+            _c(
+              "button",
+              {
+                staticClass:
+                  " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
+                attrs: {
+                  type: "button",
+                  id: "corpusMainActions-Choice",
+                  "data-toggle": "dropdown",
+                  "aria-haspopup": "true",
+                  "aria-expanded": "false"
+                }
+              },
+              [_vm._v("\n        CITE\n      ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass: "dropdown-menu",
+                attrs: { "aria-labelledby": "dropdownMenuButton" }
+              },
+              [
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("Menuitem 1")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("Menuitem 2")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item text-14",
+                    attrs: { href: "#" }
+                  },
+                  [_vm._v("Menuitem 3")]
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass:
+                "w-100 d-flex justify-content-start align-items-center"
+            },
+            [
+              _c("img", {
+                staticClass: "py-1",
+                attrs: { src: "/images/license-cc.svg", alt: "license cc" }
+              }),
+              _vm._v(" "),
+              _c("img", {
+                staticClass: "py-1",
+                attrs: { src: "/images/license-sa.svg", alt: "license sa" }
+              }),
+              _vm._v(" "),
+              _c("img", {
+                staticClass: "py-1",
+                attrs: { src: "/images/license-by.svg", alt: "license by" }
+              }),
+              _vm._v(" "),
+              _c("img", {
+                staticClass: "py-1",
+                attrs: { src: "/images/license-nd.svg", alt: "license nd" }
+              }),
+              _vm._v(" "),
+              _c("img", {
+                staticClass: "py-1",
+                attrs: { src: "/images/license-nc.svg", alt: "license nc" }
+              })
+            ]
+          )
         ])
       ])
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "nav-item col-2 text-center text-14 font-weight-bold active"
+      },
+      [
+        _c(
+          "a",
+          {
+            staticClass: "nav-link  text-dark text-uppercase ",
+            attrs: { href: "#documentMetadataBody" }
+          },
+          [_vm._v("\n                Document Metadata\n              ")]
+        )
+      ]
+    )
   }
 ]
 render._withStripped = true
@@ -56699,141 +56946,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -57026,614 +57138,103 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "headerRow headerNav" }, [
-    _c("div", { staticClass: "bodyColumn left" }),
+  return _c("div", { staticClass: "container-fluid tab-content content" }, [
+    _vm._m(0),
     _vm._v(" "),
-    _c("div", { staticClass: "bodyColumn middle" }, [
-      _c("div", { staticClass: "container tab-content" }, [
-        _c(
+    _vm.header == "document"
+      ? _c(
           "div",
           {
-            staticClass: "tab-pane fade in active",
-            attrs: { id: "documentMetadata" }
+            staticClass: "tab-pane fade in",
+            attrs: { role: "tabpanel", id: "annotationMetadataBody" }
           },
           [
-            _c("div", { staticClass: "row" }, [
-              _vm._m(0),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-sm-9" }, [
-                _vm.header == "document"
-                  ? _c("div", { staticClass: "tab-content" }, [
+            _c("div", { staticClass: "container" }, [
+              _c("div", { staticClass: "row" }, [
+                _c("div", { staticClass: "col-2" }, [
+                  _c(
+                    "nav",
+                    {
+                      staticClass:
+                        "headernav sidebar text-14 nav flex-column border-top border-light mt-7",
+                      attrs: { role: "tablist" }
+                    },
+                    [
                       _c(
-                        "div",
+                        "a",
                         {
-                          staticClass: "tab-pane fade in active",
-                          attrs: { id: "description" }
+                          staticClass:
+                            "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active",
+                          attrs: {
+                            "data-toggle": "tab",
+                            role: "tab",
+                            "data-headertype": "corpus",
+                            href: "#allAnnotations"
+                          }
                         },
-                        [
-                          _c("h2", [_vm._v("DESCRIPTION")]),
-                          _vm._v(" "),
-                          _c(
-                            "table",
-                            { staticClass: "table table-condensed" },
-                            [
-                              _c("tr", [
-                                _c("th", [_vm._v("Title: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata.document_title
-                                        )
-                                      ) +
-                                      " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Author: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " + _vm._s(_vm.documentAuthors()) + " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Editor: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " + _vm._s(_vm.documentEditors()) + " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Register: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata.document_genre
-                                        )
-                                      ) +
-                                      " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Publisher: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " + _vm._s(_vm.documentPublisher()) + " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Place: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata
-                                            .document_publication_place
-                                        )
-                                      ) +
-                                      " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Publication: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(" " + _vm._s(_vm.publication()) + " ")
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Series: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata
-                                            .document_publication_series
-                                        )
-                                      ) +
-                                      " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Scope")]),
-                                _vm._v(" "),
-                                _c("td", [
+                        [_vm._v("All (" + _vm._s(_vm.groupCount("all")) + ")")]
+                      ),
+                      _vm._v(" "),
+                      _vm._l(_vm.headerdata.allAnnotationGroups, function(
+                        annotationGroup
+                      ) {
+                        return _c("span", [
+                          _vm.groupCount(annotationGroup) > 0
+                            ? _c(
+                                "a",
+                                {
+                                  staticClass:
+                                    "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
+                                  attrs: {
+                                    "data-toggle": "tab",
+                                    role: "tab",
+                                    "data-headertype": "corpus",
+                                    href: "#".concat(annotationGroup)
+                                  }
+                                },
+                                [
                                   _vm._v(
                                     _vm._s(
-                                      _vm._f("arrayToString")(
-                                        _vm.headerdata
-                                          .document_publication_pages
-                                      )
-                                    )
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Document size")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    _vm._s(
-                                      _vm._f("arrayToString")(
-                                        _vm.headerdata.document_size_extent
-                                      )
+                                      _vm._f("touppercase")(annotationGroup)
                                     ) +
-                                      " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata.document_size_type
-                                        )
-                                      )
+                                      " (" +
+                                      _vm._s(_vm.groupCount(annotationGroup)) +
+                                      ")"
                                   )
-                                ])
-                              ])
-                            ]
-                          ),
-                          _vm._v(" "),
-                          _c("h2", [_vm._v("Language")]),
-                          _vm._v(" "),
-                          _c(
-                            "table",
-                            { staticClass: "table table-condensed" },
-                            _vm._l(
-                              _vm.headerdata.document_languages_style,
-                              function(languageData, index) {
-                                return _c("tr", [
-                                  _c("th", [
-                                    _vm._v(_vm._s(languageData.concat(": ")))
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("td", [
-                                    _vm._v(
-                                      _vm._s(
-                                        _vm.headerdata
-                                          .document_languages_language[index]
-                                      )
+                                ]
+                              )
+                            : _c(
+                                "a",
+                                {
+                                  staticClass:
+                                    "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink disabledLink",
+                                  attrs: {
+                                    "data-toggle": "tab",
+                                    role: "tab",
+                                    "data-headertype": "corpus"
+                                  }
+                                },
+                                [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm._f("touppercase")(annotationGroup)
                                     )
-                                  ])
-                                ])
-                              }
-                            )
-                          )
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass: "tab-pane fade",
-                          attrs: { id: "sourcedescription" }
-                        },
-                        [
-                          _c("h2", [_vm._v("SOURCE DESCRIPTION")]),
-                          _vm._v(" "),
-                          _c(
-                            "table",
-                            { staticClass: "table table-condensed" },
-                            [
-                              _c("tr", [
-                                _c("th", [_vm._v("Title: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata.document_history_title
-                                        )
-                                      ) +
-                                      " "
                                   )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Original Title: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata
-                                            .document_history_original_title
-                                        )
-                                      ) +
-                                      " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Type: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata
-                                            .document_history_document_type
-                                        )
-                                      ) +
-                                      " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Date: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata
-                                            .document_history_not_before
-                                        )
-                                      ) +
-                                      " : " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata
-                                            .document_history_not_after
-                                        )
-                                      )
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Place: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata
-                                            .document_history_original_place
-                                        )
-                                      ) +
-                                      " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Location in manuscript: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata
-                                            .document_history_location_in_manuscript
-                                        )
-                                      ) +
-                                      " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Collection: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata
-                                            .document_history_collection
-                                        )
-                                      ) +
-                                      " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Repository: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata.document_history_repo
-                                        )
-                                      ) +
-                                      " "
-                                  )
-                                ])
-                              ]),
-                              _vm._v(" "),
-                              _c("tr", [
-                                _c("th", [_vm._v("Faximile: ")]),
-                                _vm._v(" "),
-                                _c("td", [
-                                  _vm._v(
-                                    " " +
-                                      _vm._s(
-                                        _vm._f("arrayToString")(
-                                          _vm.headerdata
-                                            .document_history_faximile_link
-                                        )
-                                      ) +
-                                      " "
-                                  )
-                                ])
-                              ])
-                            ]
-                          )
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _vm.header == "document"
-                        ? _c(
-                            "div",
-                            {
-                              staticClass: "tab-pane fade",
-                              attrs: { id: "license" }
-                            },
-                            [
-                              _c("h2", [_vm._v("LICENSE / REVISION")]),
-                              _vm._v(" "),
-                              _c("vue-good-table", {
-                                attrs: {
-                                  title: "",
-                                  columns: _vm.licenseColumns,
-                                  rows: _vm.licenseRows(),
-                                  paginate: true,
-                                  lineNumbers: false,
-                                  styleClass: "table table-striped"
-                                }
-                              })
-                            ],
-                            1
-                          )
-                        : _vm._e()
-                    ])
-                  : _vm._e()
+                                ]
+                              )
+                        ])
+                      })
+                    ],
+                    2
+                  )
+                ]),
+                _vm._v(" "),
+                _vm._m(1)
               ])
             ])
           ]
-        ),
-        _vm._v(" "),
-        _vm.header == "document"
-          ? _c(
-              "div",
-              {
-                staticClass: "tab-pane fade",
-                attrs: { id: "annotationMetadata" }
-              },
-              [
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-sm-3" }, [
-                    _c("div", { staticClass: "sidebar-nav" }, [
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "navbar-collapse collapse sidebar-navbar-collapse"
-                        },
-                        [
-                          _c(
-                            "ul",
-                            { staticClass: "nav nav-stacked" },
-                            [
-                              _c(
-                                "li",
-                                {
-                                  staticClass: "nav-link active",
-                                  attrs: { role: "tab" }
-                                },
-                                [
-                                  _c(
-                                    "a",
-                                    {
-                                      attrs: {
-                                        href: "#allAnnotations",
-                                        "data-toggle": "pill"
-                                      }
-                                    },
-                                    [
-                                      _vm._v(
-                                        "All (" +
-                                          _vm._s(_vm.totalAnnotations()) +
-                                          ")"
-                                      )
-                                    ]
-                                  )
-                                ]
-                              ),
-                              _vm._v(" "),
-                              _vm._l(
-                                _vm.headerdata.allAnnotationGroups,
-                                function(annotationGroup) {
-                                  return _c(
-                                    "li",
-                                    {
-                                      staticClass: "nav-link",
-                                      attrs: { role: "tab" }
-                                    },
-                                    [
-                                      _vm.groupCount(annotationGroup) > 0
-                                        ? _c(
-                                            "a",
-                                            {
-                                              attrs: {
-                                                href: "#".concat(
-                                                  annotationGroup
-                                                ),
-                                                "data-toggle": "pill"
-                                              }
-                                            },
-                                            [
-                                              _vm._v(
-                                                _vm._s(
-                                                  _vm._f("touppercase")(
-                                                    annotationGroup
-                                                  )
-                                                ) +
-                                                  " (" +
-                                                  _vm._s(
-                                                    _vm.groupCount(
-                                                      annotationGroup
-                                                    )
-                                                  ) +
-                                                  ")"
-                                              )
-                                            ]
-                                          )
-                                        : _c(
-                                            "a",
-                                            {
-                                              staticClass: "disabledLink",
-                                              attrs: {
-                                                href: "#",
-                                                "data-toggle": "pill"
-                                              }
-                                            },
-                                            [
-                                              _vm._v(
-                                                _vm._s(
-                                                  _vm._f("touppercase")(
-                                                    annotationGroup
-                                                  )
-                                                )
-                                              )
-                                            ]
-                                          )
-                                    ]
-                                  )
-                                }
-                              )
-                            ],
-                            2
-                          )
-                        ]
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-sm-9" }, [
-                    _c(
-                      "div",
-                      { staticClass: "tab-content" },
-                      [
-                        _vm.header == "document"
-                          ? _c(
-                              "div",
-                              {
-                                staticClass: "tab-pane fade in active",
-                                attrs: { id: "allAnnotations" }
-                              },
-                              [
-                                _c("h2", [
-                                  _vm._v(
-                                    "Annotations - All (" +
-                                      _vm._s(_vm.totalAnnotations()) +
-                                      ")"
-                                  )
-                                ]),
-                                _vm._v(" "),
-                                _c("vue-good-table", {
-                                  attrs: {
-                                    title: "",
-                                    columns: _vm.allAnnotationColumns,
-                                    rows: _vm.allAnnotationRows,
-                                    paginate: true,
-                                    lineNumbers: false,
-                                    styleClass: "table table-striped"
-                                  }
-                                })
-                              ],
-                              1
-                            )
-                          : _vm._e(),
-                        _vm._v(" "),
-                        _vm._l(_vm.headerdata.allAnnotationGroups, function(
-                          annotationGroup
-                        ) {
-                          return _vm.header == "document"
-                            ? _c(
-                                "div",
-                                {
-                                  staticClass: "tab-pane fade",
-                                  attrs: { id: annotationGroup }
-                                },
-                                [
-                                  _c("h2", [
-                                    _vm._v(
-                                      _vm._s(annotationGroup) +
-                                        "  (" +
-                                        _vm._s(
-                                          _vm.groupCount(annotationGroup)
-                                        ) +
-                                        ")"
-                                    )
-                                  ]),
-                                  _vm._v(" "),
-                                  _c("vue-good-table", {
-                                    attrs: {
-                                      title: "",
-                                      columns: _vm.allAnnotationColumns,
-                                      rows: _vm.annotationRows(annotationGroup),
-                                      paginate: true,
-                                      lineNumbers: false,
-                                      onClick: _vm.goToAnnotation,
-                                      styleClass: "table table-striped"
-                                    }
-                                  })
-                                ],
-                                1
-                              )
-                            : _vm._e()
-                        })
-                      ],
-                      2
-                    )
-                  ])
-                ])
-              ]
-            )
-          : _vm._e()
-      ])
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "bodyColumn right" })
+        )
+      : _vm._e()
   ])
 }
 var staticRenderFns = [
@@ -57641,46 +57242,79 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-sm-3" }, [
-      _c("div", { staticClass: "sidebar-nav" }, [
-        _c(
-          "div",
-          { staticClass: "navbar-collapse collapse sidebar-navbar-collapse" },
-          [
-            _c("ul", { staticClass: "nav nav-stacked" }, [
-              _c(
-                "li",
-                { staticClass: "nav-link active", attrs: { role: "tab" } },
-                [
-                  _c(
-                    "a",
-                    { attrs: { href: "#description", "data-toggle": "pill" } },
-                    [_vm._v("DESCRIPTION")]
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c("li", { staticClass: "nav-link", attrs: { role: "tab" } }, [
+    return _c(
+      "div",
+      {
+        staticClass: "tab-pane active",
+        attrs: { role: "tabpanel", id: "corpusMetadataBody" }
+      },
+      [
+        _c("div", { staticClass: "container-fluid" }, [
+          _c("div", { staticClass: "container" }, [
+            _c("div", { staticClass: "row" }, [
+              _c("div", { staticClass: "col-2" }, [
                 _c(
-                  "a",
+                  "nav",
                   {
-                    attrs: { href: "#sourcedescription", "data-toggle": "pill" }
+                    staticClass:
+                      "headernav sidebar text-14 nav flex-column border-top border-light mt-7",
+                    attrs: { role: "tablist" }
                   },
-                  [_vm._v("SOURCE DESCRIPTION")]
+                  [
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active",
+                        attrs: { href: "#" }
+                      },
+                      [_vm._v("Description")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link",
+                        attrs: { href: "#" }
+                      },
+                      [_vm._v("Source Description")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link",
+                        attrs: { href: "#" }
+                      },
+                      [_vm._v("License / Revision")]
+                    )
+                  ]
                 )
               ]),
               _vm._v(" "),
-              _c("li", { staticClass: "nav-link", attrs: { role: "tab" } }, [
-                _c(
-                  "a",
-                  { attrs: { href: "#license", "data-toggle": "pill" } },
-                  [_vm._v("LICENSE / REVISION")]
-                )
+              _c("div", { staticClass: "col" }, [
+                _c("div", {
+                  staticClass: "container-fluid tab-content content",
+                  attrs: { id: "tabcontainer" }
+                })
               ])
             ])
-          ]
-        )
-      ])
+          ])
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col" }, [
+      _c("div", {
+        staticClass: "container-fluid tab-content content",
+        attrs: { id: "tabcontainer" }
+      })
     ])
   }
 ]
