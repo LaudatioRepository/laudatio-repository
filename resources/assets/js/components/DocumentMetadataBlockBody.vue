@@ -1,53 +1,240 @@
 <template lang="html">
-    <div class="container-fluid tab-content content">
-    <div role="tabpanel"  class="tab-pane active" id="corpusMetadataBody">
-    <div class="container-fluid">
-    <div class="container">
-        <div class="row">
-            <div class="col-2">
-                <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
-                     <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active" href="#">Description</a>
-  <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link" href="#">Source Description</a>
-  <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link" href="#">License / Revision</a>
-                </nav>
-            </div>
-            <div class="col">
-                <div id="tabcontainer" class="container-fluid tab-content content">
+    <div class="container-fluid tab-content content"  v-if="header == 'document'">
+        <div role="tabpanel"  class="tab-pane active" id="documentMetadataBody">
+            <div class="container">
+                <div class="row">
+                    <div class="col-2">
+                        <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active tablink" data-toggle="tab" role="tab" data-headertype="document" href="#documentDescription">Description</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="document"  href="#sourceDescription">Source Description</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="document" href="#license">License / Revision</a>
+                        </nav>
+                    </div>
+                    <div class="col">
+                        <div id="tabcontainer" class="container-fluid tab-content content">
+                            <div role="tabpanel"  class="tab-pane active" id="documentDescription" v-if="header == 'document'">
+                            <div class="d-flex justify-content-between mt-7 mb-3">
+                                <div class="h3 font-weight-normal">DESCRIPTION</div>
+                            </div>
+                                <table class="table table-condensed">
+                                    <tr>
+                                        <th>Title: </th>
+                                        <td> {{  headerdata.document_title  | arrayToString }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Author: </th>
+                                        <td> {{  documentAuthors() }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Editor: </th>
+                                        <td> {{  documentEditors() }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Register: </th>
+                                        <td> {{  headerdata.document_genre  | arrayToString }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Publisher: </th>
+                                        <td> {{  documentPublisher() }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Place: </th>
+                                        <td> {{  headerdata.document_publication_place  | arrayToString }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Publication: </th>
+                                        <td> {{ publication()  }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Series: </th>
+                                        <td> {{ headerdata.document_publication_series | arrayToString }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Scope</th>
+                                        <td>{{ headerdata.document_publication_pages | arrayToString }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Document size</th>
+                                        <td>{{ headerdata.document_size_extent | arrayToString }} {{ headerdata.document_size_type | arrayToString }}</td>
+                                    </tr>
+                                 </table>
+                                <h2>Language</h2>
+                                <table class="table table-condensed">
+                                    <tr v-for="(languageData, index) in headerdata.document_languages_style">
+                                        <th>{{languageData.concat(': ')}}</th>
+                                        <td>{{headerdata.document_languages_language[index]}}</td>
+                                    </tr>
+                                </table>
+                            </div>
 
+                            <div role="tabpanel"  class="tab-pane fade" id="sourceDescription" v-if="header == 'document'">
+                                <div class="d-flex justify-content-between mt-7 mb-3">
+                                    <div class="h3 font-weight-normal">SOURCE DESCRIPTION</div>
+                                </div>
+                                <table class="table table-condensed">
+                                    <tr>
+                                        <th>Title: </th>
+                                        <td> {{ headerdata.document_history_title  | arrayToString }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Original Title: </th>
+                                        <td> {{ headerdata.document_history_original_title  | arrayToString }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Type: </th>
+                                        <td> {{ headerdata.document_history_document_type  | arrayToString }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Date: </th>
+                                        <td> {{headerdata.document_history_not_before | arrayToString }} : {{ headerdata.document_history_not_after | arrayToString }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Place: </th>
+                                        <td> {{ headerdata.document_history_original_place | arrayToString }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Location in manuscript: </th>
+                                        <td> {{ headerdata.document_history_location_in_manuscript | arrayToString }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Collection: </th>
+                                        <td> {{ headerdata.document_history_collection | arrayToString }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Repository: </th>
+                                        <td> {{ headerdata.document_history_repo | arrayToString }} </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Faximile: </th>
+                                        <td> {{ headerdata.document_history_faximile_link | arrayToString }} </td>
+                                    </tr>
+                                </table>
+                            </div>
 
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-        </div>
-
-
-        <div role="tabpanel"  class="tab-pane fade in" id="annotationMetadataBody" v-if="header == 'document'">
-             <div class="container">
-              <div class="row">
-                <div class="col-2">
-                    <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
-                        <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#allAnnotations">All ({{groupCount("all")}})</a>
-                        <span v-for="(annotationGroup) in headerdata.allAnnotationGroups">
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="corpus" v-if="groupCount(annotationGroup) > 0 " v-bind:href="('#').concat(annotationGroup)">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink disabledLink" data-toggle="tab" role="tab" data-headertype="corpus" v-else>{{annotationGroup | touppercase}}</a>
-                        </span>
-                    </nav>
-                </div>
-                <div class="col">
-                    <div id="tabcontainer" class="container-fluid tab-content content">
-
-
+                            <div role="tabpanel"  class="tab-pane fade" id="license" v-if="header == 'document'">
+                                <div class="d-flex justify-content-between mt-7 mb-3">
+                                    <div class="h3 font-weight-normal">LLICENSE / REVISION</div>
+                                </div>
+                                <vue-good-table
+                                title=""
+                                :columns="licenseColumns"
+                                :rows=licenseRows()
+                                :search-options="{
+                                enabled: true,
+                                }"
+                                :pagination-options="{
+                                enabled: false,
+                                }"
+                                :lineNumbers="false"
+                                styleClass="custom-table table table-corpus-mid table-striped"/>
+                                </div>
+                        </div>
                     </div>
                 </div>
-               </div>
-             </div>
+            </div>
+        </div>
+        <div role="tabpanel"  class="tab-pane fade in" id="annotationMetadataBody" v-if="header == 'document'">
+             <div class="container">
+                <div class="row">
+                    <div class="col-2">
+                        <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="document" href="##allAnnotations">All ({{totalAnnotations()}})</a>
+                            <span v-for="(annotationGroup) in headerdata.allAnnotationGroups">
+                                <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="document" v-if="groupCount(annotationGroup) > 0 " v-bind:href="('#').concat(annotationGroup)">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
+                                <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink disabledLink" data-toggle="tab" role="tab" data-headertype="document" v-else>{{annotationGroup | touppercase}}</a>
+                            </span>
+                        </nav>
+                    </div>
+                    <div class="col">
+                    <div id="tabcontainer" class="container-fluid tab-content content">
+                        <div role="tabpanel"  class="tab-pane active" id="allAnnotations" v-if="header == 'document'">
+                            <div class="d-flex justify-content-between mt-7 mb-3">
+                                <div class="h3 font-weight-normal">Annotations - All ({{groupCount("all")}})</div>
+                            </div>
+                            <vue-good-table
+                                 :columns="allAnnotationColumns"
+                                 :rows=allAnnotations()
+                                 :lineNumbers="false"
+                                 @on-row-click="goToAnnotation"
+                                 :search-options="{
+                                    enabled: true,
+                                  }"
+                                  :pagination-options="{
+                                    enabled: true,
+                                    perPage: 10,
+                                  }"
+                                 styleClass="custom-table table table-corpus-mid table-striped">
+                                <template slot="table-row" slot-scope="props">
+                                    <span v-if="props.column.field == 'title'">
+                                     <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'guidelines'">
+                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#guidelines')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'prep'">
+                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#preparationSteps')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'document_count'">
+                                        <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
+                                            <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
+                                            <span class="text-14 font-weight-bold">{{props.formattedRow[props.column.field]}}</span>
+                                        </a>
+                                    </span>
+                                    <span v-else>
+                                    {{props.formattedRow[props.column.field]}}
+                                    </span>
+                                </template>
+                            </vue-good-table>
+                        </div>
+
+                        <div role="tabpanel"  class="tab-pane active" v-for="(annotationGroup) in headerdata.allAnnotationGroups" :id="annotationGroup" v-if="header == 'document'">
+                            <div class="d-flex justify-content-between mt-7 mb-3">
+                                <div class="h3 font-weight-normal">{{annotationGroup}}  ({{groupCount(annotationGroup)}})</div>
+                            </div>
+                            <vue-good-table
+                              :columns="allAnnotationColumns"
+                              :rows=annotationRows(annotationGroup)
+                              @on-row-click="goToAnnotation"
+                              :search-options="{
+                                enabled: true,
+                              }"
+                              :pagination-options="{
+                                enabled: true,
+                                perPage: 10,
+                              }"
+                              :lineNumbers="false"
+                              :onClick="goToAnnotation"
+                              styleClass="custom-table table table-corpus-mid table-striped">
+                                <template slot="table-row" slot-scope="props">
+                                    <span v-if="props.column.field == 'title'">
+                                     <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'guidelines'">
+                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#guidelines')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'prep'">
+                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#preparationSteps')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'document_count'">
+                                        <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
+                                            <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
+                                            <span class="text-14 font-weight-bold">{{props.formattedRow[props.column.field]}}</span>
+                                        </a>
+                                    </span>
+                                    <span v-else>
+                                    {{props.formattedRow[props.column.field]}}
+                                    </span>
+                                </template>
+                            </vue-good-table>
+                         </div>
+
+                    </div>
+                    </div>
+                </div>
+              </div>
         </div>
     </div>
 </template>
-
 <script>
     export default {
         props: ['headerdata','header'],
