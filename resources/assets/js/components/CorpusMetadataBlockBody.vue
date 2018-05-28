@@ -265,7 +265,7 @@
 
 <script>
     export default {
-        props: ['headerdata','header'],
+        props: ['headerdata','header','user','isloggedin'],
         data: function(){
             return {
                 annotators: [],

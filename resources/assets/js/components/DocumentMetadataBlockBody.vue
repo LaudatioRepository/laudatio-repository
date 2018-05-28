@@ -138,7 +138,7 @@
                 <div class="row">
                     <div class="col-2">
                         <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="document" href="##allAnnotations">All ({{totalAnnotations()}})</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="document" href="#allAnnotations">All ({{totalAnnotations()}})</a>
                             <span v-for="(annotationGroup) in headerdata.allAnnotationGroups">
                                 <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="document" v-if="groupCount(annotationGroup) > 0 " v-bind:href="('#').concat(annotationGroup)">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
                                 <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink disabledLink" data-toggle="tab" role="tab" data-headertype="document" v-else>{{annotationGroup | touppercase}}</a>
@@ -237,7 +237,7 @@
 </template>
 <script>
     export default {
-        props: ['headerdata','header'],
+        props: ['headerdata','header','user','isloggedin'],
         data: function(){
             return {
                 annotators: [],
@@ -428,9 +428,9 @@
                     return data[key].length;
                 }
             },
-            goToAnnotation: function(row, index) {
-                document.location = "/browse/annotation/"+row.preparation_annotation_id
-                return index;
+            goToAnnotation: function(params) {
+                document.location = "/browse/annotation/"+params.row.preparation_annotation_id
+                return params.pageIndex;
 
             },
             hasSameLength: function(attributes) {

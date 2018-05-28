@@ -61,42 +61,57 @@
         </div>
       </div>
       <div class="col col-auto">
-        <div class="card text-white bg-transparent">
-          <h6 class="corpus-title h6 text-uppercase text-12 text-wine">
-            Corpus
-          </h6>
-          <div class="card-body d-flex flex-column">
-            <div class="dropdown mb-3">
-              <button class=" w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small"
-                type="button" id="corpusMainActions-Download" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Download
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item text-14" href="#">TEI-Header</a>
-                <a class="dropdown-item text-14" href="#">EXCEL</a>
-                <a class="dropdown-item text-14" href="#">PAULA</a>
-                <a class="dropdown-item text-14" href="#">ANNIS</a>
+        <div class="card text-white bg-transparent" v-if="isloggedin">
+              <h6 class="corpus-title h6 text-uppercase text-12 text-wine-trans">
+                Corpus
+              </h6>
+              <div class="card-body d-flex flex-column">
+                <a href="adminEdit_corpus.html" class=" btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded small">
+                  Edit
+                </a>
+                <button class=" btn btn-primary font-weight-bold text-uppercase rounded small mt-3" data-toggle="modal"
+                  data-target="#publishCorpusModal">
+                  Publish
+                </button>
               </div>
             </div>
-            <button class=" btn btn-primary font-weight-bold text-uppercase rounded mb-3 small">
-              Open in Annis
-            </button>
-            <div class="dropdown">
-              <button class=" w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3"
-                type="button" id="corpusMainActions-Choice" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                CITE
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item text-14" href="#">Menuitem 1</a>
-                <a class="dropdown-item text-14" href="#">Menuitem 2</a>
-                <a class="dropdown-item text-14" href="#">Menuitem 3</a>
+
+            <div class="card text-white bg-transparent" v-else-if="! isloggedin">
+              <h6 class="corpus-title h6 text-uppercase text-12 text-wine">
+                Corpus
+              </h6>
+              <div class="card-body d-flex flex-column">
+                <div class="dropdown mb-3">
+                  <button class=" w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small"
+                    type="button" id="corpusMainActions-Download" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Download
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item text-14" href="#">TEI-Header</a>
+                    <a class="dropdown-item text-14" href="#">EXCEL</a>
+                    <a class="dropdown-item text-14" href="#">PAULA</a>
+                    <a class="dropdown-item text-14" href="#">ANNIS</a>
+                  </div>
+                </div>
+                <button class=" btn btn-primary font-weight-bold text-uppercase rounded mb-3 small">
+                  Open in Annis
+                </button>
+                <div class="dropdown">
+                  <button class=" w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3"
+                    type="button" id="corpusMainActions-Choice" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    CITE
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item text-14" href="#">Menuitem 1</a>
+                    <a class="dropdown-item text-14" href="#">Menuitem 2</a>
+                    <a class="dropdown-item text-14" href="#">Menuitem 3</a>
+                  </div>
+                </div>
+                <div class="w-100 d-flex justify-content-start align-items-center">
+                  <img class="py-1" src="/images/license-cc.svg" alt="license cc" /> <img class="py-1" src="/images/license-sa.svg" alt="license sa" /> <img class="py-1" src="/images/license-by.svg" alt="license by" /> <img class="py-1" src="/images/license-nd.svg" alt="license nd" /> <img class="py-1" src="/images/license-nc.svg" alt="license nc" />
+                </div>
               </div>
             </div>
-            <div class="w-100 d-flex justify-content-start align-items-center">
-              <img class="py-1" src="/images/license-cc.svg" alt="license cc" /> <img class="py-1" src="/images/license-sa.svg" alt="license sa" /> <img class="py-1" src="/images/license-by.svg" alt="license by" /> <img class="py-1" src="/images/license-nd.svg" alt="license nd" /> <img class="py-1" src="/images/license-nc.svg" alt="license nc" />
-            </div>
-          </div>
-        </div>
       </div>
     </div>
     <div class="row mt-5">

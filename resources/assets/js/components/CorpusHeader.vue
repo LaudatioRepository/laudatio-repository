@@ -62,7 +62,7 @@
           </div>
         </div>
         <div class="col-2">
-          <div class="card text-white bg-transparent">
+          <div class="card text-white bg-transparent" v-if="isloggedin">
               <h6 class="corpus-title h6 text-uppercase text-12 text-wine-trans">
                 Corpus
               </h6>
@@ -77,7 +77,7 @@
               </div>
             </div>
 
-            <div class="card text-white bg-transparent">
+            <div class="card text-white bg-transparent" v-else-if="! isloggedin">
               <h6 class="corpus-title h6 text-uppercase text-12 text-wine">
                 Corpus
               </h6>
