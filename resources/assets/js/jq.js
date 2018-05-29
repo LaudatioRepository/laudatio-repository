@@ -101,6 +101,16 @@ $(function(){
         });
     });
 
+    $(document).on('click','a.nav-link.stacktablink',function(e){
+        var thatself = $(this);
+        $.each($('a.nav-link.stacktablink'),function(){
+            if($(this).hasClass('active')){
+                $(this).removeClass('active');
+            }
+        });
+        $(thatself).addClass('active');
+    });
+
     /**
      * switch between file list and upload view
      */

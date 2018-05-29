@@ -184,6 +184,7 @@ class BrowseController extends Controller
                     $annotationCorpusdata = $this->ElasticService->getCorporaByAnnotation(array(array('corpus_id' => $corpusId)),array($id));
                     $data['result']['annotationCorpusdata'] = $annotationCorpusdata[$id][0]['_source'];
                     $guidelines = $this->ElasticService->getGuidelinesByCorpusAndAnnotationId($corpusId,$data['result']['preparation_annotation_id'][0]);
+                    //dd($guidelines);
                     $formats = array();
                     $formatSearchResult = $this->ElasticService->getFormatsByCorpus($corpusId);
 
@@ -225,6 +226,7 @@ class BrowseController extends Controller
 
                     $data['result']['allformats'] = $formats;
                     $data['result']['guidelines'] = $guidelineArray;
+                    //dd($data);
                     //Log::info("GUIDELINES: ".print_r( $data['result']['guidelines'],1 ));
                 }
                 break;

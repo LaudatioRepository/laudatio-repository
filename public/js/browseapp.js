@@ -55758,6 +55758,56 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin'],
@@ -56102,180 +56152,173 @@ var render = function() {
                       "nav",
                       {
                         staticClass:
-                          "headernav sidebar text-14 nav flex-column border-top border-light mt-7",
-                        attrs: { role: "tablist" }
+                          "sidebar text-14 nav flex-column border-top border-light mt-7",
+                        attrs: { role: "navigation" }
                       },
                       [
                         _c(
-                          "a",
-                          {
-                            staticClass:
-                              "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active",
-                            attrs: {
-                              "data-toggle": "tab",
-                              role: "tab",
-                              "data-headertype": "corpus",
-                              href: "#corpusDescription"
-                            }
-                          },
-                          [_vm._v("DESCRIPTION")]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "a",
-                          {
-                            staticClass:
-                              "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink collapsed",
-                            attrs: {
-                              href: "#",
-                              "data-toggle": "collapse",
-                              "data-target": "#authorship",
-                              "aria-expanded": "false"
-                            }
-                          },
-                          [_vm._v("AUTHORSHIP")]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "ul",
-                          {
-                            staticClass: "nav nav-stacked collapse",
-                            attrs: { id: "authorship" }
-                          },
+                          "div",
+                          { staticClass: "border-bottom border-light" },
                           [
                             _c(
-                              "li",
+                              "a",
                               {
-                                staticClass: "nav-link",
-                                attrs: { role: "tab" }
+                                staticClass:
+                                  "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active",
+                                attrs: {
+                                  "data-toggle": "tab",
+                                  role: "tab",
+                                  "data-headertype": "corpus",
+                                  href: "#corpusDescription"
+                                }
                               },
-                              [
-                                this.corpusEditorRows().length > 0
-                                  ? _c(
-                                      "a",
-                                      {
-                                        attrs: {
-                                          href: "#editors",
-                                          "data-toggle": "pill"
-                                        }
-                                      },
-                                      [_vm._v("CORPUS EDITORS")]
-                                    )
-                                  : _vm._e()
-                              ]
+                              [_vm._v("DESCRIPTION")]
                             ),
                             _vm._v(" "),
                             _c(
-                              "li",
+                              "a",
                               {
-                                staticClass: "nav-link",
-                                attrs: { role: "tab" }
+                                staticClass:
+                                  "font-weight-normal text-uppercase py-3 px-0 nav-link",
+                                attrs: {
+                                  href: "#",
+                                  "data-target": "#authorCollapse",
+                                  "data-toggle": "collapse",
+                                  "aria-expanded": "false",
+                                  "aria-controls": "authorCollapse"
+                                }
                               },
                               [
-                                this.corpusAnnotatorRows().length > 0
-                                  ? _c(
-                                      "a",
-                                      {
-                                        attrs: {
-                                          href: "#annotators",
-                                          "data-toggle": "pill"
-                                        }
-                                      },
-                                      [_vm._v("ANNOTATORS")]
-                                    )
-                                  : _vm._e()
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "li",
-                              {
-                                staticClass: "nav-link",
-                                attrs: { role: "tab" }
-                              },
-                              [
-                                this.corpusTranscriptionRows().length > 0
-                                  ? _c(
-                                      "a",
-                                      {
-                                        attrs: {
-                                          href: "#transcription",
-                                          "data-toggle": "pill"
-                                        }
-                                      },
-                                      [_vm._v("TRANSCRIPTION")]
-                                    )
-                                  : _vm._e()
-                              ]
-                            ),
-                            _vm._v(" "),
-                            this.corpusInfrastructureRows().length > 0
-                              ? _c(
-                                  "li",
-                                  {
-                                    staticClass: "nav-link",
-                                    attrs: { role: "tab" }
-                                  },
-                                  [
-                                    _c(
-                                      "a",
-                                      {
-                                        attrs: {
-                                          href: "#infrastructure",
-                                          "data-toggle": "pill"
-                                        }
-                                      },
-                                      [_vm._v("INFRASTRUCTURE")]
-                                    )
-                                  ]
+                                _vm._v(
+                                  "\n                           Authorship"
                                 )
-                              : _vm._e()
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              {
+                                staticClass: "collapse ",
+                                attrs: { id: "authorCollapse" }
+                              },
+                              [
+                                _c("div", { staticClass: "nav flex-column " }, [
+                                  this.corpusEditorRows().length > 0
+                                    ? _c(
+                                        "a",
+                                        {
+                                          staticClass:
+                                            "font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink",
+                                          attrs: {
+                                            "data-toggle": "tab",
+                                            role: "tab",
+                                            href: "#editors",
+                                            "data-headertype": "annotation"
+                                          }
+                                        },
+                                        [_vm._v("EDITORS")]
+                                      )
+                                    : _vm._e(),
+                                  _vm._v(" "),
+                                  this.corpusAnnotatorRows().length > 0
+                                    ? _c(
+                                        "a",
+                                        {
+                                          staticClass:
+                                            "font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink",
+                                          attrs: {
+                                            "data-toggle": "tab",
+                                            role: "tab",
+                                            href: "#annotators",
+                                            "data-headertype": "annotation"
+                                          }
+                                        },
+                                        [_vm._v("ANNOTATORS")]
+                                      )
+                                    : _vm._e(),
+                                  _vm._v(" "),
+                                  this.corpusTranscriptionRows().length > 0
+                                    ? _c(
+                                        "a",
+                                        {
+                                          staticClass:
+                                            "font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink",
+                                          attrs: {
+                                            "data-toggle": "tab",
+                                            role: "tab",
+                                            href: "#transcription",
+                                            "data-headertype": "annotation"
+                                          }
+                                        },
+                                        [_vm._v("TRANSCRIPTION")]
+                                      )
+                                    : _vm._e(),
+                                  _vm._v(" "),
+                                  this.corpusInfrastructureRows().length > 0
+                                    ? _c(
+                                        "a",
+                                        {
+                                          staticClass:
+                                            "font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink",
+                                          attrs: {
+                                            "data-toggle": "tab",
+                                            role: "tab",
+                                            href: "#infrastructure",
+                                            "data-headertype": "annotation"
+                                          }
+                                        },
+                                        [_vm._v("INFRASTRUCTURE")]
+                                      )
+                                    : _vm._e()
+                                ])
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "a",
+                              {
+                                staticClass:
+                                  "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink",
+                                attrs: {
+                                  "data-toggle": "tab",
+                                  role: "tab",
+                                  "data-headertype": "annotation",
+                                  href: "#corpusVersions"
+                                }
+                              },
+                              [_vm._v("VERSIONS")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "a",
+                              {
+                                staticClass:
+                                  "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink",
+                                attrs: {
+                                  "data-toggle": "tab",
+                                  role: "tab",
+                                  "data-headertype": "formatdata",
+                                  href: "#corpusLicense"
+                                }
+                              },
+                              [_vm._v("LICENSE / REVISION")]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "a",
+                              {
+                                staticClass:
+                                  "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink",
+                                attrs: {
+                                  "data-toggle": "tab",
+                                  role: "tab",
+                                  "data-headertype": "license",
+                                  href: "#corpusFormats"
+                                }
+                              },
+                              [_vm._v("FORMATS")]
+                            )
                           ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "a",
-                          {
-                            staticClass:
-                              "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
-                            attrs: {
-                              "data-toggle": "tab",
-                              role: "tab",
-                              "data-headertype": "annotation",
-                              href: "#corpusVersions"
-                            }
-                          },
-                          [_vm._v("VERSIONS")]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "a",
-                          {
-                            staticClass:
-                              "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
-                            attrs: {
-                              "data-toggle": "tab",
-                              role: "tab",
-                              "data-headertype": "formatdata",
-                              href: "#corpusLicense"
-                            }
-                          },
-                          [_vm._v("LICENSE / REVISION")]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "a",
-                          {
-                            staticClass:
-                              "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
-                            attrs: {
-                              "data-toggle": "tab",
-                              role: "tab",
-                              "data-headertype": "license",
-                              href: "#corpusFormats"
-                            }
-                          },
-                          [_vm._v("FORMATS")]
                         )
                       ]
                     )
@@ -56345,16 +56388,22 @@ var render = function() {
                                 attrs: { id: "editors" }
                               },
                               [
-                                _c("h2", [_vm._v(" CORPUS EDITORS")]),
+                                _vm._m(1),
                                 _vm._v(" "),
                                 _c("vue-good-table", {
                                   attrs: {
                                     title: "",
                                     columns: _vm.authorshipColumns,
                                     rows: _vm.corpusEditorRows(),
-                                    paginate: true,
+                                    "search-options": {
+                                      enabled: true
+                                    },
+                                    "pagination-options": {
+                                      enabled: false
+                                    },
                                     lineNumbers: false,
-                                    styleClass: "table table-striped"
+                                    styleClass:
+                                      "custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -56371,16 +56420,22 @@ var render = function() {
                                 attrs: { id: "annotators" }
                               },
                               [
-                                _c("h2", [_vm._v("ANNOTATORS")]),
+                                _vm._m(2),
                                 _vm._v(" "),
                                 _c("vue-good-table", {
                                   attrs: {
                                     title: "",
                                     columns: _vm.authorshipColumns,
                                     rows: _vm.corpusAnnotatorRows(),
-                                    paginate: true,
+                                    "search-options": {
+                                      enabled: true
+                                    },
+                                    "pagination-options": {
+                                      enabled: false
+                                    },
                                     lineNumbers: false,
-                                    styleClass: "table table-striped"
+                                    styleClass:
+                                      "custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -56397,16 +56452,22 @@ var render = function() {
                                 attrs: { id: "transcription" }
                               },
                               [
-                                _c("h2", [_vm._v("TRANSCRIPTION")]),
+                                _vm._m(3),
                                 _vm._v(" "),
                                 _c("vue-good-table", {
                                   attrs: {
                                     title: "",
                                     columns: _vm.authorshipColumns,
                                     rows: _vm.corpusTranscriptionRows(),
-                                    paginate: true,
+                                    "search-options": {
+                                      enabled: true
+                                    },
+                                    "pagination-options": {
+                                      enabled: false
+                                    },
                                     lineNumbers: false,
-                                    styleClass: "table table-striped"
+                                    styleClass:
+                                      "custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -56423,16 +56484,22 @@ var render = function() {
                                 attrs: { id: "infrastructure" }
                               },
                               [
-                                _c("h2", [_vm._v("INFRASTRUCTURE")]),
+                                _vm._m(4),
                                 _vm._v(" "),
                                 _c("vue-good-table", {
                                   attrs: {
                                     title: "",
                                     columns: _vm.authorshipColumns,
                                     rows: _vm.corpusInfrastructureRows(),
-                                    paginate: true,
+                                    "search-options": {
+                                      enabled: true
+                                    },
+                                    "pagination-options": {
+                                      enabled: false
+                                    },
                                     lineNumbers: false,
-                                    styleClass: "table table-striped"
+                                    styleClass:
+                                      "custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -56451,16 +56518,22 @@ var render = function() {
                                 }
                               },
                               [
-                                _c("h2", [_vm._v("VERSIONS")]),
+                                _vm._m(5),
                                 _vm._v(" "),
                                 _c("vue-good-table", {
                                   attrs: {
                                     title: "",
                                     columns: _vm.versionColumns,
                                     rows: _vm.getRevisions(),
-                                    paginate: true,
+                                    "search-options": {
+                                      enabled: true
+                                    },
+                                    "pagination-options": {
+                                      enabled: false
+                                    },
                                     lineNumbers: false,
-                                    styleClass: "table table-striped"
+                                    styleClass:
+                                      "custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -56498,14 +56571,22 @@ var render = function() {
                                 attrs: { role: "tabpanel", id: "corpusFormats" }
                               },
                               [
+                                _vm._m(6),
+                                _vm._v(" "),
                                 _c("vue-good-table", {
                                   attrs: {
                                     title: "",
                                     columns: _vm.formatColumns,
                                     rows: _vm.getFormats(),
-                                    paginate: true,
+                                    "search-options": {
+                                      enabled: true
+                                    },
+                                    "pagination-options": {
+                                      enabled: false
+                                    },
                                     lineNumbers: false,
-                                    styleClass: "table table-striped"
+                                    styleClass:
+                                      "custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -56535,7 +56616,7 @@ var render = function() {
                       "div",
                       { staticClass: "col" },
                       [
-                        _vm._m(1),
+                        _vm._m(7),
                         _vm._v(" "),
                         _c("vue-good-table", {
                           attrs: {
@@ -56691,7 +56772,7 @@ var render = function() {
                             "a",
                             {
                               staticClass:
-                                "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active",
+                                "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link  stacktablink active",
                               attrs: {
                                 "data-toggle": "tab",
                                 role: "tab",
@@ -56715,7 +56796,7 @@ var render = function() {
                                     "a",
                                     {
                                       staticClass:
-                                        "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
+                                        "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link  stacktablink",
                                       attrs: {
                                         "data-toggle": "tab",
                                         role: "tab",
@@ -56740,7 +56821,7 @@ var render = function() {
                                     "a",
                                     {
                                       staticClass:
-                                        "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink disabledLink",
+                                        "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link  stacktablink disabledLink",
                                       attrs: {
                                         "data-toggle": "tab",
                                         role: "tab",
@@ -57178,6 +57259,86 @@ var staticRenderFns = [
           _vm._v("CORPUS DESCRIPTION")
         ])
       ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "d-flex justify-content-between mt-7 mb-3" },
+      [
+        _c("div", { staticClass: "h3 font-weight-normal" }, [
+          _vm._v("CORPUS EDITORS")
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "d-flex justify-content-between mt-7 mb-3" },
+      [
+        _c("div", { staticClass: "h3 font-weight-normal" }, [
+          _vm._v("ANNOTATORS")
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "d-flex justify-content-between mt-7 mb-3" },
+      [
+        _c("div", { staticClass: "h3 font-weight-normal" }, [
+          _vm._v("TRANSCRIPTION")
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "d-flex justify-content-between mt-7 mb-3" },
+      [
+        _c("div", { staticClass: "h3 font-weight-normal" }, [
+          _vm._v("INFRASTRUCTURE")
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "d-flex justify-content-between mt-7 mb-3" },
+      [
+        _c("div", { staticClass: "h3 font-weight-normal" }, [
+          _vm._v("VERSIONS")
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "d-flex justify-content-between mt-7 mb-3" },
+      [_c("div", { staticClass: "h3 font-weight-normal" }, [_vm._v("FORMATS")])]
     )
   },
   function() {
@@ -59358,6 +59519,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -59369,6 +59532,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             guidelineColumns: [{
                 label: 'Annotation key',
                 field: 'title',
+                filterable: true
+            }, {
+                label: 'Annotation value',
+                field: 'value',
                 filterable: true
             }, {
                 label: 'Description',
@@ -59487,7 +59654,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         if (format == formatKey && Object.keys(this[formatKey]['annotations']).length > 0) {
                             Object.keys(this[formatKey]['annotations'][annotationTitle]).forEach(function (guidelineKey, guidelineIndex) {
                                 var valueObject = {};
-                                valueObject.title = guidelineKey;
+                                valueObject.title = annotationTitle;
+                                valueObject.value = guidelineKey;
                                 valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey];
 
                                 guidelineArray.push(valueObject);
@@ -59496,6 +59664,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     }
                 }, this.headerdata.guidelines);
             }
+            return guidelineArray;
+        },
+        allGuidelineRows: function allGuidelineRows() {
+            var guidelineArray = [];
+            var annotationTitle = this.headerdata.preparation_title[0];
+            if (null != this.headerdata.guidelines && typeof this.headerdata.guidelines != 'undefined') {
+                Object.keys(this.headerdata.guidelines).forEach(function (formatKey, formatIndex) {
+                    var annotationData = this[formatKey];
+                    if (Object.keys(this[formatKey]['annotations']).length > 0) {
+                        Object.keys(this[formatKey]['annotations'][annotationTitle]).forEach(function (guidelineKey, guidelineIndex) {
+                            var valueObject = {};
+                            valueObject.title = annotationTitle;
+                            valueObject.value = guidelineKey;
+                            valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey];
+
+                            guidelineArray.push(valueObject);
+                        }, this[formatKey]['annotations']);
+                    }
+                }, this.headerdata.guidelines);
+            }
+
             return guidelineArray;
         },
         editorRows: function editorRows() {
@@ -59566,6 +59755,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     versionArray.push(versionObject);
                 }
             }
+
             return versionArray;
         },
         licenseRows: function licenseRows() {
@@ -59580,15 +59770,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     licenseArray.push(licenseObject);
                 }
             }
+
             return licenseArray;
         },
         preparationRows: function preparationRows() {
             var preparationArray = [];
             var theHeaderData = this.headerdata;
-            if (typeof theHeaderData.preparation_encoding_step != 'undefined' && typeof theHeaderData.preparation_encoding_step_number != 'undefined' && typeof theHeaderData.preparation_encoding_models != 'undefined' && typeof theHeaderData.preparation_encoding_tool != 'undefined' && typeof theHeaderData.preparation_encoding_full_name != 'undefined' && typeof theHeaderData.preparation_encoding_description != 'undefined' && typeof theHeaderData.preparation_encoding_file_extension != 'undefined' && typeof theHeaderData.preparation_encoding_tool_version != 'undefined' && typeof theHeaderData.preparation_encoding_annotation_group != 'undefined' && typeof theHeaderData.preparation_encoding_annotation_sub_group != 'undefined' && this.hasSameLength([theHeaderData.preparation_encoding_step, theHeaderData.preparation_encoding_step_number, theHeaderData.preparation_encoding_models, theHeaderData.preparation_encoding_tool, theHeaderData.preparation_encoding_full_name, theHeaderData.preparation_encoding_description, theHeaderData.preparation_encoding_file_extension, theHeaderData.preparation_encoding_tool_version, theHeaderData.preparation_encoding_annotation_group, theHeaderData.preparation_encoding_annotation_sub_group])) {
+            if (typeof theHeaderData.preparation_encoding_step != 'undefined' && typeof theHeaderData.preparation_encoding_models != 'undefined' && typeof theHeaderData.preparation_encoding_tool != 'undefined' && typeof theHeaderData.preparation_encoding_full_name != 'undefined' && typeof theHeaderData.preparation_encoding_description != 'undefined' && typeof theHeaderData.preparation_encoding_file_extension != 'undefined' && typeof theHeaderData.preparation_encoding_tool_version != 'undefined' && typeof theHeaderData.preparation_encoding_annotation_group != 'undefined' && typeof theHeaderData.preparation_encoding_annotation_sub_group != 'undefined' && this.hasSameLength([theHeaderData.preparation_encoding_step, theHeaderData.preparation_encoding_models, theHeaderData.preparation_encoding_tool, theHeaderData.preparation_encoding_full_name, theHeaderData.preparation_encoding_description, theHeaderData.preparation_encoding_file_extension, theHeaderData.preparation_encoding_tool_version, theHeaderData.preparation_encoding_annotation_group, theHeaderData.preparation_encoding_annotation_sub_group])) {
                 for (var i = 0; i < theHeaderData.preparation_encoding_step.length; i++) {
                     var preparationObject = {};
-                    preparationObject.stepnumber = theHeaderData.preparation_encoding_step_number[i];
                     preparationObject.step = theHeaderData.preparation_encoding_step[i];
                     preparationObject.model = theHeaderData.preparation_encoding_models[i];
                     preparationObject.tool = theHeaderData.preparation_encoding_tool[i];
@@ -59601,6 +59791,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     preparationArray.push(preparationObject);
                 }
             }
+
             return preparationArray;
         },
         documentRows: function documentRows() {
@@ -59696,24 +59887,23 @@ var render = function() {
                         guidelinedata,
                         guidelinekey
                       ) {
-                        return _c("span", [
-                          Object.keys(guidelinedata["annotations"]).length > 0
-                            ? _c(
-                                "a",
-                                {
-                                  staticClass:
-                                    "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
-                                  attrs: {
-                                    "data-toggle": "tab",
-                                    role: "tab",
-                                    "data-headertype": "annotation",
-                                    href: "#".concat(guidelinekey)
-                                  }
-                                },
-                                [_vm._v(_vm._s(guidelinekey))]
-                              )
-                            : _vm._e()
-                        ])
+                        return Object.keys(guidelinedata["annotations"])
+                          .length > 0
+                          ? _c(
+                              "a",
+                              {
+                                staticClass:
+                                  "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
+                                attrs: {
+                                  "data-toggle": "tab",
+                                  role: "tab",
+                                  "data-headertype": "annotation",
+                                  href: "#".concat(guidelinekey)
+                                }
+                              },
+                              [_vm._v(_vm._s(guidelinekey))]
+                            )
+                          : _vm._e()
                       })
                     ],
                     2
@@ -59735,7 +59925,28 @@ var render = function() {
                               staticClass: "tab-pane active",
                               attrs: { role: "tabpanel", id: "tei-header" }
                             },
-                            [_vm._m(0)]
+                            [
+                              _vm._m(0),
+                              _vm._v(" "),
+                              _c("vue-good-table", {
+                                attrs: {
+                                  title: "",
+                                  columns: _vm.guidelineColumns,
+                                  rows: _vm.allGuidelineRows(),
+                                  "search-options": {
+                                    enabled: true
+                                  },
+                                  "pagination-options": {
+                                    enabled: true,
+                                    perPage: 10
+                                  },
+                                  lineNumbers: false,
+                                  styleClass:
+                                    "custom-table table table-corpus-mid table-striped"
+                                }
+                              })
+                            ],
+                            1
                           )
                         : _vm._e(),
                       _vm._v(" "),
@@ -59777,9 +59988,16 @@ var render = function() {
                                     title: "",
                                     columns: _vm.guidelineColumns,
                                     rows: _vm.guidelineRows(guidelinekey),
-                                    paginate: true,
+                                    "search-options": {
+                                      enabled: true
+                                    },
+                                    "pagination-options": {
+                                      enabled: true,
+                                      perPage: 10
+                                    },
                                     lineNumbers: false,
-                                    styleClass: "table table-striped"
+                                    styleClass:
+                                      "custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -59842,152 +60060,168 @@ var render = function() {
                         "nav",
                         {
                           staticClass:
-                            "headernav sidebar text-14 nav flex-column border-top border-light mt-7",
-                          attrs: { role: "tablist" }
+                            "sidebar text-14 nav flex-column border-top border-light mt-7",
+                          attrs: { role: "navigation" }
                         },
                         [
                           _c(
-                            "a",
-                            {
-                              staticClass:
-                                "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active",
-                              attrs: {
-                                "data-toggle": "tab",
-                                role: "tab",
-                                "data-headertype": "annotation",
-                                href: "#authorship"
-                              }
-                            },
+                            "div",
+                            { staticClass: "border-bottom border-light" },
                             [
-                              _vm._v(
-                                "Authorship\n                               "
-                              ),
                               _c(
-                                "span",
+                                "a",
                                 {
-                                  staticClass: "nav nav-stacked collapsed",
-                                  attrs: { id: "authorship" }
+                                  staticClass:
+                                    "font-weight-normal text-uppercase py-3 px-0 nav-link",
+                                  attrs: {
+                                    href: "#",
+                                    "data-target": "#authorCollapse",
+                                    "data-toggle": "collapse",
+                                    "aria-expanded": "false",
+                                    "aria-controls": "authorCollapse"
+                                  }
                                 },
                                 [
-                                  this.editorRows().length > 0
-                                    ? _c(
-                                        "a",
-                                        {
-                                          staticClass:
-                                            "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
-                                          attrs: {
-                                            "data-toggle": "tab",
-                                            role: "tab",
-                                            "data-headertype": "annotation",
-                                            href: "#editors"
-                                          }
-                                        },
-                                        [_vm._v("EDITORS")]
-                                      )
-                                    : _vm._e(),
-                                  _vm._v(" "),
-                                  this.annotatorRows().length > 0
-                                    ? _c(
-                                        "a",
-                                        {
-                                          staticClass:
-                                            "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
-                                          attrs: {
-                                            "data-toggle": "tab",
-                                            role: "tab",
-                                            "data-headertype": "annotation",
-                                            href: "#annotators"
-                                          }
-                                        },
-                                        [_vm._v("ANNOTATORS")]
-                                      )
-                                    : _vm._e(),
-                                  _vm._v(" "),
-                                  this.transcriptionRows().length > 0
-                                    ? _c(
-                                        "a",
-                                        {
-                                          staticClass:
-                                            "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
-                                          attrs: {
-                                            "data-toggle": "tab",
-                                            role: "tab",
-                                            "data-headertype": "annotation",
-                                            href: "#transcription"
-                                          }
-                                        },
-                                        [_vm._v("TRANSCRIPTION")]
-                                      )
-                                    : _vm._e(),
-                                  _vm._v(" "),
-                                  this.infrastructureRows().length > 0
-                                    ? _c(
-                                        "a",
-                                        {
-                                          staticClass:
-                                            "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
-                                          attrs: {
-                                            "data-toggle": "tab",
-                                            role: "tab",
-                                            "data-headertype": "annotation",
-                                            href: "#infrastructure"
-                                          }
-                                        },
-                                        [_vm._v("INFRASTRUCTURE")]
-                                      )
-                                    : _vm._e()
+                                  _vm._v(
+                                    "\n                             Authorship"
+                                  )
                                 ]
-                              )
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "div",
+                                {
+                                  staticClass: "collapse ",
+                                  attrs: { id: "authorCollapse" }
+                                },
+                                [
+                                  _c(
+                                    "div",
+                                    { staticClass: "nav flex-column " },
+                                    [
+                                      this.editorRows().length > 0
+                                        ? _c(
+                                            "a",
+                                            {
+                                              staticClass:
+                                                "font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink",
+                                              attrs: {
+                                                "data-toggle": "tab",
+                                                role: "tab",
+                                                href: "#editors",
+                                                "data-headertype": "annotation"
+                                              }
+                                            },
+                                            [_vm._v("EDITORS")]
+                                          )
+                                        : _vm._e(),
+                                      _vm._v(" "),
+                                      this.annotatorRows().length > 0
+                                        ? _c(
+                                            "a",
+                                            {
+                                              staticClass:
+                                                "font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink",
+                                              attrs: {
+                                                "data-toggle": "tab",
+                                                role: "tab",
+                                                href: "#annotators",
+                                                "data-headertype": "annotation"
+                                              }
+                                            },
+                                            [_vm._v("ANNOTATORS")]
+                                          )
+                                        : _vm._e(),
+                                      _vm._v(" "),
+                                      this.transcriptionRows().length > 0
+                                        ? _c(
+                                            "a",
+                                            {
+                                              staticClass:
+                                                "font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink",
+                                              attrs: {
+                                                "data-toggle": "tab",
+                                                role: "tab",
+                                                href: "#transcription",
+                                                "data-headertype": "annotation"
+                                              }
+                                            },
+                                            [_vm._v("TRANSCRIPTION")]
+                                          )
+                                        : _vm._e(),
+                                      _vm._v(" "),
+                                      this.infrastructureRows().length > 0
+                                        ? _c(
+                                            "a",
+                                            {
+                                              staticClass:
+                                                "font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink",
+                                              attrs: {
+                                                "data-toggle": "tab",
+                                                role: "tab",
+                                                href: "#infrastructure",
+                                                "data-headertype": "annotation"
+                                              }
+                                            },
+                                            [_vm._v("INFRASTRUCTURE")]
+                                          )
+                                        : _vm._e()
+                                    ]
+                                  )
+                                ]
+                              ),
+                              _vm._v(" "),
+                              this.versionRows().length > 0
+                                ? _c(
+                                    "a",
+                                    {
+                                      staticClass:
+                                        "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink",
+                                      attrs: {
+                                        "data-toggle": "tab",
+                                        role: "tab",
+                                        href: "#preparationversions",
+                                        "data-headertype": "annotation"
+                                      }
+                                    },
+                                    [_vm._v("VERSIONS")]
+                                  )
+                                : _vm._e(),
+                              _vm._v(" "),
+                              this.licenseRows().length > 0
+                                ? _c(
+                                    "a",
+                                    {
+                                      staticClass:
+                                        "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink",
+                                      attrs: {
+                                        "data-toggle": "tab",
+                                        role: "tab",
+                                        href: "#preparationlicense",
+                                        "data-headertype": "annotation"
+                                      }
+                                    },
+                                    [_vm._v("LICENSE / SOURCE")]
+                                  )
+                                : _vm._e(),
+                              _vm._v(" "),
+                              this.preparationRows().length > 0
+                                ? _c(
+                                    "a",
+                                    {
+                                      staticClass:
+                                        "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink active",
+                                      attrs: {
+                                        "data-toggle": "tab",
+                                        role: "tab",
+                                        "data-headertype": "annotation",
+                                        href: "#preparations"
+                                      }
+                                    },
+                                    [_vm._v("Preparation")]
+                                  )
+                                : _vm._e()
                             ]
-                          ),
-                          _vm._v(" "),
-                          this.versionRows().length > 0
-                            ? _c(
-                                "a",
-                                {
-                                  staticClass:
-                                    "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
-                                  attrs: {
-                                    "data-toggle": "tab",
-                                    role: "tab",
-                                    "data-headertype": "annotation",
-                                    href: "#versions"
-                                  }
-                                },
-                                [_vm._v("VERSIONS")]
-                              )
-                            : _vm._e(),
-                          _vm._v(" "),
-                          this.licenseRows().length > 0
-                            ? _c(
-                                "a",
-                                {
-                                  staticClass:
-                                    "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
-                                  attrs: {
-                                    "data-toggle": "tab",
-                                    role: "tab",
-                                    "data-headertype": "annotation",
-                                    href: "#license"
-                                  }
-                                },
-                                [_vm._v("LICENSE/SOURCE")]
-                              )
-                            : _vm._e(),
-                          _vm._v(" "),
-                          _c(
-                            "a",
-                            {
-                              staticClass:
-                                "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
-                              attrs: {
-                                "data-toggle": "tab",
-                                role: "tab",
-                                "data-headertype": "annotation",
-                                href: "#preparation"
-                              }
-                            },
-                            [_vm._v("PREPARATION")]
                           )
                         ]
                       )
@@ -60005,7 +60239,7 @@ var render = function() {
                             ? _c(
                                 "div",
                                 {
-                                  staticClass: "tab-pane active",
+                                  staticClass: "tab-pane fade",
                                   attrs: { role: "tabpanel", id: "editors" }
                                 },
                                 [
@@ -60032,8 +60266,7 @@ var render = function() {
                               )
                             : _vm._e(),
                           _vm._v(" "),
-                          _vm.header == "annotation" &&
-                          this.editorRows().length > 0
+                          this.annotatorRows().length > 0
                             ? _c(
                                 "div",
                                 {
@@ -60064,39 +60297,6 @@ var render = function() {
                               )
                             : _vm._e(),
                           _vm._v(" "),
-                          _vm.header == "annotation" &&
-                          this.annotatorRows().length > 0
-                            ? _c(
-                                "div",
-                                {
-                                  staticClass: "tab-pane fade",
-                                  attrs: { role: "tabpanel", id: "annotators" }
-                                },
-                                [
-                                  _vm._m(4),
-                                  _vm._v(" "),
-                                  _c("vue-good-table", {
-                                    attrs: {
-                                      columns: _vm.personColumns,
-                                      rows: _vm.annotatorRows(),
-                                      "search-options": {
-                                        enabled: true
-                                      },
-                                      "pagination-options": {
-                                        enabled: true,
-                                        perPage: 10
-                                      },
-                                      lineNumbers: false,
-                                      styleClass:
-                                        "custom-table table table-corpus-mid table-striped"
-                                    }
-                                  })
-                                ],
-                                1
-                              )
-                            : _vm._e(),
-                          _vm._v(" "),
-                          _vm.header == "annotation" &&
                           this.transcriptionRows().length > 0
                             ? _c(
                                 "div",
@@ -60108,7 +60308,7 @@ var render = function() {
                                   }
                                 },
                                 [
-                                  _vm._m(5),
+                                  _vm._m(4),
                                   _vm._v(" "),
                                   _c("vue-good-table", {
                                     attrs: {
@@ -60131,7 +60331,6 @@ var render = function() {
                               )
                             : _vm._e(),
                           _vm._v(" "),
-                          _vm.header == "annotation" &&
                           this.infrastructureRows().length > 0
                             ? _c(
                                 "div",
@@ -60139,11 +60338,11 @@ var render = function() {
                                   staticClass: "tab-pane fade",
                                   attrs: {
                                     role: "tabpanel",
-                                    id: "transcription"
+                                    id: "infrastructure"
                                   }
                                 },
                                 [
-                                  _vm._m(6),
+                                  _vm._m(5),
                                   _vm._v(" "),
                                   _c("vue-good-table", {
                                     attrs: {
@@ -60166,7 +60365,6 @@ var render = function() {
                               )
                             : _vm._e(),
                           _vm._v(" "),
-                          _vm.header == "annotation" &&
                           this.versionRows().length > 0
                             ? _c(
                                 "div",
@@ -60174,11 +60372,11 @@ var render = function() {
                                   staticClass: "tab-pane fade",
                                   attrs: {
                                     role: "tabpanel",
-                                    id: "transcription"
+                                    id: "preparationversions"
                                   }
                                 },
                                 [
-                                  _vm._m(7),
+                                  _vm._m(6),
                                   _vm._v(" "),
                                   _c("vue-good-table", {
                                     attrs: {
@@ -60201,16 +60399,18 @@ var render = function() {
                               )
                             : _vm._e(),
                           _vm._v(" "),
-                          _vm.header == "annotation" &&
                           this.licenseRows().length > 0
                             ? _c(
                                 "div",
                                 {
                                   staticClass: "tab-pane fade",
-                                  attrs: { role: "tabpanel", id: "license" }
+                                  attrs: {
+                                    role: "tabpanel",
+                                    id: "preparationlicense"
+                                  }
                                 },
                                 [
-                                  _vm._m(8),
+                                  _vm._m(7),
                                   _vm._v(" "),
                                   _c("vue-good-table", {
                                     attrs: {
@@ -60233,16 +60433,18 @@ var render = function() {
                               )
                             : _vm._e(),
                           _vm._v(" "),
-                          _vm.header == "annotation" &&
-                          this.licenseRows().length > 0
+                          this.preparationRows().length > 0
                             ? _c(
                                 "div",
                                 {
-                                  staticClass: "tab-pane fade",
-                                  attrs: { role: "tabpanel", id: "preparation" }
+                                  staticClass: "tab-pane active",
+                                  attrs: {
+                                    role: "tabpanel",
+                                    id: "preparations"
+                                  }
                                 },
                                 [
-                                  _vm._m(9),
+                                  _vm._m(8),
                                   _vm._v(" "),
                                   _c("vue-good-table", {
                                     attrs: {
@@ -60297,7 +60499,7 @@ var render = function() {
                               staticClass: "tab-pane active",
                               attrs: { role: "tabpanel", id: "tei-header" }
                             },
-                            [_vm._m(10)]
+                            [_vm._m(9)]
                           )
                         : _vm._e(),
                       _vm._v(" "),
@@ -60391,20 +60593,6 @@ var staticRenderFns = [
       { staticClass: "d-flex justify-content-between mt-7 mb-3" },
       [
         _c("div", { staticClass: "h3 font-weight-normal" }, [
-          _vm._v("Annotators")
-        ])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "d-flex justify-content-between mt-7 mb-3" },
-      [
-        _c("div", { staticClass: "h3 font-weight-normal" }, [
           _vm._v("Transcription")
         ])
       ]
@@ -60419,7 +60607,7 @@ var staticRenderFns = [
       { staticClass: "d-flex justify-content-between mt-7 mb-3" },
       [
         _c("div", { staticClass: "h3 font-weight-normal" }, [
-          _vm._v("Annotators")
+          _vm._v("Infrastructure")
         ])
       ]
     )
@@ -60445,11 +60633,7 @@ var staticRenderFns = [
     return _c(
       "div",
       { staticClass: "d-flex justify-content-between mt-7 mb-3" },
-      [
-        _c("div", { staticClass: "h3 font-weight-normal" }, [
-          _vm._v("Versions")
-        ])
-      ]
+      [_c("div", { staticClass: "h3 font-weight-normal" }, [_vm._v("License")])]
     )
   },
   function() {
@@ -60461,7 +60645,7 @@ var staticRenderFns = [
       { staticClass: "d-flex justify-content-between mt-7 mb-3" },
       [
         _c("div", { staticClass: "h3 font-weight-normal" }, [
-          _vm._v("Preparation")
+          _vm._v("Preparation steps")
         ])
       ]
     )

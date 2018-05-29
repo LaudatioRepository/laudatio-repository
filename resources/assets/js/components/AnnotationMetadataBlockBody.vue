@@ -6,9 +6,7 @@
                     <div class="col-2">
                         <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
                             <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#tei-header">Description</a>
-                            <span v-for="(guidelinedata, guidelinekey) in headerdata.guidelines">
-                                <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" v-if="Object.keys(guidelinedata['annotations']).length > 0" v-bind:href="('#').concat(guidelinekey)">{{guidelinekey}}</a>
-                            </span>
+                            <a v-for="(guidelinedata, guidelinekey) in headerdata.guidelines" class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" v-if="Object.keys(guidelinedata['annotations']).length > 0" v-bind:href="('#').concat(guidelinekey)">{{guidelinekey}}</a>
                         </nav>
                     </div>
                     <div class="col">
@@ -17,7 +15,19 @@
                                 <div class="d-flex justify-content-between mt-7 mb-3">
                                     <div class="h3 font-weight-normal">GUIDELINES - TEI-Header</div>
                                 </div>
-
+                                <vue-good-table
+                                  title=""
+                                  :columns="guidelineColumns"
+                                  :rows=allGuidelineRows()
+                                  :search-options="{
+                                    enabled: true,
+                                  }"
+                                  :pagination-options="{
+                                    enabled: true,
+                                    perPage: 10,
+                                  }"
+                                  :lineNumbers="false"
+                                  styleClass="custom-table table table-corpus-mid table-striped"/>
                             </div>
 
                             <div role="tabpanel"  class="tab-pane fade" v-for="(guidelinedata, guidelinekey) in headerdata.guidelines" :id="guidelinekey" v-if="header == 'annotation'">
@@ -28,9 +38,15 @@
                                   title=""
                                   :columns="guidelineColumns"
                                   :rows=guidelineRows(guidelinekey)
-                                  :paginate="true"
+                                  :search-options="{
+                                    enabled: true,
+                                  }"
+                                  :pagination-options="{
+                                    enabled: true,
+                                    perPage: 10,
+                                  }"
                                   :lineNumbers="false"
-                                  styleClass="table table-striped"/>
+                                  styleClass="custom-table table table-corpus-mid table-striped"/>
                             </div>
 
                             <div role="tabpanel"  class="tab-pane fade" id="license" v-if="header == 'annotation'">
@@ -59,23 +75,28 @@
              <div class="container">
                 <div class="row">
                     <div class="col-2">
-                        <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="annotation" href="#authorship">Authorship
-                                <span class="nav nav-stacked collapsed" id="authorship">
-                                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#editors" v-if="this.editorRows().length > 0">EDITORS</a>
-                                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#annotators" v-if="this.annotatorRows().length > 0">ANNOTATORS</a>
-                                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#transcription" v-if="this.transcriptionRows().length > 0">TRANSCRIPTION</a>
-                                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#infrastructure" v-if="this.infrastructureRows().length > 0">INFRASTRUCTURE</a>
-                                </span>
-                            </a>
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#versions" v-if="this.versionRows().length > 0">VERSIONS</a>
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#license" v-if="this.licenseRows().length > 0">LICENSE/SOURCE</a>
-                             <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#preparation">PREPARATION</a>
+                        <nav class="sidebar text-14 nav flex-column border-top border-light mt-7"  role="navigation">
+                          <div class="border-bottom border-light">
+                            <a class="font-weight-normal text-uppercase py-3 px-0 nav-link" href="#" data-target="#authorCollapse"
+                              data-toggle="collapse" aria-expanded="false" aria-controls="authorCollapse">
+                              Authorship</a>
+                            <div class="collapse " id="authorCollapse">
+                              <div class="nav flex-column ">
+                                <a class="font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink" data-toggle="tab" role="tab"  href="#editors" data-headertype="annotation"  v-if="this.editorRows().length > 0">EDITORS</a>
+                                <a class="font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink" data-toggle="tab" role="tab"  href="#annotators" data-headertype="annotation"  v-if="this.annotatorRows().length > 0">ANNOTATORS</a>
+                                <a class="font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink" data-toggle="tab" role="tab"  href="#transcription" data-headertype="annotation"  v-if="this.transcriptionRows().length > 0">TRANSCRIPTION</a>
+                                <a class="font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink" data-toggle="tab" role="tab"  href="#infrastructure" data-headertype="annotation"  v-if="this.infrastructureRows().length > 0">INFRASTRUCTURE</a>
+                            </div>
+                          </div>
+                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab"   href="#preparationversions" data-headertype="annotation"  v-if="this.versionRows().length > 0">VERSIONS</a>
+                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab"  href="#preparationlicense" data-headertype="annotation"  v-if="this.licenseRows().length > 0">LICENSE / SOURCE</a>
+                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink active" data-toggle="tab" role="tab"  data-headertype="annotation"  href="#preparations" v-if="this.preparationRows().length > 0">Preparation</a>
+                          </div>
                         </nav>
                     </div>
                     <div class="col">
                         <div id="tabcontainer" class="container-fluid tab-content content">
-                            <div role="tabpanel"  class="tab-pane active" id="editors" v-if="header == 'annotation'">
+                            <div role="tabpanel"  class="tab-pane fade" id="editors" v-if="header == 'annotation'">
                                 <div class="d-flex justify-content-between mt-7 mb-3">
                                     <div class="h3 font-weight-normal">Editors</div>
                                 </div>
@@ -95,7 +116,7 @@
 
 
 
-                            <div role="tabpanel"  class="tab-pane fade" id="annotators" v-if="header == 'annotation' && this.editorRows().length > 0">
+                            <div role="tabpanel"  class="tab-pane fade" id="annotators" v-if=" this.annotatorRows().length > 0">
                                 <div class="d-flex justify-content-between mt-7 mb-3">
                                     <div class="h3 font-weight-normal">Annotators</div>
                                 </div>
@@ -117,27 +138,8 @@
 
 
 
-                            <div role="tabpanel"  class="tab-pane fade" id="annotators" v-if="header == 'annotation' && this.annotatorRows().length > 0">
-                                <div class="d-flex justify-content-between mt-7 mb-3">
-                                    <div class="h3 font-weight-normal">Annotators</div>
-                                </div>
-                               <vue-good-table
-                              :columns="personColumns"
-                              :rows=annotatorRows()
-                              :search-options="{
-                                enabled: true,
-                              }"
-                              :pagination-options="{
-                                enabled: true,
-                                perPage: 10,
-                              }"
-                              :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped" />
-                            </div>
 
-
-
-                            <div role="tabpanel"  class="tab-pane fade" id="transcription" v-if="header == 'annotation' && this.transcriptionRows().length > 0">
+                            <div role="tabpanel"  class="tab-pane fade" id="transcription" v-if=" this.transcriptionRows().length > 0">
                                 <div class="d-flex justify-content-between mt-7 mb-3">
                                     <div class="h3 font-weight-normal">Transcription</div>
                                 </div>
@@ -157,9 +159,9 @@
 
 
 
-                            <div role="tabpanel"  class="tab-pane fade" id="transcription" v-if="header == 'annotation' && this.infrastructureRows().length > 0">
+                            <div role="tabpanel"  class="tab-pane fade" id="infrastructure" v-if=" this.infrastructureRows().length > 0">
                                 <div class="d-flex justify-content-between mt-7 mb-3">
-                                    <div class="h3 font-weight-normal">Annotators</div>
+                                    <div class="h3 font-weight-normal">Infrastructure</div>
                                 </div>
                                <vue-good-table
                               :columns="personColumns"
@@ -177,7 +179,7 @@
 
 
 
-                            <div role="tabpanel"  class="tab-pane fade" id="transcription" v-if="header == 'annotation' && this.versionRows().length > 0">
+                            <div role="tabpanel"  class="tab-pane fade" id="preparationversions" v-if=" this.versionRows().length > 0">
                                 <div class="d-flex justify-content-between mt-7 mb-3">
                                     <div class="h3 font-weight-normal">Versions</div>
                                 </div>
@@ -197,9 +199,9 @@
 
 
 
-                            <div role="tabpanel"  class="tab-pane fade" id="license" v-if="header == 'annotation' && this.licenseRows().length > 0">
+                            <div role="tabpanel"  class="tab-pane fade" id="preparationlicense" v-if=" this.licenseRows().length > 0">
                                 <div class="d-flex justify-content-between mt-7 mb-3">
-                                    <div class="h3 font-weight-normal">Versions</div>
+                                    <div class="h3 font-weight-normal">License</div>
                                 </div>
                                <vue-good-table
                               :columns="licenseColumns"
@@ -217,9 +219,9 @@
 
 
 
-                            <div role="tabpanel"  class="tab-pane fade" id="preparation" v-if="header == 'annotation' && this.licenseRows().length > 0">
+                            <div role="tabpanel"  class="tab-pane active" id="preparations" v-if=" this.preparationRows().length > 0">
                                 <div class="d-flex justify-content-between mt-7 mb-3">
-                                    <div class="h3 font-weight-normal">Preparation</div>
+                                    <div class="h3 font-weight-normal">Preparation steps</div>
                                 </div>
                                <vue-good-table
                               :columns="preparationColumns"
@@ -288,6 +290,11 @@
                     {
                         label: 'Annotation key',
                         field: 'title',
+                        filterable: true,
+                    },
+                    {
+                        label: 'Annotation value',
+                        field: 'value',
                         filterable: true,
                     },
                     {
@@ -436,7 +443,8 @@
                             if(format == formatKey && Object.keys(this[formatKey]['annotations']).length > 0){
                                 Object.keys(this[formatKey]['annotations'][annotationTitle]).forEach(function (guidelineKey, guidelineIndex) {
                                     var valueObject = {}
-                                    valueObject.title = guidelineKey;
+                                    valueObject.title = annotationTitle;
+                                    valueObject.value = guidelineKey;
                                     valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey]
 
                                     guidelineArray.push(valueObject);
@@ -446,6 +454,28 @@
 
                     }, this.headerdata.guidelines);
                 }
+                return guidelineArray;
+            },
+            allGuidelineRows: function(){
+                var guidelineArray = [];
+                var annotationTitle = this.headerdata.preparation_title[0];
+                if(null != this.headerdata.guidelines && typeof this.headerdata.guidelines != 'undefined'){
+                    Object.keys(this.headerdata.guidelines).forEach(function(formatKey, formatIndex) {
+                        var annotationData = this[formatKey];
+                        if(Object.keys(this[formatKey]['annotations']).length > 0){
+                            Object.keys(this[formatKey]['annotations'][annotationTitle]).forEach(function (guidelineKey, guidelineIndex) {
+                                var valueObject = {}
+                                valueObject.title = annotationTitle;
+                                valueObject.value = guidelineKey;
+                                valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey]
+
+                                guidelineArray.push(valueObject);
+                            }, this[formatKey]['annotations']);
+                        }
+
+                    }, this.headerdata.guidelines);
+                }
+
                 return guidelineArray;
             },
             editorRows: function(){
@@ -560,6 +590,7 @@
                         versionArray.push(versionObject);
                     }
                 }
+
                 return versionArray;
             },
             licenseRows: function(){
@@ -582,13 +613,13 @@
                         licenseArray.push(licenseObject);
                     }
                 }
+
                 return licenseArray;
             },
             preparationRows: function(){
                 var preparationArray = [];
                 var theHeaderData = this.headerdata;
                 if( typeof theHeaderData.preparation_encoding_step != 'undefined' &&
-                    typeof theHeaderData.preparation_encoding_step_number != 'undefined' &&
                     typeof theHeaderData.preparation_encoding_models != 'undefined' &&
                     typeof theHeaderData.preparation_encoding_tool != 'undefined' &&
                     typeof theHeaderData.preparation_encoding_full_name != 'undefined' &&
@@ -599,7 +630,6 @@
                     typeof theHeaderData.preparation_encoding_annotation_sub_group != 'undefined' &&
                     this.hasSameLength([
                         theHeaderData.preparation_encoding_step,
-                        theHeaderData.preparation_encoding_step_number,
                         theHeaderData.preparation_encoding_models,
                         theHeaderData.preparation_encoding_tool,
                         theHeaderData.preparation_encoding_full_name,
@@ -612,7 +642,6 @@
                 ){
                     for(var i = 0; i < theHeaderData.preparation_encoding_step.length;i++){
                         var preparationObject = {}
-                        preparationObject.stepnumber = theHeaderData.preparation_encoding_step_number[i];
                         preparationObject.step = theHeaderData.preparation_encoding_step[i];
                         preparationObject.model  = theHeaderData.preparation_encoding_models[i];
                         preparationObject.tool  = theHeaderData.preparation_encoding_tool[i];
@@ -625,6 +654,7 @@
                         preparationArray.push(preparationObject);
                     }
                 }
+
                 return preparationArray;
             },
             documentRows: function(){

@@ -5,18 +5,25 @@
             <div class="container">
                 <div class="row">
                     <div class="col-2">
-                        <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#corpusDescription">DESCRIPTION</a>
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink collapsed"  href="#" data-toggle="collapse" data-target="#authorship" aria-expanded="false">AUTHORSHIP</a>
-                            <ul class="nav nav-stacked collapse" id="authorship">
-                                    <li role="tab" class="nav-link"><a href="#editors" data-toggle="pill" v-if="this.corpusEditorRows().length > 0">CORPUS EDITORS</a></li>
-                                    <li role="tab" class="nav-link"><a href="#annotators" data-toggle="pill" v-if="this.corpusAnnotatorRows().length > 0">ANNOTATORS</a></li>
-                                    <li role="tab" class="nav-link"><a href="#transcription" data-toggle="pill" v-if="this.corpusTranscriptionRows().length > 0">TRANSCRIPTION</a></li>
-                                    <li role="tab" class="nav-link" v-if="this.corpusInfrastructureRows().length > 0"><a href="#infrastructure" data-toggle="pill">INFRASTRUCTURE</a></li>
-                                  </ul>
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#corpusVersions">VERSIONS</a>
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="formatdata" href="#corpusLicense">LICENSE / REVISION</a>
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="license" href="#corpusFormats">FORMATS</a>
+
+                        <nav class="sidebar text-14 nav flex-column border-top border-light mt-7"  role="navigation">
+                          <div class="border-bottom border-light">
+                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#corpusDescription">DESCRIPTION</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 nav-link" href="#" data-target="#authorCollapse"
+                              data-toggle="collapse" aria-expanded="false" aria-controls="authorCollapse">
+                              Authorship</a>
+                            <div class="collapse " id="authorCollapse">
+                              <div class="nav flex-column ">
+                                <a class="font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink" data-toggle="tab" role="tab"  href="#editors" data-headertype="annotation"  v-if="this.corpusEditorRows().length > 0">EDITORS</a>
+                                <a class="font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink" data-toggle="tab" role="tab"  href="#annotators" data-headertype="annotation"  v-if="this.corpusAnnotatorRows().length > 0">ANNOTATORS</a>
+                                <a class="font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink" data-toggle="tab" role="tab"  href="#transcription" data-headertype="annotation"  v-if="this.corpusTranscriptionRows().length > 0">TRANSCRIPTION</a>
+                                <a class="font-weight-normal text-uppercase py-1 mb-1 nav-link stacktablink" data-toggle="tab" role="tab"  href="#infrastructure" data-headertype="annotation"  v-if="this.corpusInfrastructureRows().length > 0">INFRASTRUCTURE</a>
+                            </div>
+                          </div>
+                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#corpusVersions">VERSIONS</a>
+                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="formatdata" href="#corpusLicense">LICENSE / REVISION</a>
+                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="license" href="#corpusFormats">FORMATS</a>
+                          </div>
                         </nav>
                     </div>
                     <div class="col">
@@ -35,58 +42,93 @@
                             </div>
 
                             <div class="tab-pane fade" id="editors" v-if="header == 'corpus' && this.corpusEditorRows().length > 0">
-                            <h2> CORPUS EDITORS</h2>
+                                <div class="d-flex justify-content-between mt-7 mb-3">
+                                    <div class="h3 font-weight-normal">CORPUS EDITORS</div>
+                                </div>
                             <vue-good-table
                               title=""
                               :columns="authorshipColumns"
                               :rows=corpusEditorRows()
-                              :paginate="true"
+                              :search-options="{
+                                enabled: true,
+                              }"
+                              :pagination-options="{
+                                enabled: false,
+                              }"
                               :lineNumbers="false"
-                              styleClass="table table-striped"/>
+                              styleClass="custom-table table table-corpus-mid table-striped"/>
                         </div>
 
                         <div class="tab-pane fade" id="annotators" v-if="header == 'corpus' && this.corpusAnnotatorRows().length > 0">
-                            <h2>ANNOTATORS</h2>
+                           <div class="d-flex justify-content-between mt-7 mb-3">
+                                <div class="h3 font-weight-normal">ANNOTATORS</div>
+                            </div>
                             <vue-good-table
                               title=""
                               :columns="authorshipColumns"
                               :rows=corpusAnnotatorRows()
-                              :paginate="true"
+                              :search-options="{
+                                enabled: true,
+                              }"
+                              :pagination-options="{
+                                enabled: false,
+                              }"
                               :lineNumbers="false"
-                              styleClass="table table-striped"/>
+                              styleClass="custom-table table table-corpus-mid table-striped"/>
                         </div>
 
                         <div class="tab-pane fade" id="transcription" v-if="header == 'corpus' && this.corpusTranscriptionRows().length > 0">
-                            <h2>TRANSCRIPTION</h2>
+                            <div class="d-flex justify-content-between mt-7 mb-3">
+                                <div class="h3 font-weight-normal">TRANSCRIPTION</div>
+                            </div>
                             <vue-good-table
                               title=""
                               :columns="authorshipColumns"
                               :rows=corpusTranscriptionRows()
-                              :paginate="true"
+                              :search-options="{
+                                enabled: true,
+                              }"
+                              :pagination-options="{
+                                enabled: false,
+                              }"
                               :lineNumbers="false"
-                              styleClass="table table-striped"/>
+                              styleClass="custom-table table table-corpus-mid table-striped"/>
                         </div>
 
                         <div class="tab-pane fade" id="infrastructure" v-if="header == 'corpus' && this.corpusInfrastructureRows().length > 0">
-                            <h2>INFRASTRUCTURE</h2>
+                            <div class="d-flex justify-content-between mt-7 mb-3">
+                                <div class="h3 font-weight-normal">INFRASTRUCTURE</div>
+                            </div>
                             <vue-good-table
                               title=""
                               :columns="authorshipColumns"
                               :rows=corpusInfrastructureRows()
-                              :paginate="true"
+                              :search-options="{
+                                enabled: true,
+                              }"
+                              :pagination-options="{
+                                enabled: false,
+                              }"
                               :lineNumbers="false"
-                              styleClass="table table-striped"/>
+                              styleClass="custom-table table table-corpus-mid table-striped"/>
                         </div>
 
                             <div role="tabpanel"  class="tab-pane fade in" id="corpusVersions" v-if="header == 'corpus'">
-                                <h2>VERSIONS</h2>
+                                <div class="d-flex justify-content-between mt-7 mb-3">
+                                    <div class="h3 font-weight-normal">VERSIONS</div>
+                                </div>
                             <vue-good-table
                               title=""
                               :columns="versionColumns"
                               :rows=getRevisions()
-                              :paginate="true"
+                              :search-options="{
+                                enabled: true,
+                              }"
+                              :pagination-options="{
+                                enabled: false,
+                              }"
                               :lineNumbers="false"
-                              styleClass="table table-striped"/>
+                              styleClass="custom-table table table-corpus-mid table-striped"/>
                             </div>
 
                             <div role="tabpanel"  class="tab-pane fade in" id="corpusLicense" v-if="header == 'corpus'">
@@ -94,13 +136,21 @@
                             </div>
 
                             <div role="tabpanel"  class="tab-pane fade in" id="corpusFormats" v-if="header == 'corpus'">
+                                <div class="d-flex justify-content-between mt-7 mb-3">
+                                    <div class="h3 font-weight-normal">FORMATS</div>
+                                </div>
                                 <vue-good-table
                                   title=""
                                   :columns="formatColumns"
                                   :rows=getFormats()
-                                  :paginate="true"
+                                  :search-options="{
+                                    enabled: true,
+                                  }"
+                                  :pagination-options="{
+                                    enabled: false,
+                                  }"
                                   :lineNumbers="false"
-                                  styleClass="table table-striped"/>
+                                  styleClass="custom-table table table-corpus-mid table-striped"/>
                             </div>
 
                         </div>
@@ -165,10 +215,10 @@
               <div class="row">
                 <div class="col-2">
                     <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
-                        <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#allAnnotations">All ({{groupCount("all")}})</a>
+                        <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link  stacktablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#allAnnotations">All ({{groupCount("all")}})</a>
                         <span v-for="(annotationGroup) in headerdata.allAnnotationGroups">
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="corpus" v-if="groupCount(annotationGroup) > 0 " v-bind:href="('#').concat(annotationGroup)">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink disabledLink" data-toggle="tab" role="tab" data-headertype="corpus" v-else>{{annotationGroup | touppercase}}</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link  stacktablink" data-toggle="tab" role="tab" data-headertype="corpus" v-if="groupCount(annotationGroup) > 0 " v-bind:href="('#').concat(annotationGroup)">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link  stacktablink disabledLink" data-toggle="tab" role="tab" data-headertype="corpus" v-else>{{annotationGroup | touppercase}}</a>
                         </span>
                     </nav>
                 </div>
