@@ -58453,7 +58453,7 @@ var render = function() {
                             "a",
                             {
                               staticClass:
-                                "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active",
+                                "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink active",
                               attrs: {
                                 "data-toggle": "tab",
                                 role: "tab",
@@ -58477,7 +58477,7 @@ var render = function() {
                                     "a",
                                     {
                                       staticClass:
-                                        "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
+                                        "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink",
                                       attrs: {
                                         "data-toggle": "tab",
                                         role: "tab",
@@ -58502,7 +58502,7 @@ var render = function() {
                                     "a",
                                     {
                                       staticClass:
-                                        "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink disabledLink",
+                                        "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink disabledLink",
                                       attrs: {
                                         "data-toggle": "tab",
                                         role: "tab",
@@ -58945,7 +58945,7 @@ var staticRenderFns = [
             "a",
             {
               staticClass:
-                "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active tablink",
+                "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active stacktablink",
               attrs: {
                 "data-toggle": "tab",
                 role: "tab",
@@ -58960,7 +58960,7 @@ var staticRenderFns = [
             "a",
             {
               staticClass:
-                "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
+                "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink",
               attrs: {
                 "data-toggle": "tab",
                 role: "tab",
@@ -58975,7 +58975,7 @@ var staticRenderFns = [
             "a",
             {
               staticClass:
-                "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink",
+                "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink",
               attrs: {
                 "data-toggle": "tab",
                 role: "tab",

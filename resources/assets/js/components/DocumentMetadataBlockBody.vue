@@ -5,9 +5,9 @@
                 <div class="row">
                     <div class="col-2">
                         <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active tablink" data-toggle="tab" role="tab" data-headertype="document" href="#documentDescription">Description</a>
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="document"  href="#sourceDescription">Source Description</a>
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="document" href="#license">License / Revision</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active stacktablink" data-toggle="tab" role="tab" data-headertype="document" href="#documentDescription">Description</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="document"  href="#sourceDescription">Source Description</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="document" href="#license">License / Revision</a>
                         </nav>
                     </div>
                     <div class="col">
@@ -138,10 +138,10 @@
                 <div class="row">
                     <div class="col-2">
                         <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="document" href="#allAnnotations">All ({{totalAnnotations()}})</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink active" data-toggle="tab" role="tab" data-headertype="document" href="#allAnnotations">All ({{totalAnnotations()}})</a>
                             <span v-for="(annotationGroup) in headerdata.allAnnotationGroups">
-                                <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="document" v-if="groupCount(annotationGroup) > 0 " v-bind:href="('#').concat(annotationGroup)">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
-                                <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink disabledLink" data-toggle="tab" role="tab" data-headertype="document" v-else>{{annotationGroup | touppercase}}</a>
+                                <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="document" v-if="groupCount(annotationGroup) > 0 " v-bind:href="('#').concat(annotationGroup)">{{annotationGroup | touppercase}} ({{groupCount(annotationGroup)}})</a>
+                                <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink disabledLink" data-toggle="tab" role="tab" data-headertype="document" v-else>{{annotationGroup | touppercase}}</a>
                             </span>
                         </nav>
                     </div>
