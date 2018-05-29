@@ -18,6 +18,7 @@ interface GitRepoInterface {
     public function deleteCorpusFileStructure($flysystem, $path);
     public function deleteProjectFileStructure($flysystem, $path);
     public function getCorpusFiles($flysystem,$corpusid,$path = "");
+    public function getUploader($headerData,$headertype);
     public function getCorpusFileInfo($flysystem, $path = "");
     public function addFilesToRepository($path,$file);
     public function deleteFile($flysystem, $path);

@@ -91,6 +91,7 @@
                 <tr class="text-14 text-grey">
                     <th scope="col">Uploaded Files</th>
                     <th scope="col">Collaborator</th>
+                    <th scope="col">Affiliation</th>
                     <th scope="col">updated</th>
                     <th scope="col">Delete</th>
                 </tr>
@@ -106,7 +107,17 @@
                                 </label>
                             </div>
                         </td>
-                        <td class="text-14 text-grey-light">uploader</td>
+                        @if(isset($fileData['uploader_name']))
+                            <td class="text-14 text-grey-light">{{$fileData['uploader_name']}}</td>
+                        @else
+                            <td class="text-14 text-grey-light">&nbsp;</td>
+                        @endif
+
+                        @if(isset($fileData['uploader_affiliation']))
+                            <td class="text-14 text-grey-light">{{$fileData['uploader_affiliation']}}</td>
+                        @else
+                            <td class="text-14 text-grey-light">&nbsp;</td>
+                        @endif
                         <td class="text-14 text-grey-light">{{  Carbon\Carbon::parse($fileData['lastupdated'])->format('H:i,M d') }}</td>
                         <td>
                             <a href="#">

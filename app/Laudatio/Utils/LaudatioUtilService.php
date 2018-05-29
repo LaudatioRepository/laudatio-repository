@@ -190,7 +190,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $fileName
      * @return Document
      */
-    public function setDocumentAttributes($json,$corpusId,$fileName,$isDir){
+    public function setDocumentAttributes($json,$corpusId,$uid,$fileName,$isDir){
         $jsonPath = new JSONPath($json);
 
         $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
@@ -223,6 +223,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $document->document_size_value = count($documentSizeValue) > 0 ? $documentSizeValue[0]: 0;
             $document->document_id = $document_id[0];
             $document->corpus_id = $corpusId;
+            $document->uid = $uid;
             $document->file_name = $fileName;
             $document->directory_path = $corpus->directory_path;
             $document->save();
@@ -235,6 +236,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $document->document_size_value = count($documentSizeValue) > 0 ? $documentSizeValue[0]: 0;
             $document->document_id = $document_id[0];
             $document->corpus_id = $corpusId;
+            $document->uid = $uid;
             $document->directory_path = $corpus->directory_path;
             $document->file_name = $fileName;
             $document->save();
@@ -314,7 +316,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $fileName
      * @return Annotation|mixed
      */
-    public function setAnnotationAttributes($json,$corpusId,$fileName,$isDir){
+    public function setAnnotationAttributes($json,$corpusId,$uid,$fileName,$isDir){
         $jsonPath = new JSONPath($json);
 
         $annotationId = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.corresp')->data();
@@ -332,13 +334,14 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $corpus = Corpus::find($corpusId);
 
         if(count($annotationsFromDB) > 0){
-
+            Log::info("annotationsFromDB:uuid: ".$uid);
             foreach($annotationsFromDB as $annotationFromDB)
               $annotationFromDB->update([
                   "annotation_size_type" => $annotationSizeType[0],
                   "annotation_size_value" => $annotationSizeValue[0],
                   "directory_path" => $corpus->directory_path,
-                  "file_name" => $fileName
+                  "file_name" => $fileName,
+                  "uid" => $uid
             ]);
 
             $annotationFromDB->save();
@@ -347,11 +350,12 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         }
         else{
             $annotation = new Annotation;
-
+            Log::info("newanno:uuid: ".$uid);
             $annotation->annotation_id = $annotationId[0];
             $annotation->annotation_size_type = $annotationSizeType[0];
             $annotation->annotation_size_value = $annotationSizeValue[0];
             $annotation->corpus_id = $corpusId;
+            $annotation->uid = $uid;
             $annotation->file_name = $fileName;
             $annotation->directory_path = $corpus->directory_path;
             $annotation->save();

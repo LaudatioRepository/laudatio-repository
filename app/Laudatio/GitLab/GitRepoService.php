@@ -16,6 +16,9 @@ use GrahamCampbell\Flysystem\FlysystemManager;
 use Carbon\Carbon;
 use Log;
 use App\Corpus;
+use App\Document;
+use App\Annotation;
+use App\User;
 use App\CorpusProject;
 
 class GitRepoService implements GitRepoInterface
@@ -205,6 +208,7 @@ class GitRepoService implements GitRepoInterface
                 $headerData = $this->getCorpusFileInfo($flysystem,$corpusPath.'/TEI-HEADERS');
             }
 
+
             $corpusDataFolder = substr($corpusData['path'],strrpos($corpusData['path'],"/")+1);
             $headerDataFolder = substr($headerData['path'],strrpos($headerData['path'],"/")+1);
             $fileData = array(
@@ -233,7 +237,38 @@ class GitRepoService implements GitRepoInterface
         }
         return $fileData;
     }
+    public function getUploader($headerData,$headertype){
 
+        //dd($headerData);
+        for($i = 0; $i < count($headerData); $i++){
+            $extension = $headerData[$i]['extension'];
+            $basename = $headerData[$i]['basename'];
+            if($extension == "xml") {
+                $obrect = null;
+                switch ($headertype){
+                    case 'corpus':
+                        $object = Corpus::where(['file_name' => $basename])->get();
+                        break;
+                    case 'document':
+                        $object = Document::where(['file_name' => $basename])->get();
+                        break;
+                    case 'annotation':
+                        $object = Annotation::where(['file_name' => $basename])->get();
+                        break;
+                }
+
+                if($object[0]->uid != ""){
+                    $uploader = User::find($object[0]->uid);
+                    $headerData[$i]['uploader_affiliation'] = $uploader->affiliation;
+                    $headerData[$i]['uploader_name'] = $uploader->name;
+                    $headerData[$i]['uploader_uid'] = $uploader->id;
+                }
+            }
+        }
+
+        return $headerData;
+
+    }
     public function getCorpusFileInfo($flysystem, $path = ""){
         $gitFunction = new GitFunction();
         $hasDir = false;
@@ -253,7 +288,6 @@ class GitRepoService implements GitRepoInterface
         $last_id = key($pathArray);
 
 
-        //dd($projects);
         for ($i = 0; $i < count($projects);$i++){
             $foldercount = count($flysystem->listContents($projects[$i]['path']));
             $projects[$i]['foldercount'] = $foldercount;

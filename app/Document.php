@@ -13,7 +13,7 @@ class Document extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'oauth_id', 'avatar','password',
+        'name', 'email', 'oauth_id', 'avatar','password','uid'
     ];
 
     /**

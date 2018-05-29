@@ -415,7 +415,19 @@ class CorpusController extends Controller
         $annotationFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/annotation");
 
         $corpusFormatData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$path."/CORPUS-DATA");
-        //dd($corpusFormatData);
+
+
+
+        //get userinfo for the fileData
+        $corpusnewelements = $this->GitRepoService->getUploader($corpusFileData['headerData']['elements'],'corpus');
+        $corpusFileData['headerData']['elements'] = $corpusnewelements;
+
+        $documentnewelements = $this->GitRepoService->getUploader($documentFileData['headerData']['elements'],'document');
+        $documentFileData['headerData']['elements'] = $documentnewelements;
+
+        $annotationnewelements = $this->GitRepoService->getUploader($annotationFileData['headerData']['elements'],'annotation');
+        $annotationFileData['headerData']['elements'] = $annotationnewelements;
+
 
         $corpusUpload = false;
         if($corpus->gitlab_id == ""){
@@ -490,7 +502,7 @@ class CorpusController extends Controller
             'messagecount' => $messagecount
 
         );
-
+        //dd($documentFileData);
         JavaScript::put([
             'corpusUpload' => $corpusUpload,
             'documentUpload' => $documentUpload,
