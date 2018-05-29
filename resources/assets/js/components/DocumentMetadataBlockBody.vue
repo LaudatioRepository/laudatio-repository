@@ -172,7 +172,7 @@
                                       <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#guidelines')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
                                     </span>
                                     <span v-else-if="props.column.field == 'prep'">
-                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#preparationSteps')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
+                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#preparationsteps')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
                                     </span>
                                     <span v-else-if="props.column.field == 'document_count'">
                                         <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
@@ -187,7 +187,7 @@
                             </vue-good-table>
                         </div>
 
-                        <div role="tabpanel"  class="tab-pane active" v-for="(annotationGroup) in headerdata.allAnnotationGroups" :id="annotationGroup" v-if="header == 'document'">
+                        <div role="tabpanel"  class="tab-pane fade" v-for="(annotationGroup) in headerdata.allAnnotationGroups" :id="annotationGroup" v-if="header == 'document'">
                             <div class="d-flex justify-content-between mt-7 mb-3">
                                 <div class="h3 font-weight-normal">{{annotationGroup}}  ({{groupCount(annotationGroup)}})</div>
                             </div>
@@ -203,7 +203,6 @@
                                 perPage: 10,
                               }"
                               :lineNumbers="false"
-                              :onClick="goToAnnotation"
                               styleClass="custom-table table table-corpus-mid table-striped">
                                 <template slot="table-row" slot-scope="props">
                                     <span v-if="props.column.field == 'title'">
@@ -213,7 +212,7 @@
                                       <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#guidelines')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
                                     </span>
                                     <span v-else-if="props.column.field == 'prep'">
-                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#preparationSteps')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
+                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#preparationsteps')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
                                     </span>
                                     <span v-else-if="props.column.field == 'document_count'">
                                         <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">

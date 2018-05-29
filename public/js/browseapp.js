@@ -54083,8 +54083,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin'],
@@ -54330,7 +54328,7 @@ var render = function() {
                   "div",
                   {
                     staticClass:
-                      "nav-item maintablink col-auto text-center text-14 font-weight-bold "
+                      "nav-item maintablink col-auto text-center text-14 font-weight-bold active"
                   },
                   [
                     _c(
@@ -54345,7 +54343,7 @@ var render = function() {
                         }
                       },
                       [
-                        _vm._v(" Document Metadata\n                  "),
+                        _vm._v(" Document Metadata\n                      "),
                         _c(
                           "div",
                           {
@@ -54396,7 +54394,7 @@ var render = function() {
                         }
                       },
                       [
-                        _vm._v(" Annotations\n                  "),
+                        _vm._v(" Annotations\n                      "),
                         _c(
                           "div",
                           {
@@ -55144,7 +55142,7 @@ var render = function() {
                   "div",
                   {
                     staticClass:
-                      "nav-item maintablink col-auto text-center text-14 font-weight-bold "
+                      "nav-item maintablink col-auto text-center text-14 font-weight-bold"
                   },
                   [
                     _c(
@@ -55390,13 +55388,14 @@ var staticRenderFns = [
       "div",
       {
         staticClass:
-          "nav-item maintablink col-auto text-center text-14 font-weight-bold "
+          "nav-item maintablink col-auto text-center text-14 font-weight-bold active",
+        attrs: { id: "guidelines_nav" }
       },
       [
         _c(
           "a",
           {
-            staticClass: "nav-link maintablink text-dark text-uppercase ",
+            staticClass: "nav-link maintablink text-dark text-uppercase",
             attrs: { "data-toggle": "tab", href: "#guidelines", role: "tab" }
           },
           [_vm._v(" GUIDELINES")]
@@ -55412,7 +55411,8 @@ var staticRenderFns = [
       "div",
       {
         staticClass:
-          "nav-item maintablink col-auto text-center text-14 font-weight-bold "
+          "nav-item maintablink col-auto text-center text-14 font-weight-bold",
+        attrs: { id: "preparationsteps_nav" }
       },
       [
         _c(
@@ -57796,7 +57796,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin'],
@@ -58643,7 +58642,7 @@ var render = function() {
                                                                   .preparation_annotation_id
                                                               )
                                                               .concat(
-                                                                "#preparationSteps"
+                                                                "#preparationsteps"
                                                               )
                                                           }
                                                         },
@@ -58723,7 +58722,7 @@ var render = function() {
                               ? _c(
                                   "div",
                                   {
-                                    staticClass: "tab-pane active",
+                                    staticClass: "tab-pane fade",
                                     attrs: {
                                       role: "tabpanel",
                                       id: annotationGroup
@@ -58772,7 +58771,6 @@ var render = function() {
                                           perPage: 10
                                         },
                                         lineNumbers: false,
-                                        onClick: _vm.goToAnnotation,
                                         styleClass:
                                           "custom-table table table-corpus-mid table-striped"
                                       },
@@ -58840,7 +58838,7 @@ var render = function() {
                                                                     .preparation_annotation_id
                                                                 )
                                                                 .concat(
-                                                                  "#preparationSteps"
+                                                                  "#preparationsteps"
                                                                 )
                                                             }
                                                           },
@@ -59521,6 +59519,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header'],
@@ -59578,19 +59585,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 filterable: true
             }],
             preparationColumns: [{
-                label: '#',
-                field: 'stepnumber',
-                filterable: true
-            }, {
                 label: 'Encoding step',
                 field: 'step',
                 filterable: true
             }, {
-                label: 'Encoding model',
+                label: 'Model',
                 field: 'model',
                 filterable: true
             }, {
-                label: 'Encoding tool',
+                label: 'Tool',
                 field: 'tool',
                 filterable: true
             }, {
@@ -59598,24 +59601,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 field: 'version',
                 filterable: true
             }, {
-                label: 'Encoding name',
+                label: 'Name',
                 field: 'name',
                 filterable: true
             }, {
-                label: 'Encoding description',
+                label: 'Description',
                 field: 'description',
                 filterable: true
             }, {
-                label: 'File extension',
+                label: 'Extension',
                 field: 'extension',
-                filterable: true
-            }, {
-                label: 'Annotation group',
-                field: 'group',
-                filterable: true
-            }, {
-                label: 'Annotation sub group',
-                field: 'subgroup',
                 filterable: true
             }],
             documentColumns: [{
@@ -59853,7 +59848,7 @@ var render = function() {
         _c(
           "div",
           {
-            staticClass: "tab-pane active",
+            staticClass: "tab-pane mainpanel active",
             attrs: { role: "tabpanel", id: "guidelines" }
           },
           [
@@ -60049,7 +60044,7 @@ var render = function() {
           ? _c(
               "div",
               {
-                staticClass: "tab-pane fade in",
+                staticClass: "tab-pane mainpanel fade in",
                 attrs: { role: "tabpanel", id: "preparationsteps" }
               },
               [
@@ -60478,7 +60473,7 @@ var render = function() {
         _c(
           "div",
           {
-            staticClass: "tab-pane fade",
+            staticClass: "tab-pane mainpanel fade",
             attrs: { role: "tabpanel", id: "annotationDocumentBody" }
           },
           [
@@ -60518,7 +60513,43 @@ var render = function() {
                           styleClass:
                             "custom-table table table-corpus-mid table-striped"
                         },
-                        on: { "on-row-click": _vm.goToDocument }
+                        on: { "on-row-click": _vm.goToDocument },
+                        scopedSlots: _vm._u([
+                          {
+                            key: "table-row",
+                            fn: function(props) {
+                              return [
+                                props.column.field == "title"
+                                  ? _c("span", [
+                                      _c(
+                                        "span",
+                                        { staticClass: "hover-mouse-pointer" },
+                                        [
+                                          _vm._v(
+                                            _vm._s(
+                                              props.formattedRow[
+                                                props.column.field
+                                              ]
+                                            )
+                                          )
+                                        ]
+                                      )
+                                    ])
+                                  : _c("span", [
+                                      _vm._v(
+                                        "\n                                   " +
+                                          _vm._s(
+                                            props.formattedRow[
+                                              props.column.field
+                                            ]
+                                          ) +
+                                          "\n                                   "
+                                      )
+                                    ])
+                              ]
+                            }
+                          }
+                        ])
                       })
                     ],
                     1

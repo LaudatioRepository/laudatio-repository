@@ -118,28 +118,26 @@
       <nav class="navbar navbar-expand-sm navbar-light bg-transparent p-0 container" role="tablist">
 
           <div class="navbar-nav nav row w-100 px-5">
+               <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold active">
+                    <a class="nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#documentMetadataBody" role="tab"> Document Metadata
+                        <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
+                            <i class="fa fa-comment-o fa-fw fa-edit align-text-top fa-lg text-wine"></i>
+                            <span class="text-primary text-14 font-weight-bold">{{headerdata.corpusdocumentcount}}</span>
+                        </div>
+                    </a>
+               </div>
 
 
-           <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold ">
-                <a class="nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#documentMetadataBody" role="tab"> Document Metadata
-                    <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
-                        <i class="fa fa-comment-o fa-fw fa-edit align-text-top fa-lg text-wine"></i>
-                        <span class="text-primary text-14 font-weight-bold">{{headerdata.corpusdocumentcount}}</span>
-                    </div>
-                </a>
-           </div>
-
-
-           <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold ">
-                <a class="nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#annotationMetadataBody" role="tab"> Annotations
-                    <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
-                        <i class="fa fa-comment-o fa-fw fa-edit align-text-top fa-lg text-wine"></i>
-                        <span class="text-primary text-14 font-weight-bold">{{headerdata.totaldocumentannotationcount}}</span>
-                    </div>
-                </a>
-           </div>
-
+               <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold ">
+                    <a class="nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#annotationMetadataBody" role="tab"> Annotations
+                        <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
+                            <i class="fa fa-comment-o fa-fw fa-edit align-text-top fa-lg text-wine"></i>
+                            <span class="text-primary text-14 font-weight-bold">{{headerdata.totaldocumentannotationcount}}</span>
+                        </div>
+                    </a>
+               </div>
           </div>
+
        </nav>
      </div>
 

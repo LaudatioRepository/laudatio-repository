@@ -123,16 +123,16 @@
           <div class="navbar-nav nav row w-100 px-5">
 
 
-           <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold ">
-                <a class="nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#guidelines" role="tab"> GUIDELINES</a>
+           <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold active" id="guidelines_nav">
+                <a class="nav-link maintablink text-dark text-uppercase" data-toggle="tab" href="#guidelines" role="tab"> GUIDELINES</a>
            </div>
 
-           <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold ">
+           <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold" id="preparationsteps_nav">
                 <a class="nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#preparationsteps" role="tab"> PREPARATION STEPS</a>
            </div>
 
 
-           <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold ">
+           <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold">
                 <a class="nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#annotationDocumentBody" role="tab"> DOCUMENTS
                     <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
                         <i class="fa fa-comment-o fa-fw fa-edit align-text-top fa-lg text-wine"></i>

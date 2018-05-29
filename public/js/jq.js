@@ -101,6 +101,26 @@ $(function () {
         }
     }
 
+    if (window.location.hash) {
+        var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+
+        $.each($('div.nav-item.maintablink'), function () {
+            if ($(this).hasClass('active')) {
+                $(this).removeClass('active');
+            }
+        });
+        $('#' + hash + "_nav").addClass('active');
+        $.each($('div.tab-pane.mainpanel.active'), function () {
+
+            $(this).removeClass('active');
+            $(this).addClass('fade in');
+        });
+        $('#' + hash).removeClass('fade in');
+        $('#' + hash).addClass('active');
+    } else {}
+    // Fragment doesn't exist
+
+
     /**
      * Hide error banner initially
      */

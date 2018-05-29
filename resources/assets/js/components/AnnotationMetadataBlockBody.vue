@@ -1,6 +1,6 @@
 <template lang="html">
  <div class="container-fluid tab-content content"  v-if="header == 'annotation'">
-        <div role="tabpanel"  class="tab-pane active" id="guidelines">
+        <div role="tabpanel"  class="tab-pane mainpanel active" id="guidelines">
             <div class="container">
                 <div class="row">
                     <div class="col-2">
@@ -71,7 +71,7 @@
                 </div>
             </div>
         </div>
-        <div role="tabpanel"  class="tab-pane fade in" id="preparationsteps" v-if="header == 'annotation'">
+        <div role="tabpanel"  class="tab-pane mainpanel fade in" id="preparationsteps" v-if="header == 'annotation'">
              <div class="container">
                 <div class="row">
                     <div class="col-2">
@@ -219,7 +219,7 @@
 
 
 
-                            <div role="tabpanel"  class="tab-pane active" id="preparations" v-if=" this.preparationRows().length > 0">
+                            <div role="tabpanel" class="tab-pane active" id="preparations" v-if=" this.preparationRows().length > 0">
                                 <div class="d-flex justify-content-between mt-7 mb-3">
                                     <div class="h3 font-weight-normal">Preparation steps</div>
                                 </div>
@@ -244,7 +244,7 @@
         </div>
 
 
-        <div role="tabpanel"  class="tab-pane fade" id="annotationDocumentBody">
+        <div role="tabpanel"  class="tab-pane mainpanel fade" id="annotationDocumentBody">
             <div class="container">
                 <div class="row">
                     <div class="col">
@@ -258,7 +258,7 @@
                                 <vue-good-table
                                   :columns="documentColumns"
                                   :rows=documentRows()
-                                 :search-options="{
+                                  :search-options="{
                                     enabled: true,
                                   }"
                                   :pagination-options="{
@@ -267,7 +267,16 @@
                                   }"
                                   :lineNumbers="false"
                                   @on-row-click="goToDocument"
-                                  styleClass="custom-table table table-corpus-mid table-striped"/>
+                                  styleClass="custom-table table table-corpus-mid table-striped">
+                                   <template slot="table-row" slot-scope="props">
+                                    <span v-if="props.column.field == 'title'">
+                                     <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
+                                    </span>
+                                    <span v-else>
+                                    {{props.formattedRow[props.column.field]}}
+                                    </span>
+                                </template>
+                            </vue-good-table>
                         </div>
                     </div>
                 </div>
@@ -351,22 +360,17 @@
                 ],
                 preparationColumns: [
                     {
-                        label: '#',
-                        field: 'stepnumber',
-                        filterable: true
-                    },
-                    {
                         label: 'Encoding step',
                         field: 'step',
                         filterable: true
                     },
                     {
-                        label: 'Encoding model',
+                        label: 'Model',
                         field: 'model',
                         filterable: true
                     },
                     {
-                        label: 'Encoding tool',
+                        label: 'Tool',
                         field: 'tool',
                         filterable: true
                     },
@@ -376,28 +380,18 @@
                         filterable: true
                     },
                     {
-                        label: 'Encoding name',
+                        label: 'Name',
                         field: 'name',
                         filterable: true
                     },
                     {
-                        label: 'Encoding description',
+                        label: 'Description',
                         field: 'description',
                         filterable: true
                     },
                     {
-                        label: 'File extension',
+                        label: 'Extension',
                         field: 'extension',
-                        filterable: true
-                    },
-                    {
-                        label: 'Annotation group',
-                        field: 'group',
-                        filterable: true
-                    },
-                    {
-                        label: 'Annotation sub group',
-                        field: 'subgroup',
                         filterable: true
                     }
                 ],
