@@ -309,7 +309,7 @@ class ElasticService implements ElasticsearchInterface
                 $queryBody = $queryBuilder->buildMustQuery($objectparam);
             }
 
-
+            Log::info("queryBody: ".print_r($queryBody,1));
             $params = [
                 'size' => 10,
                 'index' => $index,

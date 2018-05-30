@@ -491,8 +491,9 @@ $(function () {
 
     $(document).on('click', '#publishCorpusButton', function () {
         var postPublishData = {};
-        postPublishData.corpusid = $('#corpusid').val();
-        postPublishData.corpuspath = $('#corpuspath').val();
+        postPublishData.corpusid = window.laudatioApp.corpus_id;
+        postPublishData.corpuspath = window.laudatioApp.corpus_path;
+        console.log(JSON.stringify(postPublishData));
         getPublishTestData(postPublishData).then(function (publishData) {
             console.log(JSON.stringify(publishData));
             //var json = JSON.parse(publishData.msg);

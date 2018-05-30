@@ -29,6 +29,8 @@ const browseApp = new Vue({
         headerdata: window.laudatioApp.header_data.result,
         user: window.laudatioApp.user,
         isloggedin: window.laudatioApp.isLoggedIn,
-        corpusid: window.laudatioApp.corpus_id
+        corpusid: window.laudatioApp.corpus_id,
+        corpuspath: window.laudatioApp.corpus_path,
+        corpuselasticsearchid: window.laudatioApp.corpus_elasticsearch_id
     }
 });

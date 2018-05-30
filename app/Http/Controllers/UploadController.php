@@ -142,37 +142,12 @@ class UploadController extends Controller
 
             if($headerPath == 'document'){
                 $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId,$user->id,$fileName,false);
-                if(!array_key_exists($document->id,$documents)){
-                    $documents[$document->id] = array();
-                }
-                $idParams = array();
-                array_push($idParams,array(
-                    "document_id" => $document->document_id
-                ));
-
-                array_push($idParams,array(
-                    "in_corpora" => $corpus->corpus_id
-                ));
-                $documents[$document->id] = $idParams;
-
                 $isVersioned = $this->laudatioUtilsService->documentIsVersioned($document->id);
                 $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/document/'.$fileName;
-
-
-                if(isset($corpus->corpus_id)){
-                    $elasticIds = $this->elasticService->getElasticIdByObjectId('document',$documents);
-                    foreach ($elasticIds as $documentId => $elasticId){
-                        $documentToBeUpdated = Document::findOrFail($documentId);
-                        $documentToBeUpdated->elasticsearch_id = $elasticIds[$documentId];
-                        $documentToBeUpdated->save();
-                    }
-                    //$this->laudatioUtilsService->updateDocumentAttributes($updateParams,$document->id);
-                }
-
             }
             else if($headerPath == 'annotation'){
                 $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId,$user->id,$fileName,false);
-                if(!array_key_exists($annotation->id,$documents)){
+                if(!array_key_exists($annotation->id,$annotations)){
                     $annotations[$annotation->id] = array();
                 }
 
@@ -313,6 +288,74 @@ class UploadController extends Controller
                 $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);
             }
 
+            // fetch the elastic id
+            if($headerPath == 'corpus') {
+                $idParams = array();
+                array_push($idParams,array(
+                    "corpus_id" => $corpus->corpus_id
+                ));
+
+                $corpusObject[$corpus->corpus_id] = $idParams;
+                //if(isset($corpus->corpus_id)){
+                $elasticIds = $this->elasticService->getElasticIdByObjectId('corpus',$corpusObject);
+
+                foreach ($elasticIds as $ecorpusId => $elasticId){
+                    $corpus->elasticsearch_id = $elasticIds[$ecorpusId];
+                    $corpus->save();
+                    }
+                //}
+            }
+            else if($headerPath == 'document'){
+                if(!array_key_exists($document->id,$documents)){
+                    $documents[$document->id] = array();
+                }
+
+                $idParams = array();
+                if(isset($corpus->corpus_id)) {
+                    array_push($idParams, array(
+                        "document_id" => $document->document_id
+                    ));
+
+                    array_push($idParams, array(
+                        "in_corpora" => $corpus->corpus_id
+                    ));
+                    $documents[$document->id] = $idParams;
+
+
+                    $elasticIds = $this->elasticService->getElasticIdByObjectId('document', $documents);
+
+                    foreach ($elasticIds as $documentId => $elasticId) {
+                        $documentToBeUpdated = Document::findOrFail($document->id);
+                        $documentToBeUpdated->elasticsearch_id = $elasticIds[$documentId];
+                        $documentToBeUpdated->save();
+                    }
+                }
+            }
+            else if($headerPath == 'annotation'){
+                if(!array_key_exists($annotation->id,$annotations)){
+                    $annotations[$annotation->id] = array();
+                }
+
+                $idParams = array();
+                if(isset($corpus->corpus_id)) {
+                    array_push($idParams, array(
+                        "preparation_annotation_id" => $annotation->annotation_id,
+                    ));
+
+                    array_push($idParams, array(
+                        "in_corpora" => $corpus->corpus_id
+                    ));
+                    $annotations[$annotation->id] = $idParams;
+
+                    $elasticIds = $this->elasticService->getElasticIdByObjectId('annotation', $annotations);
+                    foreach ($elasticIds as $annotationId => $elasticId) {
+                        $annotationToBeUpdated = Annotation::findOrFail($annotation->id);
+                        $annotationToBeUpdated->elasticsearch_id = $elasticIds[$annotationId];
+                        $annotationToBeUpdated->elasticsearch_id = $elasticIds[$annotationId];
+                        $annotationToBeUpdated->save();
+                    }
+                }
+            }
 
         }
         else{

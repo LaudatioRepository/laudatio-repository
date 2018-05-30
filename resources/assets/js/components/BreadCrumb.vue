@@ -5,14 +5,14 @@
         <nav aria-label="breadcrumb" class="breadcrumbs">
             <ol class="breadcrumb bg-transparent">
                 <li class="text-12 text-uppercase breadcrumb-item">
-                    <a class="text-dark" href="#">Home</a>
+                    <a class="text-dark" href="/">Home</a>
                 </li>
                 <li class="text-12 text-uppercase breadcrumb-item">
-                    <a class="text-dark" href="#">Publish</a>
+                    <a class="text-dark" href="/corpusprojects">Publish</a>
                 </li>
                 <li class="text-12 text-uppercase breadcrumb-item text-wine-trans active" aria-current="page">Corpus projects</li>
                 <li class="text-12 text-uppercase breadcrumb-item" v-if="header == 'corpus'">
-                    <a class="text-dark" v-bind:href="('/browse/corpus/').concat(corpusid)">{{ headerdata.corpus_title | arrayToString | touppercase }}</a>
+                    <a class="text-dark" v-bind:href="('/browse/corpus/').concat(corpuselasticsearchid)">{{ headerdata.corpus_title | arrayToString | touppercase }}</a>
                 </li>
                  <li class="text-12 text-uppercase breadcrumb-item" v-if="header == 'document' && headerdata.documentCorpusdata  != 'undefined'">
                     <a class="text-dark" href="#">{{ headerdata.documentCorpusdata.corpus_title | arrayToString | touppercase}}</a> |  {{ headerdata.document_title | arrayToString | arrayToString | touppercase }}</a>
@@ -30,7 +30,7 @@
 </template>
 <script>
     export default {
-        props: ['headerdata','header','user','isloggedin','corpusid'],
+        props: ['headerdata','header','user','isloggedin','corpuselasticsearchid','corpusid'],
         methods: {
             corpusAuthors: function(){
                 var authorString = "";

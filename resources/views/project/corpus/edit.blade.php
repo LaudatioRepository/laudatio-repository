@@ -36,7 +36,7 @@
                             Corpus
                         </h6>
                         <div class="card-body d-flex flex-column">
-                            <a href="adminPreview_corpus.html" class="disabled btn btn-primary font-weight-bold text-uppercase rounded small">
+                            <a href="/browse/corpus/{{$corpus->elasticsearch_id}}" class="btn btn-primary font-weight-bold text-uppercase rounded small">
                                 Preview
                             </a>
                         </div>

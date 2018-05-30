@@ -36674,7 +36674,9 @@ var browseApp = new Vue({
         headerdata: window.laudatioApp.header_data.result,
         user: window.laudatioApp.user,
         isloggedin: window.laudatioApp.isLoggedIn,
-        corpusid: window.laudatioApp.corpus_id
+        corpusid: window.laudatioApp.corpus_id,
+        corpuspath: window.laudatioApp.corpus_path,
+        corpuselasticsearchid: window.laudatioApp.corpus_elasticsearch_id
     }
 });
 
@@ -52912,7 +52914,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header', 'user', 'isloggedin', 'corpusid'],
+    props: ['headerdata', 'header', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid'],
     methods: {
         corpusAuthors: function corpusAuthors() {
             var authorString = "";
@@ -52979,7 +52981,9 @@ var render = function() {
                         {
                           staticClass: "text-dark",
                           attrs: {
-                            href: "/browse/corpus/".concat(_vm.corpusid)
+                            href: "/browse/corpus/".concat(
+                              _vm.corpuselasticsearchid
+                            )
                           }
                         },
                         [
@@ -53085,7 +53089,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("li", { staticClass: "text-12 text-uppercase breadcrumb-item" }, [
-      _c("a", { staticClass: "text-dark", attrs: { href: "#" } }, [
+      _c("a", { staticClass: "text-dark", attrs: { href: "/" } }, [
         _vm._v("Home")
       ])
     ])
@@ -53095,9 +53099,11 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("li", { staticClass: "text-12 text-uppercase breadcrumb-item" }, [
-      _c("a", { staticClass: "text-dark", attrs: { href: "#" } }, [
-        _vm._v("Publish")
-      ])
+      _c(
+        "a",
+        { staticClass: "text-dark", attrs: { href: "/corpusprojects" } },
+        [_vm._v("Publish")]
+      )
     ])
   }
 ]
@@ -53318,9 +53324,70 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header', 'user', 'isloggedin'],
+    props: ['headerdata', 'header', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid'],
     methods: {
         corpusAuthors: function corpusAuthors() {
             var authorString = "";
@@ -53496,7 +53563,35 @@ var render = function() {
                     [_vm._v("\n            Corpus\n          ")]
                   ),
                   _vm._v(" "),
-                  _vm._m(2)
+                  _c("div", { staticClass: "card-body d-flex flex-column" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          " btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded small",
+                        attrs: {
+                          href: "/corpusprojects/corpora/"
+                            .concat(_vm.corpusid)
+                            .concat("/edit")
+                        }
+                      },
+                      [_vm._v("\n              Edit\n            ")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass:
+                          " btn btn-primary font-weight-bold text-uppercase rounded small mt-3",
+                        attrs: {
+                          id: "publishCorpusButton",
+                          "data-toggle": "modal",
+                          "data-target": "#publishCorpusModal"
+                        }
+                      },
+                      [_vm._v("\n              Publish\n            ")]
+                    )
+                  ])
                 ])
               : !_vm.isloggedin
                 ? _c("div", { staticClass: "card text-white bg-transparent" }, [
@@ -53509,7 +53604,7 @@ var render = function() {
                       [_vm._v("\n            Corpus\n          ")]
                     ),
                     _vm._v(" "),
-                    _vm._m(3)
+                    _vm._m(2)
                   ])
                 : _vm._e()
           ])
@@ -53525,7 +53620,7 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-                _vm._m(4),
+                _vm._m(3),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -53633,7 +53728,9 @@ var render = function() {
               ])
             ]
           )
-        ])
+        ]),
+        _vm._v(" "),
+        _vm._m(4)
       ])
     : _vm._e()
 }
@@ -53678,35 +53775,6 @@ var staticRenderFns = [
           _vm._v(" "),
           _c("span", [_vm._v("\n            Herbology\n          ")])
         ]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-body d-flex flex-column" }, [
-      _c(
-        "a",
-        {
-          staticClass:
-            " btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded small",
-          attrs: { href: "adminEdit_corpus.html" }
-        },
-        [_vm._v("\n              Edit\n            ")]
-      ),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass:
-            " btn btn-primary font-weight-bold text-uppercase rounded small mt-3",
-          attrs: {
-            "data-toggle": "modal",
-            "data-target": "#publishCorpusModal"
-          }
-        },
-        [_vm._v("\n              Publish\n            ")]
       )
     ])
   },
@@ -53876,6 +53944,203 @@ var staticRenderFns = [
             }
           },
           [_vm._v("\n                        CORPUS\n                    ")]
+        )
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: {
+          id: "publishCorpusModal",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "publishCorpusModal",
+          "aria-hidden": "true"
+        }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "modal-dialog ", attrs: { role: "document" } },
+          [
+            _c(
+              "div",
+              { staticClass: "modal-content border-0 rounded-lg bsh-1" },
+              [
+                _c("div", { staticClass: "modal-body px-5" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "close",
+                      attrs: {
+                        type: "button",
+                        "data-dismiss": "modal",
+                        "aria-label": "Close"
+                      }
+                    },
+                    [
+                      _c("i", {
+                        staticClass: "fa fa-close",
+                        attrs: { "aria-hidden": "true" }
+                      })
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("h3", { staticClass: "h3 modal-title mt-3 w-75" }, [
+                    _vm._v(
+                      "\n              Publish „RIDGES Herbology, Version 9.0“\n            "
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "mt-3 mb-1" }, [
+                    _vm._v(
+                      "\n              Following criteria needs to be fulfilled before you can publish a corpus: A verification is ongoing ...\n            "
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "ul",
+                    { staticClass: "list-group list-group-flush mb-3 mt-3" },
+                    [
+                      _c(
+                        "li",
+                        {
+                          staticClass:
+                            "list-group-item d-flex justify-content-between align-items-center"
+                        },
+                        [
+                          _c("b", [_vm._v("1 Corpus Header uploaded")]),
+                          _vm._v(" "),
+                          _c("span", { staticClass: "text-grey text-14" }, [
+                            _vm._v("verifying")
+                          ])
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "li",
+                        {
+                          staticClass:
+                            "list-group-item d-flex justify-content-between align-items-center"
+                        },
+                        [
+                          _c("b", [
+                            _vm._v("According number of Document Header")
+                          ]),
+                          _vm._v(" "),
+                          _c("i", {
+                            staticClass:
+                              "fa fa-check-circle fa-fw fa-lg text-success"
+                          })
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "li",
+                        {
+                          staticClass:
+                            "list-group-item d-flex justify-content-between align-items-center"
+                        },
+                        [
+                          _c("div", { staticClass: "d-flex flex-column" }, [
+                            _c("b", [
+                              _vm._v("According number of Annotation Header")
+                            ]),
+                            _vm._v(" "),
+                            _c("small", { staticClass: "text-primary" }, [
+                              _vm._v("missing Annotation Header")
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("i", {
+                            staticClass:
+                              "fa fa-exclamation-triangle fa-fw fa-lg text-danger"
+                          })
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "li",
+                        {
+                          staticClass:
+                            "list-group-item d-flex justify-content-between align-items-center"
+                        },
+                        [
+                          _c("div", { staticClass: "d-flex flex-column" }, [
+                            _c("b", [_vm._v("at least 1 Corpus Data Format")]),
+                            _vm._v(" "),
+                            _c("small", { staticClass: "text-primary" }, [
+                              _vm._v("missing Corpus Data Format")
+                            ])
+                          ]),
+                          _vm._v(" "),
+                          _c("i", {
+                            staticClass:
+                              "fa fa-exclamation-triangle fa-fw fa-lg text-danger"
+                          })
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "li",
+                        {
+                          staticClass:
+                            "list-group-item d-flex justify-content-between align-items-center"
+                        },
+                        [
+                          _c("b", [_vm._v("Defined License")]),
+                          _vm._v(" "),
+                          _c("span", [_vm._v("...")])
+                        ]
+                      )
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "modal-footer bg-corpus-light px-4 rounded-lg-bt"
+                  },
+                  [
+                    _c(
+                      "button",
+                      {
+                        staticClass:
+                          "btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded px-5",
+                        attrs: {
+                          "data-dismiss": "modal",
+                          "aria-label": "Close"
+                        }
+                      },
+                      [_vm._v("\n              Cancel\n            ")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass:
+                          "disabled btn btn-primary font-weight-bold text-uppercase rounded px-5",
+                        attrs: {
+                          "data-dismiss": "modal",
+                          "data-toggle": "modal",
+                          "data-target": "#publishSuccessCorpusModal"
+                        }
+                      },
+                      [_vm._v("\n              Publish\n            ")]
+                    )
+                  ]
+                )
+              ]
+            )
+          ]
         )
       ]
     )

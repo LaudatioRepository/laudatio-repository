@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Custom\ElasticsearchInterface;
+use App\Custom\LaudatioUtilsInterface;
 use JavaScript;
 use Log;
 
@@ -11,10 +12,12 @@ class BrowseController extends Controller
 {
 
     protected $ElasticService;
+    protected $LaudatioUtilService;
 
-    public function __construct(ElasticsearchInterface $Elasticservice)
+    public function __construct(ElasticsearchInterface $Elasticservice, LaudatioUtilsInterface $laudatioUtils)
     {
         $this->ElasticService = $Elasticservice;
+        $this->LaudatioUtilService = $laudatioUtils;
     }
 
     /**
@@ -236,7 +239,9 @@ class BrowseController extends Controller
         JavaScript::put([
             "header" => $header,
             "header_id" => $id,
-            "corpus_id" => $corpusId,
+            "corpus_elasticsearch_id" => $this->LaudatioUtilService->getElasticSearchIdByCorpusId($corpusId),
+            "corpus_id" => $this->LaudatioUtilService->getDatabaseIdByCorpusId($corpusId),
+            "corpus_path" => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusId),
             "header_data" => $data,
             "user" => $user,
             "isLoggedIn" => $isLoggedIn

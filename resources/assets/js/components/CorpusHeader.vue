@@ -67,10 +67,10 @@
                 Corpus
               </h6>
               <div class="card-body d-flex flex-column">
-                <a href="adminEdit_corpus.html" class=" btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded small">
+                <a v-bind:href="('/corpusprojects/corpora/').concat(corpusid).concat('/edit')" class=" btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded small">
                   Edit
                 </a>
-                <button class=" btn btn-primary font-weight-bold text-uppercase rounded small mt-3" data-toggle="modal"
+                <button id="publishCorpusButton" class=" btn btn-primary font-weight-bold text-uppercase rounded small mt-3" data-toggle="modal"
                   data-target="#publishCorpusModal">
                   Publish
                 </button>
@@ -150,12 +150,73 @@
             </nav>
 
         </div>
+
+        <div class="modal fade" id="publishCorpusModal" tabindex="-1" role="dialog" aria-labelledby="publishCorpusModal"
+          aria-hidden="true">
+          <div class="modal-dialog " role="document">
+            <div class="modal-content border-0 rounded-lg bsh-1">
+
+              <div class="modal-body px-5">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <i class="fa fa-close" aria-hidden="true"></i>
+                </button>
+                <h3 class="h3 modal-title mt-3 w-75">
+                  Publish „RIDGES Herbology, Version 9.0“
+                </h3>
+
+                <p class="mt-3 mb-1">
+                  Following criteria needs to be fulfilled before you can publish a corpus: A verification is ongoing ...
+                </p>
+
+                <ul class="list-group list-group-flush mb-3 mt-3">
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <b>1 Corpus Header uploaded</b>
+                    <span class="text-grey text-14">verifying</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <b>According number of Document Header</b>
+                    <i class="fa fa-check-circle fa-fw fa-lg text-success"></i>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex flex-column">
+                      <b>According number of Annotation Header</b>
+                      <small class="text-primary">missing Annotation Header</small>
+                    </div>
+                    <i class="fa fa-exclamation-triangle fa-fw fa-lg text-danger"></i>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex flex-column">
+                      <b>at least 1 Corpus Data Format</b>
+                      <small class="text-primary">missing Corpus Data Format</small>
+                    </div>
+                    <i class="fa fa-exclamation-triangle fa-fw fa-lg text-danger"></i>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <b>Defined License</b>
+                    <span>...</span>
+                  </li>
+                </ul>
+
+              </div>
+              <div class="modal-footer bg-corpus-light px-4 rounded-lg-bt">
+                <button class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded px-5" data-dismiss="modal"
+                  aria-label="Close">
+                  Cancel
+                </button>
+                <button class="disabled btn btn-primary font-weight-bold text-uppercase rounded px-5" data-dismiss="modal"
+                  data-toggle="modal" data-target="#publishSuccessCorpusModal">
+                  Publish
+                </button>
+              </div>
+            </div>
+          </div>
+       </div>
     </div>
 </template>
 
 <script>
     export default {
-        props: ['headerdata','header','user','isloggedin'],
+        props: ['headerdata','header','user','isloggedin','corpuselasticsearchid','corpusid'],
         methods: {
             corpusAuthors: function(){
                 var authorString = "";

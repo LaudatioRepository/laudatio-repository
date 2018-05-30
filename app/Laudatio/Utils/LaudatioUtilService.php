@@ -674,6 +674,25 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $object;
     }
 
+    public function getElasticSearchIdByCorpusId($corpusid)
+    {
+        $corpus = Corpus::where("corpus_id",$corpusid)->get();
+        return $corpus[0]->elasticsearch_id;
+    }
+
+    public function getDatabaseIdByCorpusId($corpusid)
+    {
+        $corpus = Corpus::where("corpus_id",$corpusid)->get();
+        return $corpus[0]->id;
+    }
+
+    public function getCorpusPathByCorpusId($corpusid){
+        $corpus = Corpus::where("corpus_id",$corpusid)->get();
+        $corpusprojects = $corpus[0]->corpusprojects()->get();
+        $project = $corpusprojects[0];
+        return $project->directory_path."/".$corpus[0]->directory_path;
+    }
+
     public function deleteModels($path){
         $dirArray = explode("/",$path);
         $type = $dirArray[3];
