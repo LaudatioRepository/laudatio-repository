@@ -26,11 +26,11 @@ class BrowseController extends Controller
         $data = null;
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
+        $corpusElasticId = null;
         switch ($header){
             case "corpus":
                 $apiData = $this->ElasticService->getCorpus($id);
                 $data = json_decode($apiData->getContent(), true);
-
 
                 $corpusId = is_array($data['result']['corpus_id']) ? $data['result']['corpus_id'][0]: $data['result']['corpus_id'];
                 $formatSearchResult = $this->ElasticService->getFormatsByCorpus($corpusId);
@@ -236,6 +236,7 @@ class BrowseController extends Controller
         JavaScript::put([
             "header" => $header,
             "header_id" => $id,
+            "corpus_id" => $corpusId,
             "header_data" => $data,
             "user" => $user,
             "isLoggedIn" => $isLoggedIn

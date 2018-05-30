@@ -488,7 +488,199 @@ $(function () {
             console.log("FAIL : " + data);
         });
     });
+
+    $(document).on('click', '#publishCorpusButton', function () {
+        var postPublishData = {};
+        postPublishData.corpusid = $('#corpusid').val();
+        postPublishData.corpuspath = $('#corpuspath').val();
+        getPublishTestData(postPublishData).then(function (publishData) {
+            console.log(JSON.stringify(publishData));
+            //var json = JSON.parse(publishData.msg);
+            var jsonData = publishData.msg;
+
+            $('#publicationModalLabel').html(jsonData.title);
+
+            $('#publicationModal').modal('show');
+            var html = '<div id="preparationWrapper">';
+
+            html += '<div id="subtitle">' + jsonData.subtitle + '</div>';
+            html += '<div id="waiting">' + jsonData.waiting + '</div>';
+
+            html += '<ul class="list-group">';
+
+            html += '<li class="list-group-item">';
+            html += '' + jsonData.corpus_header.title + '';
+            if (jsonData.corpus_header.corpusHeaderText != '') {
+                html += '<br /><span class="has-error>' + jsonData.corpus_header.corpusHeaderText + '</span>';
+            }
+            html += '<i class="material-icons pull-right">' + jsonData.corpus_header.corpusIcon + '</i>';
+            html += '</li>';
+
+            html += '<li class="list-group-item">';
+            html += '' + jsonData.document_headers.title + '';
+            if (jsonData.document_headers.documentHeaderText != '') {
+                html += '<br /><span class="has-error">' + jsonData.document_headers.documentHeaderText + '</span>';
+            }
+            html += '<i class="material-icons pull-right">' + jsonData.document_headers.documentIcon + '</i>';
+            html += '</li>';
+
+            html += '<li class="list-group-item">';
+            html += '' + jsonData.annotation_headers.title + '';
+            if (jsonData.annotation_headers.annotationHeaderText != '') {
+                html += '<br /><span class="has-error">' + jsonData.annotation_headers.annotationHeaderText + '</span>';
+            }
+            html += '<i class="material-icons pull-right">' + jsonData.annotation_headers.annotationIcon + '</i>';
+            html += '</li>';
+
+            html += '</ul>';
+
+            html += '</div>';
+
+            if (jsonData.canPublish == false) {
+                $('#doPublish').attr("disabled", "disabled");
+            }
+            $('#publicationModal .modal-dialog .modal-content .modal-body').html(html);
+        }).catch(function (err) {
+            // Run this when promise was rejected via reject()
+            console.log(err);
+        });
+    });
+
+    $(document).on('click', '#validateCorpusButton', function () {
+        var postData = {};
+        postData.corpusid = $('#corpusid').val();
+        postData.corpuspath = $('#corpuspath').val();
+
+        getValidationData(postData).then(function (data) {
+            var json = JSON.parse(data.msg);
+
+            var newModaltitle = "Validation results for corpus/" + json.corpusheader;
+            $('#myModalLabelValidation').html(newModaltitle);
+            $('#myValidatorModal').modal('show');
+
+            var html = '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">';
+
+            html += '<div class="panel panel-default">';
+            html += '<div class="panel-heading" role="tab" id="documentHeading">';
+            html += '<h4 class="panel-title"><a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#documentsInCorpus" aria-expanded="false" aria-controls="documentsInCorpus">Documents in corpus</a></h4></div>';
+            html += '<div id="documentsInCorpus" class="panel-collapse collapse" role="tabpanel" aria-labelledby="documentHeading"><div class="list-group">';
+            html += '<ul class="list-group">';
+            for (var i = 0; i < json.found_documents.length; i++) {
+                html += '<li class="list-group-item">' + json.found_documents[i].title + ' <i class="material-icons pull-right">check_circle</i></li>';
+            }
+
+            var not_found_documents = json.not_found_documents_in_corpus.sort();
+
+            for (var j = 0; j < not_found_documents.length; j++) {
+                html += '<li class="list-group-item">' + not_found_documents[j] + ' <i class="material-icons pull-right">warning</i></li>';
+            }
+            html += '</ul>';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+
+            html += '<div class="panel panel-default">';
+            html += '<div class="panel-heading" role="tab" id="annotationHeading">';
+            html += '<h4 class="panel-title"><a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#annotationsInCorpus" aria-expanded="false" aria-controls="annotationsInCorpus">Annotations in corpus</a></h4></div>';
+            html += '<div id="annotationsInCorpus" class="panel-collapse collapse" role="tabpanel" aria-labelledby="annotationHeading"><div class="list-group">';
+
+            html += '<ul class="list-group">';
+
+            for (var k = 0; k < json.found_annotations_in_corpus.length; k++) {
+                html += '<li class="list-group-item">' + json.found_annotations_in_corpus[k] + ' <i class="material-icons pull-right">check_circle</i></li>';
+            }
+
+            var not_found_annotations = json.not_found_annotations_in_corpus.sort();
+            for (var l = 0; l < not_found_annotations.length; l++) {
+                html += '<li class="list-group-item">' + not_found_annotations[l] + ' <i class="material-icons pull-right">warning</i></li>';
+            }
+
+            html += '</ul>';
+
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+
+            html += '</div>';
+            $('.modal-body').html(html);
+        }).catch(function (err) {
+            // Run this when promise was rejected via reject()
+            console.log(err);
+        });
+    });
 });
+
+/** FUNCTIONS **/
+
+/**
+ * Validate headers promise
+ * @param postData
+ * @returns {Promise}
+ */
+function getValidationData(postData) {
+    return new Promise(function (resolve, reject) {
+
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: '/api/adminapi/validateHeaders',
+            type: "POST",
+            data: postData,
+            async: true,
+            statusCode: {
+                500: function _() {
+                    alert("server down");
+                }
+            },
+            success: function success(data) {
+                resolve(data); // Resolve promise and go to then()
+            },
+            error: function error(err) {
+                reject(err); // Reject the promise and go to catch()
+            }
+        });
+    });
+}
+
+/**
+ * preparepublication promise
+ * @param postData
+ * @returns {Promise}
+ */
+function getPublishTestData(postData) {
+    return new Promise(function (resolve, reject) {
+
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: '/api/adminapi/preparePublication',
+            type: "POST",
+            data: postData,
+            async: true,
+            statusCode: {
+                500: function _() {
+                    alert("server down");
+                }
+            },
+            success: function success(data) {
+                resolve(data); // Resolve promise and go to then()
+            },
+            error: function error(err) {
+                reject(err); // Reject the promise and go to catch()
+            }
+        });
+    });
+}
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }),

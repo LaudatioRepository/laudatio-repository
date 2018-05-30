@@ -36673,7 +36673,8 @@ var browseApp = new Vue({
         headerid: window.laudatioApp.header_id,
         headerdata: window.laudatioApp.header_data.result,
         user: window.laudatioApp.user,
-        isloggedin: window.laudatioApp.isLoggedIn
+        isloggedin: window.laudatioApp.isLoggedIn,
+        corpusid: window.laudatioApp.corpus_id
     }
 });
 
@@ -52911,7 +52912,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header', 'user', 'isloggedin'],
+    props: ['headerdata', 'header', 'user', 'isloggedin', 'corpusid'],
     methods: {
         corpusAuthors: function corpusAuthors() {
             var authorString = "";
@@ -52975,7 +52976,12 @@ var render = function() {
                     [
                       _c(
                         "a",
-                        { staticClass: "text-dark", attrs: { href: "#" } },
+                        {
+                          staticClass: "text-dark",
+                          attrs: {
+                            href: "/browse/corpus/".concat(_vm.corpusid)
+                          }
+                        },
                         [
                           _vm._v(
                             _vm._s(
@@ -54283,7 +54289,7 @@ var render = function() {
             _vm._m(1)
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "col col-auto" }, [
+          _c("div", { staticClass: "col-2" }, [
             _vm.isloggedin
               ? _c("div", { staticClass: "card text-white bg-transparent" }, [
                   _c(
@@ -55093,7 +55099,7 @@ var render = function() {
             ])
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "col col-auto" }, [
+          _c("div", { staticClass: "col-2" }, [
             _vm.isloggedin
               ? _c("div", { staticClass: "card text-white bg-transparent" }, [
                   _c(
@@ -55493,6 +55499,11 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
 //
 //
 //
@@ -57242,7 +57253,24 @@ var render = function() {
                 ])
               ]
             )
-          : _vm._e()
+          : _vm._e(),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.isloggedin,
+                expression: "isloggedin"
+              }
+            ],
+            staticClass:
+              "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1"
+          },
+          [_c("span", [_vm._v("\n             WORKING VERSION\n         ")])]
+        )
       ])
     : _vm._e()
 }
@@ -57560,6 +57588,11 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
 //
 //
 //
@@ -58713,96 +58746,122 @@ var render = function() {
                                 ],
                                 1
                               )
-                            : _vm._e(),
-                          _vm._v(" "),
-                          _vm._l(_vm.headerdata.allAnnotationGroups, function(
-                            annotationGroup
-                          ) {
-                            return _vm.header == "document"
-                              ? _c(
-                                  "div",
-                                  {
-                                    staticClass: "tab-pane fade",
-                                    attrs: {
-                                      role: "tabpanel",
-                                      id: annotationGroup
-                                    }
-                                  },
-                                  [
-                                    _c(
-                                      "div",
-                                      {
-                                        staticClass:
-                                          "d-flex justify-content-between mt-7 mb-3"
-                                      },
-                                      [
-                                        _c(
-                                          "div",
-                                          {
-                                            staticClass: "h3 font-weight-normal"
-                                          },
-                                          [
-                                            _vm._v(
-                                              _vm._s(annotationGroup) +
-                                                "  (" +
-                                                _vm._s(
-                                                  _vm.groupCount(
-                                                    annotationGroup
-                                                  )
-                                                ) +
-                                                ")"
-                                            )
-                                          ]
-                                        )
-                                      ]
-                                    ),
-                                    _vm._v(" "),
-                                    _c("vue-good-table", {
-                                      attrs: {
-                                        columns: _vm.allAnnotationColumns,
-                                        rows: _vm.annotationRows(
-                                          annotationGroup
-                                        ),
-                                        "search-options": {
-                                          enabled: true
-                                        },
-                                        "pagination-options": {
-                                          enabled: true,
-                                          perPage: 10
-                                        },
-                                        lineNumbers: false,
-                                        styleClass:
-                                          "custom-table table table-corpus-mid table-striped"
-                                      },
-                                      on: {
-                                        "on-row-click": _vm.goToAnnotation
-                                      },
-                                      scopedSlots: _vm._u([
+                            : _vm._e()
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          staticClass: "container-fluid tab-content content",
+                          attrs: { id: "tabcontainer" }
+                        },
+                        _vm._l(_vm.headerdata.allAnnotationGroups, function(
+                          annotationGroup
+                        ) {
+                          return _vm.header == "document"
+                            ? _c(
+                                "div",
+                                {
+                                  staticClass: "tab-pane fade",
+                                  attrs: {
+                                    role: "tabpanel",
+                                    id: annotationGroup
+                                  }
+                                },
+                                [
+                                  _c(
+                                    "div",
+                                    {
+                                      staticClass:
+                                        "d-flex justify-content-between mt-7 mb-3"
+                                    },
+                                    [
+                                      _c(
+                                        "div",
                                         {
-                                          key: "table-row",
-                                          fn: function(props) {
-                                            return [
-                                              props.column.field == "title"
+                                          staticClass: "h3 font-weight-normal"
+                                        },
+                                        [
+                                          _vm._v(
+                                            _vm._s(annotationGroup) +
+                                              "  (" +
+                                              _vm._s(
+                                                _vm.groupCount(annotationGroup)
+                                              ) +
+                                              ")"
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("vue-good-table", {
+                                    attrs: {
+                                      columns: _vm.allAnnotationColumns,
+                                      rows: _vm.annotationRows(annotationGroup),
+                                      "search-options": {
+                                        enabled: true
+                                      },
+                                      "pagination-options": {
+                                        enabled: true,
+                                        perPage: 10
+                                      },
+                                      lineNumbers: false,
+                                      styleClass:
+                                        "custom-table table table-corpus-mid table-striped"
+                                    },
+                                    on: { "on-row-click": _vm.goToAnnotation },
+                                    scopedSlots: _vm._u([
+                                      {
+                                        key: "table-row",
+                                        fn: function(props) {
+                                          return [
+                                            props.column.field == "title"
+                                              ? _c("span", [
+                                                  _c(
+                                                    "span",
+                                                    {
+                                                      staticClass:
+                                                        "hover-mouse-pointer"
+                                                    },
+                                                    [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          props.formattedRow[
+                                                            props.column.field
+                                                          ]
+                                                        )
+                                                      )
+                                                    ]
+                                                  )
+                                                ])
+                                              : props.column.field ==
+                                                "guidelines"
                                                 ? _c("span", [
                                                     _c(
-                                                      "span",
+                                                      "a",
                                                       {
-                                                        staticClass:
-                                                          "hover-mouse-pointer"
+                                                        attrs: {
+                                                          href: "/browse/annotation/"
+                                                            .concat(
+                                                              props.row
+                                                                .preparation_annotation_id
+                                                            )
+                                                            .concat(
+                                                              "#guidelines"
+                                                            )
+                                                        }
                                                       },
                                                       [
-                                                        _vm._v(
-                                                          _vm._s(
-                                                            props.formattedRow[
-                                                              props.column.field
-                                                            ]
-                                                          )
-                                                        )
+                                                        _c("i", {
+                                                          staticClass:
+                                                            "fa fa-fw fa-lg fa-angle-right"
+                                                        })
                                                       ]
                                                     )
                                                   ])
-                                                : props.column.field ==
-                                                  "guidelines"
+                                                : props.column.field == "prep"
                                                   ? _c("span", [
                                                       _c(
                                                         "a",
@@ -58814,7 +58873,7 @@ var render = function() {
                                                                   .preparation_annotation_id
                                                               )
                                                               .concat(
-                                                                "#guidelines"
+                                                                "#preparationsteps"
                                                               )
                                                           }
                                                         },
@@ -58826,102 +58885,91 @@ var render = function() {
                                                         ]
                                                       )
                                                     ])
-                                                  : props.column.field == "prep"
+                                                  : props.column.field ==
+                                                    "document_count"
                                                     ? _c("span", [
                                                         _c(
                                                           "a",
                                                           {
-                                                            attrs: {
-                                                              href: "/browse/annotation/"
-                                                                .concat(
-                                                                  props.row
-                                                                    .preparation_annotation_id
-                                                                )
-                                                                .concat(
-                                                                  "#preparationsteps"
-                                                                )
-                                                            }
+                                                            staticClass:
+                                                              "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                                                            attrs: { href: "#" }
                                                           },
                                                           [
                                                             _c("i", {
                                                               staticClass:
-                                                                "fa fa-fw fa-lg fa-angle-right"
-                                                            })
+                                                                "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                                                            }),
+                                                            _vm._v(" "),
+                                                            _c(
+                                                              "span",
+                                                              {
+                                                                staticClass:
+                                                                  "text-14 font-weight-bold"
+                                                              },
+                                                              [
+                                                                _vm._v(
+                                                                  _vm._s(
+                                                                    props
+                                                                      .formattedRow[
+                                                                      props
+                                                                        .column
+                                                                        .field
+                                                                    ]
+                                                                  )
+                                                                )
+                                                              ]
+                                                            )
                                                           ]
                                                         )
                                                       ])
-                                                    : props.column.field ==
-                                                      "document_count"
-                                                      ? _c("span", [
-                                                          _c(
-                                                            "a",
-                                                            {
-                                                              staticClass:
-                                                                "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                                                              attrs: {
-                                                                href: "#"
-                                                              }
-                                                            },
-                                                            [
-                                                              _c("i", {
-                                                                staticClass:
-                                                                  "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                                                              }),
-                                                              _vm._v(" "),
-                                                              _c(
-                                                                "span",
-                                                                {
-                                                                  staticClass:
-                                                                    "text-14 font-weight-bold"
-                                                                },
-                                                                [
-                                                                  _vm._v(
-                                                                    _vm._s(
-                                                                      props
-                                                                        .formattedRow[
-                                                                        props
-                                                                          .column
-                                                                          .field
-                                                                      ]
-                                                                    )
-                                                                  )
-                                                                ]
-                                                              )
-                                                            ]
-                                                          )
-                                                        ])
-                                                      : _c("span", [
-                                                          _vm._v(
-                                                            "\n                                " +
-                                                              _vm._s(
-                                                                props
-                                                                  .formattedRow[
-                                                                  props.column
-                                                                    .field
-                                                                ]
-                                                              ) +
-                                                              "\n                                "
-                                                          )
-                                                        ])
-                                            ]
-                                          }
+                                                    : _c("span", [
+                                                        _vm._v(
+                                                          "\n                                " +
+                                                            _vm._s(
+                                                              props
+                                                                .formattedRow[
+                                                                props.column
+                                                                  .field
+                                                              ]
+                                                            ) +
+                                                            "\n                                "
+                                                        )
+                                                      ])
+                                          ]
                                         }
-                                      ])
-                                    })
-                                  ],
-                                  1
-                                )
-                              : _vm._e()
-                          })
-                        ],
-                        2
+                                      }
+                                    ])
+                                  })
+                                ],
+                                1
+                              )
+                            : _vm._e()
+                        })
                       )
                     ])
                   ])
                 ])
               ]
             )
-          : _vm._e()
+          : _vm._e(),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.isloggedin,
+                expression: "isloggedin"
+              }
+            ],
+            staticClass:
+              "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1"
+          },
+          [_c("span", [_vm._v("\n            WORKING VERSION\n          ")])]
+        )
       ])
     : _vm._e()
 }
@@ -59528,9 +59576,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header'],
+    props: ['headerdata', 'header', 'user', 'isloggedin'],
     data: function data() {
         return {
             annotators: [],
@@ -60558,6 +60610,23 @@ var render = function() {
               ])
             ])
           ]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.isloggedin,
+                expression: "isloggedin"
+              }
+            ],
+            staticClass:
+              "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1"
+          },
+          [_c("span", [_vm._v("\n           WORKING VERSION\n         ")])]
         )
       ])
     : _vm._e()

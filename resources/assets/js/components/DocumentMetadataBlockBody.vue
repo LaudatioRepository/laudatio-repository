@@ -186,7 +186,8 @@
                                 </template>
                             </vue-good-table>
                         </div>
-
+                     </div>
+                    <div id="tabcontainer" class="container-fluid tab-content content">
                         <div role="tabpanel"  class="tab-pane fade" v-for="(annotationGroup) in headerdata.allAnnotationGroups" :id="annotationGroup" v-if="header == 'document'">
                             <div class="d-flex justify-content-between mt-7 mb-3">
                                 <div class="h3 font-weight-normal">{{annotationGroup}}  ({{groupCount(annotationGroup)}})</div>
@@ -226,11 +227,15 @@
                                 </template>
                             </vue-good-table>
                          </div>
-
                     </div>
                     </div>
                 </div>
               </div>
+        </div>
+        <div class="verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1" v-show="isloggedin">
+              <span>
+                WORKING VERSION
+              </span>
         </div>
     </div>
 </template>

@@ -282,14 +282,18 @@
                 </div>
             </div>
         </div>
+        <div class="verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1" v-show="isloggedin">
+          <span>
+            WORKING VERSION
+          </span>
+        </div>
      </div>
-
     </div>
 </template>
 
 <script>
     export default {
-        props: ['headerdata','header'],
+        props: ['headerdata','header','user','isloggedin'],
         data: function(){
             return {
                 annotators: [],

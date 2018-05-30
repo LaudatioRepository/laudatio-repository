@@ -60,7 +60,7 @@
        </div>
         </div>
       </div>
-      <div class="col col-auto">
+      <div class="col-2">
         <div class="card text-white bg-transparent" v-if="isloggedin">
               <h6 class="corpus-title h6 text-uppercase text-12 text-wine-trans">
                 Corpus
