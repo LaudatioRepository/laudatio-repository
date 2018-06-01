@@ -96,9 +96,12 @@ class BrowseController extends Controller
                 $corpusId = is_array($data['result']['corpus_id']) ? $data['result']['corpus_id'][0]: $data['result']['corpus_id'];
                 $formatSearchResult = $this->ElasticService->getFormatsByCorpus($corpusId);
                 $formats = array();
-                foreach ($formatSearchResult['aggregations']['formats']['buckets'] as $formatSearchResult) {
-                    array_push($formats,$formatSearchResult['key']);
+                if(isset($formatSearchResult['aggregations'])){
+                    foreach ($formatSearchResult['aggregations']['formats']['buckets'] as $formatSearchResult) {
+                        array_push($formats,$formatSearchResult['key']);
+                    }
                 }
+
                 $data['result']['formats'] = $formats;
 
                 $documentResult = $this->ElasticService->getDocumentByCorpus(
@@ -166,9 +169,12 @@ class BrowseController extends Controller
 
                 $allAnnotationGroupResult = $this->ElasticService->getAnnotationGroups();
                 $allAnnotationGroups = array();
-                foreach($allAnnotationGroupResult['aggregations']['annotations']['buckets'] as $groupdata) {
-                    array_push($allAnnotationGroups,$groupdata['key']);
+                if(isset($allAnnotationGroupResult['aggregations'])){
+                    foreach($allAnnotationGroupResult['aggregations']['annotations']['buckets'] as $groupdata) {
+                        array_push($allAnnotationGroups,$groupdata['key']);
+                    }
                 }
+
 
 
                 $data['result']['corpusAnnotationGroups'] = $annotationMapping;
