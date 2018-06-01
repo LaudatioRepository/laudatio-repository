@@ -29,20 +29,26 @@ class BrowseController extends Controller
 
         $corpusdata = array();
         $documentcount = 0;
+        $annotationcount = 0;
         foreach($corpusresponses['result'] as $corpusresponse){
            //dd($corpusresponse);
             $documentResult = $this->ElasticService->getDocumentByCorpus(
                 array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
                 array($corpusresponse['_source']['corpus_id'][0])
             );
-            $documentcount = count($documentResult[$corpusresponse['_source']['corpus_id'][0]]);
+            if(count($documentResult) > 0) {
+                $documentcount = count($documentResult[$corpusresponse['_source']['corpus_id'][0]]);
+            }
 
             $annotationResult = $this->ElasticService->getAnnotationByCorpus(
                 array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
                 array($corpusresponse['_source']['corpus_id'][0])
             );
 
-            $annotationcount = count($annotationResult[$corpusresponse['_source']['corpus_id'][0]]);
+            if(count($annotationResult) > 0){
+                $annotationcount = count($annotationResult[$corpusresponse['_source']['corpus_id'][0]]);
+            }
+
 
             if(!array_key_exists($corpusresponse['_source']['corpus_id'][0],$corpusdata)){
 

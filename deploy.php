@@ -47,15 +47,16 @@ task('environment', function () {
     //run('cp /var/www/html/laravelaudatio/Groups.php {{release_path}}/vendor/m4tthumphrey/php-gitlab-api/lib/Gitlab/Api/Groups.php');
 })->desc('Environment setup');
 
+/*
 task('makespace', function () {
-    run('cd /var/www/html/laravelaudatio/releases');
     run('sudo -su www-data');
+    run('cd /var/www/html/laravelaudatio/releases');
     run('rm -rf *');
     run('exit');
 })->desc('Environment setup');
 
 before('deploy','makespace');
-
+*/
 
 desc('Execute artisan config:clear');
 task('clearconfig', function () {
