@@ -36,7 +36,7 @@ class BrowseController extends Controller
                 array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
                 array($corpusresponse['_source']['corpus_id'][0])
             );
-            if(count($documentResult) > 0) {
+            if(isset($documentResult[$corpusresponse['_source']['corpus_id'][0]])) {
                 $documentcount = count($documentResult[$corpusresponse['_source']['corpus_id'][0]]);
             }
 
@@ -45,7 +45,7 @@ class BrowseController extends Controller
                 array($corpusresponse['_source']['corpus_id'][0])
             );
 
-            if(count($annotationResult) > 0){
+            if(isset($annotationResult[$corpusresponse['_source']['corpus_id'][0]])){
                 $annotationcount = count($annotationResult[$corpusresponse['_source']['corpus_id'][0]]);
             }
 
