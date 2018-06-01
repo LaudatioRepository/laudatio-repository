@@ -19,7 +19,11 @@
 <body>
 <div id="rootContainer" class="container-fluid m-0 p-0">
     @include ('layouts.main_ux_nav')
-    @include ('layouts.admin_ux_breadcrumb')
+    @if($isLoggedIn)
+        @include ('layouts.admin_ux_breadcrumb')
+    @else
+        @include ('layouts.project_ux_breadcrumb')
+    @endif
     @yield('content')
     @include('layouts.main_ux_footer')
 </div>

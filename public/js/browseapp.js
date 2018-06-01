@@ -56213,12 +56213,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         corpusTranscriptionRows: function corpusTranscriptionRows() {
             var transcriptionArray = [];
             var theHeaderData = this.headerdata;
-            if (typeof theHeaderData.corpus_author_transcription_forename != 'undefined' && typeof theHeaderData.corpus_author_transcription_surname != 'undefined' && typeof theHeaderData.corpus_author_transcription_affiliation_department != 'undefined' && typeof theHeaderData.corpus_author_transcription_affilitation_institution != 'undefined' && this.hasSameLength([theHeaderData.corpus_author_transcription_forename, theHeaderData.corpus_transcription_surname, theHeaderData.corpus_transcription_affiliation_department, theHeaderData.corpus_transcription_affiliation_department])) {
+            if (typeof theHeaderData.corpus_author_transcription_forename != 'undefined' && typeof theHeaderData.corpus_author_transcription_surname != 'undefined' && typeof theHeaderData.corpus_author_transcription_affiliation_department != 'undefined' && typeof theHeaderData.corpus_author_transcription_affilitation_institution != 'undefined' && this.hasSameLength([theHeaderData.corpus_author_transcription_forename, theHeaderData.corpus_author_transcription_surname, theHeaderData.corpus_author_transcription_affilitation_institution, theHeaderData.corpus_author_transcription_affilitation_institution])) {
                 for (var i = 0; i < theHeaderData.corpus_author_transcription_forename.length; i++) {
                     var personObject = {};
-                    personObject.name = theHeaderData.corpus_author_transcription_forename[i] + " " + theHeaderData.corpus_transcription_surname[i];
-                    personObject.affiliation = theHeaderData.corpus_transcription_affiliation_department[i] + ", " + theHeaderData.corpus_transcription_affiliation_department[i];
-                    transcriptionArray.push(personObject);
+                    if (typeof theHeaderData.corpus_author_transcription_forename[i] != 'undefined' && typeof theHeaderData.corpus_author_transcription_surname[i] != 'undefined' && typeof theHeaderData.corpus_author_transcription_affiliation_department[i] != 'undefined' && typeof theHeaderData.corpus_author_transcription_affilitation_institution[i] != 'undefined') {
+                        personObject.name = theHeaderData.corpus_author_transcription_forename[i] + " " + theHeaderData.corpus_author_transcription_surname[i];
+                        personObject.affiliation = theHeaderData.corpus_author_transcription_affilitation_institution[i] + ", " + theHeaderData.corpus_author_transcription_affilitation_institution[i];
+                        transcriptionArray.push(personObject);
+                    }
                 }
             }
 
@@ -56340,17 +56342,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         hasSameLength: function hasSameLength(attributes) {
             var hasSameLength = false;
             var lastLength = 0;
-            for (var i = 0; i < attributes.length; i++) {
-                if (lastLength != 0) {
 
-                    if (lastLength == attributes[i].length) {
-                        hasSameLength = true;
-                    } else {
-                        hasSameLength = false;
+            if (typeof attributes != 'undefined') {
+                for (var i = 0; i < attributes.length; i++) {
+                    if (typeof attributes[i] != 'undefined') {
+                        if (lastLength != 0) {
+
+                            if (lastLength == attributes[i].length) {
+                                hasSameLength = true;
+                            } else {
+                                hasSameLength = false;
+                            }
+                        }
+                        lastLength = attributes[i].length;
                     }
                 }
-                lastLength = attributes[i].length;
             }
+
             return hasSameLength;
         },
         onlyUnique: function onlyUnique(arr) {

@@ -9,6 +9,7 @@ namespace App\Custom;
 use Illuminate\Http\Request;
 
 interface ElasticsearchInterface {
+    public function getPublishedCorpora();
     public function getCorpus($id,$full);
     public function deleteCorpus($id);
     public function getDocument($id,$full);

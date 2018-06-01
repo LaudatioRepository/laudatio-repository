@@ -112,4 +112,4 @@ Route::get('/validatetei/{dirname}',['as' => 'gitRepo.validatetei.get', 'uses' =
 
 
 /*BROWSE */
-Route::get('/browse/{header}/{id}', ['as' => 'browse.showHeaders.get', 'uses' => 'BrowseController@index']);
+Route::get('/browse/{header}/{id}', ['as' => 'browse.showHeaders.get', 'uses' => 'BrowseController@show']);

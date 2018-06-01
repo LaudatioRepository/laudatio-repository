@@ -48,6 +48,30 @@ class ElasticService implements ElasticsearchInterface
 
     }
 
+    public function getPublishedCorpora(){
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $searchData = array();
+        $queryBody = $queryBuilder->buildMatchAllQuery($searchData);
+
+
+        $resultData = array();
+        $params = [
+            'size' => 1000,
+            'index' => 'corpus',
+            'type' => '',
+            'body' => $queryBody,
+        ];
+        $response = Elasticsearch::search($params);
+
+        if(count($response['hits']['hits']) > 0){
+            array_push($resultData,$response['hits']['hits'][0]);
+        }
+        return array(
+            'error' => false,
+            'result' => $resultData
+        );
+    }
 
     /**
      * @param $id
