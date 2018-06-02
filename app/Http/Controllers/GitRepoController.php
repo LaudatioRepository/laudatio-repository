@@ -6,11 +6,7 @@ use App\Custom\ElasticsearchInterface;
 use App\Laudatio\GitLaB\GitFunction;
 use App\Custom\GitRepoInterface;
 use Illuminate\Http\Request;
-use GrahamCampbell\Flysystem\Facades\Flysystem;
 use GrahamCampbell\Flysystem\FlysystemManager;
-use Illuminate\Support\Facades\App; // you probably have this aliased already
-use App\Http\Requests\CreateProjectRequest;
-use App\Http\Requests\CreateCorpusRequest;
 use App\Custom\LaudatioUtilsInterface;
 use App\Custom\GitLabInterface;
 use App\Corpus;

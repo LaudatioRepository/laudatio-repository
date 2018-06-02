@@ -88,7 +88,7 @@
                     Download
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item text-14" href="#">TEI-Header</a>
+                    <a class="dropdown-item text-14"  v-bind:href="('/download/tei/').concat(corpuspath)" >TEI-Header</a>
                     <a class="dropdown-item text-14" href="#">EXCEL</a>
                     <a class="dropdown-item text-14" href="#">PAULA</a>
                     <a class="dropdown-item text-14" href="#">ANNIS</a>
@@ -216,7 +216,7 @@
 
 <script>
     export default {
-        props: ['headerdata','header','user','isloggedin','corpuselasticsearchid','corpusid'],
+        props: ['headerdata','header','user','isloggedin','corpuselasticsearchid','corpusid','corpuspath'],
         methods: {
             corpusAuthors: function(){
                 var authorString = "";
