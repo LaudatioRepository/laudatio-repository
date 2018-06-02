@@ -30,8 +30,9 @@ class BrowseController extends Controller
         $corpusdata = array();
         $documentcount = 0;
         $annotationcount = 0;
-        foreach($corpusresponses['result'] as $corpusresponse){
-           //dd($corpusresponse);
+        //dd($corpusresponses);
+        foreach($corpusresponses['result'][0] as $corpusresponse){
+           //dd($corpusresponses);
             $documentResult = $this->ElasticService->getDocumentByCorpus(
                 array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
                 array($corpusresponse['_source']['corpus_id'][0])
@@ -71,7 +72,7 @@ class BrowseController extends Controller
 
         }
 
-       // dd($corpusdata);
+       //dd($corpusdata);
         return view('browse.index')
             ->with('isLoggedIn', $isLoggedIn)
             ->with('corpusdata',$corpusdata)

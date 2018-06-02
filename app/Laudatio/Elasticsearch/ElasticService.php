@@ -65,8 +65,9 @@ class ElasticService implements ElasticsearchInterface
         $response = Elasticsearch::search($params);
 
         if(count($response['hits']['hits']) > 0){
-            array_push($resultData,$response['hits']['hits'][0]);
+            array_push($resultData,$response['hits']['hits']);
         }
+
         return array(
             'error' => false,
             'result' => $resultData
