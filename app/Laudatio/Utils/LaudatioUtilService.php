@@ -364,6 +364,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     }
 
     public function setPreparationAttributes($json,$annotationId,$corpusId,$isDir){
+        Log::info("JSON: ".print_r($json,1));
         $jsonPath = new JSONPath($json);
         $preparationFromDB = Preparation::where([
             ['annotation_id', '=', $annotationId],

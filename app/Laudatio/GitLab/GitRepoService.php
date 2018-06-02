@@ -257,11 +257,16 @@ class GitRepoService implements GitRepoInterface
                         break;
                 }
 
-                if($object[0]->uid != ""){
+                if(isset($object[0]) && $object[0]->uid != ""){
                     $uploader = User::find($object[0]->uid);
                     $headerData[$i]['uploader_affiliation'] = $uploader->affiliation;
                     $headerData[$i]['uploader_name'] = $uploader->name;
                     $headerData[$i]['uploader_uid'] = $uploader->id;
+                }
+                else{
+                    $headerData[$i]['uploader_affiliation'] = "NA";
+                    $headerData[$i]['uploader_name'] = "NA";
+                    $headerData[$i]['uploader_uid'] = "NA";
                 }
             }
         }
