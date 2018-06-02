@@ -15,11 +15,11 @@
                     <a class="text-dark" v-bind:href="('/browse/corpus/').concat(corpuselasticsearchid)">{{ headerdata.corpus_title | arrayToString | touppercase }}</a>
                 </li>
                  <li class="text-12 text-uppercase breadcrumb-item" v-if="header == 'document' && headerdata.documentCorpusdata  != 'undefined'">
-                    <a class="text-dark" href="#">{{ headerdata.documentCorpusdata.corpus_title | arrayToString | touppercase}}</a> |  {{ headerdata.document_title | arrayToString | arrayToString | touppercase }}</a>
+                    <a class="text-dark"  v-bind:href="('/browse/corpus/').concat(corpuselasticsearchid)">{{ headerdata.documentCorpusdata.corpus_title | arrayToString | touppercase}}</a> |  {{ headerdata.document_title | arrayToString | arrayToString | touppercase }}</a>
                 </li>
 
                 <li class="text-12 text-uppercase breadcrumb-item" v-if="header == 'annotation' && headerdata.annotationCorpusdata  != 'undefined'">
-                    <a class="text-dark" href="#">{{ headerdata.annotationCorpusdata.corpus_title | arrayToString | touppercase}}</a> |  {{ headerdata.preparation_title | arrayToString | arrayToString | touppercase }}</a>
+                    <a class="text-dark"  v-bind:href="('/browse/corpus/').concat(corpuselasticsearchid)">{{ headerdata.annotationCorpusdata.corpus_title | arrayToString | touppercase}}</a> |  {{ headerdata.preparation_title | arrayToString | arrayToString | touppercase }}</a>
                 </li>
 
             </ol>

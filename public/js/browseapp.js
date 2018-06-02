@@ -53010,7 +53010,14 @@ var render = function() {
                     [
                       _c(
                         "a",
-                        { staticClass: "text-dark", attrs: { href: "#" } },
+                        {
+                          staticClass: "text-dark",
+                          attrs: {
+                            href: "/browse/corpus/".concat(
+                              _vm.corpuselasticsearchid
+                            )
+                          }
+                        },
                         [
                           _vm._v(
                             _vm._s(
@@ -53047,7 +53054,14 @@ var render = function() {
                     [
                       _c(
                         "a",
-                        { staticClass: "text-dark", attrs: { href: "#" } },
+                        {
+                          staticClass: "text-dark",
+                          attrs: {
+                            href: "/browse/corpus/".concat(
+                              _vm.corpuselasticsearchid
+                            )
+                          }
+                        },
                         [
                           _vm._v(
                             _vm._s(
