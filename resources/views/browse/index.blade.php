@@ -9,7 +9,7 @@
 
                         <div class="mt-6">
                             <div class="d-flex justify-content-between mt-7 mb-1">
-                                @if(count($corpusdata) > 1)
+                                @if(count($corpusdata) <= 1 )
                                     <div class="h2 font-weight-normal">{{count($corpusdata)}} published corpora</div>
                                  @else
                                     <div class="h2 font-weight-normal">{{count($corpusdata)}} published corpus</div>
