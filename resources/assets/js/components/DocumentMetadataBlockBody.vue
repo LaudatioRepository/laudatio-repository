@@ -186,8 +186,6 @@
                                 </template>
                             </vue-good-table>
                         </div>
-                     </div>
-                    <div id="tabcontainer" class="container-fluid tab-content content">
                         <div role="tabpanel"  class="tab-pane fade" v-for="(annotationGroup) in headerdata.allAnnotationGroups" :id="annotationGroup" v-if="header == 'document'">
                             <div class="d-flex justify-content-between mt-7 mb-3">
                                 <div class="h3 font-weight-normal">{{annotationGroup}}  ({{groupCount(annotationGroup)}})</div>
