@@ -84,19 +84,19 @@
                 Corpus
               </h6>
               <div class="card-body d-flex flex-column">
-                <div class="dropdown mb-3">
+               <div class="dropdown mb-3">
                   <button class=" w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small"
                     type="button" id="corpusMainActions-Download" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Download
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item text-14" href="#">TEI-Header</a>
-                    <a class="dropdown-item text-14" href="#">EXCEL</a>
+                    <a class="dropdown-item text-14"  v-bind:href="('/download/tei/').concat(corpuspath)" >TEI-Header</a>
+                    <!--a class="dropdown-item text-14" href="#">EXCEL</a>
                     <a class="dropdown-item text-14" href="#">PAULA</a>
-                    <a class="dropdown-item text-14" href="#">ANNIS</a>
+                    <a class="dropdown-item text-14" href="#">ANNIS</a-->
                   </div>
                 </div>
-                <button class=" btn btn-primary font-weight-bold text-uppercase rounded mb-3 small">
+                <!--button class=" btn btn-primary font-weight-bold text-uppercase rounded mb-3 small">
                   Open in Annis
                 </button>
                 <div class="dropdown">
@@ -109,7 +109,7 @@
                     <a class="dropdown-item text-14" href="#">Menuitem 2</a>
                     <a class="dropdown-item text-14" href="#">Menuitem 3</a>
                   </div>
-                </div>
+                </div-->
                 <div class="w-100 d-flex justify-content-start align-items-center">
                   <img class="py-1" src="/images/license-cc.svg" alt="license cc" /> <img class="py-1" src="/images/license-sa.svg" alt="license sa" /> <img class="py-1" src="/images/license-by.svg" alt="license by" /> <img class="py-1" src="/images/license-nd.svg" alt="license nd" /> <img class="py-1" src="/images/license-nc.svg" alt="license nc" />
                 </div>
@@ -150,7 +150,7 @@
 
 <script>
     export default {
-        props: ['headerdata','header','user','isloggedin'],
+        props: ['headerdata','header','user','isloggedin','corpusid','corpuspath'],
         methods: {
             annotationEditors: function(){
                 var editorString = "";

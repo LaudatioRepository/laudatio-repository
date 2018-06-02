@@ -53638,50 +53638,12 @@ var render = function() {
                                 }
                               },
                               [_vm._v("TEI-Header")]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "a",
-                              {
-                                staticClass: "dropdown-item text-14",
-                                attrs: { href: "#" }
-                              },
-                              [_vm._v("EXCEL")]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "a",
-                              {
-                                staticClass: "dropdown-item text-14",
-                                attrs: { href: "#" }
-                              },
-                              [_vm._v("PAULA")]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "a",
-                              {
-                                staticClass: "dropdown-item text-14",
-                                attrs: { href: "#" }
-                              },
-                              [_vm._v("ANNIS")]
                             )
                           ]
                         )
                       ]),
                       _vm._v(" "),
-                      _c(
-                        "button",
-                        {
-                          staticClass:
-                            " btn btn-primary font-weight-bold text-uppercase rounded mb-3 small"
-                        },
-                        [_vm._v("\n              Open in Annis\n            ")]
-                      ),
-                      _vm._v(" "),
-                      _vm._m(2),
-                      _vm._v(" "),
-                      _vm._m(3)
+                      _vm._m(2)
                     ])
                   ])
                 : _vm._e()
@@ -53698,7 +53660,7 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-                _vm._m(4),
+                _vm._m(3),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -53808,7 +53770,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _vm._m(5)
+        _vm._m(4)
       ])
     : _vm._e()
 }
@@ -53852,55 +53814,6 @@ var staticRenderFns = [
           _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
           _vm._v(" "),
           _c("span", [_vm._v("\n            Herbology\n          ")])
-        ]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "dropdown" }, [
-      _c(
-        "button",
-        {
-          staticClass:
-            " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
-          attrs: {
-            type: "button",
-            id: "corpusMainActions-Choice",
-            "data-toggle": "dropdown",
-            "aria-haspopup": "true",
-            "aria-expanded": "false"
-          }
-        },
-        [_vm._v("\n                CITE\n              ")]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "dropdown-menu",
-          attrs: { "aria-labelledby": "dropdownMenuButton" }
-        },
-        [
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("Menuitem 1")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("Menuitem 2")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("Menuitem 3")]
-          )
         ]
       )
     ])
@@ -54374,7 +54287,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header', 'user', 'isloggedin'],
+    props: ['headerdata', 'header', 'user', 'isloggedin', 'corpusid', 'corpuspath'],
     computed: {
         concatLanguages: function concatLanguages() {
             return this.headerdata.document_languages_language.join();
@@ -54597,7 +54510,51 @@ var render = function() {
                       [_vm._v("\n              Corpus\n            ")]
                     ),
                     _vm._v(" "),
-                    _vm._m(3)
+                    _c("div", { staticClass: "card-body d-flex flex-column" }, [
+                      _c("div", { staticClass: "dropdown mb-3" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              " w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small",
+                            attrs: {
+                              type: "button",
+                              id: "corpusMainActions-Download",
+                              "data-toggle": "dropdown",
+                              "aria-haspopup": "true",
+                              "aria-expanded": "false"
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                  Download\n                "
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          {
+                            staticClass: "dropdown-menu",
+                            attrs: { "aria-labelledby": "dropdownMenuButton" }
+                          },
+                          [
+                            _c(
+                              "a",
+                              {
+                                staticClass: "dropdown-item text-14",
+                                attrs: {
+                                  href: "/download/tei/".concat(_vm.corpuspath)
+                                }
+                              },
+                              [_vm._v("TEI-Header")]
+                            )
+                          ]
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _vm._m(3)
+                    ])
                   ])
                 : _vm._e()
           ])
@@ -54798,145 +54755,36 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-body d-flex flex-column" }, [
-      _c("div", { staticClass: "dropdown mb-3" }, [
-        _c(
-          "button",
-          {
-            staticClass:
-              " w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small",
-            attrs: {
-              type: "button",
-              id: "corpusMainActions-Download",
-              "data-toggle": "dropdown",
-              "aria-haspopup": "true",
-              "aria-expanded": "false"
-            }
-          },
-          [_vm._v("\n                  Download\n                ")]
-        ),
+    return _c(
+      "div",
+      { staticClass: "w-100 d-flex justify-content-start align-items-center" },
+      [
+        _c("img", {
+          staticClass: "py-1",
+          attrs: { src: "/images/license-cc.svg", alt: "license cc" }
+        }),
         _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "dropdown-menu",
-            attrs: { "aria-labelledby": "dropdownMenuButton" }
-          },
-          [
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("TEI-Header")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("EXCEL")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("PAULA")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("ANNIS")]
-            )
-          ]
-        )
-      ]),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass:
-            " btn btn-primary font-weight-bold text-uppercase rounded mb-3 small"
-        },
-        [_vm._v("\n                Open in Annis\n              ")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "dropdown" }, [
-        _c(
-          "button",
-          {
-            staticClass:
-              " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
-            attrs: {
-              type: "button",
-              id: "corpusMainActions-Choice",
-              "data-toggle": "dropdown",
-              "aria-haspopup": "true",
-              "aria-expanded": "false"
-            }
-          },
-          [_vm._v("\n                  CITE\n                ")]
-        ),
+        _c("img", {
+          staticClass: "py-1",
+          attrs: { src: "/images/license-sa.svg", alt: "license sa" }
+        }),
         _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "dropdown-menu",
-            attrs: { "aria-labelledby": "dropdownMenuButton" }
-          },
-          [
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("Menuitem 1")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("Menuitem 2")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("Menuitem 3")]
-            )
-          ]
-        )
-      ]),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "w-100 d-flex justify-content-start align-items-center"
-        },
-        [
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-cc.svg", alt: "license cc" }
-          }),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-sa.svg", alt: "license sa" }
-          }),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-by.svg", alt: "license by" }
-          }),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-nd.svg", alt: "license nd" }
-          }),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-nc.svg", alt: "license nc" }
-          })
-        ]
-      )
-    ])
+        _c("img", {
+          staticClass: "py-1",
+          attrs: { src: "/images/license-by.svg", alt: "license by" }
+        }),
+        _vm._v(" "),
+        _c("img", {
+          staticClass: "py-1",
+          attrs: { src: "/images/license-nd.svg", alt: "license nd" }
+        }),
+        _vm._v(" "),
+        _c("img", {
+          staticClass: "py-1",
+          attrs: { src: "/images/license-nc.svg", alt: "license nc" }
+        })
+      ]
+    )
   }
 ]
 render._withStripped = true
@@ -55153,7 +55001,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header', 'user', 'isloggedin'],
+    props: ['headerdata', 'header', 'user', 'isloggedin', 'corpusid', 'corpuspath'],
     methods: {
         annotationEditors: function annotationEditors() {
             var editorString = "";
@@ -55407,7 +55255,51 @@ var render = function() {
                       [_vm._v("\n              Corpus\n            ")]
                     ),
                     _vm._v(" "),
-                    _vm._m(2)
+                    _c("div", { staticClass: "card-body d-flex flex-column" }, [
+                      _c("div", { staticClass: "dropdown mb-3" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              " w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small",
+                            attrs: {
+                              type: "button",
+                              id: "corpusMainActions-Download",
+                              "data-toggle": "dropdown",
+                              "aria-haspopup": "true",
+                              "aria-expanded": "false"
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                  Download\n                "
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          {
+                            staticClass: "dropdown-menu",
+                            attrs: { "aria-labelledby": "dropdownMenuButton" }
+                          },
+                          [
+                            _c(
+                              "a",
+                              {
+                                staticClass: "dropdown-item text-14",
+                                attrs: {
+                                  href: "/download/tei/".concat(_vm.corpuspath)
+                                }
+                              },
+                              [_vm._v("TEI-Header")]
+                            )
+                          ]
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _vm._m(2)
+                    ])
                   ])
                 : _vm._e()
           ])
@@ -55529,145 +55421,36 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-body d-flex flex-column" }, [
-      _c("div", { staticClass: "dropdown mb-3" }, [
-        _c(
-          "button",
-          {
-            staticClass:
-              " w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small",
-            attrs: {
-              type: "button",
-              id: "corpusMainActions-Download",
-              "data-toggle": "dropdown",
-              "aria-haspopup": "true",
-              "aria-expanded": "false"
-            }
-          },
-          [_vm._v("\n                  Download\n                ")]
-        ),
+    return _c(
+      "div",
+      { staticClass: "w-100 d-flex justify-content-start align-items-center" },
+      [
+        _c("img", {
+          staticClass: "py-1",
+          attrs: { src: "/images/license-cc.svg", alt: "license cc" }
+        }),
         _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "dropdown-menu",
-            attrs: { "aria-labelledby": "dropdownMenuButton" }
-          },
-          [
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("TEI-Header")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("EXCEL")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("PAULA")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("ANNIS")]
-            )
-          ]
-        )
-      ]),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass:
-            " btn btn-primary font-weight-bold text-uppercase rounded mb-3 small"
-        },
-        [_vm._v("\n                Open in Annis\n              ")]
-      ),
-      _vm._v(" "),
-      _c("div", { staticClass: "dropdown" }, [
-        _c(
-          "button",
-          {
-            staticClass:
-              " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
-            attrs: {
-              type: "button",
-              id: "corpusMainActions-Choice",
-              "data-toggle": "dropdown",
-              "aria-haspopup": "true",
-              "aria-expanded": "false"
-            }
-          },
-          [_vm._v("\n                  CITE\n                ")]
-        ),
+        _c("img", {
+          staticClass: "py-1",
+          attrs: { src: "/images/license-sa.svg", alt: "license sa" }
+        }),
         _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "dropdown-menu",
-            attrs: { "aria-labelledby": "dropdownMenuButton" }
-          },
-          [
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("Menuitem 1")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("Menuitem 2")]
-            ),
-            _vm._v(" "),
-            _c(
-              "a",
-              { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-              [_vm._v("Menuitem 3")]
-            )
-          ]
-        )
-      ]),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "w-100 d-flex justify-content-start align-items-center"
-        },
-        [
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-cc.svg", alt: "license cc" }
-          }),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-sa.svg", alt: "license sa" }
-          }),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-by.svg", alt: "license by" }
-          }),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-nd.svg", alt: "license nd" }
-          }),
-          _vm._v(" "),
-          _c("img", {
-            staticClass: "py-1",
-            attrs: { src: "/images/license-nc.svg", alt: "license nc" }
-          })
-        ]
-      )
-    ])
+        _c("img", {
+          staticClass: "py-1",
+          attrs: { src: "/images/license-by.svg", alt: "license by" }
+        }),
+        _vm._v(" "),
+        _c("img", {
+          staticClass: "py-1",
+          attrs: { src: "/images/license-nd.svg", alt: "license nd" }
+        }),
+        _vm._v(" "),
+        _c("img", {
+          staticClass: "py-1",
+          attrs: { src: "/images/license-nc.svg", alt: "license nc" }
+        })
+      ]
+    )
   },
   function() {
     var _vm = this
