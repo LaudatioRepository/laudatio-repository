@@ -264,7 +264,7 @@
                             </vue-good-table>
                         </div>
 
-                        <div role="tabpanel"  class="tab-pane active" v-for="(annotationGroup) in headerdata.allAnnotationGroups" :id="annotationGroup" v-if="header == 'corpus'">
+                        <div role="tabpanel"  class="tab-pane fade in" v-for="(annotationGroup) in headerdata.allAnnotationGroups" :id="annotationGroup" v-if="header == 'corpus'">
                             <div class="d-flex justify-content-between mt-7 mb-3">
                                 <div class="h3 font-weight-normal">{{annotationGroup}}  ({{groupCount(annotationGroup)}})</div>
                             </div>
@@ -657,7 +657,7 @@
             hasSameLength: function(attributes) {
                 var hasSameLength = false;
                 var lastLength = 0;
-
+                console.log("ATTRIBS: "+JSON.stringify(attributes));
                 if(typeof attributes != 'undefined'){
                     for(var i = 0; i < attributes.length; i++) {
                         if(typeof attributes[i] != 'undefined'){

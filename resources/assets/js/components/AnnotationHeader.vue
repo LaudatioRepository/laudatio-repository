@@ -69,7 +69,7 @@
                 Corpus
               </h6>
               <div class="card-body d-flex flex-column">
-                <a href="adminEdit_corpus.html" class=" btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded small">
+                <a v-bind:href="('/corpusprojects/corpora/').concat(corpusid).concat('/edit')" class=" btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded small">
                   Edit
                 </a>
                 <button class=" btn btn-primary font-weight-bold text-uppercase rounded small mt-3" data-toggle="modal"
@@ -150,7 +150,7 @@
 
 <script>
     export default {
-        props: ['headerdata','header','user','isloggedin','corpusid','corpuspath'],
+        props: ['headerdata','header','user','isloggedin','corpuselasticsearchid','corpusid','corpuspath'],
         methods: {
             annotationEditors: function(){
                 var editorString = "";
