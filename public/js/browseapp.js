@@ -53767,9 +53767,7 @@ var render = function() {
                               },
                               [
                                 _vm._v(
-                                  _vm._s(
-                                    _vm.headerdata.totalcorpusannotationcount
-                                  )
+                                  _vm._s(_vm.headerdata.corpusannotationcount)
                                 )
                               ]
                             )
@@ -54702,9 +54700,7 @@ var render = function() {
                               },
                               [
                                 _vm._v(
-                                  _vm._s(
-                                    _vm.headerdata.totaldocumentannotationcount
-                                  )
+                                  _vm._s(_vm.headerdata.documentannotationcount)
                                 )
                               ]
                             )

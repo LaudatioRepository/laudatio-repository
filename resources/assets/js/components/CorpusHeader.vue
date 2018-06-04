@@ -142,7 +142,7 @@
                         <a class="nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#annotationMetadataBody" role="tab">Annotations
                             <div class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
                                 <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
-                                <span class="text-primary text-14 font-weight-bold">{{headerdata.totalcorpusannotationcount}}</span>
+                                <span class="text-primary text-14 font-weight-bold">{{headerdata.corpusannotationcount}}</span>
                             </div>
                         </a>
                     </div>

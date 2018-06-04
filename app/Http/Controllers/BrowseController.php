@@ -31,46 +31,49 @@ class BrowseController extends Controller
         $documentcount = 0;
         $annotationcount = 0;
         //dd($corpusresponses);
-        foreach($corpusresponses['result'][0] as $corpusresponse){
-           //dd($corpusresponses);
-            $documentResult = $this->ElasticService->getDocumentByCorpus(
-                array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
-                array($corpusresponse['_source']['corpus_id'][0])
-            );
-            if(isset($documentResult[$corpusresponse['_source']['corpus_id'][0]])) {
-                $documentcount = count($documentResult[$corpusresponse['_source']['corpus_id'][0]]);
-            }
-
-            $annotationResult = $this->ElasticService->getAnnotationByCorpus(
-                array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
-                array($corpusresponse['_source']['corpus_id'][0])
-            );
-
-            if(isset($annotationResult[$corpusresponse['_source']['corpus_id'][0]])){
-                $annotationcount = count($annotationResult[$corpusresponse['_source']['corpus_id'][0]]);
-            }
-
-
-            if(!array_key_exists($corpusresponse['_source']['corpus_id'][0],$corpusdata)){
-
-                $authors = "";
-                for($i = 0; $i < count($corpusresponse['_source']['corpus_editor_forename']); $i++){
-                    $authors .= $corpusresponse['_source']['corpus_editor_surname'][$i].", ".$corpusresponse['_source']['corpus_editor_forename'][$i].";";
+        if(count($corpusresponses['result']) > 0){
+            foreach($corpusresponses['result'][0] as $corpusresponse){
+                //dd($corpusresponses);
+                $documentResult = $this->ElasticService->getDocumentByCorpus(
+                    array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
+                    array($corpusresponse['_source']['corpus_id'][0])
+                );
+                if(isset($documentResult[$corpusresponse['_source']['corpus_id'][0]])) {
+                    $documentcount = count($documentResult[$corpusresponse['_source']['corpus_id'][0]]);
                 }
 
-                $corpusdata[$corpusresponse['_source']['corpus_id'][0]] = array(
-                    'corpus_title' => $corpusresponse['_source']['corpus_title'][0],
-                    'authors' => $authors,
-                    'corpus_languages_language' => $corpusresponse['_source']['corpus_languages_language'][0],
-                    'corpus_size_value' => $corpusresponse['_source']['corpus_size_value'][0],
-                    'corpus_encoding_project_description' => $corpusresponse['_source']['corpus_encoding_project_description'][0],
-                    'documentcount' => $documentcount,
-                    'annotationcount' => $annotationcount,
-                    'elasticid' => $corpusresponse['_id']
+                $annotationResult = $this->ElasticService->getAnnotationByCorpus(
+                    array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
+                    array($corpusresponse['_source']['corpus_id'][0])
                 );
-            }
 
+                if(isset($annotationResult[$corpusresponse['_source']['corpus_id'][0]])){
+                    $annotationcount = count($annotationResult[$corpusresponse['_source']['corpus_id'][0]]);
+                }
+
+
+                if(!array_key_exists($corpusresponse['_source']['corpus_id'][0],$corpusdata)){
+
+                    $authors = "";
+                    for($i = 0; $i < count($corpusresponse['_source']['corpus_editor_forename']); $i++){
+                        $authors .= $corpusresponse['_source']['corpus_editor_surname'][$i].", ".$corpusresponse['_source']['corpus_editor_forename'][$i].";";
+                    }
+
+                    $corpusdata[$corpusresponse['_source']['corpus_id'][0]] = array(
+                        'corpus_title' => $corpusresponse['_source']['corpus_title'][0],
+                        'authors' => $authors,
+                        'corpus_languages_language' => $corpusresponse['_source']['corpus_languages_language'][0],
+                        'corpus_size_value' => $corpusresponse['_source']['corpus_size_value'][0],
+                        'corpus_encoding_project_description' => $corpusresponse['_source']['corpus_encoding_project_description'][0],
+                        'documentcount' => $documentcount,
+                        'annotationcount' => $annotationcount,
+                        'elasticid' => $corpusresponse['_id']
+                    );
+                }
+
+            }
         }
+
 
        //dd($corpusdata);
         return view('browse.index')
@@ -232,9 +235,12 @@ class BrowseController extends Controller
 
                     $allAnnotationGroupResult = $this->ElasticService->getAnnotationGroups();
                     $allAnnotationGroups = array();
-                    foreach($allAnnotationGroupResult['aggregations']['annotations']['buckets'] as $groupdata) {
-                        array_push($allAnnotationGroups,$groupdata['key']);
+                    if(isset($allAnnotationGroupResult['aggregations'])){
+                        foreach($allAnnotationGroupResult['aggregations']['annotations']['buckets'] as $groupdata) {
+                            array_push($allAnnotationGroups,$groupdata['key']);
+                        }
                     }
+
 
                     $data['result']['allAnnotationGroups'] = $allAnnotationGroups;
                     $data['result']['documentannotationcount'] = $documentannotationcount;
