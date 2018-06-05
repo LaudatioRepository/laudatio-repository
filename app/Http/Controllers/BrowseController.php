@@ -44,14 +44,15 @@ class BrowseController extends Controller
 
                 $annotationResult = $this->ElasticService->getAnnotationByCorpus(
                     array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
-                    array($corpusresponse['_source']['corpus_id'][0])
+                    array($corpusresponse['_source']['corpus_id'][0]),
+                    array("preparation_title", "in_corpora", "in_documents")
                 );
-
+                //dd($annotationResult);
                 if(isset($annotationResult[$corpusresponse['_source']['corpus_id'][0]])){
                     $annotationcount = count($annotationResult[$corpusresponse['_source']['corpus_id'][0]]);
                 }
 
-
+               // dd($annotationResult);
                 if(!array_key_exists($corpusresponse['_source']['corpus_id'][0],$corpusdata)){
 
                     $authors = "";
@@ -74,8 +75,8 @@ class BrowseController extends Controller
             }
         }
 
+        //dd($corpusdata);
 
-       //dd($corpusdata);
         return view('browse.index')
             ->with('isLoggedIn', $isLoggedIn)
             ->with('corpusdata',$corpusdata)
@@ -139,11 +140,14 @@ class BrowseController extends Controller
                 $annotationMapping = array();
                 $annotationcount = 0;
                 $totalannotationcount = count($data['result']['annotation_id']);
+
                 foreach($data['result']['annotation_id'] as $annotationId){
                     //$annotationData = $this->ElasticService->getAnnotationByName($annotationId, array(
+
+
                     $annotationData = $this->ElasticService->getAnnotationByNameAndCorpusId($annotationId,$corpusId, array(
                         "preparation_encoding_annotation_group",
-                        "preparation_title",
+                        "preparation_annotation_id",
                         "_id",
                         "in_documents"
                     ));
@@ -160,7 +164,7 @@ class BrowseController extends Controller
                                 if(array_key_exists('in_documents', $annotationData['result'][0]['_source'])){
                                     $dataArray['document_count'] = floatval(count($annotationData['result'][0]['_source']['in_documents']));
                                 }
-                                $dataArray['title'] = $annotationData['result'][0]['_source']['preparation_title'][0];
+                                $dataArray['title'] = $annotationData['result'][0]['_source']['preparation_annotation_id'][0];
                                 $dataArray['preparation_annotation_id'] = $annotationData['result'][0]['_id'];
                                 array_push($annotationMapping[$group],$dataArray);
                             }
@@ -313,7 +317,7 @@ class BrowseController extends Controller
                 }
                 break;
         }
-        //dd($data);
+       //dd($data);
 
         JavaScript::put([
             "header" => $header,

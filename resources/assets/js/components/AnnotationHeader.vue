@@ -53,13 +53,11 @@
           <img class="pr-1" src="/images/logo-laudatio-mini.svg" alt="copyright-logo">
           <span> {{ corpusAuthors() }};
                     {{ headerdata.annotationCorpusdata.corpus_title | arrayToString }};
-                    {{ headerdata.annotationCorpusdata.corpus_publication_publisher[0] }};
-                    Homepage: {{ headerdata.annotationCorpusdata.corpus_encoding_project_homepage[0] }};
-                    Corpus-Link: <a href="http://handle">http://handle.net/xxx. </a></span>
+                    {{ headerdata.annotationCorpusdata.corpus_publication_publisher[0] }};</span>
           <b>Homepage: </b>
-          <a href="#">Link</a>
+          <a v-bind:href="(headerdata.annotationCorpusdata.corpus_encoding_project_homepage[0])>Link</a>
           <b>Corpus-Link: </b>
-          <a href="#">Link</a>
+          <a href="http://handle.net/xxx">Link</a>
        </div>
         </div>
       </div>

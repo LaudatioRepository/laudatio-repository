@@ -51,12 +51,13 @@
         <div class="mt-3 mb-3 mr-5">
           <div class="text-wine text-14">
           <img class="pr-1" src="/images/logo-laudatio-mini.svg" alt="copyright-logo">
-          <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat ad quod culpa molestias ab. Enim quo
-            nesciunt sequi commodi quos nihil suscipit, beatae similique hic animi eius, doloremque, et corporis.</span>
+         <span> {{ corpusAuthors() }};
+                    {{ headerdata.documentCorpusdata.corpus_title | arrayToString }};
+                    {{ headerdata.documentCorpusdata.corpus_publication_publisher[0] }};</span>
           <b>Homepage: </b>
-          <a href="#">Link</a>
+          <a v-bind:href="(headerdata.documentCorpusdata.corpus_encoding_project_homepage[0])>Link</a>
           <b>Corpus-Link: </b>
-          <a href="#">Link</a>
+          <a href="http://handle.net/xxx">Link</a>
        </div>
         </div>
       </div>
@@ -156,7 +157,7 @@
             facsimileUri: function(id) {
                 return this.headerdata.document_history_faximile_link
             },
-            /*
+
             corpusAuthors: function(){
                 var authorString = "";
                 for(var i=0; i < this.headerdata.documentCorpusdata.corpus_editor_forename.length;i++) {
@@ -168,7 +169,7 @@
                 authorString = authorString.substring(0,authorString.lastIndexOf(","));
                 return authorString;
             }
-            */
+
         },
         mounted() {
             console.log('DocumentMetadataBlockHeader mounted.')

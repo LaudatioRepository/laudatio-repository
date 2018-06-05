@@ -53397,8 +53397,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath'],
@@ -53541,26 +53539,33 @@ var render = function() {
                       _vm._s(
                         _vm._f("arrayToString")(_vm.headerdata.corpus_title)
                       ) +
-                      ";\n                            " +
-                      _vm._s(_vm.headerdata.corpus_publication_publisher[0]) +
-                      ";\n                            Homepage: " +
+                      ";\n                             " +
                       _vm._s(
-                        _vm.headerdata.corpus_encoding_project_homepage[0]
+                        _vm._f("arrayToString")(
+                          _vm.headerdata.corpus_publication_publisher
+                        )
                       ) +
-                      ";\n                            Corpus-Link: "
-                  ),
-                  _c("a", { attrs: { href: "http://handle" } }, [
-                    _vm._v("http://handle.net/xxx")
-                  ])
+                      ";"
+                  )
                 ]),
                 _vm._v(" "),
                 _c("b", [_vm._v("Homepage: ")]),
                 _vm._v(" "),
-                _c("a", { attrs: { href: "#" } }, [_vm._v("Link")]),
+                _c(
+                  "a",
+                  {
+                    attrs: {
+                      href: _vm.headerdata.corpus_encoding_project_homepage[0]
+                    }
+                  },
+                  [_vm._v("Link")]
+                ),
                 _vm._v(" "),
                 _c("b", [_vm._v("Corpus-Link: ")]),
                 _vm._v(" "),
-                _c("a", { attrs: { href: "#" } }, [_vm._v("Link")])
+                _c("a", { attrs: { href: "http://handle.net/xxx" } }, [
+                  _vm._v("Link")
+                ])
               ])
             ])
           ]),
@@ -54297,6 +54302,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath'],
@@ -54308,20 +54314,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         facsimileUri: function facsimileUri(id) {
             return this.headerdata.document_history_faximile_link;
-        }
-        /*
-        corpusAuthors: function(){
+        },
+
+        corpusAuthors: function corpusAuthors() {
             var authorString = "";
-            for(var i=0; i < this.headerdata.documentCorpusdata.corpus_editor_forename.length;i++) {
-                authorString += this.headerdata.documentCorpusdata.corpus_editor_forename[i]
-                    .concat(' ')
-                    .concat(this.headerdata.documentCorpusdata.corpus_editor_surname[i])
-                    .concat(',');
+            for (var i = 0; i < this.headerdata.documentCorpusdata.corpus_editor_forename.length; i++) {
+                authorString += this.headerdata.documentCorpusdata.corpus_editor_forename[i].concat(' ').concat(this.headerdata.documentCorpusdata.corpus_editor_surname[i]).concat(',');
             }
-            authorString = authorString.substring(0,authorString.lastIndexOf(","));
+            authorString = authorString.substring(0, authorString.lastIndexOf(","));
             return authorString;
         }
-        */
+
     },
     mounted: function mounted() {
         console.log('DocumentMetadataBlockHeader mounted.');
@@ -54494,7 +54497,40 @@ var render = function() {
                 ])
               : _vm._e(),
             _vm._v(" "),
-            _vm._m(1)
+            _c("div", { staticClass: "mt-3 mb-3 mr-5" }, [
+              _c("div", { staticClass: "text-wine text-14" }, [
+                _c("img", {
+                  staticClass: "pr-1",
+                  attrs: {
+                    src: "/images/logo-laudatio-mini.svg",
+                    alt: "copyright-logo"
+                  }
+                }),
+                _vm._v(" "),
+                _c("span", [
+                  _vm._v(
+                    " " +
+                      _vm._s(_vm.corpusAuthors()) +
+                      ";\n                  " +
+                      _vm._s(
+                        _vm._f("arrayToString")(
+                          _vm.headerdata.documentCorpusdata.corpus_title
+                        )
+                      ) +
+                      ";\n                  " +
+                      _vm._s(
+                        _vm.headerdata.documentCorpusdata
+                          .corpus_publication_publisher[0]
+                      ) +
+                      ";"
+                  )
+                ]),
+                _vm._v(" "),
+                _c("b", [_vm._v("Homepage: ")]),
+                _vm._v(" "),
+                _vm._v('//handle.net/xxx">Link')
+              ])
+            ])
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "col-2" }, [
@@ -54592,7 +54628,7 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _vm._m(2)
+                      _vm._m(1)
                     ])
                   ])
                 : _vm._e()
@@ -54733,36 +54769,6 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "mt-3 mb-3 mr-5" }, [
-      _c("div", { staticClass: "text-wine text-14" }, [
-        _c("img", {
-          staticClass: "pr-1",
-          attrs: {
-            src: "/images/logo-laudatio-mini.svg",
-            alt: "copyright-logo"
-          }
-        }),
-        _vm._v(" "),
-        _c("span", [
-          _vm._v(
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat ad quod culpa molestias ab. Enim quo\n          nesciunt sequi commodi quos nihil suscipit, beatae similique hic animi eius, doloremque, et corporis."
-          )
-        ]),
-        _vm._v(" "),
-        _c("b", [_vm._v("Homepage: ")]),
-        _vm._v(" "),
-        _c("a", { attrs: { href: "#" } }, [_vm._v("Link")]),
-        _vm._v(" "),
-        _c("b", [_vm._v("Corpus-Link: ")]),
-        _vm._v(" "),
-        _c("a", { attrs: { href: "#" } }, [_vm._v("Link")])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
     return _c(
       "div",
       { staticClass: "w-100 d-flex justify-content-start align-items-center" },
@@ -54857,8 +54863,6 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
 //
 //
 //
@@ -55215,25 +55219,13 @@ var render = function() {
                         _vm.headerdata.annotationCorpusdata
                           .corpus_publication_publisher[0]
                       ) +
-                      ";\n                  Homepage: " +
-                      _vm._s(
-                        _vm.headerdata.annotationCorpusdata
-                          .corpus_encoding_project_homepage[0]
-                      ) +
-                      ";\n                  Corpus-Link: "
-                  ),
-                  _c("a", { attrs: { href: "http://handle" } }, [
-                    _vm._v("http://handle.net/xxx. ")
-                  ])
+                      ";"
+                  )
                 ]),
                 _vm._v(" "),
                 _c("b", [_vm._v("Homepage: ")]),
                 _vm._v(" "),
-                _c("a", { attrs: { href: "#" } }, [_vm._v("Link")]),
-                _vm._v(" "),
-                _c("b", [_vm._v("Corpus-Link: ")]),
-                _vm._v(" "),
-                _c("a", { attrs: { href: "#" } }, [_vm._v("Link")])
+                _vm._v('//handle.net/xxx">Link')
               ])
             ])
           ]),

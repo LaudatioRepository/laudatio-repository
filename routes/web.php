@@ -111,7 +111,7 @@ Route::get('/admin/gitlabgroups/create',[ 'as' => 'admin.gitlab.createGroup.', '
 Route::get('/validatetei/{dirname}',['as' => 'gitRepo.validatetei.get', 'uses' => 'ValidateTEIController@validateFiles'])->where('dirname', '.+')->middleware('auth');
 
 
-/*B ROWSE */
+/*BROWSE */
 Route::get('/browse/{header}/{id}', ['as' => 'browse.showHeaders.get', 'uses' => 'BrowseController@show']);
 
 /* DOWNLOAD */

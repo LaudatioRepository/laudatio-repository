@@ -408,6 +408,34 @@ class ElasticService implements ElasticsearchInterface
         );
     }
 
+    public function getAnnotationByCorpus($searchData,$corpusData,$fields){
+        $resultData = array();
+
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $counter = 0;
+        foreach($searchData as $queryData){
+            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
+            $params = [
+                'size' => 1000,
+                'index' => 'annotation',
+                'type' => 'annotation',
+                'body' => $queryBody,
+                '_source' => $fields,
+            ];
+
+            $results = Elasticsearch::search($params);
+            $termData = array_values($corpusData);
+
+            if(count($results['hits']['hits']) > 0){
+                $resultData[$termData[$counter++]] = $results['hits']['hits'];
+            }
+            else{
+                $resultData[$counter++] = array();
+            }
+        }//end foreach queries
+        return $resultData;
+    }
 
     public function getDocumentByCorpus($searchData,$corpusData){
         $resultData = array();
@@ -440,34 +468,7 @@ class ElasticService implements ElasticsearchInterface
         return $resultData;
     }
 
-    public function getAnnotationByCorpus($searchData,$corpusData){
-        $resultData = array();
 
-        $queryBuilder = new QueryBuilder();
-        $queryBody = null;
-        $counter = 0;
-        foreach($searchData as $queryData){
-            $queryBody = $queryBuilder->buildSingleMatchQuery(array($queryData));
-            $params = [
-                'size' => 1000,
-                'index' => 'annotation',
-                'type' => 'annotation',
-                'body' => $queryBody,
-                '_source' => ["preparation_title", "in_corpora", "in_documents"],
-            ];
-
-            $results = Elasticsearch::search($params);
-            $termData = array_values($corpusData);
-
-            if(count($results['hits']['hits']) > 0){
-                $resultData[$termData[$counter++]] = $results['hits']['hits'];
-            }
-            else{
-                $resultData[$counter++] = array();
-            }
-        }//end foreach queries
-        return $resultData;
-    }
 
 
     public function getCorpusByDocument($searchData,$documentData){
