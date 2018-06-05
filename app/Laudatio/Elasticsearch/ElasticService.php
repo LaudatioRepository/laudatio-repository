@@ -334,7 +334,6 @@ class ElasticService implements ElasticsearchInterface
                 $queryBody = $queryBuilder->buildMustQuery($objectparam);
             }
 
-            Log::info("queryBody: ".print_r($queryBody,1));
             $params = [
                 'size' => 10,
                 'index' => $index,
@@ -371,6 +370,34 @@ class ElasticService implements ElasticsearchInterface
             'filter_path' => ['hits.hits']
         ];
 
+        $response = Elasticsearch::search($params);
+        if(count($response['hits']['hits']) > 0){
+            array_push($result,$response['hits']['hits'][0]);
+        }
+        return array(
+            'error' => false,
+            'result' => $result
+        );
+    }
+
+    public function getAnnotationByNameAndCorpusId($name, $corpusId, $fields){
+        $result = array();
+        $queryBuilder = new QueryBuilder();
+        $queryBody = $queryBuilder->buildMustQuery(array(
+            array(
+                'preparation_annotation_id' => $name,
+                'in_corpora' => $corpusId
+            )
+        ));
+
+        $params = [
+            'size' => 1,
+            'index' => 'annotation',
+            'type' => 'annotation',
+            'body' => $queryBody,
+            '_source' => $fields,
+            'filter_path' => ['hits.hits']
+        ];
         $response = Elasticsearch::search($params);
         if(count($response['hits']['hits']) > 0){
             array_push($result,$response['hits']['hits'][0]);

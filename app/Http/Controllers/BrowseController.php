@@ -140,7 +140,8 @@ class BrowseController extends Controller
                 $annotationcount = 0;
                 $totalannotationcount = count($data['result']['annotation_id']);
                 foreach($data['result']['annotation_id'] as $annotationId){
-                    $annotationData = $this->ElasticService->getAnnotationByName($annotationId, array(
+                    //$annotationData = $this->ElasticService->getAnnotationByName($annotationId, array(
+                    $annotationData = $this->ElasticService->getAnnotationByNameAndCorpusId($annotationId,$corpusId, array(
                         "preparation_encoding_annotation_group",
                         "preparation_title",
                         "_id",
@@ -201,13 +202,20 @@ class BrowseController extends Controller
                     $documentannotationcount = 0;
                     $totalannotationcount = count($data['result']['document_list_of_annotations_id']);
                     foreach($data['result']['document_list_of_annotations_id'] as $annotationId){
+                        /*
                         $annotationData = $this->ElasticService->getAnnotationByName($annotationId, array(
                             "preparation_encoding_annotation_group",
                             "preparation_title",
                             "_id",
                             "in_documents"
                         ));
-
+*/
+                        $annotationData = $this->ElasticService->getAnnotationByNameAndCorpusId($annotationId,$corpusId, array(
+                            "preparation_encoding_annotation_group",
+                            "preparation_title",
+                            "_id",
+                            "in_documents"
+                        ));
 
                         if(!$annotationData['error'] && count($annotationData['result']) > 0){
                             $foundAnnotation = array();
@@ -305,7 +313,7 @@ class BrowseController extends Controller
                 }
                 break;
         }
-        //dd($isLoggedIn);
+        //dd($data);
 
         JavaScript::put([
             "header" => $header,

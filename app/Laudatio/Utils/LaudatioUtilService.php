@@ -745,8 +745,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     }
 
     public function getDirectoryPath($paths,$fileName){
-        Log::info("?ATHS: ".print_r($paths, 1));
-        Log::info("?FNAM: ".print_r($fileName, 1));
         $directoryPath = "";
         foreach ($paths as $path) {
             if (strpos($path,$fileName) !== false){
