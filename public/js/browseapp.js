@@ -54528,7 +54528,23 @@ var render = function() {
                 _vm._v(" "),
                 _c("b", [_vm._v("Homepage: ")]),
                 _vm._v(" "),
-                _vm._v('//handle.net/xxx">Link')
+                _c(
+                  "a",
+                  {
+                    attrs: {
+                      href:
+                        _vm.headerdata.documentCorpusdata
+                          .corpus_encoding_project_homepage[0]
+                    }
+                  },
+                  [_vm._v("Link")]
+                ),
+                _vm._v(" "),
+                _c("b", [_vm._v("Corpus-Link: ")]),
+                _vm._v(" "),
+                _c("a", { attrs: { href: "http://handle.net/xxx" } }, [
+                  _vm._v("Link")
+                ])
               ])
             ])
           ]),
