@@ -58,6 +58,25 @@ class GitFunction
         return $process->getOutput();
     }
 
+    public function addGitHooks($path) {
+        $isAdded = false;
+
+        $process = new Process("git add githooks",$this->basePath."/".$path);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            $isAdded = true;
+            $this->commitFiles($this->basePath."/".$path, "Adding githooks", null);
+        }
+
+        return $isAdded;
+    }
+
 
     public function doAddFile($file,$path){
         $process = new Process("git add $file",$path);
@@ -378,7 +397,7 @@ class GitFunction
         /*
          * cp ../../../scripts/githooks/* .git
          */
-        $hookProcess = new Process("cp ".$this->scriptPath."/githooks/* .git/hooks",$this->basePath."/".$path);
+        $hookProcess = new Process("cp ".$this->scriptPath."/githooks/* githooks",$this->basePath."/".$path);
         $hookProcess->run();
         // executes after the command finishes
         if (!$hookProcess->isSuccessful()) {
@@ -390,6 +409,30 @@ class GitFunction
         }
 
         return $isCopied;
+    }
+
+    public function setCoreHooksPath($path){
+        $isSet = false;
+        /*
+         * cp ../../../scripts/githooks/* .git
+         */
+        $hookProcess = new Process('printf "\t hooksPath = githooks" >> .git/config',$this->basePath."/".$path);
+        $hookProcess->run();
+        // executes after the command finishes
+        if (!$hookProcess->isSuccessful()) {
+            throw new ProcessFailedException($hookProcess);
+        }
+        else{
+            $processOutput = $hookProcess->getOutput();
+            $isSet = true;
+        }
+
+        return $isSet;
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        // TODO: Implement __callStatic() method.
     }
 
     public function copyScripts($path){

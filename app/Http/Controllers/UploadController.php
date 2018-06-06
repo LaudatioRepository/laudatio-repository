@@ -282,6 +282,7 @@ class UploadController extends Controller
             //we have added a corpus, and push the corpus file structure to gitlab
             if($pushCorpusStructure && !empty($initialPushPath) && $remoteRepoUrl){
                 $this->GitRepoService->addRemote($remoteRepoUrl,$initialPushPath);
+                $hooksAdded = $this->GitRepoService->addHooks($initialPushPath);
                 $this->GitRepoService->initialPush($initialPushPath,$user);
             }
             else {

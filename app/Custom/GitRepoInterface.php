@@ -26,6 +26,7 @@ interface GitRepoInterface {
     public function addFiles($path,$corpus);
     public function commitFiles($dirname, $commitmessage, $corpusid,$user);
     public function pushFiles($dirname,$corpusid,$user);
+    public function addHooks($path);
     public function initialPush($path,$user);
     public function addRemote($origin,$path);
 

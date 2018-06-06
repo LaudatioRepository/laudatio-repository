@@ -51,18 +51,20 @@ class GitRepoService implements GitRepoInterface
 
         if(!$flysystem->has($dirPath)){
             $flysystem->createDir($dirPath);
+            $flysystem->createDir($dirPath."/githooks");
             $flysystem->createDir($dirPath."/TEI-HEADERS");
             $flysystem->createDir($dirPath."/TEI-HEADERS/corpus");
-            $flysystem->write($dirPath."/TEI-HEADERS/corpus/README.md","#CORPUS HEADERS# \n This folder holds Corpus header meta data");
+            $flysystem->write($dirPath."/TEI-HEADERS/corpus/README.md","#CORPUS HEADERS#\n This folder holds Corpus header meta data");
             $flysystem->createDir($dirPath."/TEI-HEADERS/document");
-            $flysystem->write($dirPath."/TEI-HEADERS/document/README.md","#DOCUMENT HEADERS# \n This folder holds Document header meta data");
+            $flysystem->write($dirPath."/TEI-HEADERS/document/README.md","#DOCUMENT HEADERS#\n This folder holds Document header meta data");
             $flysystem->createDir($dirPath."/TEI-HEADERS/annotation");
-            $flysystem->write($dirPath."/TEI-HEADERS/annotation/README.md","#ANNOTATION HEADERS# \n This folder holds Document header meta data");
+            $flysystem->write($dirPath."/TEI-HEADERS/annotation/README.md","#ANNOTATION HEADERS#\n This folder holds Annotation header meta data");
             $flysystem->createDir($dirPath."/CORPUS-DATA");
 
             $initiated = $this->initiateRepository($dirPath);
             if($initiated){
                 $this->copyGitHooks($dirPath);
+                $this->setCoreHooksPath($dirPath);
                 $this->copyScripts($dirPath);
             }
 
@@ -493,6 +495,10 @@ class GitRepoService implements GitRepoInterface
         return $isAdded;
     }
 
+    public function addHooks($path){
+        $gitFunction = new  GitFunction();
+        return $gitFunction->addGitHooks($path);
+    }
 
 
     public function pushFiles($dirname,$corpusid,$user){
@@ -611,6 +617,11 @@ class GitRepoService implements GitRepoInterface
     public function copyGitHooks($path){
         $gitFunction = new  GitFunction();
         return $gitFunction->copyGitHooks($path);
+    }
+
+    public function setCoreHooksPath($path){
+        $gitFunction = new  GitFunction();
+        return $gitFunction->setCoreHooksPath($path);
     }
 
     public function copyScripts($path){
