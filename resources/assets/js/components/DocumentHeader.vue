@@ -94,7 +94,7 @@
                     <a class="dropdown-item text-14" href="#">ANNIS</a-->
                   </div>
                 </div>
-                <!--button class=" btn btn-primary font-weight-bold text-uppercase rounded mb-3 small">
+                <button class=" btn btn-primary font-weight-bold text-uppercase rounded mb-3 small">
                   Open in Annis
                 </button>
                 <div class="dropdown">
@@ -107,7 +107,7 @@
                     <a class="dropdown-item text-14" href="#">Menuitem 2</a>
                     <a class="dropdown-item text-14" href="#">Menuitem 3</a>
                   </div>
-                </div-->
+                </div>
                 <div class="w-100 d-flex justify-content-start align-items-center">
                   <img class="py-1" src="/images/license-cc.svg" alt="license cc" /> <img class="py-1" src="/images/license-sa.svg" alt="license sa" /> <img class="py-1" src="/images/license-by.svg" alt="license by" /> <img class="py-1" src="/images/license-nd.svg" alt="license nd" /> <img class="py-1" src="/images/license-nc.svg" alt="license nc" />
                 </div>

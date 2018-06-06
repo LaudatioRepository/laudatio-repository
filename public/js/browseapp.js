@@ -53662,7 +53662,18 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _vm._m(2)
+                      _c(
+                        "button",
+                        {
+                          staticClass:
+                            " btn btn-primary font-weight-bold text-uppercase rounded mb-3 small"
+                        },
+                        [_vm._v("\n              Open in Annis\n            ")]
+                      ),
+                      _vm._v(" "),
+                      _vm._m(2),
+                      _vm._v(" "),
+                      _vm._m(3)
                     ])
                   ])
                 : _vm._e()
@@ -53679,7 +53690,7 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-                _vm._m(3),
+                _vm._m(4),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -53787,7 +53798,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _vm._m(4)
+        _vm._m(5)
       ])
     : _vm._e()
 }
@@ -53831,6 +53842,55 @@ var staticRenderFns = [
           _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
           _vm._v(" "),
           _c("span", [_vm._v("\n            Herbology\n          ")])
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "dropdown" }, [
+      _c(
+        "button",
+        {
+          staticClass:
+            " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
+          attrs: {
+            type: "button",
+            id: "corpusMainActions-Choice",
+            "data-toggle": "dropdown",
+            "aria-haspopup": "true",
+            "aria-expanded": "false"
+          }
+        },
+        [_vm._v("\n                CITE\n              ")]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "dropdown-menu",
+          attrs: { "aria-labelledby": "dropdownMenuButton" }
+        },
+        [
+          _c(
+            "a",
+            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+            [_vm._v("Menuitem 1")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+            [_vm._v("Menuitem 2")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+            [_vm._v("Menuitem 3")]
+          )
         ]
       )
     ])
@@ -54644,7 +54704,22 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _vm._m(1)
+                      _c(
+                        "button",
+                        {
+                          staticClass:
+                            " btn btn-primary font-weight-bold text-uppercase rounded mb-3 small"
+                        },
+                        [
+                          _vm._v(
+                            "\n                Open in Annis\n              "
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _vm._m(1),
+                      _vm._v(" "),
+                      _vm._m(2)
                     ])
                   ])
                 : _vm._e()
@@ -54779,6 +54854,55 @@ var staticRenderFns = [
         staticClass: "w-100",
         attrs: { src: "/images/placeholder_circle.svg", alt: "circle-image" }
       })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "dropdown" }, [
+      _c(
+        "button",
+        {
+          staticClass:
+            " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
+          attrs: {
+            type: "button",
+            id: "corpusMainActions-Choice",
+            "data-toggle": "dropdown",
+            "aria-haspopup": "true",
+            "aria-expanded": "false"
+          }
+        },
+        [_vm._v("\n                  CITE\n                ")]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "dropdown-menu",
+          attrs: { "aria-labelledby": "dropdownMenuButton" }
+        },
+        [
+          _c(
+            "a",
+            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+            [_vm._v("Menuitem 1")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+            [_vm._v("Menuitem 2")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+            [_vm._v("Menuitem 3")]
+          )
+        ]
+      )
     ])
   },
   function() {
@@ -55341,7 +55465,22 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _vm._m(1)
+                      _c(
+                        "button",
+                        {
+                          staticClass:
+                            " btn btn-primary font-weight-bold text-uppercase rounded mb-3 small"
+                        },
+                        [
+                          _vm._v(
+                            "\n                Open in Annis\n              "
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _vm._m(1),
+                      _vm._v(" "),
+                      _vm._m(2)
                     ])
                   ])
                 : _vm._e()
@@ -55358,9 +55497,9 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-                _vm._m(2),
-                _vm._v(" "),
                 _vm._m(3),
+                _vm._v(" "),
+                _vm._m(4),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -55429,6 +55568,55 @@ var staticRenderFns = [
         staticClass: "w-100",
         attrs: { src: "/images/placeholder_circle.svg", alt: "circle-image" }
       })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "dropdown" }, [
+      _c(
+        "button",
+        {
+          staticClass:
+            " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
+          attrs: {
+            type: "button",
+            id: "corpusMainActions-Choice",
+            "data-toggle": "dropdown",
+            "aria-haspopup": "true",
+            "aria-expanded": "false"
+          }
+        },
+        [_vm._v("\n                  CITE\n                ")]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "dropdown-menu",
+          attrs: { "aria-labelledby": "dropdownMenuButton" }
+        },
+        [
+          _c(
+            "a",
+            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+            [_vm._v("Menuitem 1")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+            [_vm._v("Menuitem 2")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+            [_vm._v("Menuitem 3")]
+          )
+        ]
+      )
     ])
   },
   function() {
