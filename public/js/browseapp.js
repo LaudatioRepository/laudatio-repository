@@ -53397,6 +53397,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath'],
@@ -53662,18 +53674,13 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _c(
-                        "button",
-                        {
-                          staticClass:
-                            " btn btn-primary font-weight-bold text-uppercase rounded mb-3 small"
-                        },
-                        [_vm._v("\n              Open in Annis\n            ")]
-                      ),
-                      _vm._v(" "),
                       _vm._m(2),
                       _vm._v(" "),
-                      _vm._m(3)
+                      _c("br"),
+                      _vm._v(" "),
+                      _vm._m(3),
+                      _vm._v(" "),
+                      _vm._m(4)
                     ])
                   ])
                 : _vm._e()
@@ -53690,7 +53697,7 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-                _vm._m(4),
+                _vm._m(5),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -53798,7 +53805,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _vm._m(5)
+        _vm._m(6)
       ])
     : _vm._e()
 }
@@ -53855,6 +53862,55 @@ var staticRenderFns = [
         "button",
         {
           staticClass:
+            "w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small",
+          attrs: {
+            type: "button",
+            id: "corpusMainActions-Choice",
+            "data-toggle": "dropdown",
+            "aria-haspopup": "true",
+            "aria-expanded": "false"
+          }
+        },
+        [_vm._v("\n                OPEN IN\n              ")]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "dropdown-menu",
+          attrs: { "aria-labelledby": "dropdownMenuButton" }
+        },
+        [
+          _c(
+            "a",
+            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+            [_vm._v("ANNIS")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+            [_vm._v("DARIA")]
+          ),
+          _vm._v(" "),
+          _c(
+            "a",
+            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+            [_vm._v("CLARIN")]
+          )
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "dropdown" }, [
+      _c(
+        "button",
+        {
+          staticClass:
             " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
           attrs: {
             type: "button",
@@ -53877,19 +53933,13 @@ var staticRenderFns = [
           _c(
             "a",
             { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("Menuitem 1")]
+            [_vm._v("PLAIN TEXT")]
           ),
           _vm._v(" "),
           _c(
             "a",
             { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("Menuitem 2")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("Menuitem 3")]
+            [_vm._v("BIBTEX")]
           )
         ]
       )

@@ -92,18 +92,30 @@
                     <a class="dropdown-item text-14" href="#">ANNIS</a-->
                   </div>
                 </div>
-                <button class=" btn btn-primary font-weight-bold text-uppercase rounded mb-3 small">
+                <!--button class=" btn btn-primary font-weight-bold text-uppercase rounded mb-3 small">
                   Open in Annis
-                </button>
+                </button-->
+
+                 <div class="dropdown">
+                  <button class="w-100 btn btn-primary dropdown-toggle font-weight-bold text-uppercase rounded small"
+                    type="button" id="corpusMainActions-Choice" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    OPEN IN
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item text-14" href="#">ANNIS</a>
+                    <a class="dropdown-item text-14" href="#">DARIA</a>
+                    <a class="dropdown-item text-14" href="#">CLARIN</a>
+                  </div>
+                </div>
+                <br />
                 <div class="dropdown">
                   <button class=" w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3"
                     type="button" id="corpusMainActions-Choice" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     CITE
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item text-14" href="#">Menuitem 1</a>
-                    <a class="dropdown-item text-14" href="#">Menuitem 2</a>
-                    <a class="dropdown-item text-14" href="#">Menuitem 3</a>
+                    <a class="dropdown-item text-14" href="#">PLAIN TEXT</a>
+                    <a class="dropdown-item text-14" href="#">BIBTEX</a>
                   </div>
                 </div>
                 <div class="w-100 d-flex justify-content-start align-items-center">
