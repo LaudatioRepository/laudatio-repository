@@ -34,6 +34,7 @@ interface LaudatioUtilsInterface
     public function getModelByFileAndCorpus($fileName, $type, $isDir, $corpusId);
     public function getElasticSearchIdByCorpusId($corpusid);
     public function getDatabaseIdByCorpusId($corpusid);
+    public function getDocumentGenreByCorpusId($corpusid);
     public function getCorpusPathByCorpusId($corpusid);
     public function deleteModels($path);
     public function deleteModel($type,$id);

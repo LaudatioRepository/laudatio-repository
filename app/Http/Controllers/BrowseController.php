@@ -190,6 +190,7 @@ class BrowseController extends Controller
                 $data['result']['allAnnotationGroups'] = $allAnnotationGroups;
                 $data['result']['corpusannotationcount'] = $annotationcount;
                 $data['result']['totalcorpusannotationcount'] = $totalannotationcount;
+                $data['result']['document_genre'] = $this->LaudatioUtilService->getDocumentGenreByCorpusId($corpusId);
 
 
                 break;

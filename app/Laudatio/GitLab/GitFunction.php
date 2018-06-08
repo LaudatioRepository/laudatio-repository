@@ -416,7 +416,7 @@ class GitFunction
         /*
          * cp ../../../scripts/githooks/* .git
          */
-        $hookProcess = new Process('printf "\t hooksPath = githooks" >> .git/config',$this->basePath."/".$path);
+        $hookProcess = new Process('printf "\t hooksPath = githooks\n" >> .git/config',$this->basePath."/".$path);
         $hookProcess->run();
         // executes after the command finishes
         if (!$hookProcess->isSuccessful()) {

@@ -687,6 +687,13 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpus[0]->id;
     }
 
+    public function getDocumentGenreByCorpusId($corpusid)
+    {
+        $corpus = Corpus::where("corpus_id",$corpusid)->get();
+        $documents = $corpus[0]->documents()->get();
+        return $documents[0]->document_genre;
+    }
+
     public function getCorpusPathByCorpusId($corpusid){
         $corpus = Corpus::where("corpus_id",$corpusid)->get();
         $corpusprojects = $corpus[0]->corpusprojects()->get();

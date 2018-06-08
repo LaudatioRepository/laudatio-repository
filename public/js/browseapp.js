@@ -53461,7 +53461,28 @@ var render = function() {
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "row mt-2" }, [
-              _vm._m(1),
+              _c("div", { staticClass: "col col-auto mr-2" }, [
+                _vm._m(1),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                  },
+                  [
+                    _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
+                    _vm._v(" "),
+                    _c("span", [
+                      _vm._v(
+                        "\n            " +
+                          _vm._s(_vm.headerdata.document_genre) +
+                          "\n          "
+                      )
+                    ])
+                  ]
+                )
+              ]),
               _vm._v(" "),
               _c("div", { staticClass: "col col-auto mr-2" }, [
                 _c(
@@ -53825,33 +53846,18 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col col-auto mr-2" }, [
-      _c(
-        "div",
-        {
-          staticClass:
-            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-        },
-        [
-          _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
-          _vm._v(" "),
-          _c("span", [_vm._v("\n            D. from 1945 - 1950\n          ")])
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass:
-            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-        },
-        [
-          _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
-          _vm._v(" "),
-          _c("span", [_vm._v("\n            Herbology\n          ")])
-        ]
-      )
-    ])
+    return _c(
+      "div",
+      {
+        staticClass:
+          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+      },
+      [
+        _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
+        _vm._v(" "),
+        _c("span", [_vm._v("\n            D. from 1945 - 1950\n          ")])
+      ]
+    )
   },
   function() {
     var _vm = this

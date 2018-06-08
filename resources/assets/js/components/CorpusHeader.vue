@@ -22,7 +22,7 @@
             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
               <i class="fa fa-fw fa-th-list  mr-1"></i>
               <span>
-                Herbology
+                {{headerdata.document_genre}}
               </span>
             </div>
             </div>

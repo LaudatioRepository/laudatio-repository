@@ -998,7 +998,7 @@ class ElasticService implements ElasticsearchInterface
                     "_id" => $documentId
                 ),
             ));
-            //dd($queryBody);
+
             $params = [
                 'index' => 'document',
                 'type' => 'document',
