@@ -13,6 +13,7 @@ Route::get('/browse', ['as' => 'browse', 'uses' => 'BrowseController@index']);
 Route::get('/publish', ['as' => 'publish', 'uses' => 'IndexController@publish']);
 Route::get('/schema/{path?}',[ 'as' => 'gitRepo.route.schema', 'uses' => 'GitRepoController@listSchema'])->where('path', '.+')->middleware('auth');
 Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
+Route::get('/sitecomments',['as' => 'search', 'uses' => 'SearchController@index']);
 
 
 

@@ -657,7 +657,7 @@
             hasSameLength: function(attributes) {
                 var hasSameLength = false;
                 var lastLength = 0;
-                console.log("ATTRIBS: "+JSON.stringify(attributes));
+
                 if(typeof attributes != 'undefined'){
                     for(var i = 0; i < attributes.length; i++) {
                         if(typeof attributes[i] != 'undefined'){

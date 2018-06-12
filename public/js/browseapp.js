@@ -56401,7 +56401,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         hasSameLength: function hasSameLength(attributes) {
             var hasSameLength = false;
             var lastLength = 0;
-            console.log("ATTRIBS: " + JSON.stringify(attributes));
+
             if (typeof attributes != 'undefined') {
                 for (var i = 0; i < attributes.length; i++) {
                     if (typeof attributes[i] != 'undefined') {
