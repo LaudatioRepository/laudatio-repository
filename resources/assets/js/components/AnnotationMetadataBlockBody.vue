@@ -256,26 +256,39 @@
 
                             </div>
                                 <vue-good-table
-                                  :columns="documentColumns"
-                                  :rows=documentRows()
-                                  :search-options="{
-                                    enabled: true,
-                                  }"
-                                  :pagination-options="{
-                                    enabled: true,
-                                    perPage: 10,
-                                  }"
-                                  :lineNumbers="false"
-                                  @on-row-click="goToDocument"
-                                  styleClass="custom-table table table-corpus-mid table-striped">
-                                   <template slot="table-row" slot-scope="props">
-                                    <span v-if="props.column.field == 'title'">
-                                     <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
-                                    </span>
-                                    <span v-else>
-                                    {{props.formattedRow[props.column.field]}}
-                                    </span>
-                                </template>
+                          :columns="documentColumns"
+                          :rows=documentRows()
+                          :lineNumbers="false"
+                          @on-row-click="goToDocument"
+                          :search-options="{
+                            enabled: true,
+                          }"
+                          :pagination-options="{
+                            enabled: true,
+                            perPage: 10,
+                          }"
+                          styleClass="custom-table documents-table table table-corpus-mid  table-striped">
+                          <template slot="table-row" slot-scope="props">
+                              <span v-if="props.column.field == 'place'">
+                                <i class="fa fa-fw fa-map-marker mr-1"></i> {{props.formattedRow[props.column.field]}}
+                              </span>
+                              <span v-else-if="props.column.field == 'date'">
+                                 <i class="fa fa-fw fa-clock-o mr-1"></i> {{props.formattedRow[props.column.field]}}
+                              </span>
+                              <span v-else-if="props.column.field == 'title'">
+                                <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
+                              </span>
+                              <span v-else-if="props.column.field == 'annotations'">
+                                    <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
+                                        <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
+                                        <span class="text-14 font-weight-bold">{{props.formattedRow[props.column.field]}}</span>
+                                    </a>
+                                </span>
+                              <span v-else>
+                                {{props.formattedRow[props.column.field]}}
+                               </span>
+                           </template>
+                    </vue-good-table>
                             </vue-good-table>
                         </div>
                     </div>

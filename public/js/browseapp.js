@@ -59912,6 +59912,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin'],
@@ -60886,6 +60899,7 @@ var render = function() {
                         attrs: {
                           columns: _vm.documentColumns,
                           rows: _vm.documentRows(),
+                          lineNumbers: false,
                           "search-options": {
                             enabled: true
                           },
@@ -60893,9 +60907,8 @@ var render = function() {
                             enabled: true,
                             perPage: 10
                           },
-                          lineNumbers: false,
                           styleClass:
-                            "custom-table table table-corpus-mid table-striped"
+                            "custom-table documents-table table table-corpus-mid  table-striped"
                         },
                         on: { "on-row-click": _vm.goToDocument },
                         scopedSlots: _vm._u([
@@ -60903,33 +60916,101 @@ var render = function() {
                             key: "table-row",
                             fn: function(props) {
                               return [
-                                props.column.field == "title"
+                                props.column.field == "place"
                                   ? _c("span", [
-                                      _c(
-                                        "span",
-                                        { staticClass: "hover-mouse-pointer" },
-                                        [
-                                          _vm._v(
-                                            _vm._s(
-                                              props.formattedRow[
-                                                props.column.field
-                                              ]
-                                            )
-                                          )
-                                        ]
-                                      )
-                                    ])
-                                  : _c("span", [
+                                      _c("i", {
+                                        staticClass:
+                                          "fa fa-fw fa-map-marker mr-1"
+                                      }),
                                       _vm._v(
-                                        "\n                                   " +
+                                        " " +
                                           _vm._s(
                                             props.formattedRow[
                                               props.column.field
                                             ]
                                           ) +
-                                          "\n                                   "
+                                          "\n                             "
                                       )
                                     ])
+                                  : props.column.field == "date"
+                                    ? _c("span", [
+                                        _c("i", {
+                                          staticClass:
+                                            "fa fa-fw fa-clock-o mr-1"
+                                        }),
+                                        _vm._v(
+                                          " " +
+                                            _vm._s(
+                                              props.formattedRow[
+                                                props.column.field
+                                              ]
+                                            ) +
+                                            "\n                             "
+                                        )
+                                      ])
+                                    : props.column.field == "title"
+                                      ? _c("span", [
+                                          _c(
+                                            "span",
+                                            {
+                                              staticClass: "hover-mouse-pointer"
+                                            },
+                                            [
+                                              _vm._v(
+                                                _vm._s(
+                                                  props.formattedRow[
+                                                    props.column.field
+                                                  ]
+                                                )
+                                              )
+                                            ]
+                                          )
+                                        ])
+                                      : props.column.field == "annotations"
+                                        ? _c("span", [
+                                            _c(
+                                              "a",
+                                              {
+                                                staticClass:
+                                                  "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                                                attrs: { href: "#" }
+                                              },
+                                              [
+                                                _c("i", {
+                                                  staticClass:
+                                                    "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                                                }),
+                                                _vm._v(" "),
+                                                _c(
+                                                  "span",
+                                                  {
+                                                    staticClass:
+                                                      "text-14 font-weight-bold"
+                                                  },
+                                                  [
+                                                    _vm._v(
+                                                      _vm._s(
+                                                        props.formattedRow[
+                                                          props.column.field
+                                                        ]
+                                                      )
+                                                    )
+                                                  ]
+                                                )
+                                              ]
+                                            )
+                                          ])
+                                        : _c("span", [
+                                            _vm._v(
+                                              "\n                               " +
+                                                _vm._s(
+                                                  props.formattedRow[
+                                                    props.column.field
+                                                  ]
+                                                ) +
+                                                "\n                              "
+                                            )
+                                          ])
                               ]
                             }
                           }
