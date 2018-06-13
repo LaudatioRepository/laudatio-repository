@@ -389,7 +389,6 @@ class ElasticService implements ElasticsearchInterface
                 'in_corpora' => $corpusId
             )
         ));
-
         $params = [
             'size' => 1,
             'index' => 'annotation',

@@ -140,7 +140,7 @@ class BrowseController extends Controller
                 $annotationMapping = array();
                 $annotationcount = 0;
                 $totalannotationcount = count($data['result']['annotation_id']);
-
+                $foundAnnotationCorpus = array();
                 foreach($data['result']['annotation_id'] as $annotationId){
                     //$annotationData = $this->ElasticService->getAnnotationByName($annotationId, array(
 
@@ -149,11 +149,12 @@ class BrowseController extends Controller
                         "preparation_encoding_annotation_group",
                         "preparation_annotation_id",
                         "_id",
-                        "in_documents"
+                        "in_documents",
+                        "in_corpora"
                     ));
 
                     if(!$annotationData['error'] && count($annotationData['result']) > 0){
-                        $foundAnnotation = array();
+
                         if(array_key_exists('preparation_encoding_annotation_group', $annotationData['result'][0]['_source'])){
                             $groups = array_unique($annotationData['result'][0]['_source']['preparation_encoding_annotation_group']);
                             foreach ($groups as $group){
@@ -168,9 +169,10 @@ class BrowseController extends Controller
                                 $dataArray['preparation_annotation_id'] = $annotationData['result'][0]['_id'];
                                 array_push($annotationMapping[$group],$dataArray);
                             }
-                            if(!in_array($annotationData['result'][0]['_id'],$foundAnnotation)){
+                            if(!in_array($annotationData['result'][0]['_source']['preparation_annotation_id'][0],$foundAnnotationCorpus)){
                                 $annotationcount++;
                             }
+                            array_push($foundAnnotationCorpus,$annotationData['result'][0]['_source']['preparation_annotation_id'][0]);
                         }
                     }
 
@@ -206,6 +208,7 @@ class BrowseController extends Controller
                     $annotationMapping = array();
                     $documentannotationcount = 0;
                     $totalannotationcount = count($data['result']['document_list_of_annotations_id']);
+                    $foundAnnotationDocument = array();
                     foreach($data['result']['document_list_of_annotations_id'] as $annotationId){
                         /*
                         $annotationData = $this->ElasticService->getAnnotationByName($annotationId, array(
@@ -223,7 +226,6 @@ class BrowseController extends Controller
                         ));
 
                         if(!$annotationData['error'] && count($annotationData['result']) > 0){
-                            $foundAnnotation = array();
                             if(array_key_exists('preparation_encoding_annotation_group', $annotationData['result'][0]['_source'])){
                                 $groups = array_unique($annotationData['result'][0]['_source']['preparation_encoding_annotation_group']);
                                 foreach ($groups as $group){
@@ -238,9 +240,10 @@ class BrowseController extends Controller
                                     $dataArray['preparation_annotation_id'] = $annotationData['result'][0]['_id'];
                                     array_push($annotationMapping[$group],$dataArray);
                                 }
-                                if(!in_array($annotationData['result'][0]['_id'],$foundAnnotation)){
+                                if(!in_array($annotationData['result'][0]['_id'],$foundAnnotationDocument)){
                                     $documentannotationcount++;
                                 }
+                                array_push($foundAnnotationDocument,$annotationData['result'][0]['_id']);
                             }
                         }
 
