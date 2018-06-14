@@ -14,7 +14,6 @@
     <link href="{{ asset('css/ux_style.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/unslider.css') }}" rel="stylesheet">
     <link href="{{ asset('css/laudatio.css') }}" rel="stylesheet">
-    <link type="text/css" rel="stylesheet" href="/sitecomments/feedback.css" />
 </head>
 
 <body>
@@ -22,17 +21,11 @@
     @include ('layouts.main_ux_nav')
     @yield('content')
     @include('layouts.main_ux_footer')
-    <div id="sc_feedback"></div>
-    <div id="sc_feedbackBanner"></div>
 </div>
 <script src="{{ asset('js/vendorscripts.js') }}"></script>
 <script src="{{ asset('js/scripts.js') }}"></script>
 <script src="{{ asset('js/browseapp.js') }}"></script>
 <script src="{{ asset('js/jq.js') }}"></script>
-<script type="text/javascript" src="/sitecomments/js/jquery-1.9.1.js"></script>
-<script type="text/javascript">var jq191 = jQuery.noConflict(true);</script>
-<script type="text/javascript" src="/sitecomments/feedback.js"></script>
-<script type="text/javascript" src="/sitecomments/feedbackBanner.js" />
 
 @if (session('openLogin'))
     //some js function that will open your hidden modal
