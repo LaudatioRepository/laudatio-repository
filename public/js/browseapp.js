@@ -52986,7 +52986,7 @@ var render = function() {
                         "a",
                         {
                           staticClass: "text-dark",
-                          attrs: { href: "/browse" }
+                          attrs: { href: "/published" }
                         },
                         [_vm._v("Published corpora")]
                       )
@@ -53448,6 +53448,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath'],
@@ -53501,7 +53504,32 @@ var render = function() {
             _vm._v(" "),
             _c("div", { staticClass: "row mt-2" }, [
               _c("div", { staticClass: "col col-auto mr-2" }, [
-                _vm._m(1),
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                  },
+                  [
+                    _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
+                    _vm._v(" "),
+                    _vm.headerdata.document_range.indexOf("-") > -1
+                      ? _c("span", [
+                          _vm._v(
+                            "\n            D. from " +
+                              _vm._s(_vm.headerdata.document_range) +
+                              "\n          "
+                          )
+                        ])
+                      : _c("span", [
+                          _vm._v(
+                            "\n            D. " +
+                              _vm._s(_vm.headerdata.document_range) +
+                              "\n          "
+                          )
+                        ])
+                  ]
+                ),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -53734,13 +53762,13 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _vm._m(2),
+                      _vm._m(1),
                       _vm._v(" "),
                       _c("br"),
                       _vm._v(" "),
-                      _vm._m(3),
+                      _vm._m(2),
                       _vm._v(" "),
-                      _vm._m(4)
+                      _vm._m(3)
                     ])
                   ])
                 : _vm._e()
@@ -53757,7 +53785,7 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-                _vm._m(5),
+                _vm._m(4),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -53865,7 +53893,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _vm._m(6)
+        _vm._m(5)
       ])
     : _vm._e()
 }
@@ -53880,23 +53908,6 @@ var staticRenderFns = [
         attrs: { src: "/images/placeholder_circle.svg", alt: "circle-image" }
       })
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-      },
-      [
-        _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
-        _vm._v(" "),
-        _c("span", [_vm._v("\n            D. from 1945 - 1950\n          ")])
-      ]
-    )
   },
   function() {
     var _vm = this

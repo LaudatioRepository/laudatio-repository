@@ -7,7 +7,7 @@
                     <a class="text-dark" href="/">Home</a>
                 </li>
                 <li class="text-12 text-uppercase breadcrumb-item">
-                    <a class="text-dark" href="/browse">Published Corpora</a>
+                    <a class="text-dark" href="/published">Published Corpora</a>
                 </li>
             </ol>
         </nav>

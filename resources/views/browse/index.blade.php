@@ -21,14 +21,14 @@
                                                     type="button" id="searchSort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 Title - Alphabetical
                                             </button>
-                                            <div class="dropdown-menu" aria-labelledby="searchSort">
-                                                <a class="dropdown-item text-14" href="#">Title - alphabetical</a>
-                                                <a class="dropdown-item text-14" href="#">Tokens - ascending</a>
-                                                <a class="dropdown-item text-14" href="#">Tokens - descending</a>
-                                                <a class="dropdown-item text-14" href="#">Corpus release - oldest</a>
-                                                <a class="dropdown-item text-14" href="#">Corpus release - newest</a>
-                                                <a class="dropdown-item text-14" href="#">Date Document - oldest</a>
-                                                <a class="dropdown-item text-14" href="#">Date Document - newest</a>
+                                            <div class="dropdown-menu" aria-labelledby="searchSort" id="pageSort">
+                                                <a class="dropdown-item text-14" href="javascript:" data-sort="alpha">Title - alphabetical</a>
+                                                <a class="dropdown-item text-14" href="javascript:" data-sort="tok_asc">Tokens - ascending</a>
+                                                <a class="dropdown-item text-14" href="javascript:"  data-sort="tok_desc">Tokens - descending</a>
+                                                <a class="dropdown-item text-14" href="javascript:"  data-sort="release_asc">Corpus release - oldest</a>
+                                                <a class="dropdown-item text-14" href="javascript:"  data-sort="release_desc">Corpus release - newest</a>
+                                                <a class="dropdown-item text-14" href="javascript:"  data-sort="document_date_asc">Date Document - oldest</a>
+                                                <a class="dropdown-item text-14" href="javascript:"  data-sort="document_date_desc">Date Document - newest</a>
                                             </div>
                                         </div>
                                     </div>
@@ -64,7 +64,11 @@
                                                             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                                                 <i class="fa fa-fw fa-clock-o mr-1"></i>
                                                                 <span>
-                                                                    D. from 1945 - 1950
+                                                                    @if(strpos($corpus['document_publication_range'],"-") !== false)
+                                                                        D. from {{$corpus['document_publication_range']}}
+                                                                    @else
+                                                                        D. {{$corpus['document_publication_range']}}
+                                                                    @endif
                                                                 </span>
                                                             </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                                                 <i class="fa fa-fw fa-globe mr-1"></i>
@@ -117,7 +121,7 @@
                                                     <div class="corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 flex-nowrap">
                                                         <i class="fa fa-fw fa-arrow-up mr-1 border-top border-dark"></i>
                                                         <span>
-                                                        2017
+                                                        {{$corpus['corpus_publication_date']}}
                                                       </span>
                                                     </div>
                                                 </div>

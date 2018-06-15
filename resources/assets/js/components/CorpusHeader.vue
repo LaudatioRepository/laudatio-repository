@@ -15,8 +15,11 @@
             <div class="col col-auto mr-2">
               <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
               <i class="fa fa-fw fa-clock-o mr-1"></i>
-              <span>
-                D. from 1945 - 1950
+              <span v-if="headerdata.document_range.indexOf('-') > -1 ">
+                D. from {{headerdata.document_range}}
+              </span>
+              <span v-else>
+                D. {{headerdata.document_range}}
               </span>
             </div>
             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">

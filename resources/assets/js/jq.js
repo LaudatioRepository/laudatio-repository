@@ -278,6 +278,13 @@ $(function(){
     /**
      * Update the perPage variable for published corpora
      */
+    $(document).on('click', '#pageSort a', function(e) {
+       console.log($(this).data('sort'));
+    });
+
+    /**
+     * Sort the the corpora
+     */
     $(document).on('change', '#pageResultButton', function(e) {
         var route = window.location
         var pageTotal =  $('#pageTotal').val();
@@ -285,7 +292,7 @@ $(function(){
         if(perPage == "all") {
             perPage = pageTotal;
         }
-        window.location = route.origin+'/browse/'+perPage;
+        window.location = route.origin+'/published/'+perPage;
     });
 
 

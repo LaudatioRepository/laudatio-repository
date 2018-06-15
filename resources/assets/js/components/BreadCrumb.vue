@@ -11,7 +11,7 @@
                     <a class="text-dark" href="/corpusprojects">Publish</a>
                 </li>
                 <li class="text-12 text-uppercase breadcrumb-item" v-else>
-                    <a class="text-dark" href="/browse">Published corpora</a>
+                    <a class="text-dark" href="/published">Published corpora</a>
                 </li>
                 <li class="text-12 text-uppercase breadcrumb-item" v-show="isloggedin"><a href="#"  class="text-dark" >Corpora</a></li>
 

@@ -7,6 +7,7 @@ use App\Custom\ElasticsearchInterface;
 use App\Custom\LaudatioUtilsInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Carbon\Carbon;
 use JavaScript;
 use Log;
 
@@ -22,7 +23,7 @@ class BrowseController extends Controller
         $this->LaudatioUtilService = $laudatioUtils;
     }
 
-    public function index($perPage = null){
+    public function index($perPage = null,$sortKriterium = null){
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
 
@@ -43,9 +44,28 @@ class BrowseController extends Controller
                     array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
                     array($corpusresponse['_source']['corpus_id'][0])
                 );
+
                 if(isset($documentResult[$corpusresponse['_source']['corpus_id'][0]])) {
                     $documentcount = count($documentResult[$corpusresponse['_source']['corpus_id'][0]]);
                 }
+
+                $document_dates = array();
+
+                for($d = 0; $d < count($documentResult[$corpusresponse['_source']['corpus_id'][0]]); $d++) {
+                    $doc = $documentResult[$corpusresponse['_source']['corpus_id'][0]][$d];
+                    array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+                }
+
+                sort($document_dates);
+
+                if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
+                    $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
+                }
+                else{
+                    $document_range = $document_dates[0];
+                }
+
+
 
                 $annotationResult = $this->ElasticService->getAnnotationByCorpus(
                     array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
@@ -66,13 +86,23 @@ class BrowseController extends Controller
                     }
 
 
+                    $corpus_publication_date = "01.01.1900";
+                    for($j = 0; $j < count($corpusresponse['_source']['corpus_publication_publication_date']); $j++) {
+                        $date =   $corpusresponse['_source']['corpus_publication_publication_date'][$j];
+                        if($date > $corpus_publication_date) {
+                            $corpus_publication_date = $date;
+                        }
+                    }
+
                     $corpusdata[$corpusresponse['_source']['corpus_id'][0]] = array(
                         'corpus_title' => $corpusresponse['_source']['corpus_title'][0],
                         'authors' => $authors,
                         'corpus_languages_language' => $corpusresponse['_source']['corpus_languages_language'][0],
                         'corpus_size_value' => $corpusresponse['_source']['corpus_size_value'][0],
+                        'corpus_publication_date' => $corpus_publication_date,
                         'corpus_encoding_project_description' => $corpusresponse['_source']['corpus_encoding_project_description'][0],
                         'document_genre' => $this->LaudatioUtilService->getDocumentGenreByCorpusId($corpusresponse['_source']['corpus_id'][0]),
+                        'document_publication_range' => $document_range,
                         'download_path' => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusresponse['_source']['corpus_id'][0]),
                         'documentcount' => $documentcount,
                         'annotationcount' => $annotationcount,
@@ -84,8 +114,28 @@ class BrowseController extends Controller
         }
 
         $collection = new Collection($corpusdata);
+
+        $kriterium = null;
+        $sortKriteria = array(
+            "alpha" => "corpus_title",
+            "tok_asc" => "corpus_size_value",
+            "tok_desc" => "corpus_size_value",
+            "release_asc" => "",
+            "release_desc" => "",
+            "document_date_asc" => "",
+            "document_date_desc" => ""
+        );
+
+        if(!isset($sortKriterium)) {
+            $kriterium = "corpus_title";
+        }
+        else{
+            $kriterium = $sortKriteria[$sortKriterium];
+        }
+
         $sortedCollection = $collection->sortBy('corpus_title');
         $sortedCollection->all();
+
         if(!isset($perPage)) {
             $perPage  = 6;
         }
@@ -109,11 +159,7 @@ class BrowseController extends Controller
 
         $currentPageSearchResults = $sortedCollection->slice(($currentPage - 1) * $perPage, $perPage)->all();
         $entries = new LengthAwarePaginator($currentPageSearchResults, count($sortedCollection), $perPage, $currentPage,['path' => LengthAwarePaginator::resolveCurrentPath()] );
-        //dd($entries->toJson());
-
-        JavaScript::put([
-            "jsoncorpusdata" => $entries
-        ]);
+        //dd($entries);
 
         return view('browse.index')
             ->with('isLoggedIn', $isLoggedIn)
@@ -155,6 +201,22 @@ class BrowseController extends Controller
                     array(array("in_corpora" => $corpusId)),
                     array($corpusId)
                 );
+
+                $document_dates = array();
+
+                for($d = 0; $d < count($documentResult[$data['result']['corpus_id'][0]]); $d++) {
+                    $doc = $documentResult[$data['result']['corpus_id'][0]][$d];
+                    array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+                }
+
+                sort($document_dates);
+
+                if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
+                    $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
+                }
+                else{
+                    $document_range = $document_dates[0];
+                }
 
                 $allDocumentsResult = $this->ElasticService->getDocumentsByDocumentId($data['result']['corpus_documents']);
                //dd($data['result']['corpus_documents']);
@@ -235,6 +297,7 @@ class BrowseController extends Controller
                 $data['result']['corpusannotationcount'] = $annotationcount;
                 $data['result']['totalcorpusannotationcount'] = $totalannotationcount;
                 $data['result']['document_genre'] = $this->LaudatioUtilService->getDocumentGenreByCorpusId($corpusId);
+                $data['result']['document_range'] = $document_range;
 
 
                 break;
