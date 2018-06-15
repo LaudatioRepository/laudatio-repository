@@ -52912,6 +52912,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid'],
@@ -52959,19 +52963,7 @@ var render = function() {
             _c("ol", { staticClass: "breadcrumb bg-transparent" }, [
               _vm._m(0),
               _vm._v(" "),
-              _vm._m(1),
-              _vm._v(" "),
-              _c(
-                "li",
-                {
-                  staticClass:
-                    "text-12 text-uppercase breadcrumb-item text-wine-trans active",
-                  attrs: { "aria-current": "page" }
-                },
-                [_vm._v("Corpus projects")]
-              ),
-              _vm._v(" "),
-              _vm.header == "corpus"
+              _vm.isloggedin
                 ? _c(
                     "li",
                     { staticClass: "text-12 text-uppercase breadcrumb-item" },
@@ -52980,6 +52972,58 @@ var render = function() {
                         "a",
                         {
                           staticClass: "text-dark",
+                          attrs: { href: "/corpusprojects" }
+                        },
+                        [_vm._v("Publish")]
+                      )
+                    ]
+                  )
+                : _c(
+                    "li",
+                    { staticClass: "text-12 text-uppercase breadcrumb-item" },
+                    [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "text-dark",
+                          attrs: { href: "/browse" }
+                        },
+                        [_vm._v("Published corpora")]
+                      )
+                    ]
+                  ),
+              _vm._v(" "),
+              _c(
+                "li",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.isloggedin,
+                      expression: "isloggedin"
+                    }
+                  ],
+                  staticClass: "text-12 text-uppercase breadcrumb-item"
+                },
+                [
+                  _c("a", { staticClass: "text-dark", attrs: { href: "#" } }, [
+                    _vm._v("Corpora")
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _vm.header == "corpus"
+                ? _c(
+                    "li",
+                    {
+                      staticClass:
+                        "text-12 text-uppercase breadcrumb-item text-wine-trans active"
+                    },
+                    [
+                      _c(
+                        "a",
+                        {
                           attrs: {
                             href: "/browse/corpus/".concat(
                               _vm.corpuselasticsearchid
@@ -53000,96 +53044,103 @@ var render = function() {
                       )
                     ]
                   )
-                : _vm._e(),
-              _vm._v(" "),
-              _vm.header == "document" &&
-              _vm.headerdata.documentCorpusdata != "undefined"
-                ? _c(
-                    "li",
-                    { staticClass: "text-12 text-uppercase breadcrumb-item" },
-                    [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "text-dark",
-                          attrs: {
-                            href: "/browse/corpus/".concat(
-                              _vm.corpuselasticsearchid
+                : _vm.header == "document" &&
+                  _vm.headerdata.documentCorpusdata != "undefined"
+                  ? _c(
+                      "li",
+                      {
+                        staticClass:
+                          "text-12 text-uppercase breadcrumb-item text-wine-trans active"
+                      },
+                      [
+                        _c(
+                          "a",
+                          {
+                            staticClass: "text-dark",
+                            attrs: {
+                              href: "/browse/corpus/".concat(
+                                _vm.corpuselasticsearchid
+                              )
+                            }
+                          },
+                          [
+                            _vm._v(
+                              _vm._s(
+                                _vm._f("touppercase")(
+                                  _vm._f("arrayToString")(
+                                    _vm.headerdata.documentCorpusdata
+                                      .corpus_title
+                                  )
+                                )
+                              )
                             )
-                          }
-                        },
-                        [
+                          ]
+                        ),
+                        _vm._v(" |  Document: "),
+                        _c("a", { attrs: { href: "" } }, [
                           _vm._v(
                             _vm._s(
                               _vm._f("touppercase")(
                                 _vm._f("arrayToString")(
-                                  _vm.headerdata.documentCorpusdata.corpus_title
+                                  _vm._f("arrayToString")(
+                                    _vm.headerdata.document_title
+                                  )
                                 )
                               )
                             )
                           )
-                        ]
-                      ),
-                      _vm._v(
-                        " |  " +
-                          _vm._s(
-                            _vm._f("touppercase")(
-                              _vm._f("arrayToString")(
-                                _vm._f("arrayToString")(
-                                  _vm.headerdata.document_title
-                                )
-                              )
-                            )
-                          )
-                      )
-                    ]
-                  )
-                : _vm._e(),
-              _vm._v(" "),
-              _vm.header == "annotation" &&
-              _vm.headerdata.annotationCorpusdata != "undefined"
-                ? _c(
-                    "li",
-                    { staticClass: "text-12 text-uppercase breadcrumb-item" },
-                    [
-                      _c(
-                        "a",
+                        ])
+                      ]
+                    )
+                  : _vm.header == "annotation" &&
+                    _vm.headerdata.annotationCorpusdata != "undefined"
+                    ? _c(
+                        "li",
                         {
-                          staticClass: "text-dark",
-                          attrs: {
-                            href: "/browse/corpus/".concat(
-                              _vm.corpuselasticsearchid
-                            )
-                          }
+                          staticClass:
+                            "text-12 text-uppercase breadcrumb-item text-wine-trans active"
                         },
                         [
-                          _vm._v(
-                            _vm._s(
-                              _vm._f("touppercase")(
-                                _vm._f("arrayToString")(
-                                  _vm.headerdata.annotationCorpusdata
-                                    .corpus_title
+                          _c(
+                            "a",
+                            {
+                              staticClass: "text-dark",
+                              attrs: {
+                                href: "/browse/corpus/".concat(
+                                  _vm.corpuselasticsearchid
+                                )
+                              }
+                            },
+                            [
+                              _vm._v(
+                                _vm._s(
+                                  _vm._f("touppercase")(
+                                    _vm._f("arrayToString")(
+                                      _vm.headerdata.annotationCorpusdata
+                                        .corpus_title
+                                    )
+                                  )
+                                )
+                              )
+                            ]
+                          ),
+                          _vm._v(" |  Annotation: "),
+                          _c("a", { attrs: { href: "" } }, [
+                            _vm._v(
+                              _vm._s(
+                                _vm._f("touppercase")(
+                                  _vm._f("arrayToString")(
+                                    _vm._f("arrayToString")(
+                                      _vm.headerdata.preparation_title
+                                    )
+                                  )
                                 )
                               )
                             )
-                          )
+                          ])
                         ]
-                      ),
-                      _vm._v(
-                        " |  " +
-                          _vm._s(
-                            _vm._f("touppercase")(
-                              _vm._f("arrayToString")(
-                                _vm._f("arrayToString")(
-                                  _vm.headerdata.preparation_title
-                                )
-                              )
-                            )
-                          )
                       )
-                    ]
-                  )
-                : _vm._e()
+                    : _vm._e()
             ])
           ]
         )
@@ -53106,18 +53157,6 @@ var staticRenderFns = [
       _c("a", { staticClass: "text-dark", attrs: { href: "/" } }, [
         _vm._v("Home")
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "text-12 text-uppercase breadcrumb-item" }, [
-      _c(
-        "a",
-        { staticClass: "text-dark", attrs: { href: "/corpusprojects" } },
-        [_vm._v("Publish")]
-      )
     ])
   }
 ]

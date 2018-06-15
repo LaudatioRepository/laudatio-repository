@@ -7,19 +7,23 @@
                 <li class="text-12 text-uppercase breadcrumb-item">
                     <a class="text-dark" href="/">Home</a>
                 </li>
-                <li class="text-12 text-uppercase breadcrumb-item">
+                <li class="text-12 text-uppercase breadcrumb-item" v-if="isloggedin">
                     <a class="text-dark" href="/corpusprojects">Publish</a>
                 </li>
-                <li class="text-12 text-uppercase breadcrumb-item text-wine-trans active" aria-current="page">Corpus projects</li>
-                <li class="text-12 text-uppercase breadcrumb-item" v-if="header == 'corpus'">
-                    <a class="text-dark" v-bind:href="('/browse/corpus/').concat(corpuselasticsearchid)">{{ headerdata.corpus_title | arrayToString | touppercase }}</a>
+                <li class="text-12 text-uppercase breadcrumb-item" v-else>
+                    <a class="text-dark" href="/browse">Published corpora</a>
                 </li>
-                 <li class="text-12 text-uppercase breadcrumb-item" v-if="header == 'document' && headerdata.documentCorpusdata  != 'undefined'">
-                    <a class="text-dark"  v-bind:href="('/browse/corpus/').concat(corpuselasticsearchid)">{{ headerdata.documentCorpusdata.corpus_title | arrayToString | touppercase}}</a> |  {{ headerdata.document_title | arrayToString | arrayToString | touppercase }}</a>
+                <li class="text-12 text-uppercase breadcrumb-item" v-show="isloggedin"><a href="#"  class="text-dark" >Corpora</a></li>
+
+                <li class="text-12 text-uppercase breadcrumb-item text-wine-trans active" v-if="header == 'corpus'">
+                    <a v-bind:href="('/browse/corpus/').concat(corpuselasticsearchid)">{{ headerdata.corpus_title | arrayToString | touppercase }}</a>
+                </li>
+                 <li class="text-12 text-uppercase breadcrumb-item text-wine-trans active" v-else-if="header == 'document' && headerdata.documentCorpusdata  != 'undefined'">
+                    <a v-bind:href="('/browse/corpus/').concat(corpuselasticsearchid)" class="text-dark">{{ headerdata.documentCorpusdata.corpus_title | arrayToString | touppercase}}</a> |  Document: <a href="">{{ headerdata.document_title | arrayToString | arrayToString | touppercase }}</a>
                 </li>
 
-                <li class="text-12 text-uppercase breadcrumb-item" v-if="header == 'annotation' && headerdata.annotationCorpusdata  != 'undefined'">
-                    <a class="text-dark"  v-bind:href="('/browse/corpus/').concat(corpuselasticsearchid)">{{ headerdata.annotationCorpusdata.corpus_title | arrayToString | touppercase}}</a> |  {{ headerdata.preparation_title | arrayToString | arrayToString | touppercase }}</a>
+                <li class="text-12 text-uppercase breadcrumb-item text-wine-trans active" v-else-if="header == 'annotation' && headerdata.annotationCorpusdata  != 'undefined'">
+                    <a  v-bind:href="('/browse/corpus/').concat(corpuselasticsearchid)" class="text-dark">{{ headerdata.annotationCorpusdata.corpus_title | arrayToString | touppercase}}</a> |  Annotation: <a href="">{{ headerdata.preparation_title | arrayToString | arrayToString | touppercase }}</a>
                 </li>
 
             </ol>

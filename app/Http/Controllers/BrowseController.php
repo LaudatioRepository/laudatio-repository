@@ -84,18 +84,21 @@ class BrowseController extends Controller
         }
 
         $collection = new Collection($corpusdata);
+        $sortedCollection = $collection->sortBy('corpus_title');
+        $sortedCollection->all();
         if(!isset($perPage)) {
             $perPage  = 6;
         }
 
         $perPageArray = array(
+            $perPage => "",
             "6" => "",
             "12" => "",
             "18" => "",
             "all" => ""
         );
 
-        if($perPage == count($collection)){
+        if($perPage == count($sortedCollection)){
             $perPageArray['all'] = "selected";
         }
         else{
@@ -104,18 +107,21 @@ class BrowseController extends Controller
 
         //dd($perPageArray);
 
-        $currentPageSearchResults = $collection->slice(($currentPage - 1) * $perPage, $perPage)->all();
-        $entries = new LengthAwarePaginator($currentPageSearchResults, count($collection), $perPage, $currentPage,['path' => LengthAwarePaginator::resolveCurrentPath()] );
-        //dd($entries);
+        $currentPageSearchResults = $sortedCollection->slice(($currentPage - 1) * $perPage, $perPage)->all();
+        $entries = new LengthAwarePaginator($currentPageSearchResults, count($sortedCollection), $perPage, $currentPage,['path' => LengthAwarePaginator::resolveCurrentPath()] );
+        //dd($entries->toJson());
 
-
+        JavaScript::put([
+            "jsoncorpusdata" => $entries
+        ]);
 
         return view('browse.index')
             ->with('isLoggedIn', $isLoggedIn)
             //->with('corpusdata',$corpusdata)
             ->with('corpusdata',$entries)
-            ->with('totalCount',count($collection))
+            ->with('totalCount',count($sortedCollection))
             ->with('perPageArray',$perPageArray)
+            ->with('perPage',$perPage)
             ->with('user',$user);
     }
 

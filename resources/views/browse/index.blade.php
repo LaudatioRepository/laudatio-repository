@@ -9,10 +9,10 @@
 
                         <div class="mt-6">
                             <div class="d-flex justify-content-between mt-7 mb-1">
-                                @if(count($corpusdata) == 0 || count($corpusdata) > 1 )
-                                    <div class="h2 font-weight-normal">{{count($corpusdata)}} published corpora</div>
+                                @if($totalCount == 0 || $totalCount > 1 )
+                                    <div class="h2 font-weight-normal">{{$totalCount}} published corpora</div>
                                  @else
-                                    <div class="h2 font-weight-normal">{{count($corpusdata)}} published corpus</div>
+                                    <div class="h2 font-weight-normal">{{$totalCount}} published corpus</div>
                                 @endif
                                 <div class="form-row ">
                                     <div class="col-auto">
@@ -95,9 +95,9 @@
                                                         </button>
                                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                             <a class="dropdown-item text-14" href="/download/tei/{{$corpus['download_path']}}">TEI-Header</a>
-                                                            <a class="dropdown-item text-14" href="#">EXCEL</a>
+                                                            <!--a class="dropdown-item text-14" href="#">EXCEL</a>
                                                             <a class="dropdown-item text-14" href="#">PAULA</a>
-                                                            <a class="dropdown-item text-14" href="#">ANNIS</a>
+                                                            <a class="dropdown-item text-14" href="#">ANNIS</a-->
                                                         </div>
                                                     </div>
                                                 </div>
@@ -143,11 +143,13 @@
                 <div class="col-auto">
                     <select class="custom-select custom-select-sm font-weight-bold text-uppercase" id="pageResultButton">
                         @foreach($perPageArray as $item => $value)
-                            @if ($value == "selected")
-                                <option value="{{$item}}" selected>{{$item}} results / page</option>
-                            @else
-                                <option value="{{$item}}"{{$item}}>{{$item}} results / page</option>
-                            @endif
+
+                                @if ($value == "selected")
+                                    <option value="{{$item}}" selected>{{$item}} results / page</option>
+                                @else
+                                    <option value="{{$item}}"{{$item}}>{{$item}} results / page</option>
+                                @endif
+
                         @endforeach
                     </select>
                 </div>
