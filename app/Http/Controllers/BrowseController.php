@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Custom\ElasticsearchInterface;
 use App\Custom\LaudatioUtilsInterface;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use JavaScript;
 use Log;
 
@@ -20,7 +22,7 @@ class BrowseController extends Controller
         $this->LaudatioUtilService = $laudatioUtils;
     }
 
-    public function index(){
+    public function index($perPage = null){
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
 
@@ -30,6 +32,9 @@ class BrowseController extends Controller
         $corpusdata = array();
         $documentcount = 0;
         $annotationcount = 0;
+
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+
         //dd($corpusresponses);
         if(count($corpusresponses['result']) > 0){
             foreach($corpusresponses['result'][0] as $corpusresponse){
@@ -60,12 +65,15 @@ class BrowseController extends Controller
                         $authors .= $corpusresponse['_source']['corpus_editor_surname'][$i].", ".$corpusresponse['_source']['corpus_editor_forename'][$i].";";
                     }
 
+
                     $corpusdata[$corpusresponse['_source']['corpus_id'][0]] = array(
                         'corpus_title' => $corpusresponse['_source']['corpus_title'][0],
                         'authors' => $authors,
                         'corpus_languages_language' => $corpusresponse['_source']['corpus_languages_language'][0],
                         'corpus_size_value' => $corpusresponse['_source']['corpus_size_value'][0],
                         'corpus_encoding_project_description' => $corpusresponse['_source']['corpus_encoding_project_description'][0],
+                        'document_genre' => $this->LaudatioUtilService->getDocumentGenreByCorpusId($corpusresponse['_source']['corpus_id'][0]),
+                        'download_path' => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusresponse['_source']['corpus_id'][0]),
                         'documentcount' => $documentcount,
                         'annotationcount' => $annotationcount,
                         'elasticid' => $corpusresponse['_id']
@@ -75,11 +83,39 @@ class BrowseController extends Controller
             }
         }
 
-        //dd($corpusdata);
+        $collection = new Collection($corpusdata);
+        if(!isset($perPage)) {
+            $perPage  = 6;
+        }
+
+        $perPageArray = array(
+            "6" => "",
+            "12" => "",
+            "18" => "",
+            "all" => ""
+        );
+
+        if($perPage == count($collection)){
+            $perPageArray['all'] = "selected";
+        }
+        else{
+            $perPageArray[$perPage] = "selected";
+        }
+
+        //dd($perPageArray);
+
+        $currentPageSearchResults = $collection->slice(($currentPage - 1) * $perPage, $perPage)->all();
+        $entries = new LengthAwarePaginator($currentPageSearchResults, count($collection), $perPage, $currentPage,['path' => LengthAwarePaginator::resolveCurrentPath()] );
+        //dd($entries);
+
+
 
         return view('browse.index')
             ->with('isLoggedIn', $isLoggedIn)
-            ->with('corpusdata',$corpusdata)
+            //->with('corpusdata',$corpusdata)
+            ->with('corpusdata',$entries)
+            ->with('totalCount',count($collection))
+            ->with('perPageArray',$perPageArray)
             ->with('user',$user);
     }
 

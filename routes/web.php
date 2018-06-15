@@ -9,12 +9,16 @@ Route::get('signin', ['as' => 'signin', 'uses' => 'Auth\LoginController@signin']
 Route::get('/', ['as' => 'frontpage', 'uses' => 'IndexController@index']);
 Route::get('/dashboard', ['as' => 'dashboard', 'uses' => 'DashboardController@index'])->middleware('auth');
 Route::get('/admin', ['as' => 'admin', 'uses' => 'AdminController@index']);
-Route::get('/browse', ['as' => 'browse', 'uses' => 'BrowseController@index']);
+Route::get('/browse/{perPage?}', ['as' => 'browse', 'uses' => 'BrowseController@index']);
 Route::get('/publish', ['as' => 'publish', 'uses' => 'IndexController@publish']);
 Route::get('/schema/{path?}',[ 'as' => 'gitRepo.route.schema', 'uses' => 'GitRepoController@listSchema'])->where('path', '.+')->middleware('auth');
 Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
 
+/*BROWSE */
+Route::get('/browse/{header}/{id}', ['as' => 'browse.showHeaders.get', 'uses' => 'BrowseController@show']);
 
+/* DOWNLOAD */
+Route::get('/download/tei/{path}', 'DownloadsController@teiDownload')->where('path', '.+');
 
 /** CORPUS PROJECTS  **/
 Route::get('/corpusprojects',[ 'as' => 'corpusProject.index', 'uses' => 'CorpusProjectController@index'])->middleware('auth');
@@ -111,8 +115,4 @@ Route::get('/admin/gitlabgroups/create',[ 'as' => 'admin.gitlab.createGroup.', '
 Route::get('/validatetei/{dirname}',['as' => 'gitRepo.validatetei.get', 'uses' => 'ValidateTEIController@validateFiles'])->where('dirname', '.+')->middleware('auth');
 
 
-/*BROWSE */
-Route::get('/browse/{header}/{id}', ['as' => 'browse.showHeaders.get', 'uses' => 'BrowseController@show']);
 
-/* DOWNLOAD */
-Route::get('/download/tei/{path}', 'DownloadsController@teiDownload')->where('path', '.+');

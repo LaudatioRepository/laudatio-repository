@@ -689,16 +689,27 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     public function getDocumentGenreByCorpusId($corpusid)
     {
+        $genre = "N/A";
+
         $corpus = Corpus::where("corpus_id",$corpusid)->get();
-        $documents = $corpus[0]->documents()->get();
-        return $documents[0]->document_genre;
+        if(isset($corpus[0])){
+            $documents = $corpus[0]->documents()->get();
+            $genre = isset($documents[0]) ? $documents[0]->document_genre : "N/A";
+        }
+
+        return $genre;
     }
 
     public function getCorpusPathByCorpusId($corpusid){
+        $corpusPath = "";
         $corpus = Corpus::where("corpus_id",$corpusid)->get();
-        $corpusprojects = $corpus[0]->corpusprojects()->get();
-        $project = $corpusprojects[0];
-        return $project->directory_path."/".$corpus[0]->directory_path;
+        if(isset($corpus[0])){
+            $corpusprojects = $corpus[0]->corpusprojects()->get();
+            $project = $corpusprojects[0];
+            $corpusPath = $project->directory_path."/".$corpus[0]->directory_path;
+        }
+
+        return $corpusPath;
     }
 
     public function deleteModels($path){

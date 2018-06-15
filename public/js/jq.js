@@ -81,6 +81,7 @@ module.exports = __webpack_require__(155);
  */
 $(function () {
 
+    //switch between header upload views
     if (typeof laudatioApp != 'undefined') {
         if (laudatioApp.corpusUpload) {
             $('#corpusUploader').css('display', 'block');
@@ -101,6 +102,7 @@ $(function () {
         }
     }
 
+    // Make sure Bootstrap tabs work correctly to show the correct active states
     if (window.location.hash) {
         var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
 
@@ -203,7 +205,6 @@ $(function () {
     /**
      * switch between file list and upload view
      */
-
     $(document).on('click', '.uploadcontrols', function () {
         var headerTypeArray = $(this).attr('id').split('_');
         var headerType = headerTypeArray[0];
@@ -329,6 +330,24 @@ $(function () {
         });
     });
 
+    /**
+     * Update the perPage variable for published corpora
+     */
+    $(document).on('change', '#pageResultButton', function (e) {
+        var route = window.location;
+        var pageTotal = $('#pageTotal').val();
+        var perPage = $(this).find(":selected").val();
+        if (perPage == "all") {
+            perPage = pageTotal;
+        }
+        window.location = route.origin + '/browse/' + perPage;
+    });
+
+    //********** BOARD MESSAGES *********//
+
+    /**
+     * Save Board Message
+     */
     $(document).on('click', '#sendMessageButton', function (e) {
         var token = $('#_token').val();
         $.ajaxSetup({
@@ -371,6 +390,9 @@ $(function () {
         });
     });
 
+    /**
+     * Assign message to user
+     */
     $(document).on('click', '#messageAssignButton', function (e) {
         var token = $('#_token').val();
         $.ajaxSetup({
@@ -411,6 +433,9 @@ $(function () {
         });
     });
 
+    /**
+     * Complete boardmessage
+     */
     $(document).on('click', '#messageCompleteButton', function (e) {
         var token = $('#_token').val();
         $.ajaxSetup({
@@ -450,6 +475,9 @@ $(function () {
         });
     });
 
+    /**
+     * Delete board message
+     */
     $(document).on('click', '#deleteMessageButton', function (e) {
         var token = $('#_token').val();
         $.ajaxSetup({
@@ -489,6 +517,12 @@ $(function () {
         });
     });
 
+    //********** PUBLICATION ***********//
+
+    /**
+     * Validate corpus for publication
+     *
+     */
     $(document).on('click', '#publishCorpusButton', function () {
         var postPublishData = {};
         postPublishData.corpusid = window.laudatioApp.corpus_id;
@@ -547,6 +581,9 @@ $(function () {
         });
     });
 
+    /**
+     * Validate Corpus For Publication
+     */
     $(document).on('click', '#validateCorpusButton', function () {
         var postData = {};
         postData.corpusid = $('#corpusid').val();

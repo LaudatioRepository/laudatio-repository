@@ -74,7 +74,7 @@
                                                             </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                                                 <i class="fa fa-fw fa-th-list  mr-1"></i>
                                                                 <span>
-                                                                    Herbology
+                                                                    {{$corpus['document_genre']}}
                                                                   </span>
                                                             </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                                                 <i class="fa fa-fw fa-cubes mr-1"></i>
@@ -94,7 +94,7 @@
                                                             Download
                                                         </button>
                                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                            <a class="dropdown-item text-14" href="#">TEI-Header</a>
+                                                            <a class="dropdown-item text-14" href="/download/tei/{{$corpus['download_path']}}">TEI-Header</a>
                                                             <a class="dropdown-item text-14" href="#">EXCEL</a>
                                                             <a class="dropdown-item text-14" href="#">PAULA</a>
                                                             <a class="dropdown-item text-14" href="#">ANNIS</a>
@@ -137,39 +137,18 @@
             </div>
         </div>
         <div class="container d-flex flex-column align-items-center justify-content-center mb-5 mt-5">
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                    </li>
-                    <li class="page-item font-weight-bold active">
-                        <a class="page-link" href="#">1</a>
-                    </li>
-                    <li class="page-item font-weight-bold">
-                        <a class="page-link" href="#">2</a>
-                    </li>
-                    <li class="page-item font-weight-bold">
-                        <a class="page-link" href="#">3</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+            {!! $corpusdata->appends(Request::capture()->except('page'))->render() !!}
+            <input type="hidden" name="pageTotal" id="pageTotal" value="{{$totalCount}}" />
             <div class="form-row">
                 <div class="col-auto">
-
-                    <select class="custom-select custom-select-sm font-weight-bold text-uppercase">
-                        <option selected>6 results / page</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
+                    <select class="custom-select custom-select-sm font-weight-bold text-uppercase" id="pageResultButton">
+                        @foreach($perPageArray as $item => $value)
+                            @if ($value == "selected")
+                                <option value="{{$item}}" selected>{{$item}} results / page</option>
+                            @else
+                                <option value="{{$item}}"{{$item}}>{{$item}} results / page</option>
+                            @endif
+                        @endforeach
                     </select>
                 </div>
             </div>
