@@ -106,8 +106,8 @@
                   </button>
                   <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item text-14" href="#">ANNIS</a>
-                    <a class="dropdown-item text-14" href="#">DARIA</a>
-                    <a class="dropdown-item text-14" href="#">CLARIN</a>
+                    <!--a class="dropdown-item text-14" href="#">DARIA</a>
+                    <a class="dropdown-item text-14" href="#">CLARIN</a-->
                   </div>
                 </div>
                 <br />

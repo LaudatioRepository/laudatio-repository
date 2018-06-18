@@ -53941,18 +53941,6 @@ var staticRenderFns = [
             "a",
             { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
             [_vm._v("ANNIS")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("DARIA")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("CLARIN")]
           )
         ]
       )

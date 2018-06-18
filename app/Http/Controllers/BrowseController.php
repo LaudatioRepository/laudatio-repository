@@ -137,7 +137,7 @@ class BrowseController extends Controller
         $sortedCollection->all();
 
         if(!isset($perPage)) {
-            $perPage  = 6;
+            $perPage  = 4;
         }
 
         $perPageArray = array(
