@@ -42,4 +42,6 @@ interface LaudatioUtilsInterface
     public function setVersionMapping($filename, $type,$isDir);
 
     public function getDirectoryPath($paths,$fileName);
+
+    public function buildCiteFormat($data,$format);
 }

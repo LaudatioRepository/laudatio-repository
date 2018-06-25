@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use GrahamCampbell\Flysystem\FlysystemManager;
 use App\Custom\LaudatioUtilsInterface;
 use Log;
+use Response;
 use Zipper;
 
 class DownloadsController extends Controller
@@ -45,5 +46,59 @@ class DownloadsController extends Controller
         $zipper->close();
         return response()->download('public/'.$uniqueName.'.zip');
     }
+
+    public function citeDownload(Request $request) {
+        $citeFormat = null;
+        $format = "";
+
+        $result = array();
+
+
+        try{
+            $data = $request->input('data');
+            $format = $request->input('format');
+            Log::info("PIIOP: ".print_r($result,1));
+
+            $result['citedata'] = $this->laudatioUtils->buildCiteFormat($data,$format);
+            $status = "success";
+        }
+        catch (\Exception $e) {
+            $status = "error";
+            $result['citedata_error_response']  = "There was a problem fetching the citation. A message has been sent to the site administrator. Please try again later";
+        }
+
+
+        $response = array(
+            'status' => $status,
+            'message' => $result,
+        );
+
+
+
+        return Response::json($response);
+
+        /*
+        $headers = [
+            'Content-Disposition' => 'attachment; filename='. $format,
+        ];
+
+
+        if($format == "txt") {
+            return response()->make($result, 200, [
+                'Content-Type' => 'text/plain',
+                'Content-Disposition' => 'attachment; filename="citation.'.$format.'"',
+            ]);
+        }
+        else {
+            return response()->make($result, 200, [
+                'Content-Type' => 'text/plain',
+                'Content-Disposition' => 'attachment; filename="citation'.$format.'"',
+            ]);
+        }
+        */
+
+    }
+
+
 
 }

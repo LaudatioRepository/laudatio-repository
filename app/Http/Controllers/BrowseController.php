@@ -181,10 +181,22 @@ class BrowseController extends Controller
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
         $corpusElasticId = null;
+        $citeData = array();
         switch ($header){
             case "corpus":
                 $apiData = $this->ElasticService->getCorpus($id);
                 $data = json_decode($apiData->getContent(), true);
+
+                $citeData['authors'] = array();
+                for($i=0;$i< count($data['result']['corpus_editor_forename']);$i++) {
+                    array_push($citeData['authors'],$data['result']['corpus_editor_forename'][$i]." ".$data['result']['corpus_editor_surname'][$i]);
+                }
+
+                $citeData['title'] = $data['result']['corpus_title'][0];
+                $citeData['version'] = $data['result']['corpus_version'][count($data['result']['corpus_version']) -1];
+                $citeData['publishing_year'] = Carbon::createFromFormat ('Y-m-d' , $data['result']['corpus_publication_publication_date'][0])->format ('Y');
+                $citeData['publishing_institution'] = $data['result']['corpus_publication_publisher'][0];
+                $citeData['published_handle'] = "";
 
                 $corpusId = is_array($data['result']['corpus_id']) ? $data['result']['corpus_id'][0]: $data['result']['corpus_id'];
                 $formatSearchResult = $this->ElasticService->getFormatsByCorpus($corpusId);
@@ -310,6 +322,18 @@ class BrowseController extends Controller
                     $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $corpusId)),array($id));
                     $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
 
+                    $citeData['authors'] = array();
+                    for($i=0;$i< count($data['result']['documentCorpusdata']['corpus_editor_forename']);$i++) {
+                        array_push($citeData['authors'],$data['result']['documentCorpusdata']['corpus_editor_forename'][$i]." ".$data['result']['documentCorpusdata']['corpus_editor_surname'][$i]);
+                    }
+
+                    $citeData['title'] = $data['result']['documentCorpusdata']['corpus_title'][0];
+                    $citeData['version'] = $data['result']['documentCorpusdata']['corpus_version'][count($data['result']['documentCorpusdata']['corpus_version']) -1];
+                    $citeData['publishing_year'] = Carbon::createFromFormat ('Y-m-d' , $data['result']['documentCorpusdata']['corpus_publication_publication_date'][0])->format ('Y');
+                    $citeData['publishing_institution'] = $data['result']['documentCorpusdata']['corpus_publication_publisher'][0];
+                    $citeData['published_handle'] = "";
+
+
                     $annotationMapping = array();
                     $documentannotationcount = 0;
                     $totalannotationcount = count($data['result']['document_list_of_annotations_id']);
@@ -378,6 +402,20 @@ class BrowseController extends Controller
 
                     $annotationCorpusdata = $this->ElasticService->getCorporaByAnnotation(array(array('corpus_id' => $corpusId)),array($id));
                     $data['result']['annotationCorpusdata'] = $annotationCorpusdata[$id][0]['_source'];
+
+                    $citeData['authors'] = array();
+                    for($i=0;$i< count($data['result']['annotationCorpusdata']['corpus_editor_forename']);$i++) {
+                        array_push($citeData['authors'],$data['result']['annotationCorpusdata']['corpus_editor_forename'][$i]." ".$data['result']['annotationCorpusdata']['corpus_editor_surname'][$i]);
+                    }
+
+                    $citeData['title'] = $data['result']['annotationCorpusdata']['corpus_title'][0];
+                    $citeData['version'] = $data['result']['annotationCorpusdata']['corpus_version'][count($data['result']['annotationCorpusdata']['corpus_version']) -1];
+                    $citeData['publishing_year'] = Carbon::createFromFormat ('Y-m-d' , $data['result']['annotationCorpusdata']['corpus_publication_publication_date'][0])->format ('Y');
+                    $citeData['publishing_institution'] = $data['result']['annotationCorpusdata']['corpus_publication_publisher'][0];
+                    $citeData['published_handle'] = "";
+
+
+
                     $guidelines = $this->ElasticService->getGuidelinesByCorpusAndAnnotationId($corpusId,$data['result']['preparation_annotation_id'][0]);
                     //dd($guidelines);
                     $formats = array();
@@ -435,6 +473,7 @@ class BrowseController extends Controller
             "corpus_id" => $this->LaudatioUtilService->getDatabaseIdByCorpusId($corpusId),
             "corpus_path" => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusId),
             "header_data" => $data,
+            "citedata" => $citeData,
             "user" => $user,
             "isLoggedIn" => $isLoggedIn
         ]);

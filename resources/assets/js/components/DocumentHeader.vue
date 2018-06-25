@@ -147,7 +147,7 @@
 
 <script>
     export default {
-        props: ['headerdata','header','user','isloggedin','corpuselasticsearchid','corpusid','corpuspath'],
+        props: ['headerdata','header','citedata','user','isloggedin','corpuselasticsearchid','corpusid','corpuspath'],
         computed: {
             concatLanguages: function(){
                 return this.headerdata.document_languages_language.join();

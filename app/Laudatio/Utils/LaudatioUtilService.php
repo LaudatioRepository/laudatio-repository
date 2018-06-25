@@ -772,4 +772,41 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         }
         return $directoryPath;
     }
+
+    public function buildCiteFormat($data,$format){
+        $cite = "";
+        $citedauthors = "";
+        $authorstring = "";
+
+        foreach ($data['authors'] as $authorData) {
+            $namearray = explode(" ", $authorData);
+            $citedauthors .= $namearray[1].",";
+            $authorstring .= $namearray[1].", ".$namearray[0].",";
+        }
+
+        $citedauthors = substr($citedauthors,0,strrpos($citedauthors,","));
+        $authorstring = substr($authorstring,0,strrpos($authorstring,","));
+        $citedauthors .= $data['publishing_year'];
+
+        switch ($format){
+            case "txt":
+                $cite .= $citedauthors."\n";
+                $cite .= $authorstring."\n";
+                $cite .= $data['title']." (Version ".$data['version'].")\n";
+                $cite .= $data['publishing_year']."\n";
+                $cite .= $data['publishing_institution']."\n";
+                $cite .= $data['published_handle']."\n";
+                break;
+            case "bibtex":
+                $cite .= "@Misc{".$citedauthors.",\n";
+                $cite .= "author \t = {".$authorstring."}, \n";
+                $cite .= "title \t = {{".$data['title']." (Version ".$data['version'].")}}, \n";
+                $cite .= "year \t = {".$data['publishing_year']."}, \n";
+                $cite .= "note \t = {".$data['publishing_institution']."}, \n";
+                $cite .= "url \t = {".$data['published_handle']."}, \n";
+                $cite .= "}";
+                break;
+        }
+        return $cite;
+    }
 }

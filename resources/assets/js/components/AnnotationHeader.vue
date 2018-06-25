@@ -148,7 +148,7 @@
 
 <script>
     export default {
-        props: ['headerdata','header','user','isloggedin','corpuselasticsearchid','corpusid','corpuspath'],
+        props: ['headerdata','header','citedata' ,'user','isloggedin','corpuselasticsearchid','corpusid','corpuspath'],
         methods: {
             annotationEditors: function(){
                 var editorString = "";

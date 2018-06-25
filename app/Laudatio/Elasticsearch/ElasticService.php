@@ -484,7 +484,7 @@ class ElasticService implements ElasticsearchInterface
                 'type' => 'corpus',
                 'body' => $queryBody,
                 //'_source_exclude' => ['message'],
-                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname"],
+                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname","corpus_version"],
                 'filter_path' => ['hits.hits']
             ];
             $results = Elasticsearch::search($params);
@@ -1302,7 +1302,7 @@ class ElasticService implements ElasticsearchInterface
             'type' => 'corpus',
             'body' => $queryBody,
             //'_source_exclude' => ['message'],
-            '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname"],
+            '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname","corpus_version"],
             'filter_path' => ['hits.hits']
         ];
         $results = Elasticsearch::search($params);

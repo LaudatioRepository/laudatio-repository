@@ -117,3 +117,4 @@ Route::get('/browse/{header}/{id}', ['as' => 'browse.showHeaders.get', 'uses' =>
 
 /* DOWNLOAD */
 Route::get('/download/tei/{path}', 'DownloadsController@teiDownload')->where('path', '.+');
+Route::post('/download/citation', 'DownloadsController@citeDownload');

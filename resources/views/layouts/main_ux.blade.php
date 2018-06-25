@@ -25,13 +25,6 @@
 <script src="{{ asset('js/vendorscripts.js') }}"></script>
 <script src="{{ asset('js/scripts.js') }}"></script>
 <script src="{{ asset('js/jq.js') }}"></script>
-@if (session('openLogin'))
-    //some js function that will open your hidden modal
-    //if you use bootstrap modal
-    <script>
-        $('#signInModal').modal('show');
-    </script>
-@endif
 </body>
 
 </html>

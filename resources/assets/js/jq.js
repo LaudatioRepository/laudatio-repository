@@ -2,7 +2,6 @@
  * Created by rolfguescini on 28.03.18.
  */
 $(function(){
-
     //switch between header upload views
     if(typeof laudatioApp != 'undefined'){
         if(laudatioApp.corpusUpload){
@@ -275,6 +274,21 @@ $(function(){
             });
     });
 
+    $(document).on('click', '#citeButton a', function(e) {
+
+        var citeFormat = $(this).data('cite-format');
+        var jsondata = window.laudatioApp.citedata;
+        var postdata = {}
+        postdata['format'] = citeFormat;
+        postdata['data'] = jsondata;
+        getCitationData(postdata).then(function (citeData) {
+            console.log(citeData);
+            console.log(window.modal)
+            $('#citeCorpusModalLabel').html(citeFormat+" Citation");
+            $('#citeCorpusModal').modal('show');
+        });
+    });
+
     /**
      * Update the perPage variable for published corpora
      */
@@ -495,14 +509,14 @@ $(function(){
         var postPublishData = {}
         postPublishData.corpusid = window.laudatioApp.corpus_id;
         postPublishData.corpuspath = window.laudatioApp.corpus_path;
-        console.log(JSON.stringify(postPublishData));
+
         getPublishTestData(postPublishData).then(function(publishData){
-            console.log(JSON.stringify(publishData))
+
             //var json = JSON.parse(publishData.msg);
             var jsonData = publishData.msg
 
             $('#publicationModalLabel').html(jsonData.title);
-
+            console.log(jQuery().jQuery)
             $('#publicationModal').modal('show');
             var html = '<div id="preparationWrapper">';
 
@@ -675,6 +689,41 @@ function getPublishTestData(postData) {
 
         $.ajax({
             url: '/api/adminapi/preparePublication',
+            type:"POST",
+            data: postData,
+            async: true,
+            statusCode: {
+                500: function () {
+                    alert("server down");
+                }
+            },
+            success: function(data) {
+                resolve(data) // Resolve promise and go to then()
+            },
+            error: function(err) {
+                reject(err) // Reject the promise and go to catch()
+            }
+        })
+    });
+}
+
+/**
+ * get Citation Data promise
+ * @param postData
+ * @returns {Promise}
+ */
+function getCitationData(postData) {
+    return new Promise(function(resolve, reject) {
+
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: '/download/citation',
             type:"POST",
             data: postData,
             async: true,

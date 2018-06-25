@@ -116,9 +116,9 @@
                     type="button" id="corpusMainActions-Choice" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     CITE
                   </button>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item text-14" href="#">PLAIN TEXT</a>
-                    <a class="dropdown-item text-14" href="#">BIBTEX</a>
+                  <div class="dropdown-menu" aria-labelledby="citeButton" id="citeButton">
+                    <a class="dropdown-item text-14" data-cite-format="txt" href="#">PLAIN TEXT</a>
+                    <a class="dropdown-item text-14" data-cite-format="bibtex"  href="#">BIBTEX</a>
                   </div>
                 </div>
                 <div class="w-100 d-flex justify-content-start align-items-center">
@@ -224,12 +224,41 @@
             </div>
           </div>
        </div>
+        <div class="modal fade bd-example-modal-sm" tabindex="-1" id="citeCorpusModal" role="dialog" aria-labelledby="citeCorpusModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+              <div class="modal-header">
+                    <h5 class="modal-title" id="citeCorpusModalLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+              </div>
+              <div class="modal-body"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="myValidatorModal" tabindex="-2" role="dialog" aria-labelledby="myModalLabelValidation">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h2 class="modal-title" id="myModalLabelValidation"></h2>
+                    </div>
+                    <div class="modal-body">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
     export default {
-        props: ['headerdata','header','user','isloggedin','corpuselasticsearchid','corpusid','corpuspath'],
+        props: ['headerdata','header','citedata','user','isloggedin','corpuselasticsearchid','corpusid','corpuspath'],
         methods: {
             corpusAuthors: function(){
                 var authorString = "";

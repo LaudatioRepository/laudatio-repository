@@ -1,11 +1,10 @@
 /**
  * Created by rolfguescini on 07.07.17.
  */
-require('./bootstrap');
+//require('./bootstrap');
 require('./filters');
 window.Vue = require('vue');
 const util = require('util');
-
 import VueGoodTable from 'vue-good-table';
 import 'vue-good-table/dist/vue-good-table.css'
 window.Vue.use(VueGoodTable);
@@ -27,6 +26,7 @@ const browseApp = new Vue({
         header: window.laudatioApp.header,
         headerid: window.laudatioApp.header_id,
         headerdata: window.laudatioApp.header_data.result,
+        citedata: window.laudatioApp.citedata,
         user: window.laudatioApp.user,
         isloggedin: window.laudatioApp.isLoggedIn,
         corpusid: window.laudatioApp.corpus_id,

@@ -60,27 +60,26 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 154);
+/******/ 	return __webpack_require__(__webpack_require__.s = 153);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 154:
+/***/ 153:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(155);
+module.exports = __webpack_require__(154);
 
 
 /***/ }),
 
-/***/ 155:
+/***/ 154:
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function($) {/**
+/* WEBPACK VAR INJECTION */(function($, __webpack_provided_window_dot_modal, jQuery) {/**
  * Created by rolfguescini on 28.03.18.
  */
 $(function () {
-
     //switch between header upload views
     if (typeof laudatioApp != 'undefined') {
         if (laudatioApp.corpusUpload) {
@@ -330,6 +329,21 @@ $(function () {
         });
     });
 
+    $(document).on('click', '#citeButton a', function (e) {
+
+        var citeFormat = $(this).data('cite-format');
+        var jsondata = window.laudatioApp.citedata;
+        var postdata = {};
+        postdata['format'] = citeFormat;
+        postdata['data'] = jsondata;
+        getCitationData(postdata).then(function (citeData) {
+            console.log(citeData);
+            console.log(__webpack_provided_window_dot_modal);
+            $('#citeCorpusModalLabel').html(citeFormat + " Citation");
+            $('#citeCorpusModal').modal('show');
+        });
+    });
+
     /**
      * Update the perPage variable for published corpora
      */
@@ -534,14 +548,14 @@ $(function () {
         var postPublishData = {};
         postPublishData.corpusid = window.laudatioApp.corpus_id;
         postPublishData.corpuspath = window.laudatioApp.corpus_path;
-        console.log(JSON.stringify(postPublishData));
+
         getPublishTestData(postPublishData).then(function (publishData) {
-            console.log(JSON.stringify(publishData));
+
             //var json = JSON.parse(publishData.msg);
             var jsonData = publishData.msg;
 
             $('#publicationModalLabel').html(jsonData.title);
-
+            console.log(jQuery().jQuery);
             $('#publicationModal').modal('show');
             var html = '<div id="preparationWrapper">';
 
@@ -726,11 +740,46 @@ function getPublishTestData(postData) {
         });
     });
 }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/**
+ * get Citation Data promise
+ * @param postData
+ * @returns {Promise}
+ */
+function getCitationData(postData) {
+    return new Promise(function (resolve, reject) {
+
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: '/download/citation',
+            type: "POST",
+            data: postData,
+            async: true,
+            statusCode: {
+                500: function _() {
+                    alert("server down");
+                }
+            },
+            success: function success(data) {
+                resolve(data); // Resolve promise and go to then()
+            },
+            error: function error(err) {
+                reject(err); // Reject the promise and go to catch()
+            }
+        });
+    });
+}
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"bootstrap/dist/modal\""); e.code = 'MODULE_NOT_FOUND'; throw e; }())), __webpack_require__(4)))
 
 /***/ }),
 
-/***/ 3:
+/***/ 4:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
