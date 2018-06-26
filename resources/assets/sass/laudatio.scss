@@ -22,6 +22,7 @@
 .fade.in {
   opacity: 1;
 }
+
 .modal.in .modal-dialog {
   -webkit-transform: translate(0, 0);
   -o-transform: translate(0, 0);
@@ -42,4 +43,9 @@
   padding: 10px;
   margin: 10px 0;
   font-weight: 500;
+}
+
+.vgt-global-search, .vgt-wrap__footer {
+  border: 1px solid #f6f3f0 !important;
+  background: linear-gradient(#f2ede6, #f6f3f0) !important;
 }
