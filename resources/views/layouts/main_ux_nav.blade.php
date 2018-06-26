@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white bsh-1 px-1 py-0">
     <div class="container">
-        <a class="navbar-brand" href="">
+        <a class="navbar-brand" href="/">
             <img src="{{ asset('images/logo-laudatio.svg') }}" alt="logo laudatio">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNavbar" aria-controls="mainNavbar"
