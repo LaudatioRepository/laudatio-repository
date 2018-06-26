@@ -43,5 +43,5 @@ interface LaudatioUtilsInterface
 
     public function getDirectoryPath($paths,$fileName);
 
-    public function buildCiteFormat($data,$format);
+    public function buildCiteFormat($data);
 }

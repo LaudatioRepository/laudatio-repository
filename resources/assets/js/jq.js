@@ -274,20 +274,66 @@ $(function(){
             });
     });
 
-    $(document).on('click', '#citeButton a', function(e) {
+    /**
+     * Get and show citation according to chosen format
+     */
 
-        var citeFormat = $(this).data('cite-format');
+    $(document).on('click', '#citeButton', function(e) {
         var jsondata = window.laudatioApp.citedata;
         var postdata = {}
-        postdata['format'] = citeFormat;
         postdata['data'] = jsondata;
         getCitationData(postdata).then(function (citeData) {
-            console.log(citeData);
-            console.log(window.modal)
-            $('#citeCorpusModalLabel').html(citeFormat+" Citation");
-            $('#citeCorpusModal').modal('show');
+            $('#citations').val(JSON.stringify(citeData.message));
+            $('#citation-text').html(citeData.message.apa);
+            $('#citation-modal').modal('show');
         });
     });
+
+    /**
+     * Set correct citation text by format
+     */
+    $(document).on('click', '#citationtabs div div a', function(e) {
+        var citationdata = JSON.parse($('#citations').val());
+        $('#citation-text').html();
+        var citation = citationdata[$(this).data('cite-format')].replace(new RegExp('\n','g'), '<br />')
+        $('#citation-text').html(citation);
+    });
+
+    /**
+     * Copy citation text to clipboard
+     */
+    $(document).on('click', '#clipboard-btn', function(e) {
+        var citationtext = document.querySelector('#citation-text');
+
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(citationtext);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        try {
+            // Now that we've selected the anchor text, execute the copy command
+            var successful = document.execCommand('copy', false, range);
+            var msg = successful ? 'The citation was copied to the clipboard' : 'There was a problem copying the citation to the clipboard';
+            $('#alert-laudatio').addClass('alert-success');
+            $('#alert-laudatio .alert-laudatio-message').html(msg)
+            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
+                $("#alert-laudatio").slideUp(500);
+            });
+        } catch(err) {
+            console.log('Oops, unable to copy');
+        }
+
+        // Remove the selections - NOTE: Should use
+        // removeRange(range) when it is supported
+        selection.removeAllRanges();
+    });
+
+
+
+
+
+
 
     /**
      * Update the perPage variable for published corpora
@@ -295,6 +341,7 @@ $(function(){
     $(document).on('click', '#pageSort a', function(e) {
        console.log($(this).data('sort'));
     });
+
 
     /**
      * Sort the the corpora

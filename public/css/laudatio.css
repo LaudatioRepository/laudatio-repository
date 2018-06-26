@@ -22,3 +22,27 @@
   cursor: hand;
 }
 
+.fade.in {
+  opacity: 1;
+}
+
+.modal.in .modal-dialog {
+  -webkit-transform: translate(0, 0);
+  transform: translate(0, 0);
+}
+
+.modal-backdrop .fade .in {
+  opacity: 0.5 !important;
+}
+
+.modal-backdrop.fade {
+  opacity: 0.5 !important;
+}
+
+#citation-text {
+  color: #0b3725;
+  padding: 10px;
+  margin: 10px 0;
+  font-weight: 500;
+}
+

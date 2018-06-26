@@ -43209,6 +43209,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'citedata', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath'],
@@ -43250,14 +43264,16 @@ var render = function() {
           _c("div", { staticClass: "col pr-5" }, [
             _c("h3", { staticClass: "h3 font-weight-bold" }, [
               _vm._v(
-                "\n       " +
+                "\n           " +
                   _vm._s(_vm._f("arrayToString")(_vm.headerdata.corpus_title)) +
-                  "\n      "
+                  "\n          "
               )
             ]),
             _vm._v(" "),
             _c("p", { staticClass: "text-wine text-14" }, [
-              _vm._v("\n        " + _vm._s(_vm.corpusAuthors()) + "\n      ")
+              _vm._v(
+                "\n            " + _vm._s(_vm.corpusAuthors()) + "\n          "
+              )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "row mt-2" }, [
@@ -43274,16 +43290,16 @@ var render = function() {
                     _vm.headerdata.document_range.indexOf("-") > -1
                       ? _c("span", [
                           _vm._v(
-                            "\n            D. from " +
+                            "\n                D. from " +
                               _vm._s(_vm.headerdata.document_range) +
-                              "\n          "
+                              "\n              "
                           )
                         ])
                       : _c("span", [
                           _vm._v(
-                            "\n            D. " +
+                            "\n                D. " +
                               _vm._s(_vm.headerdata.document_range) +
-                              "\n          "
+                              "\n              "
                           )
                         ])
                   ]
@@ -43300,9 +43316,9 @@ var render = function() {
                     _vm._v(" "),
                     _c("span", [
                       _vm._v(
-                        "\n            " +
+                        "\n                " +
                           _vm._s(_vm.headerdata.document_genre) +
-                          "\n          "
+                          "\n              "
                       )
                     ])
                   ]
@@ -43338,13 +43354,13 @@ var render = function() {
                     _vm._v(" "),
                     _c("span", [
                       _vm._v(
-                        "\n            " +
+                        "\n                " +
                           _vm._s(
                             _vm._f("arrayToString")(
                               _vm.headerdata.corpus_size_value
                             )
                           ) +
-                          " Tokens\n          "
+                          " Tokens\n              "
                       )
                     ])
                   ]
@@ -43366,13 +43382,13 @@ var render = function() {
                     _vm._v(" "),
                     _c("span", [
                       _vm._v(
-                        "\n              Working Version (" +
+                        "\n                  Working Version (" +
                           _vm._s(
                             _vm._f("lastElement")(
                               _vm.headerdata.corpus_publication_publication_date
                             )
                           ) +
-                          ")\n            "
+                          ")\n                "
                       )
                     ])
                   ]
@@ -43393,11 +43409,11 @@ var render = function() {
                 _c("span", [
                   _vm._v(
                     _vm._s(_vm.corpusAuthors()) +
-                      ";\n                            " +
+                      ";\n                                " +
                       _vm._s(
                         _vm._f("arrayToString")(_vm.headerdata.corpus_title)
                       ) +
-                      ";\n                             " +
+                      ";\n                                 " +
                       _vm._s(
                         _vm._f("arrayToString")(
                           _vm.headerdata.corpus_publication_publisher
@@ -43437,7 +43453,7 @@ var render = function() {
                       staticClass:
                         "corpus-title h6 text-uppercase text-12 text-wine-trans"
                     },
-                    [_vm._v("\n            Corpus\n          ")]
+                    [_vm._v("\n                Corpus\n              ")]
                   ),
                   _vm._v(" "),
                   _c("div", { staticClass: "card-body d-flex flex-column" }, [
@@ -43452,7 +43468,7 @@ var render = function() {
                             .concat("/edit")
                         }
                       },
-                      [_vm._v("\n              Edit\n            ")]
+                      [_vm._v("\n                  Edit\n                ")]
                     ),
                     _vm._v(" "),
                     _c(
@@ -43466,7 +43482,7 @@ var render = function() {
                           "data-target": "#publishCorpusModal"
                         }
                       },
-                      [_vm._v("\n              Publish\n            ")]
+                      [_vm._v("\n                  Publish\n                ")]
                     )
                   ])
                 ])
@@ -43478,7 +43494,7 @@ var render = function() {
                         staticClass:
                           "corpus-title h6 text-uppercase text-12 text-wine"
                       },
-                      [_vm._v("\n            Corpus\n          ")]
+                      [_vm._v("\n                Corpus\n              ")]
                     ),
                     _vm._v(" "),
                     _c("div", { staticClass: "card-body d-flex flex-column" }, [
@@ -43496,7 +43512,11 @@ var render = function() {
                               "aria-expanded": "false"
                             }
                           },
-                          [_vm._v("\n                Download\n              ")]
+                          [
+                            _vm._v(
+                              "\n                    Download\n                  "
+                            )
+                          ]
                         ),
                         _vm._v(" "),
                         _c(
@@ -43564,7 +43584,7 @@ var render = function() {
                         }
                       },
                       [
-                        _vm._v("Documents\n                        "),
+                        _vm._v("Documents\n                            "),
                         _c(
                           "div",
                           {
@@ -43615,7 +43635,7 @@ var render = function() {
                         }
                       },
                       [
-                        _vm._v("Annotations\n                        "),
+                        _vm._v("Annotations\n                            "),
                         _c(
                           "div",
                           {
@@ -43653,9 +43673,47 @@ var render = function() {
         _vm._v(" "),
         _vm._m(5),
         _vm._v(" "),
-        _vm._m(6),
-        _vm._v(" "),
-        _vm._m(7)
+        _c(
+          "div",
+          {
+            staticClass: "modal fade in",
+            attrs: {
+              id: "citation-modal",
+              tabindex: "-1",
+              role: "dialog",
+              "aria-labelledby": "citation-modal-title",
+              "aria-hidden": "true"
+            }
+          },
+          [
+            _c("div", { staticClass: "modal-dialog modal-lg" }, [
+              _c("div", { staticClass: "modal-content" }, [
+                _c("div", { staticClass: "modal-header bg-corpus-mid" }, [
+                  _c(
+                    "div",
+                    {
+                      staticClass: "h4 modal-title",
+                      attrs: { id: "citation-modal-title" }
+                    },
+                    [
+                      _vm._v(
+                        "\n                            " +
+                          _vm._s(
+                            _vm._f("arrayToString")(_vm.headerdata.corpus_title)
+                          ) +
+                          "\n\t\t\t\t\t\t"
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _vm._m(6)
+                ]),
+                _vm._v(" "),
+                _vm._m(7)
+              ])
+            ])
+          ]
+        )
       ])
     : _vm._e()
 }
@@ -43689,7 +43747,7 @@ var staticRenderFns = [
             "aria-expanded": "false"
           }
         },
-        [_vm._v("\n                OPEN IN\n              ")]
+        [_vm._v("\n                    OPEN IN\n                  ")]
       ),
       _vm._v(" "),
       _c(
@@ -43712,50 +43770,27 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "dropdown" }, [
-      _c(
-        "button",
-        {
-          staticClass:
-            " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
+    return _c(
+      "button",
+      {
+        staticClass:
+          "  w-100 btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-3",
+        attrs: {
+          id: "citeButton",
+          "data-toggle": "modal",
+          "data-target": "#citation-modal"
+        }
+      },
+      [
+        _c("img", {
           attrs: {
-            type: "button",
-            id: "corpusMainActions-Choice",
-            "data-toggle": "dropdown",
-            "aria-haspopup": "true",
-            "aria-expanded": "false"
+            src: "/images/logo-laudatio-mini.svg",
+            alt: "copyright-logo"
           }
-        },
-        [_vm._v("\n                CITE\n              ")]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "dropdown-menu",
-          attrs: { "aria-labelledby": "citeButton", id: "citeButton" }
-        },
-        [
-          _c(
-            "a",
-            {
-              staticClass: "dropdown-item text-14",
-              attrs: { "data-cite-format": "txt", href: "#" }
-            },
-            [_vm._v("PLAIN TEXT")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            {
-              staticClass: "dropdown-item text-14",
-              attrs: { "data-cite-format": "bibtex", href: "#" }
-            },
-            [_vm._v("BIBTEX")]
-          )
-        ]
-      )
-    ])
+        }),
+        _vm._v("\n                   CITE\n                ")
+      ]
+    )
   },
   function() {
     var _vm = this
@@ -43813,7 +43848,11 @@ var staticRenderFns = [
               role: "tab"
             }
           },
-          [_vm._v("\n                        CORPUS\n                    ")]
+          [
+            _vm._v(
+              "\n                            CORPUS\n                        "
+            )
+          ]
         )
       ]
     )
@@ -43864,13 +43903,13 @@ var staticRenderFns = [
                   _vm._v(" "),
                   _c("h3", { staticClass: "h3 modal-title mt-3 w-75" }, [
                     _vm._v(
-                      "\n              Publish „RIDGES Herbology, Version 9.0“\n            "
+                      "\n                  Publish „RIDGES Herbology, Version 9.0“\n                "
                     )
                   ]),
                   _vm._v(" "),
                   _c("p", { staticClass: "mt-3 mb-1" }, [
                     _vm._v(
-                      "\n              Following criteria needs to be fulfilled before you can publish a corpus: A verification is ongoing ...\n            "
+                      "\n                  Following criteria needs to be fulfilled before you can publish a corpus: A verification is ongoing ...\n                "
                     )
                   ]),
                   _vm._v(" "),
@@ -43990,7 +44029,7 @@ var staticRenderFns = [
                           "aria-label": "Close"
                         }
                       },
-                      [_vm._v("\n              Cancel\n            ")]
+                      [_vm._v("\n                  Cancel\n                ")]
                     ),
                     _vm._v(" "),
                     _c(
@@ -44004,7 +44043,7 @@ var staticRenderFns = [
                           "data-target": "#publishSuccessCorpusModal"
                         }
                       },
-                      [_vm._v("\n              Publish\n            ")]
+                      [_vm._v("\n                  Publish\n                ")]
                     )
                   ]
                 )
@@ -44020,47 +44059,20 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c(
-      "div",
+      "button",
       {
-        staticClass: "modal fade bd-example-modal-sm",
+        staticClass: "close",
         attrs: {
-          tabindex: "-1",
-          id: "citeCorpusModal",
-          role: "dialog",
-          "aria-labelledby": "citeCorpusModalLabel",
-          "aria-hidden": "true"
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
         }
       },
       [
-        _c("div", { staticClass: "modal-dialog modal-sm" }, [
-          _c("div", { staticClass: "modal-content" }, [
-            _c("div", { staticClass: "modal-header" }, [
-              _c("h5", {
-                staticClass: "modal-title",
-                attrs: { id: "citeCorpusModalLabel" }
-              }),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "close",
-                  attrs: {
-                    type: "button",
-                    "data-dismiss": "modal",
-                    "aria-label": "Close"
-                  }
-                },
-                [
-                  _c("span", { attrs: { "aria-hidden": "true" } }, [
-                    _vm._v("×")
-                  ])
-                ]
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "modal-body" })
-          ])
-        ])
+        _c("i", {
+          staticClass: "fa fa-close",
+          attrs: { "aria-hidden": "true" }
+        })
       ]
     )
   },
@@ -44068,64 +44080,145 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "modal fade",
-        attrs: {
-          id: "myValidatorModal",
-          tabindex: "-2",
-          role: "dialog",
-          "aria-labelledby": "myModalLabelValidation"
-        }
-      },
-      [
+    return _c("div", { staticClass: "modal-body" }, [
+      _c(
+        "div",
+        {
+          staticClass: "alert alert-dismissible fade show",
+          attrs: { role: "alert", id: "alert-laudatio" }
+        },
+        [
+          _c("span", { staticClass: "alert-laudatio-message" }),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "close",
+              attrs: {
+                type: "button",
+                "data-dismiss": "alert",
+                "aria-label": "Close"
+              }
+            },
+            [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "nav",
+        {
+          staticClass:
+            "navbar navbar-expand-sm navbar-light bg-transparent p-0 container",
+          attrs: { role: "tablist", id: "citationtabs" }
+        },
+        [
+          _c(
+            "div",
+            {
+              staticClass: "navbar-nav nav row w-100 px-5",
+              attrs: { "data-cite-format": "apa" }
+            },
+            [
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-2 text-center text-14 font-weight-bold active"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        " nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-toggle": "tab",
+                        role: "tab",
+                        "data-cite-format": "apa"
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                                        APA\n                                    "
+                      )
+                    ]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-auto text-center text-14 font-weight-bold"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-toggle": "tab",
+                        "data-cite-format": "bibtex",
+                        role: "tab"
+                      }
+                    },
+                    [_vm._v("BibTeX\n                                    ")]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-auto text-center text-14 font-weight-bold"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-cite-format": "txt",
+                        "data-toggle": "tab",
+                        role: "tab"
+                      }
+                    },
+                    [_vm._v("Plain text\n                                    ")]
+                  )
+                ]
+              )
+            ]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c("div", {
+        staticClass: "bg-corpus-light bsh-1",
+        attrs: { id: "citation-text" }
+      }),
+      _vm._v(" "),
+      _c("div", { staticClass: "pull-right" }, [
         _c(
-          "div",
-          { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
-          [
-            _c("div", { staticClass: "modal-content" }, [
-              _c("div", { staticClass: "modal-header" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass: "close",
-                    attrs: {
-                      type: "button",
-                      "data-dismiss": "modal",
-                      "aria-label": "Close"
-                    }
-                  },
-                  [
-                    _c("span", { attrs: { "aria-hidden": "true" } }, [
-                      _vm._v("×")
-                    ])
-                  ]
-                ),
-                _vm._v(" "),
-                _c("h2", {
-                  staticClass: "modal-title",
-                  attrs: { id: "myModalLabelValidation" }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "modal-body" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "modal-footer" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-default",
-                    attrs: { type: "button", "data-dismiss": "modal" }
-                  },
-                  [_vm._v("Close")]
-                )
-              ])
-            ])
-          ]
+          "button",
+          {
+            staticClass: "btn btn-fill btn-sm btn-neutral",
+            attrs: {
+              "data-clipboard-target": "#citation-text",
+              id: "clipboard-btn",
+              title: "Copy to Clipboard"
+            }
+          },
+          [_vm._v("Copy to Clipboard")]
         )
-      ]
-    )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "clearfix" })
+    ])
   }
 ]
 render._withStripped = true
@@ -44190,6 +44283,47 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -44814,7 +44948,51 @@ var render = function() {
               ])
             ]
           )
-        ])
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "modal fade in",
+            attrs: {
+              id: "citation-modal",
+              tabindex: "-1",
+              role: "dialog",
+              "aria-labelledby": "citation-modal-title",
+              "aria-hidden": "true"
+            }
+          },
+          [
+            _c("div", { staticClass: "modal-dialog modal-lg" }, [
+              _c("div", { staticClass: "modal-content" }, [
+                _c("div", { staticClass: "modal-header bg-corpus-mid" }, [
+                  _c(
+                    "div",
+                    {
+                      staticClass: "h4 modal-title",
+                      attrs: { id: "citation-modal-title" }
+                    },
+                    [
+                      _vm._v(
+                        "\n                      " +
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              _vm.headerdata.documentCorpusdata.corpus_title
+                            )
+                          ) +
+                          "\n                  "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _vm._m(3)
+                ]),
+                _vm._v(" "),
+                _vm._m(4)
+              ])
+            ])
+          ]
+        )
       ])
     : _vm._e()
 }
@@ -44834,50 +45012,27 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "dropdown" }, [
-      _c(
-        "button",
-        {
-          staticClass:
-            " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
+    return _c(
+      "button",
+      {
+        staticClass:
+          "  w-100 btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-3",
+        attrs: {
+          id: "citeButton",
+          "data-toggle": "modal",
+          "data-target": "#citation-modal"
+        }
+      },
+      [
+        _c("img", {
           attrs: {
-            type: "button",
-            id: "corpusMainActions-Choice",
-            "data-toggle": "dropdown",
-            "aria-haspopup": "true",
-            "aria-expanded": "false"
+            src: "/images/logo-laudatio-mini.svg",
+            alt: "copyright-logo"
           }
-        },
-        [_vm._v("\n                  CITE\n                ")]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "dropdown-menu",
-          attrs: { "aria-labelledby": "dropdownMenuButton" }
-        },
-        [
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("Menuitem 1")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("Menuitem 2")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("Menuitem 3")]
-          )
-        ]
-      )
-    ])
+        }),
+        _vm._v("\n                 CITE\n              ")
+      ]
+    )
   },
   function() {
     var _vm = this
@@ -44913,6 +45068,172 @@ var staticRenderFns = [
         })
       ]
     )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-body" }, [
+      _c(
+        "div",
+        {
+          staticClass: "alert alert-dismissible fade show",
+          attrs: { role: "alert", id: "alert-laudatio" }
+        },
+        [
+          _c("span", { staticClass: "alert-laudatio-message" }),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "close",
+              attrs: {
+                type: "button",
+                "data-dismiss": "alert",
+                "aria-label": "Close"
+              }
+            },
+            [
+              _c("i", {
+                staticClass: "fa fa-close",
+                attrs: { "aria-hidden": "true" }
+              })
+            ]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "nav",
+        {
+          staticClass:
+            "navbar navbar-expand-sm navbar-light bg-transparent p-0 container",
+          attrs: { role: "tablist", id: "citationtabs" }
+        },
+        [
+          _c(
+            "div",
+            {
+              staticClass: "navbar-nav nav row w-100 px-5",
+              attrs: { "data-cite-format": "apa" }
+            },
+            [
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-2 text-center text-14 font-weight-bold active"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        " nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-toggle": "tab",
+                        role: "tab",
+                        "data-cite-format": "apa"
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                                  APA\n                              "
+                      )
+                    ]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-auto text-center text-14 font-weight-bold"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-toggle": "tab",
+                        "data-cite-format": "bibtex",
+                        role: "tab"
+                      }
+                    },
+                    [_vm._v("BibTeX\n                              ")]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-auto text-center text-14 font-weight-bold"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-cite-format": "txt",
+                        "data-toggle": "tab",
+                        role: "tab"
+                      }
+                    },
+                    [_vm._v("Plain text\n                              ")]
+                  )
+                ]
+              )
+            ]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c("div", {
+        staticClass: "bg-corpus-light bsh-1",
+        attrs: { id: "citation-text" }
+      }),
+      _vm._v(" "),
+      _c("div", { staticClass: "pull-right" }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-fill btn-sm btn-neutral",
+            attrs: {
+              "data-clipboard-target": "#citation-text",
+              id: "clipboard-btn",
+              title: "Copy to Clipboard"
+            }
+          },
+          [_vm._v("Copy to Clipboard")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "clearfix" })
+    ])
   }
 ]
 render._withStripped = true
@@ -44977,6 +45298,47 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -45528,7 +45890,51 @@ var render = function() {
               ])
             ]
           )
-        ])
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "modal fade in",
+            attrs: {
+              id: "citation-modal",
+              tabindex: "-1",
+              role: "dialog",
+              "aria-labelledby": "citation-modal-title",
+              "aria-hidden": "true"
+            }
+          },
+          [
+            _c("div", { staticClass: "modal-dialog modal-lg" }, [
+              _c("div", { staticClass: "modal-content" }, [
+                _c("div", { staticClass: "modal-header bg-corpus-mid" }, [
+                  _c(
+                    "div",
+                    {
+                      staticClass: "h4 modal-title",
+                      attrs: { id: "citation-modal-title" }
+                    },
+                    [
+                      _vm._v(
+                        "\n                          " +
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              _vm.headerdata.annotationCorpusdata.corpus_title
+                            )
+                          ) +
+                          "\n                      "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _vm._m(5)
+                ]),
+                _vm._v(" "),
+                _vm._m(6)
+              ])
+            ])
+          ]
+        )
       ])
     : _vm._e()
 }
@@ -45548,50 +45954,27 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "dropdown" }, [
-      _c(
-        "button",
-        {
-          staticClass:
-            " w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3",
+    return _c(
+      "button",
+      {
+        staticClass:
+          "  w-100 btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-3",
+        attrs: {
+          id: "citeButton",
+          "data-toggle": "modal",
+          "data-target": "#citation-modal"
+        }
+      },
+      [
+        _c("img", {
           attrs: {
-            type: "button",
-            id: "corpusMainActions-Choice",
-            "data-toggle": "dropdown",
-            "aria-haspopup": "true",
-            "aria-expanded": "false"
+            src: "/images/logo-laudatio-mini.svg",
+            alt: "copyright-logo"
           }
-        },
-        [_vm._v("\n                  CITE\n                ")]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "dropdown-menu",
-          attrs: { "aria-labelledby": "dropdownMenuButton" }
-        },
-        [
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("Menuitem 1")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("Menuitem 2")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("Menuitem 3")]
-          )
-        ]
-      )
-    ])
+        }),
+        _vm._v("\n                 CITE\n              ")
+      ]
+    )
   },
   function() {
     var _vm = this
@@ -45677,6 +46060,172 @@ var staticRenderFns = [
         )
       ]
     )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-body" }, [
+      _c(
+        "div",
+        {
+          staticClass: "alert alert-dismissible fade show",
+          attrs: { role: "alert", id: "alert-laudatio" }
+        },
+        [
+          _c("span", { staticClass: "alert-laudatio-message" }),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "close",
+              attrs: {
+                type: "button",
+                "data-dismiss": "alert",
+                "aria-label": "Close"
+              }
+            },
+            [
+              _c("i", {
+                staticClass: "fa fa-close",
+                attrs: { "aria-hidden": "true" }
+              })
+            ]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "nav",
+        {
+          staticClass:
+            "navbar navbar-expand-sm navbar-light bg-transparent p-0 container",
+          attrs: { role: "tablist", id: "citationtabs" }
+        },
+        [
+          _c(
+            "div",
+            {
+              staticClass: "navbar-nav nav row w-100 px-5",
+              attrs: { "data-cite-format": "apa" }
+            },
+            [
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-2 text-center text-14 font-weight-bold active"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        " nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-toggle": "tab",
+                        role: "tab",
+                        "data-cite-format": "apa"
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                                      APA\n                                  "
+                      )
+                    ]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-auto text-center text-14 font-weight-bold"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-toggle": "tab",
+                        "data-cite-format": "bibtex",
+                        role: "tab"
+                      }
+                    },
+                    [_vm._v("BibTeX\n                                  ")]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-auto text-center text-14 font-weight-bold"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-cite-format": "txt",
+                        "data-toggle": "tab",
+                        role: "tab"
+                      }
+                    },
+                    [_vm._v("Plain text\n                                  ")]
+                  )
+                ]
+              )
+            ]
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c("div", {
+        staticClass: "citationtext bg-corpus-light bsh-1",
+        attrs: { id: "citation-text" }
+      }),
+      _vm._v(" "),
+      _c("div", { staticClass: "pull-right" }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-fill btn-sm btn-neutral",
+            attrs: {
+              "data-clipboard-target": "#citation-text",
+              id: "clipboard-btn",
+              title: "Copy to Clipboard"
+            }
+          },
+          [_vm._v("Copy to Clipboard")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "clearfix" })
+    ])
   }
 ]
 render._withStripped = true

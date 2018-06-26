@@ -51,15 +51,13 @@ class DownloadsController extends Controller
         $citeFormat = null;
         $format = "";
 
-        $result = array();
+        $result = null;
 
 
         try{
             $data = $request->input('data');
-            $format = $request->input('format');
-            Log::info("PIIOP: ".print_r($result,1));
-
-            $result['citedata'] = $this->laudatioUtils->buildCiteFormat($data,$format);
+            //$format = $request->input('format');
+            $result = $this->laudatioUtils->buildCiteFormat($data);
             $status = "success";
         }
         catch (\Exception $e) {
@@ -70,33 +68,10 @@ class DownloadsController extends Controller
 
         $response = array(
             'status' => $status,
-            'message' => $result,
+            'message' => $result
         );
 
-
-
         return Response::json($response);
-
-        /*
-        $headers = [
-            'Content-Disposition' => 'attachment; filename='. $format,
-        ];
-
-
-        if($format == "txt") {
-            return response()->make($result, 200, [
-                'Content-Type' => 'text/plain',
-                'Content-Disposition' => 'attachment; filename="citation.'.$format.'"',
-            ]);
-        }
-        else {
-            return response()->make($result, 200, [
-                'Content-Type' => 'text/plain',
-                'Content-Disposition' => 'attachment; filename="citation'.$format.'"',
-            ]);
-        }
-        */
-
     }
 
 

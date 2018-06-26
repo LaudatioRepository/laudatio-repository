@@ -773,7 +773,12 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $directoryPath;
     }
 
-    public function buildCiteFormat($data,$format){
+    /**
+     * buildCiteFormat creates citations for a given piece of data
+     * @param $data
+     * @return array
+     */
+    public function buildCiteFormat($data){
         $cite = "";
         $citedauthors = "";
         $authorstring = "";
@@ -788,25 +793,29 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $authorstring = substr($authorstring,0,strrpos($authorstring,","));
         $citedauthors .= $data['publishing_year'];
 
-        switch ($format){
-            case "txt":
-                $cite .= $citedauthors."\n";
-                $cite .= $authorstring."\n";
-                $cite .= $data['title']." (Version ".$data['version'].")\n";
-                $cite .= $data['publishing_year']."\n";
-                $cite .= $data['publishing_institution']."\n";
-                $cite .= $data['published_handle']."\n";
-                break;
-            case "bibtex":
-                $cite .= "@Misc{".$citedauthors.",\n";
-                $cite .= "author \t = {".$authorstring."}, \n";
-                $cite .= "title \t = {{".$data['title']." (Version ".$data['version'].")}}, \n";
-                $cite .= "year \t = {".$data['publishing_year']."}, \n";
-                $cite .= "note \t = {".$data['publishing_institution']."}, \n";
-                $cite .= "url \t = {".$data['published_handle']."}, \n";
-                $cite .= "}";
-                break;
-        }
-        return $cite;
+        $APAcite = "ABBA";
+        $BibTexcite = "";
+        $BibTexcite .= "@Misc{".$citedauthors.",\n";
+        $BibTexcite .= "\t author \t = {".$authorstring."}, \n";
+        $BibTexcite .= "\t title \t = {{".$data['title']." (Version ".$data['version'].")}}, \n";
+        $BibTexcite .= "\t year \t = {".$data['publishing_year']."}, \n";
+        $BibTexcite .= "\t note \t = {".$data['publishing_institution']."}, \n";
+        $BibTexcite .= "\t url \t = {".$data['published_handle']."}, \n";
+        $BibTexcite .= "}";
+
+        $TXTcite = "";
+        $TXTcite .= $citedauthors."\n";
+        $TXTcite .= $authorstring."\n";
+        $TXTcite .= $data['title']." (Version ".$data['version'].")\n";
+        $TXTcite .= $data['publishing_year']."\n";
+        $TXTcite .= $data['publishing_institution']."\n";
+        $TXTcite .= $data['published_handle']."\n";
+
+        $citations = array();
+        $citations['apa'] = $APAcite;
+        $citations['bibtex'] = $BibTexcite;
+        $citations['txt'] = $TXTcite;
+
+        return $citations;
     }
 }

@@ -97,17 +97,11 @@
                 <button class=" btn btn-primary font-weight-bold text-uppercase rounded mb-3 small">
                   Open in Annis
                 </button>
-                <div class="dropdown">
-                  <button class=" w-100 btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-3"
-                    type="button" id="corpusMainActions-Choice" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    CITE
-                  </button>
-                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item text-14" href="#">Menuitem 1</a>
-                    <a class="dropdown-item text-14" href="#">Menuitem 2</a>
-                    <a class="dropdown-item text-14" href="#">Menuitem 3</a>
-                  </div>
-                </div>
+                 <button id="citeButton" class="  w-100 btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-3" data-toggle="modal"
+                  data-target="#citation-modal">
+                  <img src="/images/logo-laudatio-mini.svg" alt="copyright-logo">
+                   CITE
+                </button>
                 <div class="w-100 d-flex justify-content-start align-items-center">
                   <img class="py-1" src="/images/license-cc.svg" alt="license cc" /> <img class="py-1" src="/images/license-sa.svg" alt="license sa" /> <img class="py-1" src="/images/license-by.svg" alt="license by" /> <img class="py-1" src="/images/license-nd.svg" alt="license nd" /> <img class="py-1" src="/images/license-nc.svg" alt="license nc" />
                 </div>
@@ -142,7 +136,54 @@
           </div>
        </nav>
      </div>
+    <div class="modal fade in" id="citation-modal" tabindex="-1" role="dialog" aria-labelledby="citation-modal-title" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-corpus-mid">
+                        <div class="h4 modal-title" id="citation-modal-title">
+                            {{headerdata.annotationCorpusdata.corpus_title | arrayToString}}
+                        </div>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                         </button>
+                    </div>
+                    <div class="modal-body">
+                     <div class="alert alert-dismissible fade show" role="alert" id="alert-laudatio">
+                            <span class="alert-laudatio-message"></span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <i class="fa fa-close" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <nav class="navbar navbar-expand-sm navbar-light bg-transparent p-0 container" role="tablist" id="citationtabs">
+                            <div class="navbar-nav nav row w-100 px-5" data-cite-format="apa">
+                                <div class="nav-item maintablink col-2 text-center text-14 font-weight-bold active">
+                                    <a class=" nav-link maintablink text-dark text-uppercase " data-toggle="tab" role="tab" data-cite-format="apa">
+                                        APA
+                                    </a>
+                                </div>
 
+                                 <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold">
+                                    <a class="nav-link maintablink text-dark text-uppercase " data-toggle="tab" data-cite-format="bibtex" role="tab">BibTeX
+                                    </a>
+                                </div>
+
+
+                                <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold">
+                                    <a class="nav-link maintablink text-dark text-uppercase " data-cite-format="txt" data-toggle="tab" role="tab">Plain text
+                                    </a>
+                                </div>
+                            </div>
+                        </nav>
+                        <div id="citation-text" class="citationtext bg-corpus-light bsh-1">
+                        </div>
+                        <div class="pull-right">
+                            <button class="btn btn-fill btn-sm btn-neutral" data-clipboard-target="#citation-text" id="clipboard-btn" title="Copy to Clipboard">Copy to Clipboard</button>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
   </div>
 </template>
 
