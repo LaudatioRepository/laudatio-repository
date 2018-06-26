@@ -76,7 +76,7 @@ module.exports = __webpack_require__(154);
 /***/ 154:
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function($, __webpack_provided_window_dot_modal, jQuery) {/**
+/* WEBPACK VAR INJECTION */(function($) {/**
  * Created by rolfguescini on 28.03.18.
  */
 $(function () {
@@ -338,7 +338,7 @@ $(function () {
         postdata['data'] = jsondata;
         getCitationData(postdata).then(function (citeData) {
             console.log(citeData);
-            console.log(__webpack_provided_window_dot_modal);
+            console.log(window.modal);
             $('#citeCorpusModalLabel').html(citeFormat + " Citation");
             $('#citeCorpusModal').modal('show');
         });
@@ -555,7 +555,6 @@ $(function () {
             var jsonData = publishData.msg;
 
             $('#publicationModalLabel').html(jsonData.title);
-            console.log(jQuery().jQuery);
             $('#publicationModal').modal('show');
             var html = '<div id="preparationWrapper">';
 
@@ -775,7 +774,7 @@ function getCitationData(postData) {
         });
     });
 }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"bootstrap/dist/modal\""); e.code = 'MODULE_NOT_FOUND'; throw e; }())), __webpack_require__(4)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ }),
 

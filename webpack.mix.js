@@ -1,5 +1,4 @@
 const { mix } = require('laravel-mix');
-const webpack = require('webpack');
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -12,21 +11,6 @@ const webpack = require('webpack');
  */
 
 
-mix.webpackConfig({
-    plugins: [
-        new webpack.ProvidePlugin({
-            '$': 'jquery',
-            'jQuery': 'jquery',
-            'window.jQuery': 'jquery',
-            'Popper': 'popper.js/dist/umd/popper.js',
-            'window.Popper': 'popper.js/dist/umd/popper.js',
-            'modal': 'bootstrap/dist/modal',
-            'window.modal': 'bootstrap/dist/modal',
-            'Dropzone': 'dropzone/dist/dropzone.js',
-            'window.Dropzone': 'dropzone/dist/dropzone.js'
-        }),
-    ]
-});
 /*
 mix.webpackConfig({
     plugins: [
@@ -49,15 +33,14 @@ mix.webpackConfig({
         }),
     ],
 });
-
+ */
 
 mix.autoload({
     'jquery': ['$', 'window.jQuery', "jQuery", "window.$", "jquery", "window.jquery"],
     'popper.js/dist/umd/popper.js': ['Popper', 'window.Popper'],
     'dropzone/dist/dropzone.js': ['Dropzone', 'window.Dropzone'],
-    'bootstrap/dist/modal' : ['Modal','modal','window.modal']
 });
- */
+
 mix.js('resources/assets/js/app.js', 'public/js')
     .js('resources/assets/js/jq.js', 'public/js')
     .sass('resources/assets/sass/app.scss', 'public/css')

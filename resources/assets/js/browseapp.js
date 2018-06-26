@@ -1,7 +1,7 @@
 /**
  * Created by rolfguescini on 07.07.17.
  */
-//require('./bootstrap');
+require('./bootstrap');
 require('./filters');
 window.Vue = require('vue');
 const util = require('util');

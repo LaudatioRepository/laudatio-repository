@@ -516,7 +516,6 @@ $(function(){
             var jsonData = publishData.msg
 
             $('#publicationModalLabel').html(jsonData.title);
-            console.log(jQuery().jQuery)
             $('#publicationModal').modal('show');
             var html = '<div id="preparationWrapper">';
 

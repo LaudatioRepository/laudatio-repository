@@ -31869,7 +31869,7 @@ var app = new Vue({
 /* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery) {
+/* WEBPACK VAR INJECTION */(function(__webpack_provided_window_dot_jQuery, __webpack_provided_window_dot_$) {
 window._ = __webpack_require__(38);
 
 /**
@@ -31879,7 +31879,7 @@ window._ = __webpack_require__(38);
  */
 
 try {
-  window.$ = __webpack_provided_window_dot_jQuery = __webpack_require__(4);
+  __webpack_provided_window_dot_$ = __webpack_provided_window_dot_jQuery = __webpack_require__(4);
 
   __webpack_require__(78);
 } catch (e) {}
@@ -31922,7 +31922,7 @@ if (token) {
 //     broadcaster: 'pusher',
 //     key: 'your-pusher-key'
 // });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(4)))
 
 /***/ }),
 /* 78 */
