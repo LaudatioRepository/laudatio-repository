@@ -329,7 +329,7 @@ class BrowseController extends Controller
 
                     $citeData['title'] = $data['result']['documentCorpusdata']['corpus_title'][0];
                     $citeData['version'] = $data['result']['documentCorpusdata']['corpus_version'][count($data['result']['documentCorpusdata']['corpus_version']) -1];
-                    $citeData['publishing_year'] = Carbon::createFromFormat ('Y-m-d' , $data['result']['documentCorpusdata']['corpus_publication_publication_date'][0])->format ('Y');
+                    $citeData['publishing_year'] = date('Y',strtotime($data['result']['documentCorpusdata']['corpus_publication_publication_date'][0]));//Carbon::createFromFormat ('Y-m-d' , $data['result']['documentCorpusdata']['corpus_publication_publication_date'][0])->format ('Y');
                     $citeData['publishing_institution'] = $data['result']['documentCorpusdata']['corpus_publication_publisher'][0];
                     $citeData['published_handle'] = "";
 
@@ -410,7 +410,7 @@ class BrowseController extends Controller
 
                     $citeData['title'] = $data['result']['annotationCorpusdata']['corpus_title'][0];
                     $citeData['version'] = $data['result']['annotationCorpusdata']['corpus_version'][count($data['result']['annotationCorpusdata']['corpus_version']) -1];
-                    $citeData['publishing_year'] = Carbon::createFromFormat ('Y-m-d' , $data['result']['annotationCorpusdata']['corpus_publication_publication_date'][0])->format ('Y');
+                    $citeData['publishing_year'] = date('Y',strtotime($data['result']['annotationCorpusdata']['corpus_publication_publication_date'][0]));//Carbon::createFromFormat ('Y-m-d' , $data['result']['annotationCorpusdata']['corpus_publication_publication_date'][0])->format ('Y');
                     $citeData['publishing_institution'] = $data['result']['annotationCorpusdata']['corpus_publication_publisher'][0];
                     $citeData['published_handle'] = "";
 
