@@ -792,8 +792,29 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $citedauthors = substr($citedauthors,0,strrpos($citedauthors,","));
         $authorstring = substr($authorstring,0,strrpos($authorstring,","));
         $citedauthors .= $data['publishing_year'];
+        
+        $APAcite = $namearray[1].", ".
+            substr($namearray[0],0,1).
+            ". (".$data['publishing_year']."). ".
+            $data['title']." (".$data['version']."). ".
+            $data['publishing_institution'].".".
+            "handle: ".$data['published_handle'].".";
 
-        $APAcite = "ABBA";
+
+        $CHIAGOcite = $namearray[1].", ".
+            $namearray[0].".".
+            "´".$data['title']." (".$data['version'].")´ ".
+            $data['publishing_institution'].", ".$data['publishing_year'].".".
+            "handle: ".$data['published_handle'].".";
+
+        $HARVARDcite = $namearray[1].", ".
+            substr($namearray[0],0,1).
+            ". (".$data['publishing_year']."). ".
+            "´".$data['title']." (".$data['version'].")´ ".
+            $data['publishing_institution'].
+            "handle: ". $data['published_handle'].".";
+
+
         $BibTexcite = "";
         $BibTexcite .= "@Misc{".$citedauthors.",\n";
         $BibTexcite .= "\t author \t = {".$authorstring."}, \n";
@@ -813,6 +834,8 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
         $citations = array();
         $citations['apa'] = $APAcite;
+        $citations['chicago'] = $CHIAGOcite;
+        $citations['harvard'] = $HARVARDcite;
         $citations['bibtex'] = $BibTexcite;
         $citations['txt'] = $TXTcite;
 

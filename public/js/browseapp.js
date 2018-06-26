@@ -43223,6 +43223,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'citedata', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath'],
@@ -44151,6 +44163,60 @@ var staticRenderFns = [
                 "div",
                 {
                   staticClass:
+                    "nav-item maintablink col-2 text-center text-14 font-weight-bold"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        " nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-toggle": "tab",
+                        role: "tab",
+                        "data-cite-format": "chicago"
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                                        Chicago\n                                    "
+                      )
+                    ]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-2 text-center text-14 font-weight-bold"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        " nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-toggle": "tab",
+                        role: "tab",
+                        "data-cite-format": "harvard"
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                                        Harvard\n                                    "
+                      )
+                    ]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass:
                     "nav-item maintablink col-auto text-center text-14 font-weight-bold"
                 },
                 [
@@ -44283,6 +44349,18 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -45166,6 +45244,60 @@ var staticRenderFns = [
                 "div",
                 {
                   staticClass:
+                    "nav-item maintablink col-2 text-center text-14 font-weight-bold"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        " nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-toggle": "tab",
+                        role: "tab",
+                        "data-cite-format": "chicago"
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                                      Chicago\n                                  "
+                      )
+                    ]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-2 text-center text-14 font-weight-bold"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        " nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-toggle": "tab",
+                        role: "tab",
+                        "data-cite-format": "harvard"
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                                      Harvard\n                                  "
+                      )
+                    ]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass:
                     "nav-item maintablink col-auto text-center text-14 font-weight-bold"
                 },
                 [
@@ -45298,6 +45430,18 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -46148,6 +46292,60 @@ var staticRenderFns = [
                     [
                       _vm._v(
                         "\n                                      APA\n                                  "
+                      )
+                    ]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-2 text-center text-14 font-weight-bold"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        " nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-toggle": "tab",
+                        role: "tab",
+                        "data-cite-format": "chicago"
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                                      Chicago\n                                  "
+                      )
+                    ]
+                  )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "nav-item maintablink col-2 text-center text-14 font-weight-bold"
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        " nav-link maintablink text-dark text-uppercase ",
+                      attrs: {
+                        "data-toggle": "tab",
+                        role: "tab",
+                        "data-cite-format": "harvard"
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                                      Harvard\n                                  "
                       )
                     ]
                   )

@@ -245,6 +245,18 @@
                                     </a>
                                 </div>
 
+                                <div class="nav-item maintablink col-2 text-center text-14 font-weight-bold">
+                                    <a class=" nav-link maintablink text-dark text-uppercase " data-toggle="tab" role="tab" data-cite-format="chicago">
+                                        Chicago
+                                    </a>
+                                </div>
+
+                                <div class="nav-item maintablink col-2 text-center text-14 font-weight-bold">
+                                    <a class=" nav-link maintablink text-dark text-uppercase " data-toggle="tab" role="tab" data-cite-format="harvard">
+                                        Harvard
+                                    </a>
+                                </div>
+
                                  <div class="nav-item maintablink col-auto text-center text-14 font-weight-bold">
                                     <a class="nav-link maintablink text-dark text-uppercase " data-toggle="tab" data-cite-format="bibtex" role="tab">BibTeX
                                     </a>

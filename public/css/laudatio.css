@@ -17,6 +17,7 @@
   display: none;
 }
 
+#citationtabs .maintablink,
 .hover-mouse-pointer {
   cursor: pointer;
   cursor: hand;
