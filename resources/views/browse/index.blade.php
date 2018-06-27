@@ -43,7 +43,8 @@
                                         <div class="container bg-corpus-superlight mt-3 mb-3">
                                             <div class="row d-flex flex-column p-3">
                                                 <div class="align-self-end d-flex justify-content-end align-items-center">
-                                                    <img class="py-1" src="/images/license-cc.svg" alt="license cc" /> <img class="py-1" src="/images/license-by.svg" alt="license by" />
+                                                    <img class="py-1" src="/images/license-cc.svg" alt="license cc" />
+                                                    <img class="py-1" src="/images/license-by.svg" alt="license by" />
                                                 </div>
                                             </div>
                                             <div class="row px-3">
@@ -129,8 +130,8 @@
                                             </div>
                                             <div class="row p-6">
                                                 <p class="text-14">
-                                                    {{$corpus['corpus_encoding_project_description']}}
-                                                    <a href="#">MORE</a>
+                                                    {{ StringHelper::truncate($corpus['corpus_encoding_project_description'], 300) }}
+                                                    <a href="/browse/corpus/{{$corpus['elasticid']}}">MORE</a>
                                                 </p>
                                             </div>
                                         </div>

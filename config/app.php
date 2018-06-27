@@ -249,7 +249,8 @@ return [
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
         'Avatar'    => Laravolt\Avatar\Facade::class,
-        'Zipper' => Chumper\Zipper\Zipper::class
+        'Zipper' => Chumper\Zipper\Zipper::class,
+        'StringHelper'=> App\Helpers\StringHelper::class,
 
     ],
 
