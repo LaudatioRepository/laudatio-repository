@@ -131,6 +131,17 @@ $(function(){
         });
         $(thatself).addClass('active');
     });
+    
+    $(window).on('load', function() {
+        var path = window.location.pathname.substr(1);
+
+        $.each($('a.nav-link.headerlink'),function(){
+            if($(this).hasClass(path)){
+                $(this).parent().addClass('active');
+                return false;
+            }
+        });
+    })
 
 
     /**

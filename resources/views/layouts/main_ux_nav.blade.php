@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white bsh-1 px-1 py-0">
     <div class="container">
-        <a class="navbar-brand" href="/">
+        <a class="navbar-brand homenav" href="/">
             <img src="{{ asset('images/logo-laudatio.svg') }}" alt="logo laudatio">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNavbar" aria-controls="mainNavbar"
@@ -10,17 +10,17 @@
 
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active text-14 font-weight-bold">
-                    <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('browse') }}">Published Corpora</a>
+                <li class="nav-item headerlink text-14 font-weight-bold">
+                    <a class="nav-link headerlink published px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('browse') }}">Published Corpora</a>
                 </li>
-                <li class="nav-item text-14 font-weight-bold ">
-                    <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('search') }}">Search</a>
+                <li class="nav-item headerlink  text-14 font-weight-bold ">
+                    <a class="nav-link headerlink  search  px-5 pt-4 pb-3 text-dark text-uppercase" href="#">Search</a>
                 </li>
-                <li class="nav-item text-14 font-weight-bold ">
-                    <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('corpusProject.index') }}">Publish</a>
+                <li class="nav-item headerlink  text-14 font-weight-bold ">
+                    <a class="nav-link headerlink corpusprojects  px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('corpusProject.index') }}">Publish</a>
                 </li>
-                <li class="nav-item text-14 font-weight-bold ">
-                    <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="#">Help</a>
+                <li class="nav-item headerlink help  text-14 font-weight-bold ">
+                    <a class="nav-link headerlink  px-5 pt-4 pb-3 text-dark text-uppercase" href="#">Help</a>
                 </li>
             </ul>
 
