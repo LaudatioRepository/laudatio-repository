@@ -98,7 +98,7 @@ class BrowseController extends Controller
                         'corpus_title' => $corpusresponse['_source']['corpus_title'][0],
                         'authors' => $authors,
                         'corpus_languages_language' => $corpusresponse['_source']['corpus_languages_language'][0],
-                        'corpus_size_value' => $corpusresponse['_source']['corpus_size_value'][0],
+                        'corpus_size_value' => str_replace(array(',','.'),'',$corpusresponse['_source']['corpus_size_value'][0]),
                         'corpus_publication_date' => $corpus_publication_date,
                         'corpus_encoding_project_description' => $corpusresponse['_source']['corpus_encoding_project_description'][0],
                         'document_genre' => $this->LaudatioUtilService->getDocumentGenreByCorpusId($corpusresponse['_source']['corpus_id'][0]),
@@ -114,28 +114,43 @@ class BrowseController extends Controller
         }
 
         $collection = new Collection($corpusdata);
-
+        //dd($collection);
         $kriterium = null;
         $sortKriteria = array(
-            "alpha" => "corpus_title",
-            "tok_asc" => "corpus_size_value",
-            "tok_desc" => "corpus_size_value",
-            "release_asc" => "",
-            "release_desc" => "",
-            "document_date_asc" => "",
-            "document_date_desc" => ""
+            "1" => "corpus_title",
+            "2" => "corpus_size_value",
+            "3_desc" => "corpus_size_value",
+            "4" => "corpus_publication_date",
+            "5_desc" => "corpus_publication_date",
+            "6" => "document_publication_range",
+            "7_desc" => "document_publication_range"
         );
 
         if(!isset($sortKriterium)) {
             $kriterium = "corpus_title";
         }
         else{
+            switch($sortKriterium){
+                case 3:
+                case 5:
+                case 7:
+                    $sortKriterium .= "_desc";
+                break;
+            }
             $kriterium = $sortKriteria[$sortKriterium];
         }
 
-        $sortedCollection = $collection->sortBy('corpus_title');
-        $sortedCollection->all();
+        $sortedCollection = null;
+        if(strpos($sortKriterium, "desc") !== false) {
+            $sortedCollection = $collection->sortByDesc($kriterium, SORT_NATURAL|SORT_FLAG_CASE);
+        }
+        else{
+            $sortedCollection = $collection->sortBy($kriterium,SORT_NATURAL|SORT_FLAG_CASE);
+        }
+       // dd($sortedCollection);
 
+        //$sortedCollection->all();
+        //dd($sortedCollection);
         if(!isset($perPage)) {
             $perPage  = 4;
         }
@@ -155,15 +170,12 @@ class BrowseController extends Controller
             $perPageArray[$perPage] = "selected";
         }
 
-        //dd($perPageArray);
 
         $currentPageSearchResults = $sortedCollection->slice(($currentPage - 1) * $perPage, $perPage)->all();
         $entries = new LengthAwarePaginator($currentPageSearchResults, count($sortedCollection), $perPage, $currentPage,['path' => LengthAwarePaginator::resolveCurrentPath()] );
-        //dd($entries);
 
         return view('browse.index')
             ->with('isLoggedIn', $isLoggedIn)
-            //->with('corpusdata',$corpusdata)
             ->with('corpusdata',$entries)
             ->with('totalCount',count($sortedCollection))
             ->with('perPageArray',$perPageArray)

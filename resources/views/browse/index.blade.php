@@ -22,13 +22,13 @@
                                                 Title - Alphabetical
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="searchSort" id="pageSort">
-                                                <a class="dropdown-item text-14" href="javascript:" data-sort="alpha">Title - alphabetical</a>
-                                                <a class="dropdown-item text-14" href="javascript:" data-sort="tok_asc">Tokens - ascending</a>
-                                                <a class="dropdown-item text-14" href="javascript:"  data-sort="tok_desc">Tokens - descending</a>
-                                                <a class="dropdown-item text-14" href="javascript:"  data-sort="release_asc">Corpus release - oldest</a>
-                                                <a class="dropdown-item text-14" href="javascript:"  data-sort="release_desc">Corpus release - newest</a>
-                                                <a class="dropdown-item text-14" href="javascript:"  data-sort="document_date_asc">Date Document - oldest</a>
-                                                <a class="dropdown-item text-14" href="javascript:"  data-sort="document_date_desc">Date Document - newest</a>
+                                                <a class="dropdown-item text-14" href="javascript:" data-sort="1">Title - alphabetical</a>
+                                                <a class="dropdown-item text-14" href="javascript:" data-sort="2">Tokens - ascending</a>
+                                                <a class="dropdown-item text-14" href="javascript:" data-sort="3">Tokens - descending</a>
+                                                <a class="dropdown-item text-14" href="javascript:" data-sort="4">Corpus release - oldest</a>
+                                                <a class="dropdown-item text-14" href="javascript:" data-sort="5">Corpus release - newest</a>
+                                                <a class="dropdown-item text-14" href="javascript:" data-sort="6">Date Document - oldest</a>
+                                                <a class="dropdown-item text-14" href="javascript:" data-sort="7">Date Document - newest</a>
                                             </div>
                                         </div>
                                     </div>

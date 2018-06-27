@@ -2,6 +2,42 @@
  * Created by rolfguescini on 28.03.18.
  */
 $(function(){
+
+    /**
+     * functionality to be done onb document load
+     */
+    $(window).on('load', function() {
+        var path = window.location.pathname.substr(1);
+
+        $.each($('a.nav-link.headerlink'),function(){
+            if($(this).hasClass(path)){
+                $(this).parent().addClass('active');
+                return false;
+            }
+        });
+
+        if(path.indexOf('published') > -1) {
+            var patharray = path.split('/');
+            var sortBy = patharray[2];
+
+            var sortTitle = "";
+            if(typeof sortBy != "undefined"){
+                $("a[data-sort]").each(function(){
+                    $(this).removeClass('disabled')
+                    var sortType = $(this).data('sort');
+                    if(sortType == sortBy) {
+                        sortTitle = $(this).html()
+                        $(this).addClass('disabled')
+                        return false;
+                    }
+                });
+                $('#searchSort').html(sortTitle);
+            }
+
+        }
+
+    });
+
     //switch between header upload views
     if(typeof laudatioApp != 'undefined'){
         if(laudatioApp.corpusUpload){
@@ -47,6 +83,7 @@ $(function(){
     } else {
         // Fragment doesn't exist
     }
+
 
 
 
@@ -131,17 +168,6 @@ $(function(){
         });
         $(thatself).addClass('active');
     });
-    
-    $(window).on('load', function() {
-        var path = window.location.pathname.substr(1);
-
-        $.each($('a.nav-link.headerlink'),function(){
-            if($(this).hasClass(path)){
-                $(this).parent().addClass('active');
-                return false;
-            }
-        });
-    })
 
 
     /**
@@ -341,30 +367,38 @@ $(function(){
     });
 
 
-
-
+    /**
+     * Sort the the corpora
+     */
+    $(document).on('click', '#pageSort a', function(e) {
+        var route = window.location
+        var sortby = $(this).data('sort')
+        var perPage = $('#pageResultButton').find(":selected").val();
+        window.location = route.origin+'/published/'+perPage+'/'+sortby;
+    });
 
 
 
     /**
      * Update the perPage variable for published corpora
      */
-    $(document).on('click', '#pageSort a', function(e) {
-       console.log($(this).data('sort'));
-    });
-
-
-    /**
-     * Sort the the corpora
-     */
     $(document).on('change', '#pageResultButton', function(e) {
         var route = window.location
         var pageTotal =  $('#pageTotal').val();
+        var path = route.pathname.substr(1);
+        var patharray = path.split('/');
+        var sortBy = patharray[2];
         var perPage = $(this).find(":selected").val();
         if(perPage == "all") {
             perPage = pageTotal;
         }
-        window.location = route.origin+'/published/'+perPage;
+        if(sortBy != ""){
+            window.location = route.origin+'/published/'+perPage+'/'+sortBy;
+        }
+        else {
+            window.location = route.origin+'/published/'+perPage;
+        }
+
     });
 
 
