@@ -73,7 +73,7 @@
                                 </div>
                                 <table class="table table-condensed">
                                     <tr>
-                                        <th>Title: </th>
+                                        <th>Classification: </th>
                                         <td> {{ headerdata.document_history_title  | arrayToString }} </td>
                                     </tr>
                                     <tr>
@@ -85,11 +85,11 @@
                                         <td> {{ headerdata.document_history_document_type  | arrayToString }} </td>
                                     </tr>
                                     <tr>
-                                        <th>Date: </th>
+                                        <th>Original Date: </th>
                                         <td> {{headerdata.document_history_not_before | arrayToString }} : {{ headerdata.document_history_not_after | arrayToString }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Place: </th>
+                                        <th>Original Place: </th>
                                         <td> {{ headerdata.document_history_original_place | arrayToString }} </td>
                                     </tr>
                                     <tr>
@@ -105,7 +105,7 @@
                                         <td> {{ headerdata.document_history_repo | arrayToString }} </td>
                                     </tr>
                                     <tr>
-                                        <th>Faximile: </th>
+                                        <th>Facsimile: </th>
                                         <td> {{ headerdata.document_history_faximile_link | arrayToString }} </td>
                                     </tr>
                                 </table>
@@ -113,7 +113,7 @@
 
                             <div role="tabpanel"  class="tab-pane fade" id="license" v-if="header == 'document'">
                                 <div class="d-flex justify-content-between mt-7 mb-3">
-                                    <div class="h3 font-weight-normal">LLICENSE / REVISION</div>
+                                    <div class="h3 font-weight-normal">LICENSE / REVISION</div>
                                 </div>
                                 <vue-good-table
                                 title=""

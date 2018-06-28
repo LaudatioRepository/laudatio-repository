@@ -8,7 +8,7 @@
 
                         <nav class="sidebar text-14 nav flex-column border-top border-light mt-7"  role="navigation">
                           <div class="border-bottom border-light">
-                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#corpusDescription">DESCRIPTION</a>
+                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#corpusDescription">DESCRIPTION</a>
                             <a class="font-weight-normal text-uppercase py-3 px-0 nav-link" href="#" data-target="#authorCollapse"
                               data-toggle="collapse" aria-expanded="false" aria-controls="authorCollapse">
                               Authorship</a>
@@ -35,10 +35,6 @@
                                     <div class="h3 font-weight-normal">CORPUS DESCRIPTION</div>
                                 </div>
                                 <div class="panel-body"><p class="mb-7">{{headerdata.corpus_encoding_project_description | lastElement}}</p></div>
-                            </div>
-
-                            <div role="tabpanel"  class="tab-pane fade in" id="corpusAuthorship" v-if="header == 'corpus'">
-                                docu
                             </div>
 
                             <div class="tab-pane fade" id="editors" v-if="header == 'corpus' && this.corpusEditorRows().length > 0">

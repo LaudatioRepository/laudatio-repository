@@ -46803,10 +46803,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin'],
@@ -47171,7 +47167,7 @@ var render = function() {
                               "a",
                               {
                                 staticClass:
-                                  "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active",
+                                  "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink active",
                                 attrs: {
                                   "data-toggle": "tab",
                                   role: "tab",
@@ -47364,24 +47360,6 @@ var render = function() {
                                     )
                                   ])
                                 ])
-                              ]
-                            )
-                          : _vm._e(),
-                        _vm._v(" "),
-                        _vm.header == "corpus"
-                          ? _c(
-                              "div",
-                              {
-                                staticClass: "tab-pane fade in",
-                                attrs: {
-                                  role: "tabpanel",
-                                  id: "corpusAuthorship"
-                                }
-                              },
-                              [
-                                _vm._v(
-                                  "\n                             docu\n                         "
-                                )
                               ]
                             )
                           : _vm._e(),
@@ -49253,7 +49231,7 @@ var render = function() {
                                 { staticClass: "table table-condensed" },
                                 [
                                   _c("tr", [
-                                    _c("th", [_vm._v("Title: ")]),
+                                    _c("th", [_vm._v("Classification: ")]),
                                     _vm._v(" "),
                                     _c("td", [
                                       _vm._v(
@@ -49304,7 +49282,7 @@ var render = function() {
                                   ]),
                                   _vm._v(" "),
                                   _c("tr", [
-                                    _c("th", [_vm._v("Date: ")]),
+                                    _c("th", [_vm._v("Original Date: ")]),
                                     _vm._v(" "),
                                     _c("td", [
                                       _vm._v(
@@ -49327,7 +49305,7 @@ var render = function() {
                                   ]),
                                   _vm._v(" "),
                                   _c("tr", [
-                                    _c("th", [_vm._v("Place: ")]),
+                                    _c("th", [_vm._v("Original Place: ")]),
                                     _vm._v(" "),
                                     _c("td", [
                                       _vm._v(
@@ -49397,7 +49375,7 @@ var render = function() {
                                   ]),
                                   _vm._v(" "),
                                   _c("tr", [
-                                    _c("th", [_vm._v("Faximile: ")]),
+                                    _c("th", [_vm._v("Facsimile: ")]),
                                     _vm._v(" "),
                                     _c("td", [
                                       _vm._v(
@@ -50068,7 +50046,7 @@ var staticRenderFns = [
       { staticClass: "d-flex justify-content-between mt-7 mb-3" },
       [
         _c("div", { staticClass: "h3 font-weight-normal" }, [
-          _vm._v("LLICENSE / REVISION")
+          _vm._v("LICENSE / REVISION")
         ])
       ]
     )
