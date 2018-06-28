@@ -21,7 +21,7 @@ Vue.component('metadata-block-header-annotation', require('./components/Annotati
 Vue.component('metadata-block-body-annotation', require('./components/AnnotationMetadataBlockBody.vue'));
 
 const browseApp = new Vue({
-    el: '#browseapp',
+    el: '#rootContainer',
     data: {
         header: window.laudatioApp.header,
         headerid: window.laudatioApp.header_id,

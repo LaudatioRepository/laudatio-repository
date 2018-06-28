@@ -26394,7 +26394,7 @@ Vue.component('metadata-block-header-annotation', __webpack_require__(296));
 Vue.component('metadata-block-body-annotation', __webpack_require__(299));
 
 var browseApp = new Vue({
-    el: '#browseapp',
+    el: '#rootContainer',
     data: {
         header: window.laudatioApp.header,
         headerid: window.laudatioApp.header_id,

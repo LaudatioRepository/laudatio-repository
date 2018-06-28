@@ -1,7 +1,7 @@
 @extends('layouts.admin_ux')
 
 @section('content')
-<div id="browseapp">
+<div id="rootContainer">
         <breadcrumb :headerdata="headerdata" :header="header" :user="user" :corpusid="corpusid" :corpuselasticsearchid="corpuselasticsearchid" :corpuspath="corpuspath" :isloggedin="isloggedin"></breadcrumb>
         <div class="container-fluid {{$isLoggedIn ? 'bg-bluegrey-mid' : 'bg-corpus-light'}} bsh-1">
             <corpusheader :headerdata="headerdata" :header="header" :citedata="citedata" :user="user" :corpusid="corpusid" :corpuselasticsearchid="corpuselasticsearchid"  :corpuspath="corpuspath"   :isloggedin="isloggedin" v-show="header == 'corpus'"></corpusheader>

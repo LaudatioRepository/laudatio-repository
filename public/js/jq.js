@@ -436,7 +436,7 @@ $(function () {
         var path = route.pathname.substr(1);
         var patharray = path.split('/');
         var sortBy = patharray[2];
-        console.log(sortBy);
+
         var perPage = $(this).find(":selected").val();
         if (perPage == "all") {
             perPage = pageTotal;
