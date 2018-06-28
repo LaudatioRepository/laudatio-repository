@@ -1,43 +1,42 @@
 /**
  * Created by rolfguescini on 28.03.18.
  */
-$(function(){
+/**
+ * functionality to be done onb document load
+ */
+jQuery(window).on('load', function() {
+    var path = window.location.pathname.substr(1);
 
-    /**
-     * functionality to be done onb document load
-     */
-    $(window).on('load', function() {
-        var path = window.location.pathname.substr(1);
-
-        $.each($('a.nav-link.headerlink'),function(){
-            if($(this).hasClass(path)){
-                $(this).parent().addClass('active');
-                return false;
-            }
-        });
-
-        if(path.indexOf('published') > -1) {
-            var patharray = path.split('/');
-            var sortBy = patharray[2];
-
-            var sortTitle = "";
-            if(typeof sortBy != "undefined"){
-                $("a[data-sort]").each(function(){
-                    $(this).removeClass('disabled')
-                    var sortType = $(this).data('sort');
-                    if(sortType == sortBy) {
-                        sortTitle = $(this).html()
-                        $(this).addClass('disabled')
-                        return false;
-                    }
-                });
-                $('#searchSort').html(sortTitle);
-            }
-
+    $.each($('a.nav-link.headerlink'),function(){
+        if($(this).hasClass(path)){
+            $(this).parent().addClass('active');
+            return false;
         }
-
     });
 
+    if(path.indexOf('published') > -1) {
+        var patharray = path.split('/');
+        var sortBy = patharray[2];
+
+        var sortTitle = "";
+        if(typeof sortBy != "undefined"){
+            $("a[data-sort]").each(function(){
+                $(this).removeClass('disabled')
+                var sortType = $(this).data('sort');
+                if(sortType == sortBy) {
+                    sortTitle = $(this).html()
+                    $(this).addClass('disabled')
+                    return false;
+                }
+            });
+            $('#searchSort').html(sortTitle);
+        }
+
+    }
+
+});
+
+$(function(){
     //switch between header upload views
     if(typeof laudatioApp != 'undefined'){
         if(laudatioApp.corpusUpload){
@@ -107,7 +106,7 @@ $(function(){
         if(typeof window.Laravel != 'undefined') {
             var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'))
             window.Laravel.directorypath = oldPath + '/TEI-HEADERS/corpus';
-            console.log(window.Laravel.directorypath)
+
             var previews = $('#previews').detach();
             previews.html("");
             previews.appendTo($('#tabcontainer'));
@@ -118,7 +117,7 @@ $(function(){
         if(typeof window.Laravel != 'undefined') {
             var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'))
             window.Laravel.directorypath = oldPath + '/TEI-HEADERS/document';
-            console.log(window.Laravel.directorypath)
+
             var previews = $('#previews').detach();
             previews.html("");
             previews.appendTo($('#tabcontainer'));
@@ -129,7 +128,7 @@ $(function(){
         if(typeof window.Laravel != 'undefined') {
             var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'))
             window.Laravel.directorypath = oldPath + '/TEI-HEADERS/annotation';
-            console.log(window.Laravel.directorypath)
+
             var previews = $('#previews').detach();
             previews.html("");
             previews.appendTo($('#tabcontainer'));
@@ -388,15 +387,16 @@ $(function(){
         var path = route.pathname.substr(1);
         var patharray = path.split('/');
         var sortBy = patharray[2];
+        console.log(sortBy)
         var perPage = $(this).find(":selected").val();
         if(perPage == "all") {
             perPage = pageTotal;
         }
-        if(sortBy != ""){
+        if(typeof sortBy != 'undefined'){
             window.location = route.origin+'/published/'+perPage+'/'+sortBy;
         }
         else {
-            window.location = route.origin+'/published/'+perPage;
+            window.location = route.origin+'/published/'+perPage+'/1';
         }
 
     });
