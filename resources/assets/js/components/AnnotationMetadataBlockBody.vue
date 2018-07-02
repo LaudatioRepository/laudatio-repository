@@ -17,7 +17,7 @@
                                 </div>
                                 <vue-good-table
                                   title=""
-                                  :columns="guidelineColumns"
+                                  :columns="guidelineColumnsGeneric"
                                   :rows=allGuidelineRows()
                                   :search-options="{
                                     enabled: true,
@@ -27,7 +27,7 @@
                                     perPage: 10,
                                   }"
                                   :lineNumbers="false"
-                                  styleClass="custom-table table table-corpus-mid table-striped"/>
+                                  styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped"/>
                             </div>
 
                             <div role="tabpanel"  class="tab-pane fade" v-for="(guidelinedata, guidelinekey) in headerdata.guidelines" :id="guidelinekey" v-if="header == 'annotation'">
@@ -89,7 +89,7 @@
                             </div>
                           </div>
                           <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab"   href="#preparationversions" data-headertype="annotation"  v-if="this.versionRows().length > 0">VERSIONS</a>
-                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab"  href="#preparationlicense" data-headertype="annotation"  v-if="this.licenseRows().length > 0">LICENSE / SOURCE</a>
+                          <!--a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab"  href="#preparationlicense" data-headertype="annotation"  v-if="this.licenseRows().length > 0">LICENSE / SOURCE</a-->
                           <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink active" data-toggle="tab" role="tab"  data-headertype="annotation"  href="#preparations" v-if="this.preparationRows().length > 0">Preparation</a>
                           </div>
                         </nav>
@@ -111,7 +111,7 @@
                                     perPage: 10,
                                   }"
                                   :lineNumbers="false"
-                                  styleClass="custom-table table table-corpus-mid table-striped" />
+                                  styleClass="vgt-table condensed  custom-table table table-corpus-mid table-striped" />
                             </div>
 
 
@@ -131,7 +131,7 @@
                                 perPage: 10,
                               }"
                               :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped" />
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped" />
                             </div>
 
 
@@ -154,7 +154,7 @@
                                 perPage: 10,
                               }"
                               :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped" />
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped" />
                             </div>
 
 
@@ -174,7 +174,7 @@
                                 perPage: 10,
                               }"
                               :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped" />
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped" />
                             </div>
 
 
@@ -194,7 +194,7 @@
                                 perPage: 10,
                               }"
                               :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped" />
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped" />
                             </div>
 
 
@@ -214,7 +214,7 @@
                                 perPage: 10,
                               }"
                               :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped" />
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped" />
                             </div>
 
 
@@ -234,7 +234,7 @@
                                 perPage: 10,
                               }"
                               :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped" />
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped" />
                             </div>
                         </div>
 
@@ -255,7 +255,8 @@
                                 </div>
 
                             </div>
-                                <vue-good-table
+
+                         <vue-good-table
                           :columns="documentColumns"
                           :rows=documentRows()
                           :lineNumbers="false"
@@ -267,7 +268,7 @@
                             enabled: true,
                             perPage: 10,
                           }"
-                          styleClass="custom-table documents-table table table-corpus-mid  table-striped">
+                          styleClass="vgt-table condensed custom-table documents-table table table-corpus-mid  table-striped">
                           <template slot="table-row" slot-scope="props">
                               <span v-if="props.column.field == 'place'">
                                 <i class="fa fa-fw fa-map-marker mr-1"></i> {{props.formattedRow[props.column.field]}}
@@ -288,8 +289,7 @@
                                 {{props.formattedRow[props.column.field]}}
                                </span>
                            </template>
-                    </vue-good-table>
-                            </vue-good-table>
+                        </vue-good-table>
                         </div>
                     </div>
                 </div>
@@ -312,6 +312,28 @@
                 annotators: [],
                 revisions: [],
                 documentsByAnnotation: [],
+                guidelineColumnsGeneric: [
+                    {
+                        label: 'Annotation key',
+                        field: 'title',
+                        filterable: true,
+                    },
+                    {
+                        label: 'Format',
+                        field: 'format',
+                        filterable: true,
+                    },
+                    {
+                        label: 'Annotation value',
+                        field: 'value',
+                        filterable: true,
+                    },
+                    {
+                        label: 'Description',
+                        field: 'description',
+                        filterable: true,
+                    }
+                ],
                 guidelineColumns: [
                     {
                         label: 'Annotation key',
@@ -478,6 +500,7 @@
                                 var valueObject = {}
                                 valueObject.title = annotationTitle;
                                 valueObject.value = guidelineKey;
+                                valueObject.format = formatKey;
                                 valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey]
 
                                 guidelineArray.push(valueObject);

@@ -16,55 +16,55 @@
                             <div class="d-flex justify-content-between mt-7 mb-3">
                                 <div class="h3 font-weight-normal">DESCRIPTION</div>
                             </div>
-                                <table class="table table-condensed">
-                                    <tr>
-                                        <th>Title: </th>
-                                        <td> {{  headerdata.document_title  | arrayToString }} </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Author: </th>
-                                        <td> {{  documentAuthors() }} </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Editor: </th>
-                                        <td> {{  documentEditors() }} </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Register: </th>
-                                        <td> {{  headerdata.document_genre  | arrayToString }} </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Publisher: </th>
-                                        <td> {{  documentPublisher() }} </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Place: </th>
-                                        <td> {{  headerdata.document_publication_place  | arrayToString }} </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Publication: </th>
-                                        <td> {{ publication()  }} </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Series: </th>
-                                        <td> {{ headerdata.document_publication_series | arrayToString }} </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Scope</th>
-                                        <td>{{ headerdata.document_publication_pages | arrayToString }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Document size</th>
-                                        <td>{{ headerdata.document_size_extent | arrayToString }} {{ headerdata.document_size_type | arrayToString }}</td>
-                                    </tr>
-                                 </table>
-                                <h2>Language</h2>
-                                <table class="table table-condensed">
-                                    <tr v-for="(languageData, index) in headerdata.document_languages_style">
-                                        <th>{{languageData.concat(': ')}}</th>
-                                        <td>{{headerdata.document_languages_language[index]}}</td>
-                                    </tr>
-                                </table>
+
+                            <dl class="row mb-7">
+                                <dt class="col-sm-3">Title: </dt>
+                                <dd class="col-sm-9"> {{  headerdata.document_title  | arrayToString }} </dd>
+
+
+                                <dt class="col-sm-3">Audtor: </dt>
+                                <dd class="col-sm-9"> {{  documentAuthors() }} </dd>
+
+
+                                <dt class="col-sm-3">Editor: </dt>
+                                <dd class="col-sm-9"> {{  documentEditors() }} </dd>
+
+
+                                <dt class="col-sm-3">Register: </dt>
+                                <dd class="col-sm-9"> {{  headerdata.document_genre  | arrayToString }} </dd>
+
+
+                                <dt class="col-sm-3">Publisher: </dt>
+                                <dd class="col-sm-9"> {{  documentPublisher() }} </dd>
+
+
+                                <dt class="col-sm-3">Place: </dt>
+                                <dd class="col-sm-9"> {{  headerdata.document_publication_place  | arrayToString }} </dd>
+
+
+                                <dt class="col-sm-3">Publication: </dt>
+                                <dd class="col-sm-9"> {{ publication()  }} </dd>
+
+
+                                <dt class="col-sm-3">Series: </dt>
+                                <dd class="col-sm-9"> {{ headerdata.document_publication_series | arrayToString }} </dd>
+
+
+                                <dt class="col-sm-3">Scope</dt>
+                                <dd class="col-sm-9">{{ headerdata.document_publication_pages | arrayToString }}</dd>
+
+
+                                <dt class="col-sm-3">Document size</dt>
+                                <dd class="col-sm-9">{{ headerdata.document_size_extent | arrayToString }} {{ headerdata.document_size_type | arrayToString }}</dd>
+                            </dl>
+
+
+
+                             <h2>Language</h2>
+                            <span v-for="(langObject,index) in getLanguages()" class="languageLists">
+                                <nested-list v-bind:content="langObject"></nested-list>
+                            </span>
+
                             </div>
 
                             <div role="tabpanel"  class="tab-pane fade" id="sourceDescription" v-if="header == 'document'">
@@ -238,7 +238,9 @@
     </div>
 </template>
 <script>
+    import DefinitionList from "./DefinitionList";
     export default {
+        components: {DefinitionList},
         props: ['headerdata','header','user','isloggedin'],
         data: function(){
             return {
@@ -451,6 +453,18 @@
                     lastLength = attributes[i].length;
                 }
                 return hasSameLength;
+            },
+            getLanguages: function () {
+                var languageArray = []
+                var theHeaderData = this.headerdata;
+                Object.keys(theHeaderData.document_languages_style).forEach(function(key, idx) {
+                    var languageObject = {}
+                    //languageObject['label'] = theHeaderData.document_languages_style[idx]
+                    languageObject[theHeaderData.document_languages_style[idx]] = theHeaderData.document_languages_language[idx];
+                    //languageObject['language'] = theHeaderData.document_languages_language[idx];
+                    languageArray.push(languageObject);
+                },theHeaderData.document_languages_style);
+                return languageArray;
             }
 
         },

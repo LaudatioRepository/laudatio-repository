@@ -56,7 +56,7 @@
                                 {{ headerdata.corpus_title | arrayToString }};
                                  {{ headerdata.corpus_publication_publisher | arrayToString }};</span>
               <b>Homepage: </b>
-              <a v-bind:href="(headerdata.corpus_encoding_project_homepage[0])">Link</a>
+              <a v-bind:href="headerdata.corpus_encoding_project_homepage[0]">Link</a>
               <b>Corpus-Link: </b>
               <a href="http://handle.net/xxx">Link</a>
             </div>

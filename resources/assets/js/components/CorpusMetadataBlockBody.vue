@@ -382,7 +382,7 @@
                 ],
                 annotationColumns: [
                     {
-                        label: 'Annotation title',
+                        label: 'Annotation key',
                         field: 'title',
                         filterable: true,
                     },

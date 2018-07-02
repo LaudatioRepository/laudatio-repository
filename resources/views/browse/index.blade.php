@@ -52,11 +52,11 @@
                                                     <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
                                                 </div>
                                                 <div class="col">
-                                                    <h4 class="h4 font-weight-bold">
+                                                    <div class="h4 font-weight-bold">
                                                         <a class="text-dark" href="/browse/corpus/{{$corpus['elasticid']}}">
                                                             {{$corpus['corpus_title']}}
                                                         </a>
-                                                    </h4>
+                                                    </div>
                                                     <p class="text-wine text-14">
                                                         {{$corpus['authors']}}
                                                     </p>
@@ -74,13 +74,13 @@
                                                             </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                                                 <i class="fa fa-fw fa-globe mr-1"></i>
                                                                 <span>
-                                                                    {{$corpus['corpus_languages_language']}}
+                                                                    {{ StringHelper::truncate($corpus['corpus_languages_language'], 40) }}
                                                                   </span>
                                                             </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                                                 <i class="fa fa-fw fa-th-list  mr-1"></i>
                                                                 <span>
                                                                     {{$corpus['document_genre']}}
-                                                                  </span>
+                                                                    </span>
                                                             </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                                                 <i class="fa fa-fw fa-cubes mr-1"></i>
                                                                 <span>
