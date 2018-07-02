@@ -44,7 +44,7 @@
               <div class="corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 pl-2 flex-nowrap">
                 <i class="fa fa-fw fa-arrow-up mr-1 border-top border-dark"></i>
                 <span>
-                  Working Version ({{headerdata.corpus_publication_publication_date | lastElement}})
+                  Current Version ({{headerdata.corpus_publication_publication_date | lastElement}})
                 </span>
               </div>
             </div>

@@ -22,7 +22,7 @@
                           </div>
                           <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#corpusVersions">VERSIONS</a>
                           <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="formatdata" href="#corpusLicense">LICENSE / REVISION</a>
-                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="license" href="#corpusFormats">FORMATS</a>
+                          <!-- a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="license" href="#corpusFormats">FORMATS</a-->
                           </div>
                         </nav>
                     </div>
@@ -35,6 +35,13 @@
                                     <div class="h3 font-weight-normal">CORPUS DESCRIPTION</div>
                                 </div>
                                 <div class="panel-body"><p class="mb-7">{{headerdata.corpus_encoding_project_description | lastElement}}</p></div>
+                                <div class="d-flex justify-content-between mt-7 mb-3">
+                                    <div class="h3 font-weight-normal">CORPUS FORMATS</div>
+                                </div>
+                                <ul>
+                                <li v-for="format in getFormats()" v-bind:format="format">{{format.format}}</li>
+                                </ul>
+</ul>
                             </div>
 
                             <div class="tab-pane fade" id="editors" v-if="header == 'corpus' && this.corpusEditorRows().length > 0">
@@ -131,7 +138,7 @@
                                 {{headerdata.corpus_publication_license_description  | arrayToString }}
                             </div>
 
-                            <div role="tabpanel"  class="tab-pane fade in" id="corpusFormats" v-if="header == 'corpus'">
+                            <!--div role="tabpanel"  class="tab-pane fade in" id="corpusFormats" v-if="header == 'corpus'">
                                 <div class="d-flex justify-content-between mt-7 mb-3">
                                     <div class="h3 font-weight-normal">FORMATS</div>
                                 </div>
@@ -147,7 +154,7 @@
                                   }"
                                   :lineNumbers="false"
                                   styleClass="custom-table table table-corpus-mid table-striped"/>
-                            </div>
+                            </div-->
 
                         </div>
                     </div>

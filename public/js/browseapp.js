@@ -43765,7 +43765,7 @@ var render = function() {
                     _vm._v(" "),
                     _c("span", [
                       _vm._v(
-                        "\n                  Working Version (" +
+                        "\n                  Current Version (" +
                           _vm._s(
                             _vm._f("lastElement")(
                               _vm.headerdata.corpus_publication_publication_date
@@ -47191,6 +47191,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin'],
@@ -47581,7 +47588,7 @@ var render = function() {
                               },
                               [
                                 _vm._v(
-                                  "\n                           Authorship"
+                                  "\n                              Authorship"
                                 )
                               ]
                             ),
@@ -47693,21 +47700,6 @@ var render = function() {
                                 }
                               },
                               [_vm._v("LICENSE / REVISION")]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "a",
-                              {
-                                staticClass:
-                                  "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink",
-                                attrs: {
-                                  "data-toggle": "tab",
-                                  role: "tab",
-                                  "data-headertype": "license",
-                                  href: "#corpusFormats"
-                                }
-                              },
-                              [_vm._v("FORMATS")]
                             )
                           ]
                         )
@@ -47747,7 +47739,20 @@ var render = function() {
                                       )
                                     )
                                   ])
-                                ])
+                                ]),
+                                _vm._v(" "),
+                                _vm._m(1),
+                                _vm._v(" "),
+                                _c(
+                                  "ul",
+                                  _vm._l(_vm.getFormats(), function(format) {
+                                    return _c(
+                                      "li",
+                                      { attrs: { format: format } },
+                                      [_vm._v(_vm._s(format.format))]
+                                    )
+                                  })
+                                )
                               ]
                             )
                           : _vm._e(),
@@ -47761,7 +47766,7 @@ var render = function() {
                                 attrs: { id: "editors" }
                               },
                               [
-                                _vm._m(1),
+                                _vm._m(2),
                                 _vm._v(" "),
                                 _c("vue-good-table", {
                                   attrs: {
@@ -47793,7 +47798,7 @@ var render = function() {
                                 attrs: { id: "annotators" }
                               },
                               [
-                                _vm._m(2),
+                                _vm._m(3),
                                 _vm._v(" "),
                                 _c("vue-good-table", {
                                   attrs: {
@@ -47825,7 +47830,7 @@ var render = function() {
                                 attrs: { id: "transcription" }
                               },
                               [
-                                _vm._m(3),
+                                _vm._m(4),
                                 _vm._v(" "),
                                 _c("vue-good-table", {
                                   attrs: {
@@ -47857,7 +47862,7 @@ var render = function() {
                                 attrs: { id: "infrastructure" }
                               },
                               [
-                                _vm._m(4),
+                                _vm._m(5),
                                 _vm._v(" "),
                                 _c("vue-good-table", {
                                   attrs: {
@@ -47891,7 +47896,7 @@ var render = function() {
                                 }
                               },
                               [
-                                _vm._m(5),
+                                _vm._m(6),
                                 _vm._v(" "),
                                 _c("vue-good-table", {
                                   attrs: {
@@ -47923,47 +47928,16 @@ var render = function() {
                               },
                               [
                                 _vm._v(
-                                  "\n                             " +
+                                  "\n                                " +
                                     _vm._s(
                                       _vm._f("arrayToString")(
                                         _vm.headerdata
                                           .corpus_publication_license_description
                                       )
                                     ) +
-                                    "\n                         "
+                                    "\n                            "
                                 )
                               ]
-                            )
-                          : _vm._e(),
-                        _vm._v(" "),
-                        _vm.header == "corpus"
-                          ? _c(
-                              "div",
-                              {
-                                staticClass: "tab-pane fade in",
-                                attrs: { role: "tabpanel", id: "corpusFormats" }
-                              },
-                              [
-                                _vm._m(6),
-                                _vm._v(" "),
-                                _c("vue-good-table", {
-                                  attrs: {
-                                    title: "",
-                                    columns: _vm.formatColumns,
-                                    rows: _vm.getFormats(),
-                                    "search-options": {
-                                      enabled: true
-                                    },
-                                    "pagination-options": {
-                                      enabled: false
-                                    },
-                                    lineNumbers: false,
-                                    styleClass:
-                                      "custom-table table table-corpus-mid table-striped"
-                                  }
-                                })
-                              ],
-                              1
                             )
                           : _vm._e()
                       ]
@@ -48025,7 +47999,7 @@ var render = function() {
                                                 props.column.field
                                               ]
                                             ) +
-                                            "\n                           "
+                                            "\n                              "
                                         )
                                       ])
                                     : props.column.field == "date"
@@ -48041,7 +48015,7 @@ var render = function() {
                                                   props.column.field
                                                 ]
                                               ) +
-                                              "\n                           "
+                                              "\n                              "
                                           )
                                         ])
                                       : props.column.field == "title"
@@ -48099,13 +48073,13 @@ var render = function() {
                                             ])
                                           : _c("span", [
                                               _vm._v(
-                                                "\n                             " +
+                                                "\n                                " +
                                                   _vm._s(
                                                     props.formattedRow[
                                                       props.column.field
                                                     ]
                                                   ) +
-                                                  "\n                            "
+                                                  "\n                               "
                                               )
                                             ])
                                 ]
@@ -48387,7 +48361,7 @@ var render = function() {
                                                       ])
                                                     : _c("span", [
                                                         _vm._v(
-                                                          "\n                                 " +
+                                                          "\n                                    " +
                                                             _vm._s(
                                                               props
                                                                 .formattedRow[
@@ -48395,7 +48369,7 @@ var render = function() {
                                                                   .field
                                                               ]
                                                             ) +
-                                                            "\n                                 "
+                                                            "\n                                    "
                                                         )
                                                       ])
                                           ]
@@ -48586,7 +48560,7 @@ var render = function() {
                                                         ])
                                                       : _c("span", [
                                                           _vm._v(
-                                                            "\n                                 " +
+                                                            "\n                                    " +
                                                               _vm._s(
                                                                 props
                                                                   .formattedRow[
@@ -48594,7 +48568,7 @@ var render = function() {
                                                                     .field
                                                                 ]
                                                               ) +
-                                                              "\n                                 "
+                                                              "\n                                    "
                                                           )
                                                         ])
                                             ]
@@ -48631,7 +48605,11 @@ var render = function() {
             staticClass:
               "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1"
           },
-          [_c("span", [_vm._v("\n             WORKING VERSION\n         ")])]
+          [
+            _c("span", [
+              _vm._v("\n                WORKING VERSION\n            ")
+            ])
+          ]
         )
       ])
     : _vm._e()
@@ -48647,6 +48625,20 @@ var staticRenderFns = [
       [
         _c("div", { staticClass: "h3 font-weight-normal" }, [
           _vm._v("CORPUS DESCRIPTION")
+        ])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "d-flex justify-content-between mt-7 mb-3" },
+      [
+        _c("div", { staticClass: "h3 font-weight-normal" }, [
+          _vm._v("CORPUS FORMATS")
         ])
       ]
     )
@@ -48719,16 +48711,6 @@ var staticRenderFns = [
           _vm._v("VERSIONS")
         ])
       ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "d-flex justify-content-between mt-7 mb-3" },
-      [_c("div", { staticClass: "h3 font-weight-normal" }, [_vm._v("FORMATS")])]
     )
   },
   function() {
@@ -51313,7 +51295,7 @@ var render = function() {
                             href: "#tei-header"
                           }
                         },
-                        [_vm._v("Description")]
+                        [_vm._v("All Formats")]
                       ),
                       _vm._v(" "),
                       _vm._l(_vm.headerdata.guidelines, function(
@@ -52078,7 +52060,7 @@ var staticRenderFns = [
       { staticClass: "d-flex justify-content-between mt-7 mb-3" },
       [
         _c("div", { staticClass: "h3 font-weight-normal" }, [
-          _vm._v("GUIDELINES - TEI-Header")
+          _vm._v("GUIDELINES")
         ])
       ]
     )
