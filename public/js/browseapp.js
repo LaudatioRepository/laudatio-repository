@@ -50939,14 +50939,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             revisions: [],
             documentsByAnnotation: [],
             guidelineColumnsGeneric: [{
-                label: 'Annotation key',
-                field: 'title',
-                filterable: true
-            }, {
-                label: 'Format',
-                field: 'format',
-                filterable: true
-            }, {
                 label: 'Annotation value',
                 field: 'value',
                 filterable: true
@@ -51091,7 +51083,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                             var valueObject = {};
                             valueObject.title = annotationTitle;
                             valueObject.value = guidelineKey;
-                            valueObject.format = formatKey;
                             valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey];
 
                             guidelineArray.push(valueObject);
@@ -51295,7 +51286,7 @@ var render = function() {
                             href: "#tei-header"
                           }
                         },
-                        [_vm._v("All Formats")]
+                        [_vm._v("Description")]
                       ),
                       _vm._v(" "),
                       _vm._l(_vm.headerdata.guidelines, function(
@@ -51341,7 +51332,31 @@ var render = function() {
                               attrs: { role: "tabpanel", id: "tei-header" }
                             },
                             [
-                              _vm._m(0),
+                              _c(
+                                "div",
+                                {
+                                  staticClass:
+                                    "d-flex justify-content-between mt-7 mb-3"
+                                },
+                                [
+                                  _c(
+                                    "div",
+                                    { staticClass: "h3 font-weight-normal" },
+                                    [
+                                      _vm._v("GUIDELINES for "),
+                                      _c("em", [
+                                        _vm._v(
+                                          _vm._s(
+                                            _vm._f("arrayToString")(
+                                              _vm.headerdata.preparation_title
+                                            )
+                                          )
+                                        )
+                                      ])
+                                    ]
+                                  )
+                                ]
+                              ),
                               _vm._v(" "),
                               _c("vue-good-table", {
                                 attrs: {
@@ -51388,8 +51403,18 @@ var render = function() {
                                       "div",
                                       { staticClass: "h3 font-weight-normal" },
                                       [
+                                        _vm._v("GUIDELINES - for "),
+                                        _c("em", [
+                                          _vm._v(
+                                            _vm._s(
+                                              _vm._f("arrayToString")(
+                                                _vm.headerdata.preparation_title
+                                              )
+                                            )
+                                          )
+                                        ]),
                                         _vm._v(
-                                          "GUIDELINES - for the " +
+                                          " in the " +
                                             _vm._s(guidelinekey) +
                                             " format"
                                         )
@@ -51429,7 +51454,7 @@ var render = function() {
                               attrs: { role: "tabpanel", id: "license" }
                             },
                             [
-                              _vm._m(1),
+                              _vm._m(0),
                               _vm._v(" "),
                               _c("vue-good-table", {
                                 attrs: {
@@ -51641,7 +51666,7 @@ var render = function() {
                                   attrs: { role: "tabpanel", id: "editors" }
                                 },
                                 [
-                                  _vm._m(2),
+                                  _vm._m(1),
                                   _vm._v(" "),
                                   _c("vue-good-table", {
                                     attrs: {
@@ -51672,7 +51697,7 @@ var render = function() {
                                   attrs: { role: "tabpanel", id: "annotators" }
                                 },
                                 [
-                                  _vm._m(3),
+                                  _vm._m(2),
                                   _vm._v(" "),
                                   _c("vue-good-table", {
                                     attrs: {
@@ -51706,7 +51731,7 @@ var render = function() {
                                   }
                                 },
                                 [
-                                  _vm._m(4),
+                                  _vm._m(3),
                                   _vm._v(" "),
                                   _c("vue-good-table", {
                                     attrs: {
@@ -51740,7 +51765,7 @@ var render = function() {
                                   }
                                 },
                                 [
-                                  _vm._m(5),
+                                  _vm._m(4),
                                   _vm._v(" "),
                                   _c("vue-good-table", {
                                     attrs: {
@@ -51774,7 +51799,7 @@ var render = function() {
                                   }
                                 },
                                 [
-                                  _vm._m(6),
+                                  _vm._m(5),
                                   _vm._v(" "),
                                   _c("vue-good-table", {
                                     attrs: {
@@ -51808,7 +51833,7 @@ var render = function() {
                                   }
                                 },
                                 [
-                                  _vm._m(7),
+                                  _vm._m(6),
                                   _vm._v(" "),
                                   _c("vue-good-table", {
                                     attrs: {
@@ -51842,7 +51867,7 @@ var render = function() {
                                   }
                                 },
                                 [
-                                  _vm._m(8),
+                                  _vm._m(7),
                                   _vm._v(" "),
                                   _c("vue-good-table", {
                                     attrs: {
@@ -51897,7 +51922,7 @@ var render = function() {
                               staticClass: "tab-pane active",
                               attrs: { role: "tabpanel", id: "tei-header" }
                             },
-                            [_vm._m(9)]
+                            [_vm._m(8)]
                           )
                         : _vm._e(),
                       _vm._v(" "),
@@ -52051,20 +52076,6 @@ var render = function() {
     : _vm._e()
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "d-flex justify-content-between mt-7 mb-3" },
-      [
-        _c("div", { staticClass: "h3 font-weight-normal" }, [
-          _vm._v("GUIDELINES")
-        ])
-      ]
-    )
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement

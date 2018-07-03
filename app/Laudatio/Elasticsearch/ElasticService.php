@@ -1368,14 +1368,20 @@ class ElasticService implements ElasticsearchInterface
         return $results;
     }
 
-    public function getAnnotationGroups(){
+    /**
+     * @return mixed
+     * @todo: fix the function so it only aggregates within a given corpus
+     */
+    public function getAnnotationGroups($matchdata){
         $queryBuilder = new QueryBuilder();
-
-        $queryBody = $queryBuilder->buildTermsAggregationQuery(array(
+        Cache::flush();
+        $queryBody = $queryBuilder->buildTermsAggregationQueryByMatchQuery(
+            $matchdata,
+            array(
             "name" => "annotations",
             "field" => "preparation_encoding_annotation_group.keyword"
         ));
-
+            Log::info("KVERIBAåddi: ".print_r($queryBody,1));
         $params = [
             'index' => 'annotation',
             'type' => 'annotation',

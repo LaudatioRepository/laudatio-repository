@@ -18,7 +18,7 @@ interface ElasticsearchInterface {
     public function deleteAnnotation($title,$corpusId);
     public function getAnnotationByName($name, $fields);
     public function getAnnotationByNameAndCorpusId($name, $corpusId, $fields);
-    public function getAnnotationGroups();
+    public function getAnnotationGroups($matchdata);
     public function getGuidelinesByCorpus($corpusId);
     public function getGuidelinesByCorpusAndAnnotationId($corpusId,$annotationName);
     public function getFormatsByCorpus($corpusId);

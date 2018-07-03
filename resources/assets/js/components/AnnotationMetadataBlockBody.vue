@@ -5,7 +5,7 @@
                 <div class="row">
                     <div class="col-2">
                         <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
-                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#tei-header">All Formats</a>
+                            <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link active tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#tei-header">Description</a>
                             <a v-for="(guidelinedata, guidelinekey) in headerdata.guidelines" class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" v-if="Object.keys(guidelinedata['annotations']).length > 0" v-bind:href="('#').concat(guidelinekey)">{{guidelinekey}}</a>
                         </nav>
                     </div>
@@ -13,7 +13,7 @@
                         <div id="tabcontainer" class="container-fluid tab-content content">
                             <div role="tabpanel"  class="tab-pane active" id="tei-header" v-if="header == 'annotation'">
                                 <div class="d-flex justify-content-between mt-7 mb-3">
-                                    <div class="h3 font-weight-normal">GUIDELINES</div>
+                                    <div class="h3 font-weight-normal">GUIDELINES for <em>{{ headerdata.preparation_title | arrayToString }}</em></div>
                                 </div>
                                 <vue-good-table
                                   title=""
@@ -32,7 +32,7 @@
 
                             <div role="tabpanel"  class="tab-pane fade" v-for="(guidelinedata, guidelinekey) in headerdata.guidelines" :id="guidelinekey" v-if="header == 'annotation'">
                                 <div class="d-flex justify-content-between mt-7 mb-3">
-                                    <div class="h3 font-weight-normal">GUIDELINES - for the {{guidelinekey}} format</div>
+                                    <div class="h3 font-weight-normal">GUIDELINES - for <em>{{ headerdata.preparation_title | arrayToString }}</em> in the {{guidelinekey}} format</div>
                                 </div>
                                 <vue-good-table
                                   title=""
@@ -314,16 +314,6 @@
                 documentsByAnnotation: [],
                 guidelineColumnsGeneric: [
                     {
-                        label: 'Annotation key',
-                        field: 'title',
-                        filterable: true,
-                    },
-                    {
-                        label: 'Format',
-                        field: 'format',
-                        filterable: true,
-                    },
-                    {
                         label: 'Annotation value',
                         field: 'value',
                         filterable: true,
@@ -500,7 +490,6 @@
                                 var valueObject = {}
                                 valueObject.title = annotationTitle;
                                 valueObject.value = guidelineKey;
-                                valueObject.format = formatKey;
                                 valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey]
 
                                 guidelineArray.push(valueObject);
