@@ -271,19 +271,31 @@ class BrowseController extends Controller
                 $foundAnnotationCorpus = array();
                 foreach($data['result']['annotation_id'] as $annotationId){
                     //$annotationData = $this->ElasticService->getAnnotationByName($annotationId, array(
-
+                    $annotators = array();
 
                     $annotationData = $this->ElasticService->getAnnotationByNameAndCorpusId($annotationId,$corpusId, array(
                         "preparation_encoding_annotation_group",
                         "preparation_annotation_id",
                         "_id",
                         "in_documents",
-                        "in_corpora"
+                        "in_corpora",
+                        "preparation_author_annotator_forename",
+                        "preparation_author_annotator_surname",
+                        "generated_id"
                     ));
 
                     if(!$annotationData['error'] && count($annotationData['result']) > 0){
 
                         if(array_key_exists('preparation_encoding_annotation_group', $annotationData['result'][0]['_source'])){
+                            if(!array_key_exists($annotationData['result'][0]['_id'],$annotators)){
+                                $annotators[$annotationData['result'][0]['_id']] = array();
+                                for($a=0; $a < count($annotationData['result'][0]['_source']['preparation_author_annotator_forename']); $a++){
+                                    array_push($annotators[$annotationData['result'][0]['_id']], $annotationData['result'][0]['_source']['preparation_author_annotator_forename'][$a]." ".$annotationData['result'][0]['_source']['preparation_author_annotator_surname'][$a]);
+                                }
+                            }
+
+
+
                             $groups = array_unique($annotationData['result'][0]['_source']['preparation_encoding_annotation_group']);
                             foreach ($groups as $group){
                                 if(!array_key_exists($group,$annotationMapping)){
@@ -295,6 +307,8 @@ class BrowseController extends Controller
                                 }
                                 $dataArray['title'] = $annotationData['result'][0]['_source']['preparation_annotation_id'][0];
                                 $dataArray['preparation_annotation_id'] = $annotationData['result'][0]['_id'];
+
+                                $dataArray['annotators'] = $annotators;
                                 array_push($annotationMapping[$group],$dataArray);
                             }
                             if(!in_array($annotationData['result'][0]['_source']['preparation_annotation_id'][0],$foundAnnotationCorpus)){
@@ -312,7 +326,7 @@ class BrowseController extends Controller
                         "value" => $corpusId
                     )
                 );
-                Log::info("allAnnotationGroupResult: ".print_r($allAnnotationGroupResult,1));
+
                 $allAnnotationGroups = array();
                 if(isset($allAnnotationGroupResult['aggregations'])){
                     foreach($allAnnotationGroupResult['aggregations']['annotations']['buckets'] as $groupdata) {

@@ -399,6 +399,11 @@
                         filterable: true,
                     },
                     {
+                        label: 'Annotators',
+                        field: 'annotators',
+                        filterable: false,
+                    },
+                    {
                         label: 'Guidelines',
                         field: 'guidelines',
                         filterable: false,
@@ -615,6 +620,10 @@
                                 if(typeof value.document_count == 'undefined'){
                                     value.document_count = 0.0;
                                 }
+                                if (typeof value['annotators'][value.preparation_annotation_id] != 'undefined') {
+                                    value.annotators = value['annotators'][value.preparation_annotation_id].join(", ");
+                                }
+
                                 if(foundAnnotationArray.indexOf(value.title) == -1){
                                     annotationArray.push(value);
                                     foundAnnotationArray.push(value.title);
@@ -625,7 +634,6 @@
 
                     }, this.headerdata.corpusAnnotationGroups);
                 }
-
                 return annotationArray;
             },
             groupCount: function(currentkey) {
