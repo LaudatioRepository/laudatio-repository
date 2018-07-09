@@ -289,9 +289,12 @@ class BrowseController extends Controller
                         if(array_key_exists('preparation_encoding_annotation_group', $annotationData['result'][0]['_source'])){
                             if(!array_key_exists($annotationData['result'][0]['_id'],$annotators)){
                                 $annotators[$annotationData['result'][0]['_id']] = array();
-                                for($a=0; $a < count($annotationData['result'][0]['_source']['preparation_author_annotator_forename']); $a++){
-                                    array_push($annotators[$annotationData['result'][0]['_id']], $annotationData['result'][0]['_source']['preparation_author_annotator_forename'][$a]." ".$annotationData['result'][0]['_source']['preparation_author_annotator_surname'][$a]);
+                                if(array_key_exists('preparation_author_annotator_forename', $annotationData['result'][0]['_source'])){
+                                    for($a=0; $a < count($annotationData['result'][0]['_source']['preparation_author_annotator_forename']); $a++){
+                                        array_push($annotators[$annotationData['result'][0]['_id']], $annotationData['result'][0]['_source']['preparation_author_annotator_forename'][$a]." ".$annotationData['result'][0]['_source']['preparation_author_annotator_surname'][$a]);
+                                    }
                                 }
+
                             }
 
 
