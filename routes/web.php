@@ -29,7 +29,7 @@ Route::delete('/corpusprojects/{corpusproject}',[ 'as' => 'corpusProject.destroy
 
 Route::get('/corpusprojects/assigncorpora/{corpusproject}',[ 'as' => 'corpusProject.assignCorpora', 'uses' => 'CorpusProjectController@assignCorpora'])->middleware('auth');
 Route::post('/corpusprojects/{corpusproject}/corpora',[ 'as' => 'corpusProject.assign.store.', 'uses' => 'CorpusProjectController@storeCorpusRelations'])->middleware('auth');
-Route::get('/corpusprojects/inviteusers',[ 'as' => 'corpusProject.invitations', 'uses' => 'CorpusProjectController@inviteUsers'])->middleware('auth');
+Route::get('/invitations',[ 'as' => 'corpusProject.invitations', 'uses' => 'CorpusProjectController@invitations'])->middleware('auth');
 Route::get('/corpusprojects/assignusers/{corpusproject}',[ 'as' => 'corpusProject.assignusers', 'uses' => 'CorpusProjectController@assignUsers'])->middleware('auth');
 Route::post('/corpusprojects/{corpusproject}/users',[ 'as' => 'corpusProject.StoreUsers', 'uses' => 'CorpusProjectController@storeUserRelations'])->middleware('auth');
 /** END CORPUS PROJECTS  **/

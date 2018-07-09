@@ -343,7 +343,13 @@ class CorpusProjectController extends Controller
         return redirect()->route('project.corpusProject.index');
     }
 
-    public function inviteUsers(CorpusProject $corpusProject){}
+    public function invitations(){
+        $isLoggedIn = \Auth::check();
+        $loggedInUser = \Auth::user();
+        return view('project.corpusproject.invite')
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('loggedInUser',$loggedInUser);
+    }
 
     /**
      * @param CorpusProject $corpusproject
