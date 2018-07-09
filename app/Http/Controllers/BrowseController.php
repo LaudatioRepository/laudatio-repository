@@ -410,7 +410,12 @@ class BrowseController extends Controller
 
                     }
 
-                    $allAnnotationGroupResult = $this->ElasticService->getAnnotationGroups();
+                    $allAnnotationGroupResult = $this->ElasticService->getAnnotationGroups(
+                        array(
+                            "field" => "in_corpora",
+                            "value" => $corpusId
+                        )
+                    );
                     $allAnnotationGroups = array();
                     if(isset($allAnnotationGroupResult['aggregations'])){
                         foreach($allAnnotationGroupResult['aggregations']['annotations']['buckets'] as $groupdata) {
