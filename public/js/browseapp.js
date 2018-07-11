@@ -47186,6 +47186,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin'],
@@ -47223,6 +47228,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }, {
                 label: 'Tokens',
                 field: 'tokens',
+                type: 'number',
                 filterable: true
             }, {
                 label: 'Publishing date',
@@ -47366,7 +47372,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 for (var i = 0; i < theHeaderData.corpusdocuments.length; i++) {
                     var documentObject = {};
                     documentObject.title = theHeaderData.corpusdocuments[i].document_title[0];
-                    documentObject.tokens = theHeaderData.corpusdocuments[i].document_size_extent[0];
+                    documentObject.tokens = parseInt(theHeaderData.corpusdocuments[i].document_size_extent[0].replace('.', ''), 10);
                     documentObject.date = theHeaderData.corpusdocuments[i].document_publication_publishing_date[0];
                     documentObject.place = theHeaderData.corpusdocuments[i].document_publication_place[0];
                     documentObject.annotations = theHeaderData.corpusdocuments[i].document_list_of_annotations_name.length;
@@ -47776,7 +47782,7 @@ var render = function() {
                                     },
                                     lineNumbers: false,
                                     styleClass:
-                                      "custom-table table table-corpus-mid table-striped"
+                                      "vgt-table condensed custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -47808,7 +47814,7 @@ var render = function() {
                                     },
                                     lineNumbers: false,
                                     styleClass:
-                                      "custom-table table table-corpus-mid table-striped"
+                                      "vgt-table condensed custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -47840,7 +47846,7 @@ var render = function() {
                                     },
                                     lineNumbers: false,
                                     styleClass:
-                                      "custom-table table table-corpus-mid table-striped"
+                                      "vgt-table condensed custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -47872,7 +47878,7 @@ var render = function() {
                                     },
                                     lineNumbers: false,
                                     styleClass:
-                                      "custom-table table table-corpus-mid table-striped"
+                                      "vgt-table condensed custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -47906,7 +47912,7 @@ var render = function() {
                                     },
                                     lineNumbers: false,
                                     styleClass:
-                                      "custom-table table table-corpus-mid table-striped"
+                                      "vgt-table condensed custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -47968,12 +47974,16 @@ var render = function() {
                             "search-options": {
                               enabled: true
                             },
+                            "sort-options": {
+                              enabled: true,
+                              initialSortBy: { field: "title", type: "asc" }
+                            },
                             "pagination-options": {
                               enabled: true,
                               perPage: 10
                             },
                             styleClass:
-                              "custom-table documents-table table table-corpus-mid  table-striped"
+                              "vgt-table condensed custom-table table table-corpus-mid table-striped"
                           },
                           on: { "on-row-click": _vm.goToDocument },
                           scopedSlots: _vm._u([
@@ -48240,7 +48250,7 @@ var render = function() {
                                         perPage: 10
                                       },
                                       styleClass:
-                                        "custom-table table table-corpus-mid table-striped"
+                                        "vgt-table condensed custom-table table table-corpus-mid table-striped"
                                     },
                                     on: { "on-row-click": _vm.goToAnnotation },
                                     scopedSlots: _vm._u([
@@ -48435,7 +48445,7 @@ var render = function() {
                                         lineNumbers: false,
                                         onClick: _vm.goToAnnotation,
                                         styleClass:
-                                          "custom-table table table-corpus-mid table-striped"
+                                          "vgt-table condensed custom-table table table-corpus-mid table-striped"
                                       },
                                       on: {
                                         "on-row-click": _vm.goToAnnotation
@@ -49865,7 +49875,7 @@ var render = function() {
                                   },
                                   lineNumbers: false,
                                   styleClass:
-                                    "custom-table table table-corpus-mid table-striped"
+                                    "vgt-table condensed custom-table table table-corpus-mid table-striped"
                                 }
                               })
                             ],
@@ -50029,7 +50039,7 @@ var render = function() {
                                         perPage: 10
                                       },
                                       styleClass:
-                                        "custom-table table table-corpus-mid table-striped"
+                                        "vgt-table condensed custom-table table table-corpus-mid table-striped"
                                     },
                                     on: { "on-row-click": _vm.goToAnnotation },
                                     scopedSlots: _vm._u([
@@ -50223,7 +50233,7 @@ var render = function() {
                                         },
                                         lineNumbers: false,
                                         styleClass:
-                                          "custom-table table table-corpus-mid table-striped"
+                                          "vgt-table condensed custom-table table table-corpus-mid table-striped"
                                       },
                                       on: {
                                         "on-row-click": _vm.goToAnnotation
@@ -51013,6 +51023,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin'],
@@ -51110,6 +51124,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }, {
                 label: 'Tokens',
                 field: 'tokens',
+                type: 'number',
                 filterable: true
             }, {
                 label: 'Publishing date',
@@ -51292,7 +51307,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 for (var i = 0; i < theHeaderData.documents.length; i++) {
                     var documentObject = {};
                     documentObject.title = theHeaderData.documents[i].document_title[0];
-                    documentObject.tokens = theHeaderData.documents[i].document_size_extent[0];
+                    documentObject.tokens = parseInt(theHeaderData.documents[i].document_size_extent[0].replace('.', ''), 10);
                     documentObject.date = theHeaderData.documents[i].document_publication_publishing_date[0];
                     documentObject.place = theHeaderData.documents[i].document_history_original_place[0];
                     documentObject.annotations = theHeaderData.documents[i].document_list_of_annotations_id.length;
@@ -52017,6 +52032,10 @@ var render = function() {
                           lineNumbers: false,
                           "search-options": {
                             enabled: true
+                          },
+                          "sort-options": {
+                            enabled: true,
+                            initialSortBy: { field: "title", type: "asc" }
                           },
                           "pagination-options": {
                             enabled: true,

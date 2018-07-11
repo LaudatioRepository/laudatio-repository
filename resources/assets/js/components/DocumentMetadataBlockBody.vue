@@ -126,7 +126,7 @@
                                 enabled: false,
                                 }"
                                 :lineNumbers="false"
-                                styleClass="custom-table table table-corpus-mid table-striped"/>
+                                styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped"/>
                                 </div>
                         </div>
                     </div>
@@ -163,7 +163,7 @@
                                     enabled: true,
                                     perPage: 10,
                                   }"
-                                 styleClass="custom-table table table-corpus-mid table-striped">
+                                 styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped">
                                 <template slot="table-row" slot-scope="props">
                                     <span v-if="props.column.field == 'title'">
                                      <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
@@ -202,7 +202,7 @@
                                 perPage: 10,
                               }"
                               :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped">
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped">
                                 <template slot="table-row" slot-scope="props">
                                     <span v-if="props.column.field == 'title'">
                                      <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>

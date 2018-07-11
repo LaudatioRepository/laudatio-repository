@@ -264,6 +264,10 @@
                           :search-options="{
                             enabled: true,
                           }"
+                          :sort-options="{
+                            enabled: true,
+                            initialSortBy: {field: 'title', type: 'asc'}
+                          }"
                           :pagination-options="{
                             enabled: true,
                             perPage: 10,
@@ -428,6 +432,7 @@
                     {
                         label: 'Tokens',
                         field: 'tokens',
+                        type: 'number',
                         filterable: true
                     },
                     {
@@ -691,7 +696,7 @@
                     for(var i = 0; i < theHeaderData.documents.length; i++) {
                         var documentObject = {}
                         documentObject.title = theHeaderData.documents[i].document_title[0];
-                        documentObject.tokens = theHeaderData.documents[i].document_size_extent[0];
+                        documentObject.tokens = parseInt(theHeaderData.documents[i].document_size_extent[0].replace('.',''),10);
                         documentObject.date = theHeaderData.documents[i].document_publication_publishing_date[0];
                         documentObject.place = theHeaderData.documents[i].document_history_original_place[0];
                         documentObject.annotations = theHeaderData.documents[i].document_list_of_annotations_id.length;

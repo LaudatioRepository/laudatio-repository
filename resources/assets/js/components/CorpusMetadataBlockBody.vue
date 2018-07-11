@@ -59,7 +59,7 @@
                                 enabled: false,
                               }"
                               :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped"/>
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped"/>
                         </div>
 
                         <div class="tab-pane fade" id="annotators" v-if="header == 'corpus' && this.corpusAnnotatorRows().length > 0">
@@ -77,7 +77,7 @@
                                 enabled: false,
                               }"
                               :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped"/>
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped"/>
                         </div>
 
                         <div class="tab-pane fade" id="transcription" v-if="header == 'corpus' && this.corpusTranscriptionRows().length > 0">
@@ -95,7 +95,7 @@
                                 enabled: false,
                               }"
                               :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped"/>
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped"/>
                         </div>
 
                         <div class="tab-pane fade" id="infrastructure" v-if="header == 'corpus' && this.corpusInfrastructureRows().length > 0">
@@ -113,7 +113,7 @@
                                 enabled: false,
                               }"
                               :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped"/>
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped"/>
                         </div>
 
                             <div role="tabpanel"  class="tab-pane fade in" id="corpusVersions" v-if="header == 'corpus'">
@@ -131,7 +131,7 @@
                                 enabled: false,
                               }"
                               :lineNumbers="false"
-                              styleClass="custom-table table table-corpus-mid table-striped"/>
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped"/>
                             </div>
 
                             <div role="tabpanel"  class="tab-pane fade in" id="corpusLicense" v-if="header == 'corpus'">
@@ -181,12 +181,17 @@
                           @on-row-click="goToDocument"
                           :search-options="{
                             enabled: true,
+
+                          }"
+                          :sort-options="{
+                            enabled: true,
+                            initialSortBy: {field: 'title', type: 'asc'}
                           }"
                           :pagination-options="{
                             enabled: true,
                             perPage: 10,
                           }"
-                          styleClass="custom-table documents-table table table-corpus-mid  table-striped">
+                          styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped">
                           <template slot="table-row" slot-scope="props">
                               <span v-if="props.column.field == 'place'">
                                 <i class="fa fa-fw fa-map-marker mr-1"></i> {{props.formattedRow[props.column.field]}}
@@ -243,7 +248,7 @@
                                     enabled: true,
                                     perPage: 10,
                                   }"
-                                 styleClass="custom-table table table-corpus-mid table-striped">
+                                 styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped">
                                 <template slot="table-row" slot-scope="props">
                                     <span v-if="props.column.field == 'title'">
                                      <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
@@ -284,7 +289,7 @@
                               }"
                               :lineNumbers="false"
                               :onClick="goToAnnotation"
-                              styleClass="custom-table table table-corpus-mid table-striped">
+                              styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped">
                                 <template slot="table-row" slot-scope="props">
                                     <span v-if="props.column.field == 'title'">
                                      <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
@@ -367,6 +372,7 @@
                     {
                         label: 'Tokens',
                         field: 'tokens',
+                        type: 'number',
                         filterable: true
                     },
                     {
@@ -385,7 +391,7 @@
                         type: 'number',
                         html: false,
                         filterable: true
-                    }
+                    },
                 ],
                 annotationColumns: [
                     {
@@ -576,7 +582,7 @@
                     for(var i = 0; i < theHeaderData.corpusdocuments.length; i++) {
                         var documentObject = {}
                         documentObject.title = theHeaderData.corpusdocuments[i].document_title[0];
-                        documentObject.tokens = theHeaderData.corpusdocuments[i].document_size_extent[0];
+                        documentObject.tokens = parseInt(theHeaderData.corpusdocuments[i].document_size_extent[0].replace('.',''),10);
                         documentObject.date = theHeaderData.corpusdocuments[i].document_publication_publishing_date[0];
                         documentObject.place = theHeaderData.corpusdocuments[i].document_publication_place[0];
                         documentObject.annotations = theHeaderData.corpusdocuments[i].document_list_of_annotations_name.length;
