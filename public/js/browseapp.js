@@ -51031,10 +51031,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 filterable: true
             }],
             guidelineColumns: [{
-                label: 'Annotation key',
-                field: 'title',
-                filterable: true
-            }, {
                 label: 'Annotation value',
                 field: 'value',
                 filterable: true
@@ -51158,6 +51154,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         allGuidelineRows: function allGuidelineRows() {
             var guidelineArray = [];
             var annotationTitle = this.headerdata.preparation_title[0];
+            var foundGuidelines = [];
+
             if (null != this.headerdata.guidelines && typeof this.headerdata.guidelines != 'undefined') {
                 Object.keys(this.headerdata.guidelines).forEach(function (formatKey, formatIndex) {
                     var annotationData = this[formatKey];
@@ -51168,7 +51166,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                             valueObject.value = guidelineKey;
                             valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey];
 
-                            guidelineArray.push(valueObject);
+                            if (!foundGuidelines.includes(guidelineKey)) {
+                                guidelineArray.push(valueObject);
+                                foundGuidelines.push(guidelineKey);
+                            }
                         }, this[formatKey]['annotations']);
                     }
                 }, this.headerdata.guidelines);
