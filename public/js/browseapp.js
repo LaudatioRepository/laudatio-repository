@@ -48304,7 +48304,7 @@ var render = function() {
                                                                   .preparation_annotation_id
                                                               )
                                                               .concat(
-                                                                "#preparationSteps"
+                                                                "#preparationsteps"
                                                               )
                                                           }
                                                         },
@@ -48501,7 +48501,7 @@ var render = function() {
                                                                     .preparation_annotation_id
                                                                 )
                                                                 .concat(
-                                                                  "#preparationSteps"
+                                                                  "#preparationsteps"
                                                                 )
                                                             }
                                                           },

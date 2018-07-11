@@ -252,7 +252,7 @@
                                       <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#guidelines')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
                                     </span>
                                     <span v-else-if="props.column.field == 'prep'">
-                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#preparationSteps')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
+                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#preparationsteps')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
                                     </span>
                                     <span v-else-if="props.column.field == 'document_count'">
                                         <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
@@ -293,7 +293,7 @@
                                       <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#guidelines')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
                                     </span>
                                     <span v-else-if="props.column.field == 'prep'">
-                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#preparationSteps')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
+                                      <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#preparationsteps')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
                                     </span>
                                     <span v-else-if="props.column.field == 'document_count'">
                                         <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
