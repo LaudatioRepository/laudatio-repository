@@ -46,7 +46,7 @@
                                     perPage: 10,
                                   }"
                                   :lineNumbers="false"
-                                  styleClass="custom-table table table-corpus-mid table-striped"/>
+                                  styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped"/>
                             </div>
 
                             <div role="tabpanel"  class="tab-pane fade" id="license" v-if="header == 'annotation'">
@@ -64,7 +64,7 @@
                                     enabled: false,
                                 }"
                                 :lineNumbers="false"
-                                styleClass="custom-table table table-corpus-mid table-striped"/>
+                                styleClass="vgt-table condensed custom-table table table-corpus-mid table-striped"/>
                                 </div>
                         </div>
                     </div>

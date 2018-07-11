@@ -51521,7 +51521,7 @@ var render = function() {
                                     },
                                     lineNumbers: false,
                                     styleClass:
-                                      "custom-table table table-corpus-mid table-striped"
+                                      "vgt-table condensed custom-table table table-corpus-mid table-striped"
                                   }
                                 })
                               ],
@@ -51553,7 +51553,7 @@ var render = function() {
                                   },
                                   lineNumbers: false,
                                   styleClass:
-                                    "custom-table table table-corpus-mid table-striped"
+                                    "vgt-table condensed custom-table table table-corpus-mid table-striped"
                                 }
                               })
                             ],
