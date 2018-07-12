@@ -84,6 +84,27 @@ $(function(){
     }
 
 
+    $('.helpLink').each(function(index, helpLinkElem) {
+        var helpId = $(helpLinkElem).attr('id');
+        var popupId = helpId ? 'help_' + helpId : undefined;
+        if (popupId) {
+            var popupElem = $('#'+popupId);
+            var popupTitleHtml = $('.hd', popupElem).html();
+            var popupBodyHtml = $('.bd', popupElem).html();
+            $(helpLinkElem).popover({
+                placement: 'auto top',
+                viewport: '#deed',
+                trigger: 'focus',
+                title: popupTitleHtml ? popupTitleHtml : undefined,
+                content: popupBodyHtml ? popupBodyHtml : undefined,
+                html: true
+            });
+        }
+    });
+
+    $('.helpLink').on('click', function(e) {
+        e.preventDefault();
+    });
 
 
     /**
@@ -740,8 +761,7 @@ $(function(){
         })
             .done(function(data) {
                 if(data.status == "success"){
-                    console.log(data.message)
-                    $('#license-deed').html(data.message.deedheader+data.message.deedbody)
+                    $('#license-deed').html(data.message.deedheader+data.message.deedbody+data.message.helppanels)
                 }
                 else if (data.status == "error"){
                     console.log(data.message.message_delete_response)
@@ -757,6 +777,8 @@ $(function(){
                 console.log("FAIL : "+data)
             });
     });
+
+
 
 
 })

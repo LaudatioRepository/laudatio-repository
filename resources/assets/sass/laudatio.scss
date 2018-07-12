@@ -206,3 +206,14 @@ li.share, li.remix, li.commercial {
 li.license+li.commercial {
   margin-top: -15px;
 }
+
+#deed-main-content a.inline-help, #deed-main-content a.helpLink {
+  text-decoration: none;
+  font-weight: inherit;
+  border-bottom: 1px dashed #888;
+  cursor: help;
+}
+
+.help_panel {
+  display: none;
+}

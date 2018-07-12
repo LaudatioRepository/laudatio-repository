@@ -28,11 +28,14 @@ class ScraperController extends Controller
             $licenseBody = '<div id="deed-main-content" class="deedrow">'.$crawler->filter('#deed-main-content')->html().'</div>';
             $licenseBody = str_replace("/images", $baseUri.'/images',$licenseBody);
 
+            $helpPanels = '<div id="help-panels" style="display: none">'.$crawler->filter('#help-panels')->html().'</div>';
+            
             //Log::info("licenseBody: ".print_r($licenseBody,1));
             $status = "success";
 
             $result['deedheader'] = $licenseHeader;
             $result['deedbody'] = $licenseBody;
+            $result['helppanels'] = $helpPanels;
 
 
         }
