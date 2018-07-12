@@ -47191,6 +47191,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin'],
@@ -47694,9 +47695,10 @@ var render = function() {
                                 staticClass:
                                   "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink",
                                 attrs: {
+                                  id: "licenselink",
                                   "data-toggle": "tab",
                                   role: "tab",
-                                  "data-headertype": "formatdata",
+                                  "data-headertype": "annotation",
                                   href: "#corpusLicense"
                                 }
                               },
@@ -47936,8 +47938,9 @@ var render = function() {
                                           .corpus_publication_license_description
                                       )
                                     ) +
-                                    "\n                            "
-                                )
+                                    "\n                                "
+                                ),
+                                _c("div", { attrs: { id: "license-deed" } })
                               ]
                             )
                           : _vm._e()

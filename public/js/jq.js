@@ -750,6 +750,39 @@ $(function () {
             console.log(err);
         });
     });
+
+    $(document).on('click', '#licenselink', function () {
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        var postData = {};
+        postData.uri = "https://creativecommons.org/licenses/by/3.0/";
+        $.ajax({
+            method: 'POST',
+            url: '/api/browseapi/scrapeLicenseDeed',
+            data: postData,
+            dataType: "json"
+        }).done(function (data) {
+            if (data.status == "success") {
+                console.log(data.message);
+                $('#license-deed').html(data.message.deedheader + data.message.deedbody);
+            } else if (data.status == "error") {
+                console.log(data.message.message_delete_response);
+                $('#alert-laudatio').addClass('alert-danger');
+                $('#alert-laudatio .alert-laudatio-message').html(data.message.message_delete_response);
+
+                $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
+                    $("#alert-laudatio").slideUp(500);
+                });
+            }
+        }).fail(function (data) {
+            console.log("FAIL : " + data);
+        });
+    });
 });
 
 /** FUNCTIONS **/

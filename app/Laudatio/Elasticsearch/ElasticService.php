@@ -1381,7 +1381,6 @@ class ElasticService implements ElasticsearchInterface
             "name" => "annotations",
             "field" => "preparation_encoding_annotation_group.keyword"
         ));
-            Log::info("KVERIBAåddi: ".print_r($queryBody,1));
         $params = [
             'index' => 'annotation',
             'type' => 'annotation',

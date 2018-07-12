@@ -21,7 +21,7 @@
                             </div>
                           </div>
                           <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#corpusVersions">VERSIONS</a>
-                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="formatdata" href="#corpusLicense">LICENSE / REVISION</a>
+                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" id="licenselink" data-toggle="tab" role="tab" data-headertype="annotation" href="#corpusLicense">LICENSE / REVISION</a>
                           <!-- a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="license" href="#corpusFormats">FORMATS</a-->
                           </div>
                         </nav>
@@ -136,6 +136,7 @@
 
                             <div role="tabpanel"  class="tab-pane fade in" id="corpusLicense" v-if="header == 'corpus'">
                                 {{headerdata.corpus_publication_license_description  | arrayToString }}
+                                <div id="license-deed"></div>
                             </div>
 
                             <!--div role="tabpanel"  class="tab-pane fade in" id="corpusFormats" v-if="header == 'corpus'">
