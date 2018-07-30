@@ -59,7 +59,7 @@ class ElasticService implements ElasticsearchInterface
         $params = [
             'size' => 1000,
             'index' => 'corpus',
-            'type' => '',
+            'type' => 'doc',
             'body' => $queryBody,
         ];
         $response = Elasticsearch::search($params);
@@ -83,7 +83,7 @@ class ElasticService implements ElasticsearchInterface
         if(!$full){
             $params = [
                 'index' => 'corpus',
-                'type' => 'corpus',
+                'type' => 'doc',
                 'id' => $id,
                 '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]
             ];
@@ -91,7 +91,7 @@ class ElasticService implements ElasticsearchInterface
         else{
             $params = [
                 'index' => 'corpus',
-                'type' => 'corpus',
+                'type' => 'doc',
                 'id' => $id,
                 '_source_exclude' => ['message']
             ];
@@ -123,7 +123,7 @@ class ElasticService implements ElasticsearchInterface
         $params = [
             'size' => 1,
             'index' => 'corpus',
-            'type' => 'corpus',
+            'type' => 'doc',
             'body' => $queryBody,
         ];
 
@@ -146,7 +146,7 @@ class ElasticService implements ElasticsearchInterface
         if(!$full){
             $params = [
                 'index' => 'document',
-                'type' => 'document',
+                'type' => 'doc',
                 'id' => $id,
                 '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]
             ];
@@ -154,7 +154,7 @@ class ElasticService implements ElasticsearchInterface
         else{
             $params = [
                 'index' => 'document',
-                'type' => 'document',
+                'type' => 'doc',
                 'id' => $id,
                 '_source_exclude' => ['message']
             ];
@@ -199,7 +199,7 @@ class ElasticService implements ElasticsearchInterface
         $params = [
             'size' => 1,
             'index' => 'document',
-            'type' => 'document',
+            'type' => 'doc',
             'body' => $queryBody,
         ];
 
@@ -222,7 +222,7 @@ class ElasticService implements ElasticsearchInterface
         if(!$full){
             $params = [
                 'index' => 'annotation',
-                'type' => 'annotation',
+                'type' => 'doc',
                 'id' => $id,
                 //'_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]
             ];
@@ -230,7 +230,7 @@ class ElasticService implements ElasticsearchInterface
         else{
             $params = [
                 'index' => 'annotation',
-                'type' => 'annotation',
+                'type' => 'doc',
                 'id' => $id,
                 '_source_exclude' => ['message']
             ];
@@ -304,7 +304,7 @@ class ElasticService implements ElasticsearchInterface
         $params = [
             'size' => 1,
             'index' => $index,
-            'type' => $index,
+            'type' => 'doc',
             'body' => $queryBody,
             //'conflicts' => 'proceed'
         ];
@@ -337,7 +337,7 @@ class ElasticService implements ElasticsearchInterface
             $params = [
                 'size' => 10,
                 'index' => $index,
-                'type' => $index,
+                'type' => 'doc',
                 'body' => $queryBody,
                 '_source' => ["_id"]
             ];
@@ -392,7 +392,7 @@ class ElasticService implements ElasticsearchInterface
         $params = [
             'size' => 1,
             'index' => 'annotation',
-            'type' => 'annotation',
+            'type' => 'doc',
             'body' => $queryBody,
             '_source' => $fields,
             'filter_path' => ['hits.hits']
@@ -418,7 +418,7 @@ class ElasticService implements ElasticsearchInterface
             $params = [
                 'size' => 1000,
                 'index' => 'annotation',
-                'type' => 'annotation',
+                'type' => 'doc',
                 'body' => $queryBody,
                 '_source' => $fields,
             ];
@@ -447,7 +447,7 @@ class ElasticService implements ElasticsearchInterface
             $params = [
                 'size' => 1000,
                 'index' => 'document',
-                'type' => 'document',
+                'type' => 'doc',
                 'body' => $queryBody,
                 //'_source_exclude' => ['message'],
                 '_source' => ["document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"],
@@ -481,7 +481,7 @@ class ElasticService implements ElasticsearchInterface
             $params = [
                 'size' => 1000,
                 'index' => 'corpus',
-                'type' => 'corpus',
+                'type' => 'doc',
                 'body' => $queryBody,
                 //'_source_exclude' => ['message'],
                 '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname","corpus_version"],
@@ -513,7 +513,7 @@ class ElasticService implements ElasticsearchInterface
             $params = [
                 'size' => 1000,
                 'index' => 'annotation',
-                'type' => 'annotation',
+                'type' => 'doc',
                 'body' => $queryBody,
                 //'_source_exclude' => ['message'],
                 '_source' => ["preparation_title", "in_corpora", "in_documents"],
@@ -544,7 +544,7 @@ class ElasticService implements ElasticsearchInterface
         $params = [
             'size' => 1000,
             'index' => $index,
-            'type' => '',
+            'type' => 'doc',
             'body' => [
                 'query' => [
                     'match' => [
@@ -581,7 +581,7 @@ class ElasticService implements ElasticsearchInterface
         $params = [
             'size' => 1000,
             'index' => '_all',
-            'type' => '',
+            'type' => 'doc',
             'body' => $queryBody,
             '_source_exclude' => ['message']
         ];
@@ -615,7 +615,7 @@ class ElasticService implements ElasticsearchInterface
         $params = [
             'size' => 1000,
             'index' => 'corpus',
-            'type' => '',
+            'type' => 'doc',
             'body' => $queryBody,
             '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_id"],
             //'_source_exclude' => ['message']
@@ -806,7 +806,7 @@ class ElasticService implements ElasticsearchInterface
             $params = [
                 'size' => 1000,
                 'index' => $index,
-                'type' => '',
+                'type' => 'doc',
                 'body' => $queryBody,
                 '_source_exclude' => ['message']
             ];
@@ -849,7 +849,7 @@ class ElasticService implements ElasticsearchInterface
         $params = [
             'size' => 1000,
             'index' => 'document',
-            'type' => '',
+            'type' => 'doc',
             'body' => $queryBody,
             '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
             //'_source_exclude' => ['message']
@@ -881,7 +881,7 @@ class ElasticService implements ElasticsearchInterface
         $params = [
             'size' => 1000,
             'index' => 'document',
-            'type' => '',
+            'type' => 'doc',
             'body' => $queryBody,
             '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
         ];
@@ -918,7 +918,7 @@ class ElasticService implements ElasticsearchInterface
             $params = [
                 'size' => 1000,
                 'index' => $index,
-                'type' => '',
+                'type' => 'doc',
                 'body' => $queryBody,
                 'filter_path' => ['hits.total']
             ];
@@ -943,7 +943,7 @@ class ElasticService implements ElasticsearchInterface
             $params = [
                 'size' => 1000,
                 'index' => 'corpus',
-                'type' => 'corpus',
+                'type' => 'doc',
                 'body' => $queryBody,
                 '_source' => ["corpus_title"],
                 'filter_path' => ['hits.hits']
@@ -973,7 +973,7 @@ class ElasticService implements ElasticsearchInterface
             $params = [
                 'size' => 1000,
                 'index' => 'corpus',
-                'type' => 'corpus',
+                'type' => 'doc',
                 'body' => $queryBody,
                 '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname"],
                 'filter_path' => ['hits.hits']
@@ -1000,7 +1000,7 @@ class ElasticService implements ElasticsearchInterface
 
             $params = [
                 'index' => 'document',
-                'type' => 'document',
+                'type' => 'doc',
                 'body' => $queryBody,
                 'size'=> 100,
                 '_source' => ["document_title","document_size_extent","document_publication_publishing_date","document_id","document_history_original_place","document_list_of_annotations_id","_id"]
@@ -1231,7 +1231,7 @@ class ElasticService implements ElasticsearchInterface
             $params = [
                 //'size' => 1000,
                 'index' => 'document',
-                'type' => 'document',
+                'type' => 'doc',
                 'body' => $queries,
                 //'_source_exclude' => ['message'],
                 //'_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"],
@@ -1267,7 +1267,7 @@ class ElasticService implements ElasticsearchInterface
                 $params = [
                     'size' => 1000,
                     'index' => 'corpus',
-                    'type' => 'corpus',
+                    'type' => 'doc',
                     'body' => $queryBody,
                     '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname"],
                     'filter_path' => ['hits.hits']
@@ -1299,7 +1299,7 @@ class ElasticService implements ElasticsearchInterface
         $params = [
             'size' => 1000,
             'index' => 'corpus',
-            'type' => 'corpus',
+            'type' => 'doc',
             'body' => $queryBody,
             //'_source_exclude' => ['message'],
             '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname","corpus_version"],
@@ -1337,7 +1337,7 @@ class ElasticService implements ElasticsearchInterface
 
         $params = [
             'index' => 'annotation',
-            'type' => '',
+            'type' => 'doc',
             'body' => $queryBody,
             //'_source_exclude' => ['message'],
             //'_source' => ["preparation_title", "in_corpora", "in_documents"],
@@ -1360,7 +1360,7 @@ class ElasticService implements ElasticsearchInterface
 
         $params = [
             'index' => $index,
-            'type' => $index,
+            'type' => 'doc',
             'body' => $queryBody,
         ];
 
@@ -1383,7 +1383,7 @@ class ElasticService implements ElasticsearchInterface
         ));
         $params = [
             'index' => 'annotation',
-            'type' => 'annotation',
+            'type' => 'doc',
             'body' => $queryBody,
             'size'=> 100,
             'filter_path' => ['aggregations.annotations.buckets.key']
@@ -1404,7 +1404,7 @@ class ElasticService implements ElasticsearchInterface
 
         $params = [
             'index' => 'guideline',
-            'type' => 'guideline',
+            'type' => 'doc',
             'body' => $queryBody,
             'size'=> 100,
             '_source' => ["formats","in_annotations","id","desc"]
@@ -1430,7 +1430,7 @@ class ElasticService implements ElasticsearchInterface
 
         $params = [
             'index' => 'guideline',
-            'type' => 'guideline',
+            'type' => 'doc',
             'body' => $queryBody,
             'size'=> 100,
             '_source' => ["formats","in_annotations","id","desc"]
@@ -1465,7 +1465,7 @@ class ElasticService implements ElasticsearchInterface
 
         $params = [
             'index' => 'guideline',
-            'type' => 'guideline',
+            'type' => 'doc',
             'body' => $queryBody,
             'size'=> 100,
             'filter_path' => ['aggregations.formats.buckets.key']

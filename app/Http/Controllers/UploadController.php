@@ -163,7 +163,7 @@ class UploadController extends Controller
 
                 $isVersioned = $this->laudatioUtilsService->annotationIsVersioned($annotation->id);
                 $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/annotation/'.$fileName;
-                $preparationSteps = $this->laudatioUtilsService->setPreparationAttributes($json,$annotation->id,$corpusId,false);
+                //$preparationSteps = $this->laudatioUtilsService->setPreparationAttributes($json,$annotation->id,$corpusId,false);
 
 
                 if(isset($corpus->corpus_id)){
@@ -299,7 +299,7 @@ class UploadController extends Controller
                 $corpusObject[$corpus->corpus_id] = $idParams;
                 //if(isset($corpus->corpus_id)){
                 $elasticIds = $this->elasticService->getElasticIdByObjectId('corpus',$corpusObject);
-
+                Log::info("ELASTICSDS: ".print_r($elasticIds, 1));
                 foreach ($elasticIds as $ecorpusId => $elasticId){
                     $corpus->elasticsearch_id = $elasticIds[$ecorpusId];
                     $corpus->save();

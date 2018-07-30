@@ -38,6 +38,7 @@ class BrowseController extends Controller
 
         //dd($corpusresponses);
         if(count($corpusresponses['result']) > 0){
+            $document_range = "";
             foreach($corpusresponses['result'][0] as $corpusresponse){
                 //dd($corpusresponses);
                 $documentResult = $this->ElasticService->getDocumentByCorpus(
@@ -227,20 +228,24 @@ class BrowseController extends Controller
                 );
 
                 $document_dates = array();
+                $document_range = "";
+                //dd($documentResult);
+                if (array_key_exists($data['result']['corpus_id'][0],$documentResult)){
+                    for($d = 0; $d < count($documentResult[$data['result']['corpus_id'][0]]); $d++) {
+                        $doc = $documentResult[$data['result']['corpus_id'][0]][$d];
+                        array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+                    }
 
-                for($d = 0; $d < count($documentResult[$data['result']['corpus_id'][0]]); $d++) {
-                    $doc = $documentResult[$data['result']['corpus_id'][0]][$d];
-                    array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+                    sort($document_dates);
+
+                    if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
+                        $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
+                    }
+                    else{
+                        $document_range = $document_dates[0];
+                    }
                 }
 
-                sort($document_dates);
-
-                if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
-                    $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
-                }
-                else{
-                    $document_range = $document_dates[0];
-                }
 
                 $allDocumentsResult = $this->ElasticService->getDocumentsByDocumentId($data['result']['corpus_documents']);
                //dd($data['result']['corpus_documents']);

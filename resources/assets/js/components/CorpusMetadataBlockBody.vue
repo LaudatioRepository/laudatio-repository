@@ -39,7 +39,7 @@
                                     <div class="h3 font-weight-normal">CORPUS FORMATS</div>
                                 </div>
                                 <ul>
-                                <li v-for="format in getFormats()" v-bind:format="format">{{format.format}}</li>
+                                    <li v-for="format in getFormats()" v-bind:format="format"><a href="">{{format.format}}</a></li>
                                 </ul>
 </ul>
                             </div>

@@ -47752,7 +47752,11 @@ var render = function() {
                                     return _c(
                                       "li",
                                       { attrs: { format: format } },
-                                      [_vm._v(_vm._s(format.format))]
+                                      [
+                                        _c("a", { attrs: { href: "" } }, [
+                                          _vm._v(_vm._s(format.format))
+                                        ])
+                                      ]
                                     )
                                   })
                                 )
