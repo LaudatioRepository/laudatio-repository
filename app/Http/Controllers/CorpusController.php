@@ -386,6 +386,7 @@ class CorpusController extends Controller
             }
 
             $role = Role::find($corpusUser->pivot->role_id);
+
             if($role){
                 if($role->hasPermissionTo('Can create corpus')){
                     $corpus_admin['user_name'] = $corpusUser->name;

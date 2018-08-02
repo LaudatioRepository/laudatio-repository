@@ -334,7 +334,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $corpus = Corpus::find($corpusId);
 
         if(count($annotationsFromDB) > 0){
-            Log::info("annotationsFromDB:uuid: ".$uid);
             foreach($annotationsFromDB as $annotationFromDB)
               $annotationFromDB->update([
                   "annotation_size_type" => $annotationSizeType[0],
@@ -350,7 +349,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         }
         else{
             $annotation = new Annotation;
-            Log::info("newanno:uuid: ".$uid);
             $annotation->annotation_id = $annotationId[0];
             $annotation->annotation_size_type = $annotationSizeType[0];
             $annotation->annotation_size_value = $annotationSizeValue[0];
@@ -364,7 +362,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     }
 
     public function setPreparationAttributes($json,$annotationId,$corpusId,$isDir){
-        Log::info("JSON: ".print_r($json,1));
         $jsonPath = new JSONPath($json);
         $preparationFromDB = Preparation::where([
             ['annotation_id', '=', $annotationId],
@@ -840,5 +837,36 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $citations['txt'] = $TXTcite;
 
         return $citations;
+    }
+
+    public function emptyCorpusCache($corpusId){
+        Cache::tags(['corpus_'.$corpusId])->flush();
+
+        Cache::tags(['formats_'.$corpusId])->flush();
+
+        Cache::tags(['guidelines_'.$corpusId])->flush();
+    }
+
+    public function emptyDocumentCacheByCorpusId($corpusId){
+
+        Cache::tags(['document_'.$corpusId])->flush();
+
+        // @todo: flushes too all docs, and not only the relevant ones ?
+        Log::info("FLUSHING: document");
+        Cache::tags(['document'])->flush();
+
+    }
+    public function emptyDocumentCacheByDocumentId($documentId){
+        Cache::tags(['document_'.$documentId])->flush();
+    }
+
+    public function emptyAnnotationCacheByCorpusId($corpusId){
+        Cache::tags(['annotation_'.$corpus->corpus_id])->flush();
+        Cache::tags(['annotationgroup_'.$corpus->corpus_id])->flush();
+
+    }
+
+    public function emptyAnnotationCacheByAnnotationId($annotationId){
+        Cache::tags(['annotation_'.$annotation->id])->flush();
     }
 }
