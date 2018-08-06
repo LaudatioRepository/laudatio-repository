@@ -307,7 +307,6 @@ class UploadController extends Controller
                     }
                 //}
 
-                Log::info("FLUSHING: corpus cahce for corpus id: ".$corpus->corpus_id);
                 $this->laudatioUtilsService->emptyCorpusCache($corpus->corpus_id);
 
             }
@@ -336,10 +335,7 @@ class UploadController extends Controller
                         $documentToBeUpdated->save();
                     }
 
-
-                    Log::info("FLUSHING: document cache for corpus id: ".$corpus->corpus_id);
                     $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id);
-                    Log::info("FLUSHING: document cache by document id: ".$documentId);
                     $this->laudatioUtilsService->emptyDocumentCacheByDocumentId($documentId);
                 }
             }

@@ -138,7 +138,7 @@ class CorpusProjectController extends Controller
                 'public'
                 );
 
-            Log::info("gitLabResponse: CorpusProject ".print_r($gitLabResponse,1));
+            //Log::info("gitLabResponse: CorpusProject ".print_r($gitLabResponse,1));
 
 
             $corpusproject = CorpusProject::create([

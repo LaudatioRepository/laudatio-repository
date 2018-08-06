@@ -18,6 +18,7 @@ use App\Document;
 use App\Annotation;
 use App\Preparation;
 use Log;
+use Cache;
 use DB;
 
 class LaudatioUtilService implements LaudatioUtilsInterface
@@ -852,7 +853,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         Cache::tags(['document_'.$corpusId])->flush();
 
         // @todo: flushes too all docs, and not only the relevant ones ?
-        Log::info("FLUSHING: document");
         Cache::tags(['document'])->flush();
 
     }
@@ -861,12 +861,12 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     }
 
     public function emptyAnnotationCacheByCorpusId($corpusId){
-        Cache::tags(['annotation_'.$corpus->corpus_id])->flush();
-        Cache::tags(['annotationgroup_'.$corpus->corpus_id])->flush();
+        Cache::tags(['annotation_'.$corpusId])->flush();
+        Cache::tags(['annotationgroup_'.$$corpusId])->flush();
 
     }
 
     public function emptyAnnotationCacheByAnnotationId($annotationId){
-        Cache::tags(['annotation_'.$annotation->id])->flush();
+        Cache::tags(['annotation_'.$annotationId])->flush();
     }
 }
