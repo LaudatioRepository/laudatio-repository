@@ -243,9 +243,9 @@ class ElasticService implements ElasticsearchInterface
      */
     public function getAnnotation($id,$full = true){
         $returned_response = array();
-
-        if (Cache::tags(['annotation'])->has("getAnnotation".$id)) {
-            $returned_response = Cache::tags(['annotation_'.$id])->get("getAnnotationByNameAndCorpusId_".$id);
+        
+        if (Cache::tags(['annotation'])->has("getAnnotation_".$id)) {
+            $returned_response = Cache::tags(['annotation'])->get("getAnnotation_".$id);
         }
         else {
             if(!$full){
@@ -283,7 +283,7 @@ class ElasticService implements ElasticsearchInterface
             }
 
             if(count($returned_response) > 0) {
-                Cache::tags(['annotation_'.$id])->forever("getAnnotation".$id, $returned_response);
+                Cache::tags(['annotation_'.$id])->forever("getAnnotation_".$id, $returned_response);
             }
 
         }//end if cache
@@ -418,6 +418,7 @@ class ElasticService implements ElasticsearchInterface
 
     public function getAnnotationByNameAndCorpusId($name, $corpusId, $fields){
         $result = array();
+        Cache::tags(['annotation_'.$corpusId])->flush("getAnnotationByNameAndCorpusId_".$name."_".$corpusId);
         if (Cache::tags(['annotation_'.$corpusId])->has("getAnnotationByNameAndCorpusId_".$name."_".$corpusId)) {
             $result = Cache::tags(['annotation_'.$corpusId])->get("getAnnotationByNameAndCorpusId_".$name."_".$corpusId);
         }
@@ -1383,8 +1384,8 @@ class ElasticService implements ElasticsearchInterface
     public function getCorporaByAnnotation($searchData,$annotationData){
         $resultData = array();
 
-        if (Cache::tags(['corpus_'.$searchData[0]['corpus_id']])->has("getCorporaByAnnotation_".$searchData[0]['corpus_id'])) {
-            $resultData = Cache::tags(['corpus_'.$searchData[0]['corpus_id']])->get("getCorporaByAnnotation_".$searchData[0]['corpus_id']);
+        if (Cache::tags(['corpus_'.$searchData[0]['corpus_id']])->has('getCorporaByAnnotation_'.$searchData[0]['corpus_id'].'_'.$annotationData[0])) {
+            $resultData =  Cache::tags(['corpus_'.$searchData[0]['corpus_id']])->get('getCorporaByAnnotation_'.$searchData[0]['corpus_id'].'_'.$annotationData[0]);
         }
         else {
             $queryBuilder = new QueryBuilder();
@@ -1414,7 +1415,7 @@ class ElasticService implements ElasticsearchInterface
             }
 
             if(count($resultData) > 0) {
-                Cache::tags('corpus_'.$searchData[0]['corpus_id'])->forever("getCorporaByAnnotation_".$searchData[0]['corpus_id'], $resultData);
+                Cache::tags('corpus_'.$searchData[0]['corpus_id'])->forever('getCorporaByAnnotation_'.$searchData[0]['corpus_id'].'_'.$annotationData[0], $resultData);
             }
         }//end if cached
 

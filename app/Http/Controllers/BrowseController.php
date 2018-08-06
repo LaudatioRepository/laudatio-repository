@@ -404,6 +404,7 @@ class BrowseController extends Controller
                                     if(array_key_exists('in_documents', $annotationData['result'][0]['_source'])){
                                         $dataArray['document_count'] = floatval(count($annotationData['result'][0]['_source']['in_documents']));
                                     }
+                                    //Log::info("annotationData: ".print_r($annotationData,1));
                                     $dataArray['title'] = $annotationData['result'][0]['_source']['preparation_title'][0];
                                     $dataArray['preparation_annotation_id'] = $annotationData['result'][0]['_id'];
                                     array_push($annotationMapping[$group],$dataArray);
@@ -445,7 +446,6 @@ class BrowseController extends Controller
                 if($corpusId){
 
                     $annotationCorpusdata = $this->ElasticService->getCorporaByAnnotation(array(array('corpus_id' => $corpusId)),array($id));
-                   // dd($annotationCorpusdata);
                     $data['result']['annotationCorpusdata'] = $annotationCorpusdata[$id][0]['_source'];
 
                     $citeData['authors'] = array();
@@ -462,7 +462,6 @@ class BrowseController extends Controller
 
 
                     $guidelines = $this->ElasticService->getGuidelinesByCorpusAndAnnotationId($corpusId,$data['result']['preparation_annotation_id'][0]);
-                    //dd($guidelines);
                     $formats = array();
                     $formatSearchResult = $this->ElasticService->getFormatsByCorpus($corpusId);
 
