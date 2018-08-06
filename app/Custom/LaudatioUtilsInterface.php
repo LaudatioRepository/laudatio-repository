@@ -44,4 +44,12 @@ interface LaudatioUtilsInterface
     public function getDirectoryPath($paths,$fileName);
 
     public function buildCiteFormat($data);
+
+    public function emptyCorpusCache($corpusId);
+
+    public function emptyDocumentCacheByCorpusId($corpusId);
+    public function emptyDocumentCacheByDocumentId($documentId);
+
+    public function emptyAnnotationCacheByCorpusId($corpusId);
+    public function emptyAnnotationCacheByAnnotationId($annotationId);
 }

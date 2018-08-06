@@ -52,19 +52,24 @@ class BrowseController extends Controller
 
                 $document_dates = array();
 
-                for($d = 0; $d < count($documentResult[$corpusresponse['_source']['corpus_id'][0]]); $d++) {
-                    $doc = $documentResult[$corpusresponse['_source']['corpus_id'][0]][$d];
-                    array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+                if (count($documentResult) > 0 && isset($documentResult[$corpusresponse['_source']['corpus_id'][0]])){
+                    for($d = 0; $d < count($documentResult[$corpusresponse['_source']['corpus_id'][0]]); $d++) {
+                        $doc = $documentResult[$corpusresponse['_source']['corpus_id'][0]][$d];
+                        array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+                    }
+
+                    sort($document_dates);
                 }
 
-                sort($document_dates);
+                if(count($document_dates) > 0){
+                    if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
+                        $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
+                    }
+                    else{
+                        $document_range = $document_dates[0];
+                    }
+                }
 
-                if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
-                    $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
-                }
-                else{
-                    $document_range = $document_dates[0];
-                }
 
 
 
@@ -195,6 +200,7 @@ class BrowseController extends Controller
         $user = \Auth::user();
         $corpusElasticId = null;
         $citeData = array();
+
         switch ($header){
             case "corpus":
                 $apiData = $this->ElasticService->getCorpus($id);
@@ -274,6 +280,7 @@ class BrowseController extends Controller
                 $annotationcount = 0;
                 $totalannotationcount = count($data['result']['annotation_id']);
                 $foundAnnotationCorpus = array();
+
                 foreach($data['result']['annotation_id'] as $annotationId){
                     //$annotationData = $this->ElasticService->getAnnotationByName($annotationId, array(
                     $annotators = array();
@@ -360,8 +367,8 @@ class BrowseController extends Controller
                 $corpusId = is_array($data['result']['in_corpora']) ? $data['result']['in_corpora'][0]: $data['result']['in_corpora'];
                 if($corpusId){
                     $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $corpusId)),array($id));
-                    $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
 
+                    $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
                     $citeData['authors'] = array();
                     for($i=0;$i< count($data['result']['documentCorpusdata']['corpus_editor_forename']);$i++) {
                         array_push($citeData['authors'],$data['result']['documentCorpusdata']['corpus_editor_forename'][$i]." ".$data['result']['documentCorpusdata']['corpus_editor_surname'][$i]);
@@ -379,14 +386,6 @@ class BrowseController extends Controller
                     $totalannotationcount = count($data['result']['document_list_of_annotations_id']);
                     $foundAnnotationDocument = array();
                     foreach($data['result']['document_list_of_annotations_id'] as $annotationId){
-                        /*
-                        $annotationData = $this->ElasticService->getAnnotationByName($annotationId, array(
-                            "preparation_encoding_annotation_group",
-                            "preparation_title",
-                            "_id",
-                            "in_documents"
-                        ));
-*/
                         $annotationData = $this->ElasticService->getAnnotationByNameAndCorpusId($annotationId,$corpusId, array(
                             "preparation_encoding_annotation_group",
                             "preparation_title",
@@ -405,6 +404,7 @@ class BrowseController extends Controller
                                     if(array_key_exists('in_documents', $annotationData['result'][0]['_source'])){
                                         $dataArray['document_count'] = floatval(count($annotationData['result'][0]['_source']['in_documents']));
                                     }
+                                    //Log::info("annotationData: ".print_r($annotationData,1));
                                     $dataArray['title'] = $annotationData['result'][0]['_source']['preparation_title'][0];
                                     $dataArray['preparation_annotation_id'] = $annotationData['result'][0]['_id'];
                                     array_push($annotationMapping[$group],$dataArray);
@@ -462,7 +462,6 @@ class BrowseController extends Controller
 
 
                     $guidelines = $this->ElasticService->getGuidelinesByCorpusAndAnnotationId($corpusId,$data['result']['preparation_annotation_id'][0]);
-                    //dd($guidelines);
                     $formats = array();
                     $formatSearchResult = $this->ElasticService->getFormatsByCorpus($corpusId);
 
