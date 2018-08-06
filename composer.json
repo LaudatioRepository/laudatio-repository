@@ -6,9 +6,11 @@
     "type": "project",
     "require": {
         "php": ">=5.6.4",
+        "chumper/zipper": "1.0.x",
         "cviebrock/laravel-elasticsearch": "^2.0",
         "doctrine/dbal": "^2.5",
         "elasticsearch/elasticsearch": "~5.0",
+        "fabpot/goutte": "^3.2",
         "flow/jsonpath": "^0.3.4",
         "graham-campbell/flysystem": "^4.1",
         "laracasts/utilities": "~2.0",
@@ -21,10 +23,10 @@
         "m4tthumphrey/php-gitlab-api": "^9.6",
         "ongr/elasticsearch-dsl": "^5.0",
         "php-http/guzzle6-adapter": "^1.1",
+        "predis/predis": "^1.1",
         "socialiteproviders/gitlab": "^3.0",
         "spatie/laravel-permission": "^2.7",
-        "vinkla/gitlab": "^4.0",
-        "chumper/zipper": "1.0.x"
+        "vinkla/gitlab": "^4.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

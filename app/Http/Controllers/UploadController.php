@@ -17,6 +17,7 @@ use App\Custom\ElasticsearchInterface;
 use App\Laudatio\GitLaB\GitFunction;
 use Log;
 use Flow\JSONPath\JSONPath;
+use Cache;
 
 class UploadController extends Controller
 {
@@ -163,7 +164,7 @@ class UploadController extends Controller
 
                 $isVersioned = $this->laudatioUtilsService->annotationIsVersioned($annotation->id);
                 $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/annotation/'.$fileName;
-                $preparationSteps = $this->laudatioUtilsService->setPreparationAttributes($json,$annotation->id,$corpusId,false);
+                //$preparationSteps = $this->laudatioUtilsService->setPreparationAttributes($json,$annotation->id,$corpusId,false);
 
 
                 if(isset($corpus->corpus_id)){
@@ -305,6 +306,10 @@ class UploadController extends Controller
                     $corpus->save();
                     }
                 //}
+
+                Log::info("FLUSHING: corpus cahce for corpus id: ".$corpus->corpus_id);
+                $this->laudatioUtilsService->emptyCorpusCache($corpus->corpus_id);
+
             }
             else if($headerPath == 'document'){
                 if(!array_key_exists($document->id,$documents)){
@@ -330,6 +335,12 @@ class UploadController extends Controller
                         $documentToBeUpdated->elasticsearch_id = $elasticIds[$documentId];
                         $documentToBeUpdated->save();
                     }
+
+
+                    Log::info("FLUSHING: document cache for corpus id: ".$corpus->corpus_id);
+                    $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id);
+                    Log::info("FLUSHING: document cache by document id: ".$documentId);
+                    $this->laudatioUtilsService->emptyDocumentCacheByDocumentId($documentId);
                 }
             }
             else if($headerPath == 'annotation'){
@@ -355,6 +366,11 @@ class UploadController extends Controller
                         $annotationToBeUpdated->elasticsearch_id = $elasticIds[$annotationId];
                         $annotationToBeUpdated->save();
                     }
+
+                    Log::info("FLUSHING: annotation cache for corpus id: ".$corpus->corpus_id);
+                    $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id);
+                    Log::info("FLUSHING: annotation cache by annotation id: ".$annotationId);
+                    $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationId($annotationId);
                 }
             }
 

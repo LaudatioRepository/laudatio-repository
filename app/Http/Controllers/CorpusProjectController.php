@@ -151,10 +151,10 @@ class CorpusProjectController extends Controller
                 'gitlab_parent_id' => $gitLabResponse['parent_id']
             ]);
 
-            /*
+
             $user = \Auth::user();
-            $corpusp->users()->save($user,['role_id' => 2]);
-            */
+            $corpusproject->users()->save($user,['role_id' => 2]);
+
         }
 
         return redirect()->route('corpusProject.index');

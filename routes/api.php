@@ -61,6 +61,10 @@ Route::group(array('prefix' => 'adminapi'), function() {
 
 });
 
+Route::group(array('prefix' => 'browseapi'), function() {
+    Route::post('scrapeLicenseDeed','ScraperController@scrapeLicenseDeed');
+});
+
 
 
 Route::group(array('prefix' => 'dashboardapi'), function() {

@@ -151,9 +151,31 @@ $(function () {
         });
         $('#' + hash).removeClass('fade in');
         $('#' + hash).addClass('active');
-    } else {}
-    // Fragment doesn't exist
+    } else {
+        // Fragment doesn't exist
+    }
 
+    $('.helpLink').each(function (index, helpLinkElem) {
+        var helpId = $(helpLinkElem).attr('id');
+        var popupId = helpId ? 'help_' + helpId : undefined;
+        if (popupId) {
+            var popupElem = $('#' + popupId);
+            var popupTitleHtml = $('.hd', popupElem).html();
+            var popupBodyHtml = $('.bd', popupElem).html();
+            $(helpLinkElem).popover({
+                placement: 'auto top',
+                viewport: '#deed',
+                trigger: 'focus',
+                title: popupTitleHtml ? popupTitleHtml : undefined,
+                content: popupBodyHtml ? popupBodyHtml : undefined,
+                html: true
+            });
+        }
+    });
+
+    $('.helpLink').on('click', function (e) {
+        e.preventDefault();
+    });
 
     /**
      * Hide error banner initially
@@ -748,6 +770,38 @@ $(function () {
         }).catch(function (err) {
             // Run this when promise was rejected via reject()
             console.log(err);
+        });
+    });
+
+    $(document).on('click', '#licenselink', function () {
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        var postData = {};
+        postData.uri = "https://creativecommons.org/licenses/by/3.0/";
+        $.ajax({
+            method: 'POST',
+            url: '/api/browseapi/scrapeLicenseDeed',
+            data: postData,
+            dataType: "json"
+        }).done(function (data) {
+            if (data.status == "success") {
+                $('#license-deed').html(data.message.deedheader + data.message.deedbody + data.message.helppanels);
+            } else if (data.status == "error") {
+                console.log(data.message.message_delete_response);
+                $('#alert-laudatio').addClass('alert-danger');
+                $('#alert-laudatio .alert-laudatio-message').html(data.message.message_delete_response);
+
+                $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
+                    $("#alert-laudatio").slideUp(500);
+                });
+            }
+        }).fail(function (data) {
+            console.log("FAIL : " + data);
         });
     });
 });

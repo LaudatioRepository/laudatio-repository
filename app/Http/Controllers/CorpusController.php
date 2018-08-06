@@ -386,12 +386,19 @@ class CorpusController extends Controller
             }
 
             $role = Role::find($corpusUser->pivot->role_id);
+
             if($role){
                 if($role->hasPermissionTo('Can create corpus')){
                     $corpus_admin['user_name'] = $corpusUser->name;
                     $corpus_admin['user_id'] = $corpusUser->id;
                     $corpus_admin['role_name'] = $role->name;
                     $corpus_admin['role_id'] = $role->id;
+                }
+                else {
+                    $corpus_admin['user_name'] = "";
+                    $corpus_admin['user_id'] = "";
+                    $corpus_admin['role_name'] = "";
+                    $corpus_admin['role_id'] = "";
                 }
                 $user_role['user_name'] = $corpusUser->name;
                 $user_role['user_affiliation'] = $corpusUser->affiliation;

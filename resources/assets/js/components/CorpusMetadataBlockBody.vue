@@ -21,7 +21,7 @@
                             </div>
                           </div>
                           <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#corpusVersions">VERSIONS</a>
-                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="formatdata" href="#corpusLicense">LICENSE / REVISION</a>
+                          <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" id="licenselink" data-toggle="tab" role="tab" data-headertype="annotation" href="#corpusLicense">LICENSE / REVISION</a>
                           <!-- a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink" data-toggle="tab" role="tab" data-headertype="license" href="#corpusFormats">FORMATS</a-->
                           </div>
                         </nav>
@@ -39,7 +39,7 @@
                                     <div class="h3 font-weight-normal">CORPUS FORMATS</div>
                                 </div>
                                 <ul>
-                                <li v-for="format in getFormats()" v-bind:format="format">{{format.format}}</li>
+                                    <li v-for="format in getFormats()" v-bind:format="format"><a href="">{{format.format}}</a></li>
                                 </ul>
 </ul>
                             </div>
@@ -136,6 +136,7 @@
 
                             <div role="tabpanel"  class="tab-pane fade in" id="corpusLicense" v-if="header == 'corpus'">
                                 {{headerdata.corpus_publication_license_description  | arrayToString }}
+                                <div id="license-deed"></div>
                             </div>
 
                             <!--div role="tabpanel"  class="tab-pane fade in" id="corpusFormats" v-if="header == 'corpus'">

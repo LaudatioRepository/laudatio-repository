@@ -593,7 +593,7 @@ class ElasticController extends Controller
 
         $resultData = null;
         $cacheString = $request->cacheString;
-        Cache::flush();
+        //Cache::flush();
         Log::info("SEARCHING ANNOTATONINDEX : ".$cacheString.'|searchAnnotationIndex');
         if (Cache::has($cacheString.'|searchAnnotationIndex')) {
             $resultData = Cache::get($cacheString.'|searchAnnotationIndex');

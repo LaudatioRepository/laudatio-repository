@@ -47191,6 +47191,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'user', 'isloggedin'],
@@ -47694,9 +47695,10 @@ var render = function() {
                                 staticClass:
                                   "font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link stacktablink",
                                 attrs: {
+                                  id: "licenselink",
                                   "data-toggle": "tab",
                                   role: "tab",
-                                  "data-headertype": "formatdata",
+                                  "data-headertype": "annotation",
                                   href: "#corpusLicense"
                                 }
                               },
@@ -47750,7 +47752,11 @@ var render = function() {
                                     return _c(
                                       "li",
                                       { attrs: { format: format } },
-                                      [_vm._v(_vm._s(format.format))]
+                                      [
+                                        _c("a", { attrs: { href: "" } }, [
+                                          _vm._v(_vm._s(format.format))
+                                        ])
+                                      ]
                                     )
                                   })
                                 )
@@ -47936,8 +47942,9 @@ var render = function() {
                                           .corpus_publication_license_description
                                       )
                                     ) +
-                                    "\n                            "
-                                )
+                                    "\n                                "
+                                ),
+                                _c("div", { attrs: { id: "license-deed" } })
                               ]
                             )
                           : _vm._e()
@@ -51152,14 +51159,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     var annotationData = this[formatKey];
                     if (typeof this[formatKey]['annotations'] != 'undefined') {
                         if (format == formatKey && Object.keys(this[formatKey]['annotations']).length > 0) {
-                            Object.keys(this[formatKey]['annotations'][annotationTitle]).forEach(function (guidelineKey, guidelineIndex) {
-                                var valueObject = {};
-                                valueObject.title = annotationTitle;
-                                valueObject.value = guidelineKey;
-                                valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey];
+                            if (null != this[formatKey]['annotations'][annotationTitle] && typeof this[formatKey]['annotations'][annotationTitle] != 'undefined') {
+                                Object.keys(this[formatKey]['annotations'][annotationTitle]).forEach(function (guidelineKey, guidelineIndex) {
+                                    var valueObject = {};
+                                    valueObject.title = annotationTitle;
+                                    valueObject.value = guidelineKey;
+                                    valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey];
 
-                                guidelineArray.push(valueObject);
-                            }, this[formatKey]['annotations']);
+                                    guidelineArray.push(valueObject);
+                                }, this[formatKey]['annotations']);
+                            }
                         }
                     }
                 }, this.headerdata.guidelines);
@@ -51174,18 +51183,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             if (null != this.headerdata.guidelines && typeof this.headerdata.guidelines != 'undefined') {
                 Object.keys(this.headerdata.guidelines).forEach(function (formatKey, formatIndex) {
                     var annotationData = this[formatKey];
-                    if (Object.keys(this[formatKey]['annotations']).length > 0) {
-                        Object.keys(this[formatKey]['annotations'][annotationTitle]).forEach(function (guidelineKey, guidelineIndex) {
-                            var valueObject = {};
-                            valueObject.title = annotationTitle;
-                            valueObject.value = guidelineKey;
-                            valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey];
+                    if (null != this[formatKey]['annotations'] && typeof this[formatKey]['annotations'] != 'undefined' && Object.keys(this[formatKey]['annotations']).length > 0) {
+                        if (null != this[formatKey]['annotations'][annotationTitle] && typeof this[formatKey]['annotations'][annotationTitle] != 'undefined') {
+                            Object.keys(this[formatKey]['annotations'][annotationTitle]).forEach(function (guidelineKey, guidelineIndex) {
+                                var valueObject = {};
+                                valueObject.title = annotationTitle;
+                                valueObject.value = guidelineKey;
+                                valueObject.description = annotationData['annotations'][annotationTitle][guidelineKey];
 
-                            if (!foundGuidelines.includes(guidelineKey)) {
-                                guidelineArray.push(valueObject);
-                                foundGuidelines.push(guidelineKey);
-                            }
-                        }, this[formatKey]['annotations']);
+                                if (!foundGuidelines.includes(guidelineKey)) {
+                                    guidelineArray.push(valueObject);
+                                    foundGuidelines.push(guidelineKey);
+                                }
+                            }, this[formatKey]['annotations']);
+                        }
                     }
                 }, this.headerdata.guidelines);
             }
