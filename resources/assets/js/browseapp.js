@@ -17,9 +17,7 @@ Vue.component("corpusheader", require("./components/CorpusHeader.vue"));
 Vue.component("documentheader", require("./components/DocumentHeader.vue"));
 Vue.component("annotationheader", require("./components/AnnotationHeader.vue"));
 Vue.component("metadata-block-body-corpus", require("./components/CorpusMetadataBlockBody.vue"));
-Vue.component("metadata-block-header-document", require("./components/DocumentMetadataBlockHeader.vue"));
 Vue.component("metadata-block-body-document", require("./components/DocumentMetadataBlockBody.vue"));
-Vue.component("metadata-block-header-annotation", require("./components/AnnotationMetadataBlockHeader.vue"));
 Vue.component("metadata-block-body-annotation", require("./components/AnnotationMetadataBlockBody.vue"));
 
 const browseApp = new Vue({
@@ -33,6 +31,8 @@ const browseApp = new Vue({
         isloggedin: window.laudatioApp.isLoggedIn,
         corpusid: window.laudatioApp.corpus_id,
         corpuspath: window.laudatioApp.corpus_path,
+        workflowstatus: window.laudatioApp.workflow_status,
+        corpusversion: window.laudatioApp.corpus_version,
         corpuselasticsearchid: window.laudatioApp.corpus_elasticsearch_id
     }
 });

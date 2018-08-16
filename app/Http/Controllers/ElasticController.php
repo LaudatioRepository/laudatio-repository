@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Laudatio\Elasticsearch\ElasticService;
 use Illuminate\Http\Request;
-use Cviebrock\LaravelElasticsearch\Facade;
 use Elasticsearch;
 use App\Laudatio\Elasticsearch\QueryBuilder;
 use App\Custom\ElasticsearchInterface;

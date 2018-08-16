@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 interface ElasticsearchInterface {
     public function getPublishedCorpora();
+    public function setCorpusToPublished($params);
     public function getCorpus($id,$full);
     public function deleteCorpus($id);
     public function getDocument($id,$full);
@@ -46,8 +47,10 @@ interface ElasticsearchInterface {
     public function createIndex($name);
     public function deleteIndex($indexId);
     public function truncateIndex($index);
+    public function postToIndex($params);
     public function deleteIndexedObject($index,$params);
     public function getElasticIdByObjectId($index,$params);
+    public function setWorkflowStatusByCorpusId($corpus_id);
 
     /**
      * Helpers

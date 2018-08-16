@@ -200,6 +200,8 @@ class BrowseController extends Controller
         $user = \Auth::user();
         $corpusElasticId = null;
         $citeData = array();
+        $corpusVersion = null;
+        $workFlowStatus = null;
 
         switch ($header){
             case "corpus":
@@ -218,6 +220,9 @@ class BrowseController extends Controller
                 $citeData['published_handle'] = "";
 
                 $corpusId = is_array($data['result']['corpus_id']) ? $data['result']['corpus_id'][0]: $data['result']['corpus_id'];
+                $workFlowStatus = $this->LaudatioUtilService->getWorkFlowStatus($corpusId);
+                $corpusVersion = $this->LaudatioUtilService->getCorpusVersion($corpusId);
+
                 $formatSearchResult = $this->ElasticService->getFormatsByCorpus($corpusId);
                 $formats = array();
                 if(isset($formatSearchResult['aggregations'])){
@@ -289,6 +294,7 @@ class BrowseController extends Controller
                         "preparation_encoding_annotation_group",
                         "preparation_annotation_id",
                         "_id",
+                        "preparation_title",
                         "in_documents",
                         "in_corpora",
                         "preparation_author_annotator_forename",
@@ -350,7 +356,8 @@ class BrowseController extends Controller
                 }
 
 
-
+                $data['result']['workflow_status'] = $workFlowStatus;
+                $data['result']['corpus_version'] = $corpusVersion;
                 $data['result']['corpusAnnotationGroups'] = $annotationMapping;
                 $data['result']['allAnnotationGroups'] = $allAnnotationGroups;
                 $data['result']['corpusannotationcount'] = $annotationcount;
@@ -365,6 +372,9 @@ class BrowseController extends Controller
                 $data = json_decode($apiData->getContent(), true);
 
                 $corpusId = is_array($data['result']['in_corpora']) ? $data['result']['in_corpora'][0]: $data['result']['in_corpora'];
+                $workFlowStatus = $this->LaudatioUtilService->getWorkFlowStatus($corpusId);
+                $corpusVersion = $this->LaudatioUtilService->getCorpusVersion($corpusId);
+
                 if($corpusId){
                     $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $corpusId)),array($id));
 
@@ -388,9 +398,14 @@ class BrowseController extends Controller
                     foreach($data['result']['document_list_of_annotations_id'] as $annotationId){
                         $annotationData = $this->ElasticService->getAnnotationByNameAndCorpusId($annotationId,$corpusId, array(
                             "preparation_encoding_annotation_group",
-                            "preparation_title",
+                            "preparation_annotation_id",
                             "_id",
-                            "in_documents"
+                            "preparation_title",
+                            "in_documents",
+                            "in_corpora",
+                            "preparation_author_annotator_forename",
+                            "preparation_author_annotator_surname",
+                            "generated_id"
                         ));
 
                         if(!$annotationData['error'] && count($annotationData['result']) > 0){
@@ -404,7 +419,7 @@ class BrowseController extends Controller
                                     if(array_key_exists('in_documents', $annotationData['result'][0]['_source'])){
                                         $dataArray['document_count'] = floatval(count($annotationData['result'][0]['_source']['in_documents']));
                                     }
-                                    //Log::info("annotationData: ".print_r($annotationData,1));
+                                    Log::info("annotationData: ".print_r($annotationData,1));
                                     $dataArray['title'] = $annotationData['result'][0]['_source']['preparation_title'][0];
                                     $dataArray['preparation_annotation_id'] = $annotationData['result'][0]['_id'];
                                     array_push($annotationMapping[$group],$dataArray);
@@ -431,7 +446,8 @@ class BrowseController extends Controller
                         }
                     }
 
-
+                    $data['result']['workflow_status'] = $workFlowStatus;
+                    $data['result']['wcorpus_version'] = $corpusVersion;
                     $data['result']['allAnnotationGroups'] = $allAnnotationGroups;
                     $data['result']['documentannotationcount'] = $documentannotationcount;
                     $data['result']['annotationGroups'] = $annotationMapping;
@@ -443,10 +459,15 @@ class BrowseController extends Controller
                 $apiData = $this->ElasticService->getAnnotation($id);
                 $data = json_decode($apiData->getContent(), true);
                 $corpusId = is_array($data['result']['in_corpora']) ? $data['result']['in_corpora'][0]: $data['result']['in_corpora'];
+                $workFlowStatus = $this->LaudatioUtilService->getWorkFlowStatus($corpusId);
+                $corpusVersion = $this->LaudatioUtilService->getCorpusVersion($corpusId);
+
                 if($corpusId){
 
                     $annotationCorpusdata = $this->ElasticService->getCorporaByAnnotation(array(array('corpus_id' => $corpusId)),array($id));
                     $data['result']['annotationCorpusdata'] = $annotationCorpusdata[$id][0]['_source'];
+                    $data['result']['workflow_status'] = $workFlowStatus;
+                    $data['result']['wcorpus_version'] = $corpusVersion;
 
                     $citeData['authors'] = array();
                     for($i=0;$i< count($data['result']['annotationCorpusdata']['corpus_editor_forename']);$i++) {
@@ -516,6 +537,8 @@ class BrowseController extends Controller
             "corpus_elasticsearch_id" => $this->LaudatioUtilService->getElasticSearchIdByCorpusId($corpusId),
             "corpus_id" => $this->LaudatioUtilService->getDatabaseIdByCorpusId($corpusId),
             "corpus_path" => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusId),
+            "workflow_status" => $workFlowStatus,
+            "corpus_version" => $corpusVersion,
             "header_data" => $data,
             "citedata" => $citeData,
             "user" => $user,

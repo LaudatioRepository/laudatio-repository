@@ -104,20 +104,14 @@ class UploadController extends Controller
         $annotation = null;
         $documents = array();
         $annotations = array();
-        //Log::info("FORMATS; ".print_r($request->formats,1));
 
         $fileName = $request->formats->getClientOriginalName();
         $pathname = $request->formats->getPathName();
-        //Log::info("fileName; ".print_r($fileName,1));
-        //Log::info("pathname; ".print_r($pathname,1));
+
         $xmlpath =  $request->formats->getRealPath();
-        //Log::info("realpath; ".print_r($xmlpath,1));
+
         $directoryPath = $this->laudatioUtilsService->getDirectoryPath(array($fileName),$fileName);
-        //Log::info("directoryPath: ".$directoryPath);
 
-
-            //Log::info("_FILES: ".print_r($_FILES,1));
-        //Log::info("_POST: ".print_r($_POST,1));
         $json = null;
         $jsonPath = null;
         $xmlNode = null;
@@ -199,10 +193,22 @@ class UploadController extends Controller
             $isVersioned = $this->laudatioUtilsService->corpusIsVersioned($corpusId);
             $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
             $corpusDescription = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
+            $corpusPublicationVersions = $jsonPath->find('$.TEI.teiHeader.revisionDesc.change.n')->data();
+
+            if(empty($corpusPublicationVersions)) {
+                $corpusPublicationVersions = $jsonPath->find('$.TEI.teiHeader.revisionDesc.change[*].n')->data();
+            }
+
+
+            $corpusPublicationVersion = max(array_values($corpusPublicationVersions));
+
+
             $gitLabResponse = null;
             $remoteRepoUrl = "";
+
             if($corpusTitle[0]){
                 if(!$isVersioned){
+
                     $corpusPath = $this->GitRepoService->updateCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus->directory_path,$corpusTitle[0]);
                     $gitLabCorpusPath = substr($corpusPath,strrpos($corpusPath,"/")+1);
 
@@ -223,6 +229,8 @@ class UploadController extends Controller
                         'corpusId' => $corpusId,
                         "uid" => $user->id,
                         'corpus_path' => $gitLabCorpusPath,
+                        'publication_version' => $corpusPublicationVersion,
+                        'workflow_status' => 0,
                         'gitlab_group_id' => $corpusProjectId,
                         'gitlab_id' => $gitLabResponse['id'],
                         'gitlab_web_url' => $gitLabResponse['web_url'],
@@ -239,6 +247,8 @@ class UploadController extends Controller
                         $params = array(
                             "uid" => $user->id,
                             "name" => $corpusTitle[0],
+                            'publication_version' => $corpusPublicationVersion,
+                            'workflow_status' => 0,
                             "file_name" => $fileName,
                         );
                         $gitLabCorpusPath = substr($corpusPath,strrpos($corpusPath,"/"));
@@ -262,6 +272,7 @@ class UploadController extends Controller
                 }
             }
 
+            Log::info("FILEPATH: ".$filePath);
 
         }//end if
 
@@ -290,6 +301,9 @@ class UploadController extends Controller
                 $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);
             }
 
+            $corpusPublicationVersion = $this->laudatioUtilsService->getCorpusVersion($corpus->corpus_id);
+            $corpusWorkflowStatus = $this->laudatioUtilsService->getWorkFlowStatus($corpus->corpus_id);
+
             // fetch the elastic id
             if($headerPath == 'corpus') {
                 $idParams = array();
@@ -300,6 +314,7 @@ class UploadController extends Controller
                 $corpusObject[$corpus->corpus_id] = $idParams;
                 //if(isset($corpus->corpus_id)){
                 $elasticIds = $this->elasticService->getElasticIdByObjectId('corpus',$corpusObject);
+                //$elasticIds = $this->elasticService->setWorkflowStatusByCorpusId($corpus->corpus_id);
 
                 foreach ($elasticIds as $ecorpusId => $elasticId){
                     $corpus->elasticsearch_id = $elasticIds[$ecorpusId];
@@ -331,12 +346,20 @@ class UploadController extends Controller
 
                     foreach ($elasticIds as $documentId => $elasticId) {
                         $documentToBeUpdated = Document::findOrFail($document->id);
-                        $documentToBeUpdated->elasticsearch_id = $elasticIds[$documentId];
+                        $documentToBeUpdated->elasticsearch_id = $elasticIds[$document->id];
                         $documentToBeUpdated->save();
                     }
 
+
+                    $params = array(
+                        'publication_version' => $corpusPublicationVersion,
+                        'workflow_status' => $corpusWorkflowStatus
+                    );
+
+                    $this->laudatioUtilsService->updateDocumentAttributes($params,$document->id);
+
                     $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id);
-                    $this->laudatioUtilsService->emptyDocumentCacheByDocumentId($documentId);
+                    $this->laudatioUtilsService->emptyDocumentCacheByDocumentId($document->id);
                 }
             }
             else if($headerPath == 'annotation'){
@@ -363,10 +386,15 @@ class UploadController extends Controller
                         $annotationToBeUpdated->save();
                     }
 
-                    Log::info("FLUSHING: annotation cache for corpus id: ".$corpus->corpus_id);
+                    $params = array(
+                        'publication_version' => $corpusPublicationVersion,
+                        'workflow_status' => $corpusWorkflowStatus
+                    );
+
+                    $this->laudatioUtilsService->updateAnnotationAttributes($params,$annotation->id);
+
                     $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id);
-                    Log::info("FLUSHING: annotation cache by annotation id: ".$annotationId);
-                    $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationId($annotationId);
+                    $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationId($annotation->id);
                 }
             }
 
@@ -387,7 +415,7 @@ class UploadController extends Controller
         else{
             return redirect()->route('corpus.edit',['corpus' => $corpusId]);
         }
-        
+
     }
 
     public function uploadSubmitFiles(Request $request)

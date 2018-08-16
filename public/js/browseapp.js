@@ -26551,10 +26551,8 @@ Vue.component("corpusheader", __webpack_require__(279));
 Vue.component("documentheader", __webpack_require__(282));
 Vue.component("annotationheader", __webpack_require__(285));
 Vue.component("metadata-block-body-corpus", __webpack_require__(288));
-Vue.component("metadata-block-header-document", __webpack_require__(291));
-Vue.component("metadata-block-body-document", __webpack_require__(294));
-Vue.component("metadata-block-header-annotation", __webpack_require__(300));
-Vue.component("metadata-block-body-annotation", __webpack_require__(303));
+Vue.component("metadata-block-body-document", __webpack_require__(291));
+Vue.component("metadata-block-body-annotation", __webpack_require__(297));
 
 var browseApp = new Vue({
     el: "#rootContainer",
@@ -26567,6 +26565,8 @@ var browseApp = new Vue({
         isloggedin: window.laudatioApp.isLoggedIn,
         corpusid: window.laudatioApp.corpus_id,
         corpuspath: window.laudatioApp.corpus_path,
+        workflowstatus: window.laudatioApp.workflow_status,
+        corpusversion: window.laudatioApp.corpus_version,
         corpuselasticsearchid: window.laudatioApp.corpus_elasticsearch_id
     }
 });
@@ -43573,30 +43573,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header', 'citedata', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath'],
+    props: ['headerdata', 'header', 'citedata', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath', 'workflowstatus', 'corpusversion'],
     methods: {
         corpusAuthors: function corpusAuthors() {
             var authorString = "";
@@ -43629,8 +43608,10 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _vm.header == "corpus"
     ? _c("div", { staticClass: "container pt-5" }, [
+        _vm._m(0),
+        _vm._v(" "),
         _c("div", { staticClass: "row" }, [
-          _vm._m(0),
+          _vm._m(1),
           _vm._v(" "),
           _c("div", { staticClass: "col pr-5" }, [
             _c("h3", { staticClass: "h3 font-weight-bold" }, [
@@ -43816,7 +43797,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "col-2" }, [
-            _vm.isloggedin
+            _vm.isloggedin && _vm.workflowstatus == "0"
               ? _c("div", { staticClass: "card text-white bg-transparent" }, [
                   _c(
                     "h6",
@@ -43911,13 +43892,13 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _vm._m(1),
+                      _vm._m(2),
                       _vm._v(" "),
                       _c("br"),
                       _vm._v(" "),
-                      _vm._m(2),
+                      _vm._m(3),
                       _vm._v(" "),
-                      _vm._m(3)
+                      _vm._m(4)
                     ])
                   ])
                 : _vm._e()
@@ -43934,7 +43915,7 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-                _vm._m(4),
+                _vm._m(5),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -44042,7 +44023,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _vm._m(5),
+        _vm._m(6),
         _vm._v(" "),
         _c(
           "div",
@@ -44077,10 +44058,10 @@ var render = function() {
                     ]
                   ),
                   _vm._v(" "),
-                  _vm._m(6)
+                  _vm._m(7)
                 ]),
                 _vm._v(" "),
-                _vm._m(7)
+                _vm._m(8)
               ])
             ])
           ]
@@ -44089,6 +44070,39 @@ var render = function() {
     : _vm._e()
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "alert alert-dismissible fade show",
+        attrs: { role: "alert", id: "alert-laudatio" }
+      },
+      [
+        _c("span", { staticClass: "alert-laudatio-message" }),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "close",
+            attrs: {
+              type: "button",
+              "data-dismiss": "alert",
+              "aria-label": "Close"
+            }
+          },
+          [
+            _c("i", {
+              staticClass: "fa fa-close",
+              attrs: { "aria-hidden": "true" }
+            })
+          ]
+        )
+      ]
+    )
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -44240,7 +44254,7 @@ var staticRenderFns = [
           id: "publishCorpusModal",
           tabindex: "-1",
           role: "dialog",
-          "aria-labelledby": "publishCorpusModal",
+          "aria-labelledby": "publishCorpusModalTitle",
           "aria-hidden": "true"
         }
       },
@@ -44272,115 +44286,19 @@ var staticRenderFns = [
                     ]
                   ),
                   _vm._v(" "),
-                  _c("h3", { staticClass: "h3 modal-title mt-3 w-75" }, [
-                    _vm._v(
-                      "\n                  Publish „RIDGES Herbology, Version 9.0“\n                "
-                    )
-                  ]),
+                  _c("h3", {
+                    staticClass: "h3 modal-title mt-3 w-75",
+                    attrs: { id: "publishCorpusModalTitle" }
+                  }),
                   _vm._v(" "),
-                  _c("p", { staticClass: "mt-3 mb-1" }, [
-                    _vm._v(
-                      "\n                  Following criteria needs to be fulfilled before you can publish a corpus: A verification is ongoing ...\n                "
-                    )
-                  ]),
+                  _c("p", {
+                    staticClass: "mt-3 mb-1",
+                    attrs: { id: "publishCorpusModalSubtitle" }
+                  }),
                   _vm._v(" "),
-                  _c(
-                    "ul",
-                    { staticClass: "list-group list-group-flush mb-3 mt-3" },
-                    [
-                      _c(
-                        "li",
-                        {
-                          staticClass:
-                            "list-group-item d-flex justify-content-between align-items-center"
-                        },
-                        [
-                          _c("b", [_vm._v("1 Corpus Header uploaded")]),
-                          _vm._v(" "),
-                          _c("span", { staticClass: "text-grey text-14" }, [
-                            _vm._v("verifying")
-                          ])
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "li",
-                        {
-                          staticClass:
-                            "list-group-item d-flex justify-content-between align-items-center"
-                        },
-                        [
-                          _c("b", [
-                            _vm._v("According number of Document Header")
-                          ]),
-                          _vm._v(" "),
-                          _c("i", {
-                            staticClass:
-                              "fa fa-check-circle fa-fw fa-lg text-success"
-                          })
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "li",
-                        {
-                          staticClass:
-                            "list-group-item d-flex justify-content-between align-items-center"
-                        },
-                        [
-                          _c("div", { staticClass: "d-flex flex-column" }, [
-                            _c("b", [
-                              _vm._v("According number of Annotation Header")
-                            ]),
-                            _vm._v(" "),
-                            _c("small", { staticClass: "text-primary" }, [
-                              _vm._v("missing Annotation Header")
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("i", {
-                            staticClass:
-                              "fa fa-exclamation-triangle fa-fw fa-lg text-danger"
-                          })
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "li",
-                        {
-                          staticClass:
-                            "list-group-item d-flex justify-content-between align-items-center"
-                        },
-                        [
-                          _c("div", { staticClass: "d-flex flex-column" }, [
-                            _c("b", [_vm._v("at least 1 Corpus Data Format")]),
-                            _vm._v(" "),
-                            _c("small", { staticClass: "text-primary" }, [
-                              _vm._v("missing Corpus Data Format")
-                            ])
-                          ]),
-                          _vm._v(" "),
-                          _c("i", {
-                            staticClass:
-                              "fa fa-exclamation-triangle fa-fw fa-lg text-danger"
-                          })
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "li",
-                        {
-                          staticClass:
-                            "list-group-item d-flex justify-content-between align-items-center"
-                        },
-                        [
-                          _c("b", [_vm._v("Defined License")]),
-                          _vm._v(" "),
-                          _c("span", [_vm._v("...")])
-                        ]
-                      )
-                    ]
-                  )
+                  _c("div", {
+                    attrs: { id: "publishCorpusModalSubtitleContent" }
+                  })
                 ]),
                 _vm._v(" "),
                 _c(
@@ -44407,11 +44325,12 @@ var staticRenderFns = [
                       "button",
                       {
                         staticClass:
-                          "disabled btn btn-primary font-weight-bold text-uppercase rounded px-5",
+                          "btn btn-primary font-weight-bold text-uppercase rounded px-5",
                         attrs: {
                           "data-dismiss": "modal",
                           "data-toggle": "modal",
-                          "data-target": "#publishSuccessCorpusModal"
+                          "data-target": "#publishSuccessCorpusModal",
+                          id: "doPublish"
                         }
                       },
                       [_vm._v("\n                  Publish\n                ")]
@@ -47194,7 +47113,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header', 'user', 'isloggedin'],
+    props: ['headerdata', 'header', 'user', 'isloggedin', 'workflowstatus', 'corpusversion'],
     data: function data() {
         return {
             annotators: [],
@@ -48603,26 +48522,28 @@ var render = function() {
             )
           : _vm._e(),
         _vm._v(" "),
-        _c(
-          "div",
-          {
-            directives: [
+        _vm.workflowstatus == 0
+          ? _c(
+              "div",
               {
-                name: "show",
-                rawName: "v-show",
-                value: _vm.isloggedin,
-                expression: "isloggedin"
-              }
-            ],
-            staticClass:
-              "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1"
-          },
-          [
-            _c("span", [
-              _vm._v("\n                WORKING VERSION\n            ")
-            ])
-          ]
-        )
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.isloggedin,
+                    expression: "isloggedin"
+                  }
+                ],
+                staticClass:
+                  "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1"
+              },
+              [
+                _c("span", [
+                  _vm._v("\n                WORKING VERSION\n            ")
+                ])
+              ]
+            )
+          : _vm._e()
       ])
     : _vm._e()
 }
@@ -48761,146 +48682,7 @@ var normalizeComponent = __webpack_require__(2)
 /* script */
 var __vue_script__ = __webpack_require__(292)
 /* template */
-var __vue_template__ = __webpack_require__(293)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/DocumentMetadataBlockHeader.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-cc68696e", Component.options)
-  } else {
-    hotAPI.reload("data-v-cc68696e", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 292 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header'],
-    mounted: function mounted() {
-        console.log('CorpusMetadataBlockHeader mounted.');
-    }
-});
-
-/***/ }),
-/* 293 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "headerRow headerNav" }, [
-    _c("div", { staticClass: "headerColumn left" }),
-    _vm._v(" "),
-    _c("div", { staticClass: "headerColumn middle" }, [
-      _vm.header == "document"
-        ? _c("ul", { staticClass: "nav nav-pills" }, [
-            _vm._m(0),
-            _vm._v(" "),
-            _c("li", { attrs: { role: "tab" } }, [
-              _c(
-                "a",
-                {
-                  attrs: { href: "#annotationMetadata", "data-toggle": "pill" }
-                },
-                [
-                  _vm._v("ANNOTATIONS "),
-                  _c("i", { staticClass: "material-icons" }, [
-                    _vm._v("create")
-                  ]),
-                  _vm._v(
-                    " " + _vm._s(_vm.headerdata.totaldocumentannotationcount)
-                  )
-                ]
-              )
-            ])
-          ])
-        : _vm._e()
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "headerColumn right" })
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "active", attrs: { role: "tab" } }, [
-      _c("a", { attrs: { href: "#documentMetadata", "data-toggle": "pill" } }, [
-        _vm._v("DOCUMENT METADATA "),
-        _c("i", { staticClass: "material-icons" }, [_vm._v("description")])
-      ])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-cc68696e", module.exports)
-  }
-}
-
-/***/ }),
-/* 294 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(2)
-/* script */
-var __vue_script__ = __webpack_require__(295)
-/* template */
-var __vue_template__ = __webpack_require__(299)
+var __vue_template__ = __webpack_require__(296)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -48939,12 +48721,12 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 295 */
+/* 292 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__DefinitionList__ = __webpack_require__(296);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__DefinitionList__ = __webpack_require__(293);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__DefinitionList___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__DefinitionList__);
 //
 //
@@ -49189,7 +48971,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     components: { DefinitionList: __WEBPACK_IMPORTED_MODULE_0__DefinitionList___default.a },
-    props: ['headerdata', 'header', 'user', 'isloggedin'],
+    props: ['headerdata', 'header', 'user', 'isloggedin', 'workflowstatus', 'corpusversion'],
     data: function data() {
         return {
             annotators: [],
@@ -49384,15 +49166,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 296 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(297)
+var __vue_script__ = __webpack_require__(294)
 /* template */
-var __vue_template__ = __webpack_require__(298)
+var __vue_template__ = __webpack_require__(295)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -49431,7 +49213,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 297 */
+/* 294 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -49448,7 +49230,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 298 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -49472,7 +49254,7 @@ if (false) {
 }
 
 /***/ }),
-/* 299 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -50391,22 +50173,28 @@ var render = function() {
             )
           : _vm._e(),
         _vm._v(" "),
-        _c(
-          "div",
-          {
-            directives: [
+        _vm.workflowstatus == 0
+          ? _c(
+              "div",
               {
-                name: "show",
-                rawName: "v-show",
-                value: _vm.isloggedin,
-                expression: "isloggedin"
-              }
-            ],
-            staticClass:
-              "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1"
-          },
-          [_c("span", [_vm._v("\n            WORKING VERSION\n          ")])]
-        )
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.isloggedin,
+                    expression: "isloggedin"
+                  }
+                ],
+                staticClass:
+                  "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1"
+              },
+              [
+                _c("span", [
+                  _vm._v("\n            WORKING VERSION\n          ")
+                ])
+              ]
+            )
+          : _vm._e()
       ])
     : _vm._e()
 }
@@ -50525,162 +50313,15 @@ if (false) {
 }
 
 /***/ }),
-/* 300 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(301)
+var __vue_script__ = __webpack_require__(298)
 /* template */
-var __vue_template__ = __webpack_require__(302)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/AnnotationMetadataBlockHeader.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-67224316", Component.options)
-  } else {
-    hotAPI.reload("data-v-67224316", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 301 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header'],
-    mounted: function mounted() {
-        console.log('AnnotationMetadataBlockHeader mounted.');
-    }
-});
-
-/***/ }),
-/* 302 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "headerRow headerNav" }, [
-    _c("div", { staticClass: "headerColumn left" }),
-    _vm._v(" "),
-    _c("div", { staticClass: "headerColumn middle" }, [
-      _vm.header == "annotation"
-        ? _c("ul", { staticClass: "nav nav-pills" }, [
-            _vm._m(0),
-            _vm._v(" "),
-            _vm._m(1),
-            _vm._v(" "),
-            _c("li", { attrs: { role: "tab" } }, [
-              _c(
-                "a",
-                { attrs: { href: "#documents", "data-toggle": "pill" } },
-                [
-                  _vm._v("DOCUMENTS "),
-                  _c("i", { staticClass: "material-icons" }, [
-                    _vm._v("create")
-                  ]),
-                  _vm._v(" " + _vm._s(_vm.headerdata.annotationdocumentcount))
-                ]
-              )
-            ])
-          ])
-        : _vm._e()
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "headerColumn right" })
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "active", attrs: { role: "tab" } }, [
-      _c("a", { attrs: { href: "#guidelines", "data-toggle": "pill" } }, [
-        _vm._v("GUIDELINES")
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { attrs: { role: "tab" } }, [
-      _c("a", { attrs: { href: "#preparationsteps", "data-toggle": "pill" } }, [
-        _vm._v("PREPARATION STEPS")
-      ])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-67224316", module.exports)
-  }
-}
-
-/***/ }),
-/* 303 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(2)
-/* script */
-var __vue_script__ = __webpack_require__(304)
-/* template */
-var __vue_template__ = __webpack_require__(305)
+var __vue_template__ = __webpack_require__(299)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -50719,7 +50360,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 304 */
+/* 298 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -51036,7 +50677,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header', 'user', 'isloggedin'],
+    props: ['headerdata', 'header', 'user', 'isloggedin', 'workflowstatus', 'corpusversion'],
     data: function data() {
         return {
             annotators: [],
@@ -51357,7 +50998,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 305 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -52170,22 +51811,24 @@ var render = function() {
           ]
         ),
         _vm._v(" "),
-        _c(
-          "div",
-          {
-            directives: [
+        _vm.workflowstatus == 0
+          ? _c(
+              "div",
               {
-                name: "show",
-                rawName: "v-show",
-                value: _vm.isloggedin,
-                expression: "isloggedin"
-              }
-            ],
-            staticClass:
-              "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1"
-          },
-          [_c("span", [_vm._v("\n           WORKING VERSION\n         ")])]
-        )
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.isloggedin,
+                    expression: "isloggedin"
+                  }
+                ],
+                staticClass:
+                  "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1"
+              },
+              [_c("span", [_vm._v("\n           WORKING VERSION\n         ")])]
+            )
+          : _vm._e()
       ])
     : _vm._e()
 }

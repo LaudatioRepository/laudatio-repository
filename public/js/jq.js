@@ -660,35 +660,36 @@ $(function () {
             //var json = JSON.parse(publishData.msg);
             var jsonData = publishData.msg;
 
-            $('#publicationModalLabel').html(jsonData.title);
-            $('#publicationModal').modal('show');
-            var html = '<div id="preparationWrapper">';
+            $('#publishCorpusModalTitle').html(jsonData.title);
+            $('#publishCorpusModalSubtitle').html(jsonData.subtitle);
 
-            html += '<div id="subtitle">' + jsonData.subtitle + '</div>';
-            html += '<div id="waiting">' + jsonData.waiting + '</div>';
+            var html = '<div id="preparationWrapper">';
 
             html += '<ul class="list-group">';
 
-            html += '<li class="list-group-item">';
-            html += '' + jsonData.corpus_header.title + '';
+            html += '<li class="list-group-item d-flex justify-content-between align-items-center">';
+
             if (jsonData.corpus_header.corpusHeaderText != '') {
-                html += '<br /><span class="has-error>' + jsonData.corpus_header.corpusHeaderText + '</span>';
+                html += '<br /><small class="text-primary">' + jsonData.corpus_header.corpusHeaderText + '</small>';
+            } else {
+                html += jsonData.corpus_header.title;
             }
             html += '<i class="material-icons pull-right">' + jsonData.corpus_header.corpusIcon + '</i>';
             html += '</li>';
 
-            html += '<li class="list-group-item">';
+            html += '<li class="list-group-item justify-content-between align-items-center">';
             html += '' + jsonData.document_headers.title + '';
             if (jsonData.document_headers.documentHeaderText != '') {
-                html += '<br /><span class="has-error">' + jsonData.document_headers.documentHeaderText + '</span>';
+                html += '<br /><br /><span>' + jsonData.document_headers.documentHeaderText + '</span>';
             }
+
             html += '<i class="material-icons pull-right">' + jsonData.document_headers.documentIcon + '</i>';
             html += '</li>';
 
-            html += '<li class="list-group-item">';
+            html += '<li class="list-group-item justify-content-between align-items-center">';
             html += '' + jsonData.annotation_headers.title + '';
             if (jsonData.annotation_headers.annotationHeaderText != '') {
-                html += '<br /><span class="has-error">' + jsonData.annotation_headers.annotationHeaderText + '</span>';
+                html += '<br /><br /><span>' + jsonData.annotation_headers.annotationHeaderText + '</span>';
             }
             html += '<i class="material-icons pull-right">' + jsonData.annotation_headers.annotationIcon + '</i>';
             html += '</li>';
@@ -697,6 +698,8 @@ $(function () {
 
             html += '</div>';
 
+            $('#publishCorpusModalSubtitleContent').html(html);
+            $('#publicationModal').modal('show');
             if (jsonData.canPublish == false) {
                 $('#doPublish').attr("disabled", "disabled");
             }
@@ -707,6 +710,51 @@ $(function () {
         });
     });
 
+    $(document).on('click', '#doPublish', function () {
+        var postData = {};
+        postData.corpusid = window.laudatioApp.corpus_id;
+        postData.corpuspath = window.laudatioApp.corpus_path;
+        console.log("POSTDATA: " + JSON.stringify(postData));
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            method: 'POST',
+            url: '/api/adminapi/publishCorpus',
+            data: postData,
+            dataType: "json"
+        }).done(function (data) {
+            if (data.status == "success") {
+                console.log(data.message.publish_corpus_response);
+                $('#alert-laudatio').addClass('alert-success');
+                $('#alert-laudatio .alert-laudatio-message').html(data.message.publish_corpus_response);
+                $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
+                    $("#alert-laudatio").slideUp(500);
+                });
+            } else if (data.status == "error") {
+                console.log(data.message.publish_corpus_response);
+                $('#alert-laudatio').addClass('alert-danger');
+                $('#alert-laudatio .alert-laudatio-message').html(data.message.publish_corpus_response);
+
+                $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
+                    $("#alert-laudatio").slideUp(500);
+                });
+            }
+        }).fail(function (data) {
+            console.log("FAIL : " + data.message.publish_corpus_response);
+            $('#alert-laudatio').addClass('alert-danger');
+            $('#alert-laudatio .alert-laudatio-message').html(data.message.publish_corpus_response);
+
+            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
+                $("#alert-laudatio").slideUp(500);
+            });
+        });
+    });
+
     /**
      * Validate Corpus For Publication
      */
@@ -714,10 +762,10 @@ $(function () {
         var postData = {};
         postData.corpusid = $('#corpusid').val();
         postData.corpuspath = $('#corpuspath').val();
-
+        console.log("POSTDATA: " + JSON.stringify(postData));
         getValidationData(postData).then(function (data) {
             var json = JSON.parse(data.msg);
-
+            console.log("JSON: " + data.msg);
             var newModaltitle = "Validation results for corpus/" + json.corpusheader;
             $('#myModalLabelValidation').html(newModaltitle);
             $('#myValidatorModal').modal('show');

@@ -230,7 +230,7 @@
                 </div>
               </div>
         </div>
-        <div class="verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1" v-show="isloggedin">
+        <div v-if="workflowstatus == 0"  class="verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1" v-show="isloggedin">
               <span>
                 WORKING VERSION
               </span>
@@ -241,7 +241,7 @@
     import DefinitionList from "./DefinitionList";
     export default {
         components: {DefinitionList},
-        props: ['headerdata','header','user','isloggedin'],
+        props: ['headerdata','header','user','isloggedin','workflowstatus', 'corpusversion'],
         data: function(){
             return {
                 annotators: [],

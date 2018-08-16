@@ -1,5 +1,11 @@
 <template lang="html">
     <div class="container pt-5"  v-if="header == 'corpus'">
+        <div class="alert alert-dismissible fade show" role="alert" id="alert-laudatio">
+            <span class="alert-laudatio-message"></span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <i class="fa fa-close" aria-hidden="true"></i>
+            </button>
+        </div>
         <div class="row">
         <div class="col-2">
           <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
@@ -63,7 +69,7 @@
           </div>
         </div>
         <div class="col-2">
-          <div class="card text-white bg-transparent" v-if="isloggedin">
+          <div class="card text-white bg-transparent" v-if="isloggedin && workflowstatus == '0'">
               <h6 class="corpus-title h6 text-uppercase text-12 text-wine-trans">
                 Corpus
               </h6>
@@ -75,9 +81,11 @@
                   data-target="#publishCorpusModal">
                   Publish
                 </button>
+                <!--input type="hidden" name="corpusid" id="corpusid" v-bind:value="headerdata.corpus_id[0]" />
+                <input type="hidden" name="corpuspath" id="corpuspath" v-bind:value="corpuspath" />
+                 &nbsp; <a id="validateCorpusButton" class="btn btn-primary pull-right" href="#" role="button">Publish corpus</a-->
               </div>
             </div>
-
             <div class="card text-white bg-transparent" v-else-if="! isloggedin">
               <h6 class="corpus-title h6 text-uppercase text-12 text-wine">
                 Corpus
@@ -159,7 +167,7 @@
 
         </div>
 
-        <div class="modal fade" id="publishCorpusModal" tabindex="-1" role="dialog" aria-labelledby="publishCorpusModal"
+        <div class="modal fade" id="publishCorpusModal" tabindex="-1" role="dialog" aria-labelledby="publishCorpusModalTitle"
           aria-hidden="true">
           <div class="modal-dialog " role="document">
             <div class="modal-content border-0 rounded-lg bsh-1">
@@ -168,42 +176,13 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <i class="fa fa-close" aria-hidden="true"></i>
                 </button>
-                <h3 class="h3 modal-title mt-3 w-75">
-                  Publish „RIDGES Herbology, Version 9.0“
+                <h3 class="h3 modal-title mt-3 w-75" id="publishCorpusModalTitle">
                 </h3>
 
-                <p class="mt-3 mb-1">
-                  Following criteria needs to be fulfilled before you can publish a corpus: A verification is ongoing ...
+                <p class="mt-3 mb-1" id="publishCorpusModalSubtitle">
                 </p>
 
-                <ul class="list-group list-group-flush mb-3 mt-3">
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <b>1 Corpus Header uploaded</b>
-                    <span class="text-grey text-14">verifying</span>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <b>According number of Document Header</b>
-                    <i class="fa fa-check-circle fa-fw fa-lg text-success"></i>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex flex-column">
-                      <b>According number of Annotation Header</b>
-                      <small class="text-primary">missing Annotation Header</small>
-                    </div>
-                    <i class="fa fa-exclamation-triangle fa-fw fa-lg text-danger"></i>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex flex-column">
-                      <b>at least 1 Corpus Data Format</b>
-                      <small class="text-primary">missing Corpus Data Format</small>
-                    </div>
-                    <i class="fa fa-exclamation-triangle fa-fw fa-lg text-danger"></i>
-                  </li>
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <b>Defined License</b>
-                    <span>...</span>
-                  </li>
-                </ul>
+                <div id="publishCorpusModalSubtitleContent"></div>
 
               </div>
               <div class="modal-footer bg-corpus-light px-4 rounded-lg-bt">
@@ -211,8 +190,8 @@
                   aria-label="Close">
                   Cancel
                 </button>
-                <button class="disabled btn btn-primary font-weight-bold text-uppercase rounded px-5" data-dismiss="modal"
-                  data-toggle="modal" data-target="#publishSuccessCorpusModal">
+                <button class="btn btn-primary font-weight-bold text-uppercase rounded px-5" data-dismiss="modal"
+                  data-toggle="modal" data-target="#publishSuccessCorpusModal" id="doPublish">
                   Publish
                 </button>
               </div>
@@ -284,7 +263,7 @@
 
 <script>
     export default {
-        props: ['headerdata','header','citedata','user','isloggedin','corpuselasticsearchid','corpusid','corpuspath'],
+        props: ['headerdata','header','citedata','user','isloggedin','corpuselasticsearchid','corpusid','corpuspath','workflowstatus', 'corpusversion'],
         methods: {
             corpusAuthors: function(){
                 var authorString = "";

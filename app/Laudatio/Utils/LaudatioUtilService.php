@@ -148,6 +148,8 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             "description" => $corpusDesc[0],
             "corpus_size_type" => $corpusSizeType[0],
             "corpus_size_value" => $corpusSizeValue[0],
+            "publication_version" => $params['publication_version'],
+            "workflow_status" => 0,
             'uid' => $params['uid'],
             'gitlab_group_id' => $params['gitlab_group_id'],
             'directory_path' => $params['corpus_path'],
@@ -420,7 +422,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     }
 
     public function updateAnnotationAttributes($params,$annotationId){
-        $annotation = annotaion::find($annotationId);
+        $annotation = Annotation::find($annotationId);
         $annotation->update($params);
         return $annotation;
     }
@@ -697,6 +699,14 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
         return $genre;
     }
+    public function getCorpusVersion($corpusId){
+        $corpus = Corpus::where("corpus_id",$corpusId)->get();
+        return $corpus[0]->publication_version;
+    }
+    public function getWorkFlowStatus($corpusId){
+        $corpus = Corpus::where("corpus_id",$corpusId)->get();
+        return $corpus[0]->workflow_status;
+    }
 
     public function getCorpusPathByCorpusId($corpusid){
         $corpusPath = "";
@@ -862,7 +872,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     public function emptyAnnotationCacheByCorpusId($corpusId){
         Cache::tags(['annotation_'.$corpusId])->flush();
-        Cache::tags(['annotationgroup_'.$$corpusId])->flush();
+        Cache::tags(['annotationgroup_'.$corpusId])->flush();
 
     }
 
