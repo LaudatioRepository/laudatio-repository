@@ -278,6 +278,22 @@ $(function () {
     });
 
     /**
+     * select form check boxes
+     */
+
+    $("#selectAll_corpusEdit").click(function (e) {
+        $(this).closest("table").find("td input:checkbox").prop("checked", this.checked);
+    });
+
+    $("#selectAll_documentEdit").click(function (e) {
+        $(this).closest("table").find("td input:checkbox").prop("checked", this.checked);
+    });
+
+    $("#selectAll_annotationEdit").click(function (e) {
+        $(this).closest("table").find("td input:checkbox").prop("checked", this.checked);
+    });
+
+    /**
      * Submit the sign in form
      */
     $(document).on('submit', '#signInForm', function (e) {
@@ -652,8 +668,14 @@ $(function () {
      */
     $(document).on('click', '#publishCorpusButton', function () {
         var postPublishData = {};
-        postPublishData.corpusid = window.laudatioApp.corpus_id;
-        postPublishData.corpuspath = window.laudatioApp.corpus_path;
+
+        if (typeof window.laudatioApp != 'undefined') {
+            postPublishData.corpusid = window.laudatioApp.corpus_id;
+            postPublishData.corpuspath = window.laudatioApp.corpus_path;
+        } else {
+            postPublishData.corpusid = $(this).data('corpusid');
+            postPublishData.corpuspath = $(this).data('corpuspath');
+        }
 
         getPublishTestData(postPublishData).then(function (publishData) {
 
@@ -712,8 +734,12 @@ $(function () {
 
     $(document).on('click', '#doPublish', function () {
         var postData = {};
-        postData.corpusid = window.laudatioApp.corpus_id;
-        postData.corpuspath = window.laudatioApp.corpus_path;
+        if (typeof window.laudatioApp.corpus_id != 'undfined') {
+            postData.corpusid = window.laudatioApp.corpus_id;
+        } else {
+            postData.corpusid = $(this).data('corpusid');
+        }
+
         console.log("POSTDATA: " + JSON.stringify(postData));
         var token = $('#_token').val();
         $.ajaxSetup({
@@ -852,6 +878,222 @@ $(function () {
             console.log("FAIL : " + data);
         });
     });
+
+    /**
+     * DELETE CORPUS
+     */
+    $(document).on('click', '#checkDeleteCorpusButton', function () {
+        var postPublishData = {};
+
+        if (typeof window.laudatioApp != 'undefined') {
+            postPublishData.corpusid = window.laudatioApp.corpus_id;
+            postPublishData.corpuspath = window.laudatioApp.corpus_path;
+            postPublishData.corpusname = window.laudatioApp.corpus_name;
+        } else {
+            postPublishData.corpusid = $(this).data('corpusid');
+            postPublishData.corpuspath = $(this).data('corpuspath');
+            postPublishData.corpusname = $(this).data('corpusname');
+        }
+
+        checkCorpusContent(postPublishData).then(function (publishData) {
+
+            //var json = JSON.parse(publishData.msg);
+            var jsonData = publishData.msg.checkdata;
+
+            var corpusHeader = 0;
+            var documentHeaders = 0;
+            var annotationHeaders = 0;
+            var corpusData = 0;
+            var definedLIcense = 0;
+
+            var modal_title = "Do you really want to delete corpus " + postPublishData.corpusname + " ?";
+            $('#deleteCorpusModalTitle').html(modal_title);
+
+            if (typeof jsonData.corpusheader != 'undefined' && jsonData.corpusheader != '') {
+                corpusHeader = 1;
+            }
+
+            if (typeof jsonData.found_documents != 'undefined') {
+                documentHeaders = jsonData.found_documents.length;
+            }
+
+            if (typeof jsonData.found_annotations_in_corpus != 'undefined') {
+                annotationHeaders = jsonData.found_annotations_in_corpus.length;
+            }
+
+            var html = '<ul class="list-group list-group-flush mb-3">';
+            html += '<li class="list-group-item">(' + corpusHeader + ') Corpus Header</li>';
+
+            if (documentHeaders < 2) {
+                html += '<li class="list-group-item">(' + documentHeaders + ') Document Header</li>';
+            } else {
+                html += '<li class="list-group-item">(' + documentHeaders + ') Document Headers</li>';
+            }
+
+            if (annotationHeaders < 2) {
+                html += '<li class="list-group-item">(' + annotationHeaders + ') Annotation Header</li>';
+            } else {
+                html += '<li class="list-group-item">(' + annotationHeaders + ') Annotation Headers</li>';
+            }
+
+            html += '<li class="list-group-item">(0) Corpus Data Format</li>';
+            html += '<li class="list-group-item">(0) Defined License</li>';
+
+            html += '</ul>';
+
+            console.log(jsonData);
+            $('#corpusContent').html(html);
+        }).catch(function (err) {
+            // Run this when promise was rejected via reject()
+            console.log(err);
+        });
+    });
+
+    $(document).on('click', '.headerDeleteTrashcan', function () {
+        var postDeleteData = {};
+        var toBeDeleted = [];
+
+        if (typeof window.laudatioApp != 'undefined') {
+            postDeleteData.corpusid = window.laudatioApp.corpus_id;
+            postDeleteData.path = window.Laravel.directorypath;
+        } else {
+            postDeleteData.corpusid = $(this).data('corpusid');
+        }
+
+        var checkedId = $(this).parent().attr("id");
+        var checkedIdArray = checkedId.split('§');
+        var deletionObject = {};
+        deletionObject.fileName = checkedIdArray[1];
+        deletionObject.databaseId = checkedIdArray[2];
+        toBeDeleted.push(deletionObject);
+
+        postDeleteData.tobedeleted = toBeDeleted;
+
+        var contentType = '';
+        if (postDeleteData.path.indexOf('TEI-HEADERS/corpus') > -1) {
+            contentType = 'deleteCorpusContent';
+        } else if (postDeleteData.path.indexOf('TEI-HEADERS/document') > -1) {
+            contentType = 'deleteDocumentContent';
+        } else if (postDeleteData.path.indexOf('TEI-HEADERS/annotation') > -1) {
+            contentType = 'deleteAnnotationContent';
+        }
+
+        var trashcan = $(this);
+        deleteCorpusContent(postDeleteData, contentType).then(function (data) {
+            console.log("JSON: " + JSON.stringify(data));
+            trashcan.closest("tr").remove();
+        }).catch(function (err) {
+            // Run this when promise was rejected via reject()
+            console.log(err);
+        });
+    });
+
+    $(document).on('click', '#deleteSelectedCorpusButton', function () {
+        var postDeleteData = {};
+        var toBeDeleted = [];
+
+        if (typeof window.laudatioApp != 'undefined') {
+            postDeleteData.corpusid = window.laudatioApp.corpus_id;
+            postDeleteData.path = window.Laravel.directorypath;
+        } else {
+            postDeleteData.corpusid = $(this).data('corpusid');
+        }
+        var that = $(this);
+        that.closest("table").find("td input:checkbox").prop("checked", this.checked).each(function () {
+
+            var checkedId = $(this).attr("id");
+            if (checkedId != 'selectAll_corpusEdit') {
+                var checkedIdArray = checkedId.split('§');
+                var deletionObject = {};
+                deletionObject.fileName = checkedIdArray[1];
+                deletionObject.databaseId = checkedIdArray[2];
+                toBeDeleted.push(deletionObject);
+            }
+        });
+
+        postDeleteData.tobedeleted = toBeDeleted;
+        if (!that.hasClass('disabled')) {
+            console.log("POSTDELETEDATA:_ " + postDeleteData);
+        }
+
+        deleteCorpusContent(postDeleteData, 'deleteCorpusContent').then(function (postDeleteData) {}).catch(function (err) {
+            // Run this when promise was rejected via reject()
+            console.log(err);
+        });
+    });
+
+    $(document).on('click', '#deleteSelectedDocumentsButton', function () {
+        var postDeleteData = {};
+        var toBeDeleted = [];
+
+        if (typeof window.laudatioApp != 'undefined') {
+            postDeleteData.corpusid = window.laudatioApp.corpus_id;
+            postDeleteData.path = window.Laravel.directorypath;
+        } else {
+            postDeleteData.corpusid = $(this).data('corpusid');
+        }
+        var that = $(this);
+        that.closest("table").find("td input:checkbox").prop("checked", this.checked).each(function () {
+
+            var checkedId = $(this).attr("id");
+            if (checkedId != 'selectAll_documentEdit') {
+                var checkedIdArray = checkedId.split('§');
+                var deletionObject = {};
+                deletionObject.fileName = checkedIdArray[1];
+                deletionObject.databaseId = checkedIdArray[2];
+                toBeDeleted.push(deletionObject);
+            }
+        });
+
+        postDeleteData.tobedeleted = toBeDeleted;
+
+        if (!that.hasClass('disabled')) {
+            console.log(postDeleteData);
+        }
+
+        deleteCorpusContent(postDeleteData, 'deleteDocumentContent').then(function (postDeleteData) {}).catch(function (err) {
+            // Run this when promise was rejected via reject()
+            console.log(err);
+        });
+    });
+
+    $(document).on('click', '#deleteSelectedAnnotationsButton', function () {
+        var postDeleteData = {};
+        var toBeDeleted = [];
+
+        if (typeof window.laudatioApp != 'undefined') {
+            postDeleteData.corpusid = window.laudatioApp.corpus_id;
+            postDeleteData.path = window.Laravel.directorypath;
+        } else {
+            postDeleteData.corpusid = $(this).data('corpusid');
+        }
+
+        console.log("deleteSelectedAnnotationsButton: " + postDeleteData);
+
+        var that = $(this);
+        that.closest("table").find("td input:checkbox").prop("checked", this.checked).each(function () {
+
+            var checkedId = $(this).attr("id");
+            if (checkedId != 'selectAll_annotationEdit') {
+                var checkedIdArray = checkedId.split('§');
+                var deletionObject = {};
+                deletionObject.fileName = checkedIdArray[1];
+                deletionObject.databaseId = checkedIdArray[2];
+                toBeDeleted.push(deletionObject);
+            }
+        });
+
+        postDeleteData.tobedeleted = toBeDeleted;
+
+        if (!that.hasClass('disabled')) {
+            console.log(postDeleteData);
+        }
+
+        deleteCorpusContent(postDeleteData, 'deleteAnnotationContent').then(function (postDeleteData) {}).catch(function (err) {
+            // Run this when promise was rejected via reject()
+            console.log(err);
+        });
+    });
 });
 
 /** FUNCTIONS **/
@@ -908,6 +1150,68 @@ function getPublishTestData(postData) {
 
         $.ajax({
             url: '/api/adminapi/preparePublication',
+            type: "POST",
+            data: postData,
+            async: true,
+            statusCode: {
+                500: function _() {
+                    alert("server down");
+                }
+            },
+            success: function success(data) {
+                resolve(data); // Resolve promise and go to then()
+            },
+            error: function error(err) {
+                reject(err); // Reject the promise and go to catch()
+            }
+        });
+    });
+}
+
+function checkCorpusContent(postData) {
+    return new Promise(function (resolve, reject) {
+
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: '/api/adminapi/checkCorpusContent',
+            type: "POST",
+            data: postData,
+            async: true,
+            statusCode: {
+                500: function _() {
+                    alert("server down");
+                }
+            },
+            success: function success(data) {
+                resolve(data); // Resolve promise and go to then()
+            },
+            error: function error(err) {
+                reject(err); // Reject the promise and go to catch()
+            }
+        });
+    });
+}
+
+function deleteCorpusContent(postData, documentType) {
+    return new Promise(function (resolve, reject) {
+
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        var postUri = '/api/adminapi/' + documentType;
+        console.log("SENDING TO: " + postUri);
+        $.ajax({
+            url: postUri,
             type: "POST",
             data: postData,
             async: true,

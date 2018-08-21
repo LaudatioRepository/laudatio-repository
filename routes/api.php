@@ -53,6 +53,10 @@ Route::group(array('prefix' => 'adminapi'), function() {
     Route::post('createFormat','GitRepoController@createFormatFolder');
     Route::post('validateHeaders','GitRepoController@validateCorpus');
     Route::post('preparePublication','PublicationController@preparePublication');
+    Route::post('checkCorpusContent','PublicationController@checkCorpusContent');
+    Route::post('deleteCorpusContent','CorpusController@destroyCorpusContent');
+    Route::post('deleteDocumentContent','DocumentController@destroyDocumentContent');
+    Route::post('deleteAnnotationContent','AnnotationController@destroyAnnotationContent');
     Route::post('publishCorpus','PublicationController@publishCorpus');
     Route::post('updateCorpusProject/{corpusProject}','CorpusProjectController@update');
     Route::post('postMessage','MessageBoardController@create');

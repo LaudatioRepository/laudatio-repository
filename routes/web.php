@@ -44,7 +44,6 @@ Route::get('/corpusprojects/corpora/{corpus}/{filepath}/show',[ 'as' => 'corpus.
 Route::get('/corpusprojects/corpora/{corpus}/{path?}',[ 'as' => 'corpus.show', 'uses' => 'CorpusController@show'])->where('path', '.+')->middleware('auth');
 Route::post('/corpusprojects/corpora',[ 'as' => 'corpus.store', 'uses' => 'CorpusController@store'])->middleware('auth');
 Route::get('/corpusprojects/corpora/{corpus}/{user}/delete',[ 'as' => 'project.usercorpusroles.destroy', 'uses' => 'CorpusController@destroyCorpusUser'])->middleware('auth');
-Route::delete('/corpusprojects/corpora/{corpus}/{projectId}',[ 'as' => 'corpus.destroy', 'uses' => 'CorpusController@destroy'])->middleware('auth');
 /** END CORPORA  **/
 
 

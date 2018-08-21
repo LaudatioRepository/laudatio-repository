@@ -98,35 +98,61 @@
                 </thead>
                 <tbody>
                 @foreach($corpus_data['filedata']['annotationFileData']['headerData']['elements'] as $fileData)
-                    <tr>
-                        <td>
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="annotationEditItem_0001">
-                                <label class="custom-control-label font-weight-bold" for="annotationEditItem_0001">
-                                    {{$fileData['basename']}}
-                                </label>
-                            </div>
-                        </td>
-                        @if(isset($fileData['uploader_name']))
-                            <td class="text-14 text-grey-light">{{$fileData['uploader_name']}}</td>
-                        @else
-                            <td class="text-14 text-grey-light">&nbsp;</td>
-                        @endif
+                    @if (isset($fileData['headerObject']))
+                        <tr>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="annotationEditItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
+                                    <label class="custom-control-label font-weight-bold" for="annotationEditItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
+                                        {{$fileData['basename']}}
+                                    </label>
+                                </div>
+                            </td>
+                            @if(isset($fileData['uploader_name']))
+                                <td class="text-14 text-grey-light">{{$fileData['uploader_name']}}</td>
+                            @else
+                                <td class="text-14 text-grey-light">&nbsp;</td>
+                            @endif
 
-                        @if(isset($fileData['uploader_affiliation']))
-                            <td class="text-14 text-grey-light">{{$fileData['uploader_affiliation']}}</td>
-                        @else
-                            <td class="text-14 text-grey-light">&nbsp;</td>
-                        @endif
-                        <td class="text-14 text-grey-light">{{  Carbon\Carbon::parse($fileData['lastupdated'])->format('H:i,M d') }}</td>
-                        <td>
-                            <a href="#">
-                                <i class="fa fa-trash-o fa-fw fa-lg text-dark"></i>
-                            </a>
-                        </td>
-                    </tr>
+                            @if(isset($fileData['uploader_affiliation']))
+                                <td class="text-14 text-grey-light">{{$fileData['uploader_affiliation']}}</td>
+                            @else
+                                <td class="text-14 text-grey-light">&nbsp;</td>
+                            @endif
+                            <td class="text-14 text-grey-light">{{  Carbon\Carbon::parse($fileData['lastupdated'])->format('H:i,M d') }}</td>
+                            <td>
+                                <a href="javascript:" id="annotationDeleteItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
+                                    <i class="fa fa-trash-o fa-fw fa-lg text-dark headerDeleteTrashcan"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    @endif
                 @endforeach
                 </tbody>
+                <tfoot class="bg-bluegrey-mid">
+                <tr>
+                    <td colspan="3">
+                        @if (Auth::user()->can('Can delete Corpus'))
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="selectAll_annotationEdit">
+                                <label class="custom-control-label text-14" for="selectAll_annotationEdit">
+                                    Select all
+                                </label>
+                            </div>
+                        @else
+                            <div class="custom-control custom-checkbox">&nbsp;</div>
+                        @endif
+                    </td>
+                    <td colspan="2">
+                        @if (Auth::user()->can('Can delete Corpus'))
+                            <button class="float-right disabled btn btn-outline-corpus-dark font-weight-bold text-uppercase btn-sm" id="deleteSelectedAnnotationsButton">
+                                Delete Selected Files
+                            </button>&nbsp;
+                        @endif
+
+                    </td>
+                </tr>
+                </tfoot>
             </table>
         </div>
     </div>

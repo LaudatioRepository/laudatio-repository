@@ -606,7 +606,7 @@ class GitFunction
             if($this->isAdded($addStatus)){
 
 
-                $commit = $this->commitFiles($cwdPath,"deleting $cwdPath/$folder");
+                $commit = $this->commitFiles($cwdPath,"deleting $cwdPath/$folder",null);
                 $commitstatus = $this->getStatus($cwdPath);
 
                 if($this->isCleanWorkingTree($commitstatus)){

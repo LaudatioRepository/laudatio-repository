@@ -53,7 +53,6 @@ class PublicationController extends Controller
 
         $result = null;
         $corpusid = $request->input('corpusid');
-        $corpuspath = $request->input('corpuspath');
 
         //get information and build the post
 
@@ -159,7 +158,7 @@ class PublicationController extends Controller
                                 $annotation->save();
                             }
 
-                            
+
                             $result['publish_corpus_response']  = "The Corpus was successfully published";
                             $status = "success";
                         }
@@ -280,6 +279,25 @@ class PublicationController extends Controller
 
         //license
 
+
+        $response = array(
+            'status' => 'success',
+            'msg' => $result,
+        );
+
+        return Response::json($response);
+    }
+
+    public function checkCorpusContent(Request $request) {
+
+        $result = array();
+        $corpusid = $request->input('corpusid');
+        $corpus = Corpus::findOrFail($corpusid);
+        $corpuspath = $request->input('corpuspath');
+
+
+        $checkResult = json_decode($this->GitRepoService->checkForCorpusFiles($corpuspath."/TEI-HEADERS"), true);
+        $result['checkdata'] = $checkResult;
 
         $response = array(
             'status' => 'success',

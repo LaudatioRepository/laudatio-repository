@@ -30,6 +30,7 @@ const browseApp = new Vue({
         user: window.laudatioApp.user,
         isloggedin: window.laudatioApp.isLoggedIn,
         corpusid: window.laudatioApp.corpus_id,
+        corpusname: window.laudatioApp.corpus_name,
         corpuspath: window.laudatioApp.corpus_path,
         workflowstatus: window.laudatioApp.workflow_status,
         corpusversion: window.laudatioApp.corpus_version,

@@ -177,8 +177,8 @@
                                     <td colspan="2">
                                         @if (Auth::user()->can('Can assign users to corpus'))
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="selectAll_corpusEdit">
-                                                <label class="custom-control-label text-14" for="selectAll_corpusEdit">
+                                                <input type="checkbox" class="custom-control-input" id="selectAll_corpusUserEdit">
+                                                <label class="custom-control-label text-14" for="selectAll_corpusUserEdit">
                                                     Select all
                                                 </label>
                                             </div>

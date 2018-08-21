@@ -202,6 +202,7 @@ class BrowseController extends Controller
         $citeData = array();
         $corpusVersion = null;
         $workFlowStatus = null;
+        $corpusName = null;
 
         switch ($header){
             case "corpus":
@@ -212,6 +213,8 @@ class BrowseController extends Controller
                 for($i=0;$i< count($data['result']['corpus_editor_forename']);$i++) {
                     array_push($citeData['authors'],$data['result']['corpus_editor_forename'][$i]." ".$data['result']['corpus_editor_surname'][$i]);
                 }
+
+                $corpusName = $data['result']['corpus_title'][0];
 
                 $citeData['title'] = $data['result']['corpus_title'][0];
                 $citeData['version'] = $data['result']['corpus_version'][count($data['result']['corpus_version']) -1];
@@ -384,6 +387,7 @@ class BrowseController extends Controller
                         array_push($citeData['authors'],$data['result']['documentCorpusdata']['corpus_editor_forename'][$i]." ".$data['result']['documentCorpusdata']['corpus_editor_surname'][$i]);
                     }
 
+                    $corpusName = $data['result']['documentCorpusdata']['corpus_title'][0];
                     $citeData['title'] = $data['result']['documentCorpusdata']['corpus_title'][0];
                     $citeData['version'] = $data['result']['documentCorpusdata']['corpus_version'][count($data['result']['documentCorpusdata']['corpus_version']) -1];
                     $citeData['publishing_year'] = date('Y',strtotime($data['result']['documentCorpusdata']['corpus_publication_publication_date'][0]));//Carbon::createFromFormat ('Y-m-d' , $data['result']['documentCorpusdata']['corpus_publication_publication_date'][0])->format ('Y');
@@ -474,6 +478,7 @@ class BrowseController extends Controller
                         array_push($citeData['authors'],$data['result']['annotationCorpusdata']['corpus_editor_forename'][$i]." ".$data['result']['annotationCorpusdata']['corpus_editor_surname'][$i]);
                     }
 
+                    $corpusName = data['result']['annotationCorpusdata']['corpus_title'][0];
                     $citeData['title'] = $data['result']['annotationCorpusdata']['corpus_title'][0];
                     $citeData['version'] = $data['result']['annotationCorpusdata']['corpus_version'][count($data['result']['annotationCorpusdata']['corpus_version']) -1];
                     $citeData['publishing_year'] = date('Y',strtotime($data['result']['annotationCorpusdata']['corpus_publication_publication_date'][0]));//Carbon::createFromFormat ('Y-m-d' , $data['result']['annotationCorpusdata']['corpus_publication_publication_date'][0])->format ('Y');
@@ -536,6 +541,7 @@ class BrowseController extends Controller
             "header_id" => $id,
             "corpus_elasticsearch_id" => $this->LaudatioUtilService->getElasticSearchIdByCorpusId($corpusId),
             "corpus_id" => $this->LaudatioUtilService->getDatabaseIdByCorpusId($corpusId),
+            "corpus_name" => $corpusName,
             "corpus_path" => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusId),
             "workflow_status" => $workFlowStatus,
             "corpus_version" => $corpusVersion,

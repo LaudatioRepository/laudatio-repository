@@ -21,16 +21,14 @@ class CorpusController extends Controller
 {
     protected $GitRepoService;
     protected $LaudatioUtilService;
+    protected $flysystem;
 
-    public function __construct(GitRepoInterface $Gitservice,GitLabInterface $GitLabService,FlysystemManager $flysystem,LaudatioUtilsInterface $laudatioUtils)
+    public function __construct(GitRepoInterface $Gitservice, FlysystemManager $flysystem,LaudatioUtilsInterface $laudatioUtils)
     {
         $this->GitRepoService = $Gitservice;
-        $this->GitLabService = $GitLabService;
         $this->LaudatioUtilService = $laudatioUtils;
-
         $this->flysystem = $flysystem;
-        $this->connection = $this->flysystem->getDefaultConnection();
-        $this->basePath = config('laudatio.basePath');
+
     }
 
     /**
@@ -513,11 +511,12 @@ class CorpusController extends Controller
             'messagecount' => $messagecount
 
         );
-        //dd($documentFileData);
+        //dd($corpus_data);
         JavaScript::put([
             'corpusUpload' => $corpusUpload,
             'documentUpload' => $documentUpload,
-            'annotationUpload' => $annotationUpload
+            'annotationUpload' => $annotationUpload,
+            'corpus_id' => $corpus->id
         ]);
 
         return view('project.corpus.edit', compact('corpus'))
@@ -575,94 +574,144 @@ class CorpusController extends Controller
     }
 
 
-    /**
-     * @param Corpus $corpus
-     * @return $this
-     */
-    public function delete(Corpus $corpus, $corpusproject_directory_path)
-    {
-        $isLoggedIn = \Auth::check();
-        $user = \Auth::user();
-
-        $corpusProject = CorpusProject::where('directory_path', '=', $corpusproject_directory_path)->get();
-
-        return view('project.corpus.delete', compact('corpus'))
-            ->with('projectId', $corpusProject[0]->id)
-            ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',$user);
-    }
-
 
     /**
      * @param Request $request
-     * @param Corpus $corpus
      * @return $this
      */
-    public function destroy(Request $request, Corpus $corpus, $projectId)
+    public function destroy(Request $request)
     {
-        $isLoggedIn = \Auth::check();
-        $user = \Auth::user();
 
-        $gitLabProjectId = $corpus->gitlab_id;
-        $corpusProject = CorpusProject::find($projectId);
+        $result = array();
+        $status = "";
 
-        if(count($corpus->corpusprojects()) > 0) {
-            $corpus->corpusprojects()->detach();
-        }
+        try{
+            $corpusid = $request->input('corpusid');
+            $corpusPath = $request->input('path');
+            $toBeDeleted = $request->input('tobedeleted');
 
-        if(count($corpus->users()) > 0) {
-            $corpus->users()->detach();
-        }
+            $corpus = Corpus::findOrFail($corpusid);
+
+            $gitLabProjectId = $corpus->gitlab_id;
+            $corpusProject = CorpusProject::find($projectId);
+
+            $corpusPath = $corpusProject->directory_path.'/'.$corpus->directory_path;
 
 
-        if(count($corpus->documents) > 0){
-            foreach ($corpus->documents as $document){
 
-                if(count($document->annotations) > 0){
-                    foreach ($document->annotations as $annotation){
+            if(count($corpus->corpusprojects()) > 0) {
+                $corpus->corpusprojects()->detach();
+            }
+
+            if(count($corpus->users()) > 0) {
+                $corpus->users()->detach();
+            }
+
+
+            if(count($corpus->documents) > 0){
+                foreach ($corpus->documents as $document){
+
+                    if(count($document->annotations) > 0){
+                        foreach ($document->annotations as $annotation){
                             if(count($annotation->documents()) > 0) {
                                 $annotation->documents()->detach();
                             }
                             if(count($annotation->preparations) > 0) {
                                 $annotation->preparations()->delete();
                             }
-                    }//end for annotations
-                    $document->annotations()->delete();
-                }//end if annotations
+                        }//end for annotations
+                        $document->annotations()->delete();
+                    }//end if annotations
+                }
+                $corpus->documents()->delete();
             }
-            $corpus->documents()->delete();
-        }
 
-        if(count($corpus->annotations) > 0){
-            $corpus->annotations()->delete();
-        }
-
-        if($gitLabProjectId != ""){
-            $this->GitLabService->deleteGitLabProject($gitLabProjectId);
-        }
-
-        $corpus->delete();
-
-        $corpusPath = $corpusProject->directory_path.'/'.$corpus->directory_path;
-        $this->GitRepoService->deleteCorpusFileStructure($this->flysystem,$corpusPath);
-
-        $corpora = array();
-        $corpora = Corpus::latest()->get();
-
-        $corpusProjects = array();
-
-        foreach ($corpora as $corpus){
-            $corpusProjectsTemp = $corpus->corpusprojects()->get();
-            $cp = isset($corpusProjectsTemp[0]) ? $corpusProjectsTemp[0] : false;
-            if($cp){
-                $corpusProjects[$corpus->id] = $corpusProjectsTemp[0]->directory_path;
+            if(count($corpus->annotations) > 0){
+                $corpus->annotations()->delete();
             }
+
+            if($gitLabProjectId != ""){
+                $this->GitLabService->deleteGitLabProject($gitLabProjectId);
+            }
+
+            $corpus->delete();
+
+
+            $this->GitRepoService->deleteCorpusFileStructure($this->flysystem,$corpusPath);
+
+            $corpora = array();
+            $corpora = Corpus::latest()->get();
+
+            $corpusProjects = array();
+
+            foreach ($corpora as $corpus){
+                $corpusProjectsTemp = $corpus->corpusprojects()->get();
+                $cp = isset($corpusProjectsTemp[0]) ? $corpusProjectsTemp[0] : false;
+                if($cp){
+                    $corpusProjects[$corpus->id] = $corpusProjectsTemp[0]->directory_path;
+                }
+            }
+
+            $status = "success";
+            $result['delete_corpus_content_response']  = "Corpus content was successfully deleted";
+
+        }
+        catch (\Exception $e) {
+            $status = "error";
+            $result['delete_corpus_content_response']  = "There was a problem deleting the Corpus content. The error was: ($e) A message has been sent to the site administrator. Please try again later";
         }
 
-        return view('project.corpus.index', compact('corpora'))
-            ->with('isLoggedIn', $isLoggedIn)
-            ->with('corpusProjects', $corpusProjects)
-            ->with('user',$user);
+
+        $response = array(
+            'status' => $status,
+            'msg' => $result,
+        );
+
+        return Response::json($response);
+    }
+
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function destroyCorpusContent(Request $request)
+    {
+
+        $result = array();
+        $status = "";
+
+        try{
+            $corpusid = $request->input('corpusid');
+            $corpusPath = $request->input('path');
+            $toBeDeletedCollection = $request->input('tobedeleted');
+
+            $corpus = Corpus::findOrFail($corpusid);
+
+            foreach ($toBeDeletedCollection as $toBeDeleted) {
+                $deleteData = json_decode($toBeDeleted);
+                $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$deleteData['fileName']);
+                DB::table('corpuses')
+                    ->where([['id', '=' ,$deleteData['databaseId']],['corpus_id','=',$corpusid]])
+                    ->update(['file_name' => null]);
+            }
+
+            $status = "success";
+            $result['delete_corpus_content_response']  = "Corpus content was successfully deleted";
+
+        }
+        catch (\Exception $e) {
+            $status = "error";
+            $result['delete_corpus_content_response']  = "There was a problem deleting the Corpus content. The error was: ($e) A message has been sent to the site administrator. Please try again later";
+        }
+
+
+        $response = array(
+            'status' => $status,
+            'msg' => $result,
+        );
+
+        return Response::json($response);
     }
 
 

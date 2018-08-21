@@ -98,13 +98,16 @@
                     </thead>
                     <tbody>
                     @foreach($corpus_data['filedata']['corpusFileData']['headerData']['elements'] as $fileData)
+                        @if (isset($fileData['headerObject']))
                         <tr>
                             <td>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="corpusEditItem_0001">
-                                    <label class="custom-control-label font-weight-bold" for="corpusEditItem_0001">
-                                        {{$fileData['basename']}}
-                                    </label>
+                                    @if (isset($fileData['headerObject']))
+                                        <input type="checkbox" class="custom-control-input" id="corpusEditItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
+                                        <label class="custom-control-label font-weight-bold" for="corpusEditItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
+                                            {{$fileData['basename']}}
+                                        </label>
+                                    @endif
                                 </div>
                             </td>
                             @if(isset($fileData['uploader_name']))
@@ -121,13 +124,38 @@
 
                             <td class="text-14 text-grey-light">{{  Carbon\Carbon::parse($fileData['lastupdated'])->format('H:i,M d') }}</td>
                             <td>
-                                <a href="#">
-                                    <i class="fa fa-trash-o fa-fw fa-lg text-dark"></i>
+                                <a href="javascript:" id="documentDeleteItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
+                                    <i class="fa fa-trash-o fa-fw fa-lg text-dark headerDeleteTrashcan"></i>
                                 </a>
                             </td>
                         </tr>
+                        @endif
                     @endforeach
                     </tbody>
+                    <tfoot class="bg-bluegrey-mid">
+                    <tr>
+                        <td colspan="3">
+                            @if (Auth::user()->can('Can delete Corpus'))
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="selectAll_corpusEdit">
+                                    <label class="custom-control-label text-14" for="selectAll_corpusEdit">
+                                        Select all
+                                    </label>
+                                </div>
+                            @else
+                                <div class="custom-control custom-checkbox">&nbsp;</div>
+                            @endif
+                        </td>
+                        <td colspan="2">
+                            @if (Auth::user()->can('Can delete Corpus'))
+                                <button class="float-right disabled btn btn-outline-corpus-dark font-weight-bold text-uppercase btn-sm" id="deleteSelectedCorpusButton">
+                                    Delete Selected Files
+                                </button>&nbsp;
+                            @endif
+
+                        </td>
+                    </tr>
+                    </tfoot>
                 </table>
 
                 <p class="mt-5">
