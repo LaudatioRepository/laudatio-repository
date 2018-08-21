@@ -980,7 +980,6 @@ $(function () {
 
         var trashcan = $(this);
         deleteCorpusContent(postDeleteData, contentType).then(function (data) {
-            console.log("JSON: " + JSON.stringify(data));
             trashcan.closest("tr").remove();
         }).catch(function (err) {
             // Run this when promise was rejected via reject()
@@ -991,6 +990,7 @@ $(function () {
     $(document).on('click', '#deleteSelectedCorpusButton', function () {
         var postDeleteData = {};
         var toBeDeleted = [];
+        var checkedIds = [];
 
         if (typeof window.laudatioApp != 'undefined') {
             postDeleteData.corpusid = window.laudatioApp.corpus_id;
@@ -998,12 +998,12 @@ $(function () {
         } else {
             postDeleteData.corpusid = $(this).data('corpusid');
         }
-        var that = $(this);
-        that.closest("table").find("td input:checkbox").prop("checked", this.checked).each(function () {
 
+        $('#corpusFileList input:checked').each(function () {
             var checkedId = $(this).attr("id");
             if (checkedId != 'selectAll_corpusEdit') {
                 var checkedIdArray = checkedId.split('§');
+                checkedIds.push(checkedId);
                 var deletionObject = {};
                 deletionObject.fileName = checkedIdArray[1];
                 deletionObject.databaseId = checkedIdArray[2];
@@ -1012,11 +1012,12 @@ $(function () {
         });
 
         postDeleteData.tobedeleted = toBeDeleted;
-        if (!that.hasClass('disabled')) {
-            console.log("POSTDELETEDATA:_ " + postDeleteData);
-        }
 
-        deleteCorpusContent(postDeleteData, 'deleteCorpusContent').then(function (postDeleteData) {}).catch(function (err) {
+        var currentAnnotationCount = parseInt($('#corpusCount span').html());
+        deleteCorpusContent(postDeleteData, 'deleteCorpusContent').then(function (postDeleteData) {
+            var deletedAnnotations = removeDeletedElements(checkedIds);
+            $('#corpusCount span').html(currentAnnotationCount - deletedAnnotations);
+        }).catch(function (err) {
             // Run this when promise was rejected via reject()
             console.log(err);
         });
@@ -1025,6 +1026,7 @@ $(function () {
     $(document).on('click', '#deleteSelectedDocumentsButton', function () {
         var postDeleteData = {};
         var toBeDeleted = [];
+        var checkedIds = [];
 
         if (typeof window.laudatioApp != 'undefined') {
             postDeleteData.corpusid = window.laudatioApp.corpus_id;
@@ -1032,12 +1034,12 @@ $(function () {
         } else {
             postDeleteData.corpusid = $(this).data('corpusid');
         }
-        var that = $(this);
-        that.closest("table").find("td input:checkbox").prop("checked", this.checked).each(function () {
 
+        $('#documentFileList input:checked').each(function () {
             var checkedId = $(this).attr("id");
             if (checkedId != 'selectAll_documentEdit') {
                 var checkedIdArray = checkedId.split('§');
+                checkedIds.push(checkedId);
                 var deletionObject = {};
                 deletionObject.fileName = checkedIdArray[1];
                 deletionObject.databaseId = checkedIdArray[2];
@@ -1047,11 +1049,11 @@ $(function () {
 
         postDeleteData.tobedeleted = toBeDeleted;
 
-        if (!that.hasClass('disabled')) {
-            console.log(postDeleteData);
-        }
-
-        deleteCorpusContent(postDeleteData, 'deleteDocumentContent').then(function (postDeleteData) {}).catch(function (err) {
+        var currentAnnotationCount = parseInt($('#documentCount span').html());
+        deleteCorpusContent(postDeleteData, 'deleteDocumentContent').then(function (postDeleteData) {
+            var deletedAnnotations = removeDeletedElements(checkedIds);
+            $('#documentCount span').html(currentAnnotationCount - deletedAnnotations);
+        }).catch(function (err) {
             // Run this when promise was rejected via reject()
             console.log(err);
         });
@@ -1060,6 +1062,7 @@ $(function () {
     $(document).on('click', '#deleteSelectedAnnotationsButton', function () {
         var postDeleteData = {};
         var toBeDeleted = [];
+        var checkedIds = [];
 
         if (typeof window.laudatioApp != 'undefined') {
             postDeleteData.corpusid = window.laudatioApp.corpus_id;
@@ -1068,14 +1071,13 @@ $(function () {
             postDeleteData.corpusid = $(this).data('corpusid');
         }
 
-        console.log("deleteSelectedAnnotationsButton: " + postDeleteData);
-
         var that = $(this);
-        that.closest("table").find("td input:checkbox").prop("checked", this.checked).each(function () {
-
+        $('#annotationFileList input:checked').each(function () {
             var checkedId = $(this).attr("id");
+
             if (checkedId != 'selectAll_annotationEdit') {
                 var checkedIdArray = checkedId.split('§');
+                checkedIds.push(checkedId);
                 var deletionObject = {};
                 deletionObject.fileName = checkedIdArray[1];
                 deletionObject.databaseId = checkedIdArray[2];
@@ -1085,11 +1087,11 @@ $(function () {
 
         postDeleteData.tobedeleted = toBeDeleted;
 
-        if (!that.hasClass('disabled')) {
-            console.log(postDeleteData);
-        }
-
-        deleteCorpusContent(postDeleteData, 'deleteAnnotationContent').then(function (postDeleteData) {}).catch(function (err) {
+        var currentAnnotationCount = parseInt($('#annotationCount span').html());
+        deleteCorpusContent(postDeleteData, 'deleteAnnotationContent').then(function (postDeleteData) {
+            var deletedAnnotations = removeDeletedElements(checkedIds);
+            $('#annotationCount span').html(currentAnnotationCount - deletedAnnotations);
+        }).catch(function (err) {
             // Run this when promise was rejected via reject()
             console.log(err);
         });
@@ -1097,6 +1099,15 @@ $(function () {
 });
 
 /** FUNCTIONS **/
+
+function removeDeletedElements(checkedIds) {
+
+    for (var i = 0; i < checkedIds.length; i++) {
+        $('#' + $.escapeSelector(checkedIds[i])).closest("tr").remove();
+    } //end for
+
+    return i;
+}
 
 /**
  * Validate headers promise
@@ -1209,7 +1220,7 @@ function deleteCorpusContent(postData, documentType) {
         });
 
         var postUri = '/api/adminapi/' + documentType;
-        console.log("SENDING TO: " + postUri);
+
         $.ajax({
             url: postUri,
             type: "POST",

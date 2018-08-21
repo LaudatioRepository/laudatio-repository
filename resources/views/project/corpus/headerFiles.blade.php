@@ -4,10 +4,10 @@
         <div class="row">
             <div class="col-2">
                 <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
-                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#corpusHeaderFiles">Corpus ({{$corpus_data['headerdata']['corpusheader']}})</a>
-                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="document" href="#documentHeaderFiles">Documents ({{count($corpus_data['headerdata']['found_documents'])}})</a>
-                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#annotationHeaderFiles">Annotations ({{count($corpus_data['headerdata']['found_annotations_in_corpus'])}})</a>
-                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="formatdata" href="#formatDataFiles">Format data ({{count($corpus_data['corpusFormatData']['projects'])}})</a>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#corpusHeaderFiles" id="corpusCount">Corpus (<span>{{$corpus_data['headerdata']['corpusheader']}}</span>)</a>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="document" href="#documentHeaderFiles" id="documentCount">Documents (<span>{{count($corpus_data['headerdata']['found_documents'])}}</span>)</a>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#annotationHeaderFiles" id="annotationCount">Annotations (<span>{{count($corpus_data['headerdata']['found_annotations_in_corpus'])}}</span>)</a>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="formatdata" href="#formatDataFiles" id="formatCount">Format data (<span>{{count($corpus_data['corpusFormatData']['projects'])}}</span>)</a>
                     <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="license" href="#logoLicense">Logo/License (8)</a>
                 </nav>
             </div>
