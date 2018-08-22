@@ -211,31 +211,6 @@ class CorpusController extends Controller
                 'directory_path' => $corpusPath
             ]);
             $corpus->corpusprojects()->attach($corpusProject);
-            /*
-            $gitLabResponse = $this->GitLabService->createGitLabProject(
-                //request('corpus_name'),
-                "Untitled",
-                array(
-                    'namespace_id' => $corpusProjectId,
-                    'description' => request('corpus_description'),
-                    'visibility' => 'public'
-                )
-
-            );
-            Log::info("gitLabResponse: Corpus ".print_r($gitLabResponse,1));
-
-            $corpus = Corpus::create([
-                "name" => request('corpus_name'),
-                "description" => request('corpus_description'),
-                'directory_path' => $corpusPath,
-                'gitlab_group_id' => $corpusProjectId,
-                'gitlab_id' => $gitLabResponse['id'],
-                'gitlab_web_url' => $gitLabResponse['web_url'],
-                'gitlab_namespace_path' => $gitLabResponse['name_with_namespace']
-            ]);
-
-            $corpus->corpusprojects()->attach($corpusProject);
-            */
         }
 
         return redirect()->route('project.corpora.index');
@@ -684,17 +659,22 @@ class CorpusController extends Controller
         try{
             $corpusid = $request->input('corpusid');
             $corpusPath = $request->input('path');
+            $auth_user_name = $request->input('auth_user_name');
+            $auth_user_id = $request->input('auth_user_id');
+            $auth_user_email = $request->input('auth_user_email');
             $toBeDeletedCollection = $request->input('tobedeleted');
 
             $corpus = Corpus::findOrFail($corpusid);
 
             foreach ($toBeDeletedCollection as $toBeDeleted) {
                 $deleteData = json_decode($toBeDeleted);
-                $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$deleteData['fileName']);
+                $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$deleteData['fileName'],$auth_user_name,$auth_user_email);
                 DB::table('corpuses')
                     ->where([['id', '=' ,$deleteData['databaseId']],['corpus_id','=',$corpusid]])
                     ->update(['file_name' => null]);
             }
+
+            $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
 
             $status = "success";
             $result['delete_corpus_content_response']  = "Corpus content was successfully deleted";

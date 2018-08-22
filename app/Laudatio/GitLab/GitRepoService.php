@@ -416,11 +416,7 @@ class GitRepoService implements GitRepoInterface
                 $projects[$i]['diffFiles'] = array();
                 array_push($projects[$i]['diffFiles'],$hasDiff);
             }
-/*
-            $user = User::where('file_name',$projects[$i]['path']);
-            Log::info("JUSER: ".print_r($user, 1));
-            $projects[$i]['user'] = $user->name;
-*/
+
         }
 
         $patharray = explode("/",$path);
@@ -449,13 +445,13 @@ class GitRepoService implements GitRepoInterface
     }
 
 
-    public function deleteFile($flysystem, $path){
+    public function deleteFile($flysystem, $path, $user,$email){
         $result = null;
         if($flysystem->has($path)){
             $gitFunction = new  GitFunction();
             $isTracked = $gitFunction->isTracked($this->basePath."/".$path);
             if($isTracked){
-                $result = $gitFunction->deleteFiles($path);
+                $result = $gitFunction->deleteFiles($path,$user,$email);
             }
         }
         return $result;
@@ -495,9 +491,9 @@ class GitRepoService implements GitRepoInterface
         return $isAdded;
     }
 
-    public function addHooks($path){
+    public function addHooks($path, $user, $email){
         $gitFunction = new  GitFunction();
-        return $gitFunction->addGitHooks($path);
+        return $gitFunction->addGitHooks($path, $user, $email);
     }
 
 
@@ -511,7 +507,7 @@ class GitRepoService implements GitRepoInterface
         return $gitFunction->initialPush($path,$user);
     }
 
-    public function commitFiles($dirname = "", $commitmessage, $corpusid, $user){
+    public function commitFiles($dirname = "", $commitmessage, $corpusid, $user, $email){
         $isHeader = false;
         if(strpos($dirname,'TEI-HEADER') !== false){
             $isHeader = true;
@@ -528,7 +524,7 @@ class GitRepoService implements GitRepoInterface
 
         if(is_dir($this->basePath.'/'.$dirname)){
             $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$dirname);
-            $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$corpusid);
+            $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$corpusid,$user);
 
             if($isCommited){
                 if($isHeader){
@@ -561,7 +557,7 @@ class GitRepoService implements GitRepoInterface
             }
         }
         else{
-            $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$corpusid);
+            $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$corpusid,$user);
             if($isCommited){
                 if($isHeader){
                     $this->laudatioUtilsService->setVersionMapping($fileName,$patharray[($last_id-1)],false);

@@ -289,12 +289,12 @@ class UploadController extends Controller
             $this->GitRepoService->addFiles($addPath,$corpusId);
 
             //git commit The files
-            $this->GitRepoService->commitFiles($commitPath,"Adding files for ".$fileName,$corpusId,$user);
+            $this->GitRepoService->commitFiles($commitPath,"Adding files for ".$fileName,$corpusId,$user->name,$user->email);
 
             //we have added a corpus, and push the corpus file structure to gitlab
             if($pushCorpusStructure && !empty($initialPushPath) && $remoteRepoUrl){
                 $this->GitRepoService->addRemote($remoteRepoUrl,$initialPushPath);
-                $hooksAdded = $this->GitRepoService->addHooks($initialPushPath);
+                $hooksAdded = $this->GitRepoService->addHooks($initialPushPath, $user->name, $user->email);
                 $this->GitRepoService->initialPush($initialPushPath,$user);
             }
             else {

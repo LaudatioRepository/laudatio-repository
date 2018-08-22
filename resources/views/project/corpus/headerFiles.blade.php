@@ -57,7 +57,6 @@
                     <div role="tabpanel"  class="tab-pane fade in" id="logoLicense">
                         @include('project.corpus.logoLicense')
                     </div>
-
                 </div>
             </div>
         </div>

@@ -58,7 +58,7 @@ class GitFunction
         return $process->getOutput();
     }
 
-    public function addGitHooks($path) {
+    public function addGitHooks($path, $user, $email) {
         $isAdded = false;
 
         $process = new Process("git add githooks",$this->basePath."/".$path);
@@ -71,7 +71,7 @@ class GitFunction
         else{
             $processOutput = $process->getOutput();
             $isAdded = true;
-            $this->commitFiles($this->basePath."/".$path, "Adding githooks", null);
+            $this->commitFiles($this->basePath."/".$path, "Adding githooks", $user,$email);
         }
 
         return $isAdded;
@@ -259,9 +259,10 @@ class GitFunction
         return $isAdded;
     }
 
-    public function commitFiles($path, $commitmessage, $user){
+    public function commitFiles($path, $commitmessage, $user, $email){
         $isCommitted = false;
-        $process = new Process("git commit -m \"".$commitmessage."\" ",$path);
+        Log::info("USER: ".print_r($user,1));
+        $process = new Process("git commit -m \"".$commitmessage." by ".$user." (".$email.") \" ",$path);
         $process->setTimeout(3600);
         $process->run();
 
@@ -556,7 +557,7 @@ class GitFunction
     }
 
 
-    public function deleteFiles($path){
+    public function deleteFiles($path,$user,$email){
 
         $isdeleted = false;
         $isFile = false;
@@ -606,7 +607,7 @@ class GitFunction
             if($this->isAdded($addStatus)){
 
 
-                $commit = $this->commitFiles($cwdPath,"deleting $cwdPath/$folder",null);
+                $commit = $this->commitFiles($cwdPath,"deleting $cwdPath/$folder",$user,$email);
                 $commitstatus = $this->getStatus($cwdPath);
 
                 if($this->isCleanWorkingTree($commitstatus)){

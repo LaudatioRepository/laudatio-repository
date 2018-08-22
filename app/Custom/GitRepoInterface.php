@@ -21,12 +21,12 @@ interface GitRepoInterface {
     public function getUploader($headerData,$headertype);
     public function getCorpusFileInfo($flysystem, $path = "");
     public function addFilesToRepository($path,$file);
-    public function deleteFile($flysystem, $path);
+    public function deleteFile($flysystem, $path,$user,$email);
     public function deleteUntrackedFile($flysystem,$path);
     public function addFiles($path,$corpus);
-    public function commitFiles($dirname, $commitmessage, $corpusid,$user);
+    public function commitFiles($dirname, $commitmessage, $corpusid,$user,$email);
     public function pushFiles($dirname,$corpusid,$user);
-    public function addHooks($path);
+    public function addHooks($path,$user,$email);
     public function initialPush($path,$user);
     public function addRemote($origin,$path);
 

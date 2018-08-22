@@ -88,8 +88,10 @@
 
         <div role="tabpanel"  class="tab-pane active" id="editCorpus">
             @include('project.corpus.headerFiles')
+            <input type="hidden" name="auth_user_name" id="auth_user_name" value="{{Auth::user()->name}}" />
+            <input type="hidden" name="auth_user_id" id="auth_user_id" value="{{Auth::user()->id}}" />
+            <input type="hidden" name="auth_user_email" id="auth_user_email" value="{{Auth::user()->email}}" />
         </div>
-
         <div role="tabpanel"  class="tab-pane fade in" id="messageBoard">
             @include('project.corpus.messageboard')
         </div>

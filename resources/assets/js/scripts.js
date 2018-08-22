@@ -466,7 +466,6 @@ for(var h = 0; h < rangeSliderList.length; h++) {
 }
 $('#toTop').on("click", function(event) {
     event.preventDefault();
-    console.log('joffd')
     $("html, body").animate(
         {
             scrollTop: $('#browseapp').offset().top

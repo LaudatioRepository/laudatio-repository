@@ -141,10 +141,13 @@ class DocumentController extends Controller
         try{
             $corpusid = $request->input('corpusid');
             $corpusPath = $request->input('path');
+            $auth_user_name = $request->input('auth_user_name');
+            $auth_user_id = $request->input('auth_user_id');
+            $auth_user_email = $request->input('auth_user_email');
             $toBeDeletedCollection = $request->input('tobedeleted');
 
             foreach ($toBeDeletedCollection as $toBeDeleted) {
-                $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName']);
+                $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName'],$auth_user_name,$auth_user_email);
                 $document = Document::findOrFail($toBeDeleted['databaseId']);
 
                 if(count($document->annotations()) > 0) {
@@ -153,6 +156,7 @@ class DocumentController extends Controller
                 $document->delete();
             }
 
+            $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
 
             $status = "success";
             $result['delete_document_content_response']  = "Document content was successfully deleted";

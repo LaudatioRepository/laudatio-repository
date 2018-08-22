@@ -130,14 +130,18 @@ class AnnotationController extends Controller
     public function destroyAnnotationContent(Request $request) {
         $result = array();
         $status = "";
+        $loggedInUser = \Auth::user();
 
         try{
             $corpusid = $request->input('corpusid');
             $corpusPath = $request->input('path');
+            $auth_user_name = $request->input('auth_user_name');
+            $auth_user_id = $request->input('auth_user_id');
+            $auth_user_email = $request->input('auth_user_email');
             $toBeDeletedCollection = $request->input('tobedeleted');
 
             foreach ($toBeDeletedCollection as $toBeDeleted) {
-                $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName']);
+                $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName'],$auth_user_name,$auth_user_email);
                 $annotation = Annotation::findOrFail($toBeDeleted['databaseId']);
 
                 if(count($annotation->documents()) > 0) {
@@ -145,6 +149,8 @@ class AnnotationController extends Controller
                 }
                 $annotation->delete();
             }
+
+            $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
 
             $status = "success";
             $result['delete_annotation_content_response']  = "Annotation content was successfully deleted";

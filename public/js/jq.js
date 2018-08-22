@@ -960,6 +960,10 @@ $(function () {
             postDeleteData.corpusid = $(this).data('corpusid');
         }
 
+        postDeleteData.auth_user_name = $('#auth_user_name').val();
+        postDeleteData.auth_user_id = $('#auth_user_id').val();
+        postDeleteData.auth_user_email = $('#auth_user_email').val();
+
         var checkedId = $(this).parent().attr("id");
         var checkedIdArray = checkedId.split('§');
         var deletionObject = {};
@@ -999,6 +1003,10 @@ $(function () {
             postDeleteData.corpusid = $(this).data('corpusid');
         }
 
+        postDeleteData.auth_user_name = $('#auth_user_name').val();
+        postDeleteData.auth_user_id = $('#auth_user_id').val();
+        postDeleteData.auth_user_email = $('#auth_user_email').val();
+
         $('#corpusFileList input:checked').each(function () {
             var checkedId = $(this).attr("id");
             if (checkedId != 'selectAll_corpusEdit') {
@@ -1035,6 +1043,10 @@ $(function () {
             postDeleteData.corpusid = $(this).data('corpusid');
         }
 
+        postDeleteData.auth_user_name = $('#auth_user_name').val();
+        postDeleteData.auth_user_id = $('#auth_user_id').val();
+        postDeleteData.auth_user_email = $('#auth_user_email').val();
+
         $('#documentFileList input:checked').each(function () {
             var checkedId = $(this).attr("id");
             if (checkedId != 'selectAll_documentEdit') {
@@ -1070,6 +1082,10 @@ $(function () {
         } else {
             postDeleteData.corpusid = $(this).data('corpusid');
         }
+
+        postDeleteData.auth_user_name = $('#auth_user_name').val();
+        postDeleteData.auth_user_id = $('#auth_user_id').val();
+        postDeleteData.auth_user_email = $('#auth_user_email').val();
 
         var that = $(this);
         $('#annotationFileList input:checked').each(function () {
