@@ -250,8 +250,6 @@ class CorpusController extends Controller
             $corpusPath = $path;
         }
 
-        $corpusBasePath = "";//substr($corpusPath,0,strrpos($corpusPath,"/"));
-
 
         $fileData = array(
             "corpusData" => array(

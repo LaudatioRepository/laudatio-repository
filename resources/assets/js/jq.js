@@ -1023,6 +1023,8 @@ $(function(){
         deleteCorpusContent(postDeleteData,'deleteCorpusContent').then(function(postDeleteData){
             var deletedAnnotations = removeDeletedElements(checkedIds);
             $('#corpusCount span').html(currentAnnotationCount-deletedAnnotations);
+            $('#selectAll_corpusEdit').attr("checked",false);
+            $('#deleteSelectedCorpusButton').attr("disabled",true);
         }).catch(function(err) {
             // Run this when promise was rejected via reject()
             console.log(err)
@@ -1069,6 +1071,8 @@ $(function(){
         deleteCorpusContent(postDeleteData,'deleteDocumentContent').then(function(postDeleteData){
             var deletedAnnotations = removeDeletedElements(checkedIds);
             $('#documentCount span').html(currentAnnotationCount-deletedAnnotations);
+            $('#selectAll_documentEdit').attr("checked",false);
+            $('#deleteSelectedDocumentsButton').attr("disabled",true);
         }).catch(function(err) {
             // Run this when promise was rejected via reject()
             console.log(err)
@@ -1113,6 +1117,8 @@ $(function(){
         deleteCorpusContent(postDeleteData,'deleteAnnotationContent').then(function(postDeleteData){
             var deletedAnnotations = removeDeletedElements(checkedIds);
             $('#annotationCount span').html(currentAnnotationCount-deletedAnnotations);
+            $('#selectAll_annotationEdit').attr("checked",false);
+            $('#deleteSelectedAnnotationsButton').attr("disabled",true);
         }).catch(function(err) {
             // Run this when promise was rejected via reject()
             console.log(err)
