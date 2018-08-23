@@ -128,6 +128,7 @@
                                                         <a class="dropdown-item text-14" href="{{ route('corpus.edit',['corpus' => $corpus['id']]) }}">Edit Corpus</a>
                                                         <a class="dropdown-item text-14" href="{{route('browse.showHeaders.get', ['header' => 'corpus', 'id' => $corpus['elasticsearch_id']])}}">Preview Corpus</a>
                                                         <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#publishCorpusModal" data-corpusid="{{$corpus['id']}}" data-corpuspath="{{$corpus['corpuspath']}}" id="publishCorpusButton">Publish Corpus</a>
+
                                                         <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#deleteCorpusModal" data-corpusid="{{$corpus['id']}}" data-corpusname="{{$corpus['name']}}" data-corpuspath="{{$corpus['corpuspath']}}"  id="checkDeleteCorpusButton">Delete Corpus</a>
                                                     </div>
                                                 </div>

@@ -92,7 +92,7 @@
                     <th scope="col">Uploaded Files</th>
                     <th scope="col">Collaborator</th>
                     <th scope="col">Affiliation</th>
-                    <th scope="col">updated</th>
+                    <th scope="col">Updated</th>
                     <th scope="col">Delete</th>
                 </tr>
                 </thead>

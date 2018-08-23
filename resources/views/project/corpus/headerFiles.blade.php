@@ -8,7 +8,7 @@
                     <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="document" href="#documentHeaderFiles" id="documentCount">Documents (<span>{{count($corpus_data['headerdata']['found_documents'])}}</span>)</a>
                     <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#annotationHeaderFiles" id="annotationCount">Annotations (<span>{{count($corpus_data['headerdata']['found_annotations_in_corpus'])}}</span>)</a>
                     <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="formatdata" href="#formatDataFiles" id="formatCount">Format data (<span>{{count($corpus_data['corpusFormatData']['projects'])}}</span>)</a>
-                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="license" href="#logoLicense">Logo/License (8)</a>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink enterLogoUpload" data-toggle="tab" role="tab" data-headertype="license" href="#logoLicense">Logo/License (8)</a>
                 </nav>
             </div>
             <div class="col">

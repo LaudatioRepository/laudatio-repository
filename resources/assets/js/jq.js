@@ -942,6 +942,7 @@ $(function(){
     $(document).on('click', '.headerDeleteTrashcan',function () {
         var postDeleteData = {}
         var toBeDeleted = []
+        var checkedIds = []
 
         if (typeof window.laudatioApp != 'undefined') {
             postDeleteData.corpusid = window.laudatioApp.corpus_id;
@@ -956,6 +957,7 @@ $(function(){
         postDeleteData.auth_user_email = $('#auth_user_email').val();
 
         var checkedId = $(this).parent().attr("id");
+        checkedIds.push(checkedId)
         var checkedIdArray = checkedId.split('§');
         var deletionObject = {}
         deletionObject.fileName = checkedIdArray[1];
@@ -965,19 +967,35 @@ $(function(){
         postDeleteData.tobedeleted = toBeDeleted;
 
         var contentType = '';
+        var currentCount = 0;
         if(postDeleteData.path.indexOf('TEI-HEADERS/corpus') > -1) {
             contentType = 'deleteCorpusContent';
+            currentCount = parseInt($('#corpusCount span').html());
         }
         else if(postDeleteData.path.indexOf('TEI-HEADERS/document') > -1) {
             contentType = 'deleteDocumentContent';
+            currentCount = parseInt($('#documentCount span').html());
         }
         else if(postDeleteData.path.indexOf('TEI-HEADERS/annotation') > -1) {
             contentType = 'deleteAnnotationContent';
+            currentCount = parseInt($('#annotationCount span').html());
+
         }
 
         var trashcan = $(this);
+
         deleteCorpusContent(postDeleteData,contentType).then(function(data){
             trashcan.closest("tr").remove();
+            var deletedAnnotations = removeDeletedElements(checkedIds);
+            if(postDeleteData.path.indexOf('TEI-HEADERS/corpus') > -1) {
+                $('#corpusCount span').html(currentCount-deletedAnnotations);
+            }
+            else if(postDeleteData.path.indexOf('TEI-HEADERS/document') > -1) {
+                $('#documentCount span').html(currentCount-deletedAnnotations);
+            }
+            else if(postDeleteData.path.indexOf('TEI-HEADERS/annotation') > -1) {
+                $('#annotationCount span').html(currentCount-deletedAnnotations);
+            }
         }).catch(function(err) {
             // Run this when promise was rejected via reject()
             console.log(err)
@@ -1024,7 +1042,7 @@ $(function(){
             var deletedAnnotations = removeDeletedElements(checkedIds);
             $('#corpusCount span').html(currentAnnotationCount-deletedAnnotations);
             $('#selectAll_corpusEdit').attr("checked",false);
-            $('#deleteSelectedCorpusButton').attr("disabled",true);
+            $('#deleteSelectedCorpusButtonButton').attr("disabled",true);
         }).catch(function(err) {
             // Run this when promise was rejected via reject()
             console.log(err)

@@ -107,12 +107,10 @@
                                 <a href="#" class="btn btn-primary font-weight-bold text-uppercase rounded">
                                     Invite Collaborator
                                 </a>
-                                @else
-                                    &nbsp;
                                 @endif
                             </div>
 
-                            <table class="documents-table table table-bluegrey-dark  table-striped">
+                            <table class="message-table table table-bluegrey-dark  table-striped">
                                 <thead class="bg-bluegrey-mid">
                                 <tr class="text-14 text-grey-light">
                                     <th scope="col">Collaborator</th>

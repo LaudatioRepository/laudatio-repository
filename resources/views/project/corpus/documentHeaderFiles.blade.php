@@ -77,7 +77,7 @@
         </div>
     </div>
 
-    <div id="documentFileList">
+    <div id="fdocumentFileList">
         <div class="col">
             <div class="d-flex justify-content-between mt-7 mb-3">
                 <h3 class="h3 font-weight-normal">Document Header XML</h3>
@@ -86,13 +86,13 @@
                 </a>
             </div>
 
-            <table class="custom-table documents-table table table-bluegrey-dark  table-striped">
+            <table class="custom-table documents-table table table-bluegrey-dark table-striped">
                 <thead class="bg-bluegrey-mid">
                 <tr class="text-14 text-grey">
                     <th scope="col">Uploaded Files</th>
                     <th scope="col">Collaborator</th>
                     <th scope="col">Affiliation</th>
-                    <th scope="col">updated</th>
+                    <th scope="col">Updated</th>
                     <th scope="col">Delete</th>
                 </tr>
                 </thead>
