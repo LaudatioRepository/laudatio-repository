@@ -489,7 +489,8 @@ class CorpusController extends Controller
             'corpusUpload' => $corpusUpload,
             'documentUpload' => $documentUpload,
             'annotationUpload' => $annotationUpload,
-            'corpus_id' => $corpus->id
+            'corpus_id' => $corpus->id,
+            "corpus_path" => $path,
         ]);
 
         return view('project.corpus.edit', compact('corpus'))

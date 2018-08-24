@@ -129,40 +129,16 @@ $(function(){
     }
 
 
-
-    $('nav.headernav a[data-headertype ="corpus"]').bind('click', function (e) {
+    $('nav.headernav a[data-headertype != ""]').bind('click', function (e) {
         if(typeof window.Laravel != 'undefined') {
             var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'))
-            window.Laravel.directorypath = oldPath + '/TEI-HEADERS/corpus';
+            window.Laravel.directorypath = oldPath + '/TEI-HEADERS/'+$(this).data('headertype');
 
             var previews = $('#previews').detach();
             previews.html("");
             previews.appendTo($('#tabcontainer'));
         }
     });
-
-    $('nav.headernav a[data-headertype ="document"]').bind('click', function (e) {
-        if(typeof window.Laravel != 'undefined') {
-            var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'))
-            window.Laravel.directorypath = oldPath + '/TEI-HEADERS/document';
-            console.log( window.Laravel.directorypath)
-            var previews = $('#previews').detach();
-            previews.html("");
-            previews.appendTo($('#tabcontainer'));
-        }
-    });
-
-    $('nav.headernav a[data-headertype ="annotation"]').bind('click', function (e) {
-        if(typeof window.Laravel != 'undefined') {
-            var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'))
-            window.Laravel.directorypath = oldPath + '/TEI-HEADERS/annotation';
-
-            var previews = $('#previews').detach();
-            previews.html("");
-            previews.appendTo($('#tabcontainer'));
-        }
-    });
-
 
     /**
      * Make sure that the bootstrap tabs handle active / unactive correctly

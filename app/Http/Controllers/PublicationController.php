@@ -58,6 +58,7 @@ class PublicationController extends Controller
 
         $status = "";
         $result = array();
+        $update_response = null;
 
         try{
             $corpus = Corpus::findOrFail($corpusid);
@@ -167,12 +168,12 @@ class PublicationController extends Controller
                 }
                 else {
                     $status = "error";
-                    $result['publish_corpus_response']  = "There was a problem publishing the Corpus. The error was: ($response) A message has been sent to the site administrator. Please try again later";
+                    $result['publish_corpus_response']  = "There was a problem publishing the Corpus. The error was: ($update_response) A message has been sent to the site administrator. Please try again later";
                 }
             }
             else {
                 $status = "error";
-                $result['publish_corpus_response']  = "There was a problem publishing the Corpus. The error was: ($response) A message has been sent to the site administrator. Please try again later";
+                $result['publish_corpus_response']  = "There was a problem publishing the Corpus. The error was: ($update_response) A message has been sent to the site administrator. Please try again later";
             }
 
 
@@ -181,7 +182,7 @@ class PublicationController extends Controller
         }
         catch (\Exception $e) {
             $status = "error";
-            $result['publish_corpus_response']  = "There was a problem publishing the Corpus. A message has been sent to the site administrator. Please try again later";
+            $result['publish_corpus_response']  = "There was a problem publishing the Corpus. The error was: ($update_response) A message has been sent to the site administrator. Please try again later";
         }
 
 

@@ -86,7 +86,7 @@
                 </a>
             </div>
 
-            <table class="custom-table documents-table table table-bluegrey-dark table-striped">
+            <table class="custom-table condensed documents-table table table-bluegrey-dark table-striped">
                 <thead class="bg-bluegrey-mid">
                 <tr class="text-14 text-grey">
                     <th scope="col">Uploaded Files</th>

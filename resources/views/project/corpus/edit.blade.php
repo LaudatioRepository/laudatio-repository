@@ -39,10 +39,12 @@
                             <a href="/browse/corpus/{{$corpus->elasticsearch_id}}" class="btn btn-primary font-weight-bold text-uppercase rounded small">
                                 Preview
                             </a>
-                            <button id="publishCorpusButton" class=" btn btn-primary font-weight-bold text-uppercase rounded small mt-3" data-toggle="modal"
-                                    data-target="#publishCorpusModal">
-                                Publish
-                            </button>
+                            @if (Auth::user()->can('Can create corpus'))
+                                <button id="publishCorpusButton" class=" btn btn-primary font-weight-bold text-uppercase rounded small mt-3" data-toggle="modal"
+                                        data-target="#publishCorpusModal">
+                                    Publish
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>
