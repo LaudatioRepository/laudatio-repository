@@ -77,7 +77,7 @@
         </div>
     </div>
 
-    <div id="fdocumentFileList">
+    <div id="documentFileList">
         <div class="col">
             <div class="d-flex justify-content-between mt-7 mb-3">
                 <h3 class="h3 font-weight-normal">Document Header XML</h3>

@@ -39,6 +39,10 @@
                             <a href="/browse/corpus/{{$corpus->elasticsearch_id}}" class="btn btn-primary font-weight-bold text-uppercase rounded small">
                                 Preview
                             </a>
+                            <button id="publishCorpusButton" class=" btn btn-primary font-weight-bold text-uppercase rounded small mt-3" data-toggle="modal"
+                                    data-target="#publishCorpusModal">
+                                Publish
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -205,6 +209,37 @@
 
                 </div>
 
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="publishCorpusModal" tabindex="-1" role="dialog" aria-labelledby="publishCorpusModalTitle"
+         aria-hidden="true">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content border-0 rounded-lg bsh-1">
+
+                <div class="modal-body px-5">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fa fa-close" aria-hidden="true"></i>
+                    </button>
+                    <h3 class="h3 modal-title mt-3 w-75" id="publishCorpusModalTitle">
+                    </h3>
+
+                    <p class="mt-3 mb-1" id="publishCorpusModalSubtitle">
+                    </p>
+
+                    <div id="publishCorpusModalSubtitleContent"></div>
+
+                </div>
+                <div class="modal-footer bg-corpus-light px-4 rounded-lg-bt">
+                    <button class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded px-5" data-dismiss="modal"
+                            aria-label="Close">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary font-weight-bold text-uppercase rounded px-5" data-dismiss="modal"
+                            data-toggle="modal" data-target="#publishSuccessCorpusModal" id="doPublish">
+                        Publish
+                    </button>
+                </div>
             </div>
         </div>
     </div>

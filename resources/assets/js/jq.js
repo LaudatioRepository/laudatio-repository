@@ -116,11 +116,18 @@ $(function(){
      * add the correct foldername to the basepath according to which header is active
      */
 
-    if($("nav.headernav").find("a[data-headertype ='corpus']").hasClass('active')){
-        if(typeof window.Laravel != 'undefined') {
-            window.Laravel.directorypath += '/TEI-HEADERS/corpus';
+    if(typeof window.Laravel != 'undefined') {
+        if($("nav.headernav").find("a[data-headertype ='corpus']").hasClass('active')){
+            if(typeof window.Laravel != 'undefined') {
+                window.Laravel.directorypath += '/TEI-HEADERS/corpus';
+            }
+
+        }
+        else{
+            window.Laravel.directorypath += '/TEI-HEADERS'
         }
     }
+
 
 
     $('nav.headernav a[data-headertype ="corpus"]').bind('click', function (e) {
@@ -138,7 +145,7 @@ $(function(){
         if(typeof window.Laravel != 'undefined') {
             var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'))
             window.Laravel.directorypath = oldPath + '/TEI-HEADERS/document';
-
+            console.log( window.Laravel.directorypath)
             var previews = $('#previews').detach();
             previews.html("");
             previews.appendTo($('#tabcontainer'));
@@ -957,7 +964,7 @@ $(function(){
         postDeleteData.auth_user_email = $('#auth_user_email').val();
 
         var checkedId = $(this).parent().attr("id");
-        checkedIds.push(checkedId)
+
         var checkedIdArray = checkedId.split('§');
         var deletionObject = {}
         deletionObject.fileName = checkedIdArray[1];
