@@ -223,6 +223,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <i class="fa fa-close" aria-hidden="true"></i>
                     </button>
+                    <div id="publish-error-message" class="alert alert-danger" role="alert"></div>
                     <h3 class="h3 modal-title mt-3 w-75" id="publishCorpusModalTitle">
                     </h3>
 

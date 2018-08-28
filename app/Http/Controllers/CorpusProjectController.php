@@ -156,6 +156,8 @@ class CorpusProjectController extends Controller
 
             $user = \Auth::user();
             $corpusproject->users()->save($user,['role_id' => 2]);
+            $projectAdminRole = Role::findById(2);
+            $user->roles()->sync($projectAdminRole);
 
         }
 

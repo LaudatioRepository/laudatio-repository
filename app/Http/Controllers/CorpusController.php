@@ -103,13 +103,14 @@ class CorpusController extends Controller
             $corpus->corpusprojects()->attach($corpusproject);
 
 
-            $corpusAdminRole = Role::findById(2);
+            $corpusAdminRole = Role::findById(3);
+            $user->roles()->sync($corpusAdminRole);
             if($user) {
                 if(!$user->roles->contains($corpusAdminRole)){
                     $user->roles()->attach($corpusAdminRole);
                 }
 
-                $corpus->users()->save($user,['role_id' => 2]);
+                $corpus->users()->save($user,['role_id' => 3]);
                 $user_role['user_name'] = $user->name;
                 $user_role['user_id'] = $user->id;
                 $user_role['role_name'] = $corpusAdminRole->name;
@@ -490,7 +491,9 @@ class CorpusController extends Controller
             'documentUpload' => $documentUpload,
             'annotationUpload' => $annotationUpload,
             'corpus_id' => $corpus->id,
-            "corpus_path" => $path,
+            'corpus_path' => $path,
+            'auth_user_name' => $user->name,
+            'auth_user_email' => $user->email,
         ]);
 
         return view('project.corpus.edit', compact('corpus'))

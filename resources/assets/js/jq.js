@@ -690,15 +690,20 @@ $(function(){
 
     $(document).on('click', '#doPublish', function(){
         var postData = {}
-        if(typeof window.laudatioApp.corpus_id != 'undfined') {
+
+        if(typeof window.laudatioApp != 'undefined') {
             postData.corpusid = window.laudatioApp.corpus_id;
+            postData.corpus_path = window.laudatioApp.corpus_path;
+            postData.auth_user_name = window.laudatioApp.auth_user_name;
+            postData.auth_user_email = window.laudatioApp.auth_user_email;
         }
         else {
             postData.corpusid = $(this).data('corpusid')
+            postData.corpus_path = $(this).data('corpuspath')
+            postData.auth_user_name = $(this).data('auth_user_name')
+            postData.auth_user_email = $(this).data('auth_user_email')
         }
 
-
-        console.log("POSTDATA: "+JSON.stringify(postData))
         var token = $('#_token').val();
         $.ajaxSetup({
             headers: {
@@ -716,6 +721,7 @@ $(function(){
             .done(function(data) {
                 if(data.status == "success"){
                     console.log(data.message.publish_corpus_response)
+                    $('#publishCorpusModal').modal("hide");
                     $('#alert-laudatio').addClass('alert-success');
                     $('#alert-laudatio .alert-laudatio-message').html(data.message.publish_corpus_response)
                     $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
@@ -724,22 +730,14 @@ $(function(){
                 }
                 else if (data.status == "error"){
                     console.log(data.message.publish_corpus_response)
-                    $('#alert-laudatio').addClass('alert-danger');
-                    $('#alert-laudatio .alert-laudatio-message').html(data.message.publish_corpus_response)
-
-                    $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
-                        $("#alert-laudatio").slideUp(500);
-                    });
+                    $('#publish-error-message').text(data.message.publish_corpus_response)
+                    $('#publish-error-message').css('display','block');
                 }
             })
             .fail(function(data) {
                 console.log("FAIL : "+data.message.publish_corpus_response)
-                $('#alert-laudatio').addClass('alert-danger');
-                $('#alert-laudatio .alert-laudatio-message').html(data.message.publish_corpus_response)
-
-                $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
-                    $("#alert-laudatio").slideUp(500);
-                });
+                $('#publish-error-message').text(data.message.publish_corpus_response)
+                $('#publish-error-message').css('display','block');
             });
 
     });

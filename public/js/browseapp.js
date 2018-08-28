@@ -43574,6 +43574,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'citedata', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath', 'workflowstatus', 'corpusversion'],
@@ -43619,6 +43620,10 @@ var render = function() {
               _vm._v(
                 "\n           " +
                   _vm._s(_vm._f("arrayToString")(_vm.headerdata.corpus_title)) +
+                  ", Version " +
+                  _vm._s(
+                    _vm._f("arrayToString")(_vm.headerdata.corpus_version)
+                  ) +
                   "\n          "
               )
             ]),
@@ -48536,7 +48541,8 @@ var render = function() {
                   }
                 ],
                 staticClass:
-                  "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1"
+                  "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1",
+                attrs: { id: "workflowBadge" }
               },
               [
                 _c("span", [
@@ -50187,7 +50193,8 @@ var render = function() {
                   }
                 ],
                 staticClass:
-                  "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1"
+                  "verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1",
+                attrs: { id: "workflowBadge" }
               },
               [
                 _c("span", [

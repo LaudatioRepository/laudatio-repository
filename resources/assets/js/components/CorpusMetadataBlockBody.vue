@@ -319,7 +319,7 @@
                </div>
              </div>
         </div>
-        <div  v-if="workflowstatus == 0" class="verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1" v-show="isloggedin">
+        <div  v-if="workflowstatus == 0" class="verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1" v-show="isloggedin" id="workflowBadge">
             <span>
                 WORKING VERSION
             </span>

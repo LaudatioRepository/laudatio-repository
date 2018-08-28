@@ -261,7 +261,7 @@ class GitFunction
 
     public function commitFiles($path, $commitmessage, $user, $email){
         $isCommitted = false;
-        Log::info("USER: ".print_r($user,1));
+
         $process = new Process("git commit -m \"".$commitmessage." by ".$user." (".$email.") \" ",$path);
         $process->setTimeout(3600);
         $process->run();
@@ -278,6 +278,60 @@ class GitFunction
         }
 
         return $isCommitted;
+    }
+
+    public function setCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email) {
+        $isTagged = false;
+        $process = new Process(" git tag -a v".$version." -m \"".$tagmessage." by ".$user." (".$email.") \" ",$this->basePath."/".$corpusPath);
+        $process->setTimeout(3600);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            Log::info ("THERE WAS A PROCESS ERROR: ".print_r($process->getErrorOutput(),1));
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            Log::info ("WE HAVE TAGGED: ".print_r($processOutput, 1));
+            Log::info ("TAGMESSAGE: ".print_r($tagmessage, 1));
+            if($this->isTagged($version,$this->basePath."/".$corpusPath)){
+                Log::info ("IT IS TAGGED: ");
+                $push_process = new Process(" git push origin v".$version,$this->basePath."/".$corpusPath);
+                $push_process->setTimeout(3600);
+                $push_process->run();
+                Log::info ("RAN PUSH PROCESS: ");
+                if (!$push_process->isSuccessful()) {
+                    Log::info ("WE HAVE NOT PUSHED: ".print_r($push_process->getErrorOutput(), 1));
+                    throw new ProcessFailedException($push_process);
+                }
+                else{
+                    Log::info ("WE HAVE PUSHED: ".print_r($push_process->getOutput(), 1));
+                    $isTagged = true;
+                }
+            }
+        }
+        return $isTagged;
+    }
+
+    public function isTagged($version,$corpusPath) {
+        $isTagged = false;
+
+        $process = new Process(" git tag",$corpusPath);
+        $process->setTimeout(3600);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            if(strpos($processOutput,$version) !== false){
+                $isTagged = true;
+            }
+        }
+        return $isTagged;
     }
 
     public function addRemote($origin,$path) {

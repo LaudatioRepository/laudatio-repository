@@ -49,20 +49,19 @@ class PublicationController extends Controller
      */
     public function publishCorpus(Request $request)
     {
-        //First check if we can safely publish
 
         $result = null;
-        $corpusid = $request->input('corpusid');
-
-        //get information and build the post
-
         $status = "";
         $result = array();
         $update_response = null;
+        $user = \Auth::user();
 
         try{
+            $corpusid = $request->input('corpusid');
             $corpus = Corpus::findOrFail($corpusid);
-            $corpuspath = $request->input('corpuspath');
+            $corpuspath = $request->input('corpus_path');
+            $auth_user_name = $request->input('auth_user_name');
+            $auth_user_email = $request->input('auth_user_email');
             $corpusData = json_decode($this->GitRepoService->checkForCorpusFiles($corpuspath."/TEI-HEADERS"), true);
 
 
@@ -81,7 +80,6 @@ class PublicationController extends Controller
                 array_push($documentArray,$dbDocument[0]->elasticsearch_id);
             }
 
-              //Log::info("documentarray: ".print_r($documentArray,1));
 
             $guidelines = $this->elasticService->getGuidelinesByCorpus($corpus->corpus_id);
 
@@ -121,7 +119,11 @@ class PublicationController extends Controller
             );
 
             $response = $this->elasticService->postToIndex($params);
-            if(!empty($response)){
+
+            Log::info("RESPONSE: ".print_r($response,1));
+
+
+            if(!empty($response['_shards'])){
                 $responsestatus = $response['_shards'];
                 if($responsestatus['successful'] > 0
                     && $responsestatus['failed'] == 0
@@ -138,6 +140,9 @@ class PublicationController extends Controller
                             ]
                         ]
                     ];
+
+                    Log::info("UPDATE-PARAMS: ".print_r($update_params,1));
+
                     $update_response = $this->elasticService->setCorpusToPublished($update_params);
 
                     if(!empty($update_response)){
@@ -159,30 +164,68 @@ class PublicationController extends Controller
                                 $annotation->save();
                             }
 
+                            $tag = $this->GitRepoService->setCorpusVersionTag($corpuspath,$corpus->name." version ".$corpus->publication_version,$corpus->publication_version,$corpusid,$auth_user_name,$auth_user_email);
+                            Log::info("TAG RETURNED: ".print_r($tag,1));
 
-                            $result['publish_corpus_response']  = "The Corpus was successfully published";
-                            $status = "success";
+                            $corpus->gitlab_version_tag = "v".$corpus->publication_version;
+                            $corpus->save();
+
+                            Log::info("CORPUS SAVED: ");
+
+                            $this->LaudatioUtilService->emptyCorpusCache($corpus->corpus_id);
+                            Log::info("EMPTIED CORPUSCACHE: ");
+                            $this->LaudatioUtilService->emptyDocumentCacheByCorpusId($corpus->corpus_id);
+                            Log::info("EMPTIED DOCUMENTCACHEBYCORPUS: ");
+
+
+                            foreach ($documents_in_corpus as $cached_document) {
+                                $this->LaudatioUtilService->emptyDocumentCacheByDocumentId($cached_document['id']);
+                            }
+
+                            Log::info("EMPTIED DOCUMENTCACHEBYDOCUMENTID: ");
+
+                            $this->LaudatioUtilService->emptyAnnotationCacheByCorpusId($corpus->corpus_id);
+                            Log::info("EMPTIED ANNOTATIONCACHEBYCORPUSID: ");
+
+                            foreach ($annotations_in_corpus as $cached_annotation) {
+                                $this->LaudatioUtilService->emptyAnnotationCacheByAnnotationId($cached_annotation);
+                            }
+
+                            Log::info("EMPTIED DANNOTATIONCACHE: ");
+
+                            if($tag) {
+                                $result['publish_corpus_response']  = "The Corpus was successfully published";
+                                $status = "success";
+                            }
+                            else{
+                                $status = "error";
+                                $result['publish_corpus_response']  = "There was a problem publishing the Corpus. The error was: The corpus could not be published to git due to failed tagging. A message has been sent to the site administrator. Please try again later";
+                            }
+
+
+                        }
+                        else{
+                            $status = "error";
+                            $result['publish_corpus_response']  = "There was a problem publishing the Corpus. The error was: The corpus could not be published to git due to failed updating of indexes. A message has been sent to the site administrator. Please try again later";
                         }
                     }
 
                 }
                 else {
                     $status = "error";
-                    $result['publish_corpus_response']  = "There was a problem publishing the Corpus. The error was: ($update_response) A message has been sent to the site administrator. Please try again later";
+                    $result['publish_corpus_response']  = "There was a problem publishing the Corpus. The error was: problem i updating the index (".print_r($update_response,1).") A message has been sent to the site administrator. Please try again later";
                 }
             }
             else {
                 $status = "error";
-                $result['publish_corpus_response']  = "There was a problem publishing the Corpus. The error was: ($update_response) A message has been sent to the site administrator. Please try again later";
+                $result['publish_corpus_response']  = "There was a problem publishing the Corpus. The update shards were empty. The error was: (".print_r($update_response,1).") A message has been sent to the site administrator. Please try again later";
             }
-
-
 
 
         }
         catch (\Exception $e) {
             $status = "error";
-            $result['publish_corpus_response']  = "There was a problem publishing the Corpus. The error was: ($update_response) A message has been sent to the site administrator. Please try again later";
+            $result['publish_corpus_response']  = "There was a problem publishing the Corpus. General try-catch error. The error was: (".print_r($update_response,1).") A message has been sent to the site administrator. Please try again later";
         }
 
 

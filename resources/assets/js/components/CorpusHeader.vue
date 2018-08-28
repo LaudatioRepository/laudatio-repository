@@ -6,13 +6,14 @@
                 <i class="fa fa-close" aria-hidden="true"></i>
             </button>
         </div>
+
         <div class="row">
         <div class="col-2">
           <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
         </div>
         <div class="col pr-5">
           <h3 class="h3 font-weight-bold">
-           {{ headerdata.corpus_title | arrayToString }}
+           {{ headerdata.corpus_title | arrayToString }}, Version {{ headerdata.corpus_version | arrayToString }}
           </h3>
           <p class="text-wine text-14">
             {{corpusAuthors()}}

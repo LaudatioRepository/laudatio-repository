@@ -53,12 +53,16 @@
 
                                     </div>
                                     <div class="col-2 p-0 mr-2">
-                                        <button  class="corpusProject-startEdit btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
-                                            Edit project
-                                        </button>
-                                        <a href="{{ route('corpus.create',['corpusproject' => $corpusProjectId]) }}" class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
-                                            Add Corpus
-                                        </a>
+                                        @if (Auth::user()->can('Can edit corpus project'))
+                                            <button  class="corpusProject-startEdit btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
+                                                Edit project
+                                            </button>
+                                        @endif
+                                        @if (Auth::user()->can('Can create corpus'))
+                                            <a href="{{ route('corpus.create',['corpusproject' => $corpusProjectId]) }}" class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
+                                                Add Corpus
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -128,8 +132,9 @@
                                                         <a class="dropdown-item text-14" href="{{ route('corpus.edit',['corpus' => $corpus['id']]) }}">Edit Corpus</a>
                                                         <a class="dropdown-item text-14" href="{{route('browse.showHeaders.get', ['header' => 'corpus', 'id' => $corpus['elasticsearch_id']])}}">Preview Corpus</a>
                                                         <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#publishCorpusModal" data-corpusid="{{$corpus['id']}}" data-corpuspath="{{$corpus['corpuspath']}}" id="publishCorpusButton">Publish Corpus</a>
-
-                                                        <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#deleteCorpusModal" data-corpusid="{{$corpus['id']}}" data-corpusname="{{$corpus['name']}}" data-corpuspath="{{$corpus['corpuspath']}}"  id="checkDeleteCorpusButton">Delete Corpus</a>
+                                                        @if (Auth::user()->can('Administer the application'))
+                                                            <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#deleteCorpusModal" data-corpusid="{{$corpus['id']}}" data-corpusname="{{$corpus['name']}}" data-corpuspath="{{$corpus['corpuspath']}}"  id="checkDeleteCorpusButton">Delete Corpus</a>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>

@@ -54,7 +54,7 @@
                                                 <div class="col">
                                                     <div class="h4 font-weight-bold">
                                                         <a class="text-dark" href="/browse/corpus/{{$corpus['elasticid']}}">
-                                                            {{$corpus['corpus_title']}}
+                                                            {{$corpus['corpus_title']}} (Version {{$corpus['corpus_version']}})
                                                         </a>
                                                     </div>
                                                     <p class="text-wine text-14">

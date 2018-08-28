@@ -116,7 +116,7 @@ class ElasticService implements ElasticsearchInterface
                     'index' => 'corpus',
                     'type' => 'doc',
                     'id' => $id,
-                    '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora"]
+                    '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora","publication_version","publication_status"]
                 ];
             }
             else{
@@ -583,7 +583,7 @@ class ElasticService implements ElasticsearchInterface
                 'type' => 'doc',
                 'body' => $queryBody,
                 //'_source_exclude' => ['message'],
-                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname","corpus_version"],
+                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname","corpus_version","publication_version","publication_status"],
                 'filter_path' => ['hits.hits']
             ];
             $results = Elasticsearch::search($params);
@@ -1425,7 +1425,7 @@ class ElasticService implements ElasticsearchInterface
                 'type' => 'doc',
                 'body' => $queryBody,
                 //'_source_exclude' => ['message'],
-                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname","corpus_version"],
+                '_source' => ["corpus_title","corpus_publication_publication_date","corpus_documents","annotation_name","corpus_publication_license_description","corpus_publication_publisher","corpus_encoding_project_homepage","corpus_editor_forename","corpus_editor_surname","corpus_version","publication_version","publication_status"],
                 'filter_path' => ['hits.hits']
             ];
 

@@ -524,7 +524,7 @@ class GitRepoService implements GitRepoInterface
 
         if(is_dir($this->basePath.'/'.$dirname)){
             $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$dirname);
-            $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$corpusid,$user);
+            $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$user,$email);
 
             if($isCommited){
                 if($isHeader){
@@ -557,7 +557,7 @@ class GitRepoService implements GitRepoInterface
             }
         }
         else{
-            $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$corpusid,$user);
+            $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$user,$email);
             if($isCommited){
                 if($isHeader){
                     $this->laudatioUtilsService->setVersionMapping($fileName,$patharray[($last_id-1)],false);
@@ -641,6 +641,16 @@ class GitRepoService implements GitRepoInterface
     public function getCommitData($path){
         $gitFunction = new GitFunction();
         return $gitFunction->getCommitData($path);
+    }
+
+    public function setCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email){
+        $isTagged = false;
+        $gitFunction = new  GitFunction();
+        $tag = $gitFunction->setCorpusVersionTag($corpusPath,$tagmessage,$version,$user,$email);
+        if($tag){
+            $isTagged = true;
+        }
+        return $isTagged;
     }
 
 

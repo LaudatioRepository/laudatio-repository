@@ -102,6 +102,7 @@ class BrowseController extends Controller
 
                     $corpusdata[$corpusresponse['_source']['corpus_id'][0]] = array(
                         'corpus_title' => $corpusresponse['_source']['corpus_title'][0],
+                        'corpus_version' => $corpusresponse['_source']['publication_version'][0],
                         'authors' => $authors,
                         'corpus_languages_language' => $corpusresponse['_source']['corpus_languages_language'][0],
                         'corpus_size_value' => str_replace(array(',','.'),'',$corpusresponse['_source']['corpus_size_value'][0]),
@@ -179,7 +180,7 @@ class BrowseController extends Controller
 
         $currentPageSearchResults = $sortedCollection->slice(($currentPage - 1) * $perPage, $perPage)->all();
         $entries = new LengthAwarePaginator($currentPageSearchResults, count($sortedCollection), $perPage, $currentPage,['path' => LengthAwarePaginator::resolveCurrentPath()] );
-
+//dd($entries);
         return view('browse.index')
             ->with('isLoggedIn', $isLoggedIn)
             ->with('corpusdata',$entries)
@@ -223,8 +224,11 @@ class BrowseController extends Controller
                 $citeData['published_handle'] = "";
 
                 $corpusId = is_array($data['result']['corpus_id']) ? $data['result']['corpus_id'][0]: $data['result']['corpus_id'];
-                $workFlowStatus = $this->LaudatioUtilService->getWorkFlowStatus($corpusId);
-                $corpusVersion = $this->LaudatioUtilService->getCorpusVersion($corpusId);
+                //$workFlowStatus = $this->LaudatioUtilService->getWorkFlowStatus($corpusId);
+                //$corpusVersion = $this->LaudatioUtilService->getCorpusVersion($corpusId);
+
+                $corpusVersion =  $data['result']['publication_version'][0];
+                $workFlowStatus = $data['result']['publication_status'];
 
                 $formatSearchResult = $this->ElasticService->getFormatsByCorpus($corpusId);
                 $formats = array();
@@ -375,8 +379,9 @@ class BrowseController extends Controller
                 $data = json_decode($apiData->getContent(), true);
 
                 $corpusId = is_array($data['result']['in_corpora']) ? $data['result']['in_corpora'][0]: $data['result']['in_corpora'];
-                $workFlowStatus = $this->LaudatioUtilService->getWorkFlowStatus($corpusId);
-                $corpusVersion = $this->LaudatioUtilService->getCorpusVersion($corpusId);
+                //$workFlowStatus = $this->LaudatioUtilService->getWorkFlowStatus($corpusId);
+                //$corpusVersion = $this->LaudatioUtilService->getCorpusVersion($corpusId);
+
 
                 if($corpusId){
                     $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $corpusId)),array($id));
@@ -388,6 +393,8 @@ class BrowseController extends Controller
                     }
 
                     $corpusName = $data['result']['documentCorpusdata']['corpus_title'][0];
+                    $corpusVersion =  $data['result']['documentCorpusdata']['publication_version'][0];
+                    $workFlowStatus = $data['result']['documentCorpusdata']['publication_status'];
                     $citeData['title'] = $data['result']['documentCorpusdata']['corpus_title'][0];
                     $citeData['version'] = $data['result']['documentCorpusdata']['corpus_version'][count($data['result']['documentCorpusdata']['corpus_version']) -1];
                     $citeData['publishing_year'] = date('Y',strtotime($data['result']['documentCorpusdata']['corpus_publication_publication_date'][0]));//Carbon::createFromFormat ('Y-m-d' , $data['result']['documentCorpusdata']['corpus_publication_publication_date'][0])->format ('Y');
@@ -423,7 +430,7 @@ class BrowseController extends Controller
                                     if(array_key_exists('in_documents', $annotationData['result'][0]['_source'])){
                                         $dataArray['document_count'] = floatval(count($annotationData['result'][0]['_source']['in_documents']));
                                     }
-                                    Log::info("annotationData: ".print_r($annotationData,1));
+
                                     $dataArray['title'] = $annotationData['result'][0]['_source']['preparation_title'][0];
                                     $dataArray['preparation_annotation_id'] = $annotationData['result'][0]['_id'];
                                     array_push($annotationMapping[$group],$dataArray);
@@ -463,8 +470,8 @@ class BrowseController extends Controller
                 $apiData = $this->ElasticService->getAnnotation($id);
                 $data = json_decode($apiData->getContent(), true);
                 $corpusId = is_array($data['result']['in_corpora']) ? $data['result']['in_corpora'][0]: $data['result']['in_corpora'];
-                $workFlowStatus = $this->LaudatioUtilService->getWorkFlowStatus($corpusId);
-                $corpusVersion = $this->LaudatioUtilService->getCorpusVersion($corpusId);
+                //$workFlowStatus = $this->LaudatioUtilService->getWorkFlowStatus($corpusId);
+                //$corpusVersion = $this->LaudatioUtilService->getCorpusVersion($corpusId);
 
                 if($corpusId){
 
@@ -478,7 +485,9 @@ class BrowseController extends Controller
                         array_push($citeData['authors'],$data['result']['annotationCorpusdata']['corpus_editor_forename'][$i]." ".$data['result']['annotationCorpusdata']['corpus_editor_surname'][$i]);
                     }
 
-                    $corpusName = data['result']['annotationCorpusdata']['corpus_title'][0];
+                    $corpusName = $data['result']['annotationCorpusdata']['corpus_title'][0];
+                    $corpusVersion =  $data['result']['annotationCorpusdata']['publication_version'][0];
+                    $workFlowStatus =  $data['result']['annotationCorpusdata']['publication_status'];
                     $citeData['title'] = $data['result']['annotationCorpusdata']['corpus_title'][0];
                     $citeData['version'] = $data['result']['annotationCorpusdata']['corpus_version'][count($data['result']['annotationCorpusdata']['corpus_version']) -1];
                     $citeData['publishing_year'] = date('Y',strtotime($data['result']['annotationCorpusdata']['corpus_publication_publication_date'][0]));//Carbon::createFromFormat ('Y-m-d' , $data['result']['annotationCorpusdata']['corpus_publication_publication_date'][0])->format ('Y');
