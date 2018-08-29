@@ -87,7 +87,7 @@
                  &nbsp; <a id="validateCorpusButton" class="btn btn-primary pull-right" href="#" role="button">Publish corpus</a-->
               </div>
             </div>
-            <div class="card text-white bg-transparent" v-else-if="! isloggedin">
+            <div class="card text-white bg-transparent" v-else-if="!isloggedin && workflowstatus == '1' || isloggedin && workflowstatus == '1'">
               <h6 class="corpus-title h6 text-uppercase text-12 text-wine">
                 Corpus
               </h6>
@@ -125,9 +125,7 @@
                   <img src="/images/logo-laudatio-mini.svg" alt="copyright-logo">
                    CITE
                 </button>
-                <div class="w-100 d-flex justify-content-start align-items-center">
-                  <img class="py-1" src="/images/license-cc.svg" alt="license cc" /> <img class="py-1" src="/images/license-sa.svg" alt="license sa" /> <img class="py-1" src="/images/license-by.svg" alt="license by" /> <img class="py-1" src="/images/license-nd.svg" alt="license nd" /> <img class="py-1" src="/images/license-nc.svg" alt="license nc" />
-                </div>
+                <div class="w-100 d-flex justify-content-start align-items-center" id="licenseContainer"></div>
               </div>
             </div>
 
@@ -204,7 +202,7 @@
 				<div class="modal-content">
 					<div class="modal-header bg-corpus-mid">
 					    <div class="h4 modal-title" id="citation-modal-title">
-                            {{ headerdata.corpus_title | arrayToString }}
+                            {{ headerdata.corpus_title | arrayToString }}, Version {{ headerdata.corpus_version | arrayToString }}
 						</div>
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
                           <i class="fa fa-close" aria-hidden="true"></i>
@@ -264,7 +262,7 @@
 
 <script>
     export default {
-        props: ['headerdata','header','citedata','user','isloggedin','corpuselasticsearchid','corpusid','corpuspath','workflowstatus', 'corpusversion'],
+        props: ['headerdata','header','citedata','user','isloggedin','corpuselasticsearchid','corpusid','corpuspath','workflowstatus', 'corpusversion','ccbaseuri'],
         methods: {
             corpusAuthors: function(){
                 var authorString = "";

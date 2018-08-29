@@ -54,10 +54,8 @@ class LoginController extends Controller
             }
 */
             $intended = $request->session()->get('url.intended',url('/'));
-            Log::info("INTENDED: ".print_r($intended,1));
             $urlArray = explode("/",$intended);
             $redirect = '/'.join('/',array_slice($urlArray, 3));
-            Log::info("INTENDED: ".print_r($redirect,1));
             $response = array('success' => true, 'redirect' => $redirect);
             return response()->json($response);
         }

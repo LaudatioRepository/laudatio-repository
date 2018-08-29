@@ -293,20 +293,17 @@ class GitFunction
         }
         else{
             $processOutput = $process->getOutput();
-            Log::info ("WE HAVE TAGGED: ".print_r($processOutput, 1));
-            Log::info ("TAGMESSAGE: ".print_r($tagmessage, 1));
+
             if($this->isTagged($version,$this->basePath."/".$corpusPath)){
-                Log::info ("IT IS TAGGED: ");
+
                 $push_process = new Process(" git push origin v".$version,$this->basePath."/".$corpusPath);
                 $push_process->setTimeout(3600);
                 $push_process->run();
-                Log::info ("RAN PUSH PROCESS: ");
+
                 if (!$push_process->isSuccessful()) {
-                    Log::info ("WE HAVE NOT PUSHED: ".print_r($push_process->getErrorOutput(), 1));
                     throw new ProcessFailedException($push_process);
                 }
                 else{
-                    Log::info ("WE HAVE PUSHED: ".print_r($push_process->getOutput(), 1));
                     $isTagged = true;
                 }
             }

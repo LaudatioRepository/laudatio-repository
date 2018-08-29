@@ -34,6 +34,8 @@ const browseApp = new Vue({
         corpuspath: window.laudatioApp.corpus_path,
         workflowstatus: window.laudatioApp.workflow_status,
         corpusversion: window.laudatioApp.corpus_version,
-        corpuselasticsearchid: window.laudatioApp.corpus_elasticsearch_id
+        corpuselasticsearchid: window.laudatioApp.corpus_elasticsearch_id,
+        ccbaseuri: window.laudatioApp.ccBaseUri,
+        corpusPublicationLicense: window.laudatioApp.corpusPublicationLicense
     }
 });

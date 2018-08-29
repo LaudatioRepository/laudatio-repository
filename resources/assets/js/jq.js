@@ -17,7 +17,6 @@ jQuery(window).on('load', function() {
     if(path.indexOf('published') > -1) {
         var patharray = path.split('/');
         var sortBy = patharray[2];
-
         var sortTitle = "";
         if(typeof sortBy != "undefined"){
             $("a[data-sort]").each(function(){
@@ -32,8 +31,19 @@ jQuery(window).on('load', function() {
             $('#searchSort').html(sortTitle);
         }
 
+        //fetch the correct license icon(s)
+        $(".licenseContainer").each(function () {
+            var licenseMarkup = getLicenseMarkup($(this).data('publicationlicense'));
+            $(this).html(licenseMarkup);
+        });
     }
-
+    else {
+        //fetch the correct license icon(s)
+        if(laudatioApp.header == 'corpus') {
+            var licenseMarkup = getLicenseMarkup();
+            $('#licenseContainer').html(licenseMarkup);
+        }
+    }
 });
 
 $(function(){
@@ -818,7 +828,7 @@ $(function(){
         });
 
         var postData = {};
-        postData.uri = "https://creativecommons.org/licenses/by/3.0/";
+        postData.uri = window.laudatioApp.corpusPublicationLicense;
         $.ajax({
             method: 'POST',
             url: '/api/browseapi/scrapeLicenseDeed',
@@ -1131,6 +1141,11 @@ $(function(){
 
 /** FUNCTIONS **/
 
+/**
+ * remove Deleted elements in tables
+ * @param checkedIds
+ * @returns {number}
+ */
 function removeDeletedElements(checkedIds) {
 
     for( var i = 0; i < checkedIds.length; i++) {
@@ -1140,6 +1155,37 @@ function removeDeletedElements(checkedIds) {
     return i;
 }
 
+
+/**
+ * Get the correct license markup for the Corpus Header
+ */
+function getLicenseMarkup(license) {
+    var licenseMap = [];
+    licenseMap['cc'] = '/images/license-cc.svg';
+    licenseMap['sa'] = '/images/license-sa.svg';
+    licenseMap['by'] = '/images/license-by.svg';
+    licenseMap['nd'] = '/images/license-nd.svg';
+    licenseMap['nc'] = '/images/license-nc.svg';
+
+    var licenseUri = '';
+    if(typeof license == 'undefined') {
+        licenseUri = window.laudatioApp.corpusPublicationLicense;
+    }
+    else {
+        licenseUri = license;
+    }
+
+
+    var uriSplits = licenseUri.split("/");
+    var license = uriSplits[4]
+    var licenseSplits = license.split("-");
+    var markup = '';
+
+    for(var i=0; i < licenseSplits.length; i++) {
+        markup += '<img src="/images/license-'+licenseSplits[i]+'.svg" alt="license '+licenseSplits[i]+'" class="py-1">'
+    }
+    return markup;
+}
 
 /**
  * Validate headers promise

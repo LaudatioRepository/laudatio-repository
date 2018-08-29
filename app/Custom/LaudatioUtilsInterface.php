@@ -46,6 +46,7 @@ interface LaudatioUtilsInterface
     public function getWorkFlowStatus($corpusId);
 
     public function buildCiteFormat($data);
+    public function getLicenseByCorpus($data);
 
     public function emptyCorpusCache($corpusId);
 

@@ -16,11 +16,13 @@ class BrowseController extends Controller
 
     protected $ElasticService;
     protected $LaudatioUtilService;
+    protected $ccBaseUri;
 
     public function __construct(ElasticsearchInterface $Elasticservice, LaudatioUtilsInterface $laudatioUtils)
     {
         $this->ElasticService = $Elasticservice;
         $this->LaudatioUtilService = $laudatioUtils;
+        $this->ccBaseUri = config('laudatio.ccBaseuri');
     }
 
     public function index($perPage = null,$sortKriterium = null){
@@ -107,6 +109,7 @@ class BrowseController extends Controller
                         'corpus_languages_language' => $corpusresponse['_source']['corpus_languages_language'][0],
                         'corpus_size_value' => str_replace(array(',','.'),'',$corpusresponse['_source']['corpus_size_value'][0]),
                         'corpus_publication_date' => $corpus_publication_date,
+                        'corpus_publication_license' => $corpusresponse['_source']['corpus_publication_license'][0],
                         'corpus_encoding_project_description' => $corpusresponse['_source']['corpus_encoding_project_description'][0],
                         'document_genre' => $this->LaudatioUtilService->getDocumentGenreByCorpusId($corpusresponse['_source']['corpus_id'][0]),
                         'document_publication_range' => $document_range,
@@ -187,6 +190,7 @@ class BrowseController extends Controller
             ->with('totalCount',count($sortedCollection))
             ->with('perPageArray',$perPageArray)
             ->with('perPage',$perPage)
+            ->with('ccBaseUri',$this->ccBaseUri)
             ->with('user',$user);
     }
 
@@ -204,6 +208,7 @@ class BrowseController extends Controller
         $corpusVersion = null;
         $workFlowStatus = null;
         $corpusName = null;
+        $corpusPublicationLicense = null;
 
         switch ($header){
             case "corpus":
@@ -221,14 +226,14 @@ class BrowseController extends Controller
                 $citeData['version'] = $data['result']['corpus_version'][count($data['result']['corpus_version']) -1];
                 $citeData['publishing_year'] = $citeData['publishing_year'] = date('Y',strtotime($data['result']['corpus_publication_publication_date'][0]));//Carbon::createFromFormat ('Y-m-d' , $data['result']['corpus_publication_publication_date'][0])->format ('Y');
                 $citeData['publishing_institution'] = $data['result']['corpus_publication_publisher'][0];
+                $citeData['corpus_publication_license'] = $data['result']['corpus_publication_license'][0];
                 $citeData['published_handle'] = "";
 
                 $corpusId = is_array($data['result']['corpus_id']) ? $data['result']['corpus_id'][0]: $data['result']['corpus_id'];
-                //$workFlowStatus = $this->LaudatioUtilService->getWorkFlowStatus($corpusId);
-                //$corpusVersion = $this->LaudatioUtilService->getCorpusVersion($corpusId);
 
                 $corpusVersion =  $data['result']['publication_version'][0];
                 $workFlowStatus = $data['result']['publication_status'];
+                $corpusPublicationLicense = $data['result']['corpus_publication_license'][0];
 
                 $formatSearchResult = $this->ElasticService->getFormatsByCorpus($corpusId);
                 $formats = array();
@@ -365,6 +370,7 @@ class BrowseController extends Controller
 
                 $data['result']['workflow_status'] = $workFlowStatus;
                 $data['result']['corpus_version'] = $corpusVersion;
+                $data['result']['corpusPublicationLicense'] = $corpusPublicationLicense;
                 $data['result']['corpusAnnotationGroups'] = $annotationMapping;
                 $data['result']['allAnnotationGroups'] = $allAnnotationGroups;
                 $data['result']['corpusannotationcount'] = $annotationcount;
@@ -538,6 +544,7 @@ class BrowseController extends Controller
 
                     $data['result']['allformats'] = $formats;
                     $data['result']['guidelines'] = $guidelineArray;
+                    $data['result']['ccBaseUri'] = $this->ccBaseUri;
                     //dd($data);
                     //Log::info("GUIDELINES: ".print_r( $data['result']['guidelines'],1 ));
                 }
@@ -554,10 +561,12 @@ class BrowseController extends Controller
             "corpus_path" => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusId),
             "workflow_status" => $workFlowStatus,
             "corpus_version" => $corpusVersion,
+            "corpusPublicationLicense" => $corpusPublicationLicense,
             "header_data" => $data,
             "citedata" => $citeData,
             "user" => $user,
-            "isLoggedIn" => $isLoggedIn
+            "isLoggedIn" => $isLoggedIn,
+            "ccBaseUri" => $this->ccBaseUri
         ]);
         return view('browse.showHeaders')
             ->with('isLoggedIn', $isLoggedIn)

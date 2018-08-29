@@ -720,6 +720,10 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpusPath;
     }
 
+    public function getLicenseByCorpus($data){
+
+    }
+
     public function deleteModels($path){
         $dirArray = explode("/",$path);
         $type = $dirArray[3];

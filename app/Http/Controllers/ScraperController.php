@@ -14,7 +14,8 @@ class ScraperController extends Controller
         $status = "success";
         $result = array();
         $cacheString = $request->input('uri');
-        $baseUri = "https://creativecommons.org";
+        $domainUri = "https://creativecommons.org";
+
 
         if (Cache::has($cacheString)) {
             $result = json_decode(Cache::get($cacheString));
@@ -25,10 +26,10 @@ class ScraperController extends Controller
                 $crawler = $client->request('GET', $request->input('uri'));
 
                 $licenseHeader =  '<div id="deed-head" class="deedrow">'.$crawler->filter('#deed-license')->html().'</div>';
-                $licenseHeader = str_replace("/images", $baseUri.'/images',$licenseHeader);
+                $licenseHeader = str_replace("/images", $domainUri.'/images',$licenseHeader);
 
                 $licenseBody = '<div id="deed-main-content" class="deedrow">'.$crawler->filter('#deed-main-content')->html().'</div>';
-                $licenseBody = str_replace("/images", $baseUri.'/images',$licenseBody);
+                $licenseBody = str_replace("/images", $domainUri.'/images',$licenseBody);
 
                 $helpPanels = '<div id="help-panels" style="display: none">'.$crawler->filter('#help-panels')->html().'</div>';
 
@@ -43,7 +44,7 @@ class ScraperController extends Controller
             }
             catch (\Exception $e) {
                 $status = "error";
-                $result['message_assign_response']  = "There was a problem assigning the Board message. A message has been sent to the site administrator. Please try again later";
+                $result['message_assign_response']  = "There was a problem scraping the license deed. A message has been sent to the site administrator. Please try again later";
                 Log::info("ERROR: ".$e->getMessage());
 
             }

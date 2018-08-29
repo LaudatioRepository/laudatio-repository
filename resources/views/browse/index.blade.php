@@ -42,10 +42,7 @@
                                     <div class="col-6">
                                         <div class="container bg-corpus-superlight mt-3 mb-3">
                                             <div class="row d-flex flex-column p-3">
-                                                <div class="align-self-end d-flex justify-content-end align-items-center">
-                                                    <img class="py-1" src="/images/license-cc.svg" alt="license cc" />
-                                                    <img class="py-1" src="/images/license-by.svg" alt="license by" />
-                                                </div>
+                                                <div class="align-self-end d-flex justify-content-end align-items-center licenseContainer" data-publicationlicense="{{$corpus['corpus_publication_license']}}"></div>
                                             </div>
                                             <div class="row px-3">
                                                 <div class="col-4">

@@ -120,8 +120,6 @@ class PublicationController extends Controller
 
             $response = $this->elasticService->postToIndex($params);
 
-            Log::info("RESPONSE: ".print_r($response,1));
-
 
             if(!empty($response['_shards'])){
                 $responsestatus = $response['_shards'];
@@ -140,8 +138,6 @@ class PublicationController extends Controller
                             ]
                         ]
                     ];
-
-                    Log::info("UPDATE-PARAMS: ".print_r($update_params,1));
 
                     $update_response = $this->elasticService->setCorpusToPublished($update_params);
 
@@ -165,33 +161,24 @@ class PublicationController extends Controller
                             }
 
                             $tag = $this->GitRepoService->setCorpusVersionTag($corpuspath,$corpus->name." version ".$corpus->publication_version,$corpus->publication_version,$corpusid,$auth_user_name,$auth_user_email);
-                            Log::info("TAG RETURNED: ".print_r($tag,1));
 
                             $corpus->gitlab_version_tag = "v".$corpus->publication_version;
                             $corpus->save();
 
-                            Log::info("CORPUS SAVED: ");
 
                             $this->LaudatioUtilService->emptyCorpusCache($corpus->corpus_id);
-                            Log::info("EMPTIED CORPUSCACHE: ");
                             $this->LaudatioUtilService->emptyDocumentCacheByCorpusId($corpus->corpus_id);
-                            Log::info("EMPTIED DOCUMENTCACHEBYCORPUS: ");
-
 
                             foreach ($documents_in_corpus as $cached_document) {
                                 $this->LaudatioUtilService->emptyDocumentCacheByDocumentId($cached_document['id']);
                             }
 
-                            Log::info("EMPTIED DOCUMENTCACHEBYDOCUMENTID: ");
-
                             $this->LaudatioUtilService->emptyAnnotationCacheByCorpusId($corpus->corpus_id);
-                            Log::info("EMPTIED ANNOTATIONCACHEBYCORPUSID: ");
 
                             foreach ($annotations_in_corpus as $cached_annotation) {
                                 $this->LaudatioUtilService->emptyAnnotationCacheByAnnotationId($cached_annotation);
                             }
 
-                            Log::info("EMPTIED DANNOTATIONCACHE: ");
 
                             if($tag) {
                                 $result['publish_corpus_response']  = "The Corpus was successfully published";

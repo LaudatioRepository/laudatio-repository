@@ -329,7 +329,7 @@
 
 <script>
     export default {
-        props: ['headerdata','header','user','isloggedin','workflowstatus', 'corpusversion'],
+        props: ['headerdata','header','user','isloggedin','workflowstatus', 'corpusversion','ccbaseuri'],
         data: function(){
             return {
                 annotators: [],
