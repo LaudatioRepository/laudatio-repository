@@ -116,10 +116,8 @@ jQuery(window).on('load', function () {
         });
     } else {
         //fetch the correct license icon(s)
-        if (laudatioApp.header == 'corpus') {
-            var licenseMarkup = getLicenseMarkup();
-            $('#licenseContainer').html(licenseMarkup);
-        }
+        var licenseMarkup = getLicenseMarkup();
+        $('#licenseContainer').html(licenseMarkup);
     }
 });
 

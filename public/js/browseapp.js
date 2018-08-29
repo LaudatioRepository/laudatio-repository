@@ -44807,11 +44807,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header', 'citedata', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath'],
+    props: ['headerdata', 'header', 'citedata', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath', 'workflowstatus', 'ccbaseuri'],
     computed: {
         concatLanguages: function concatLanguages() {
             return this.headerdata.document_languages_language.join();
@@ -45056,7 +45054,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "col-2" }, [
-            _vm.isloggedin
+            _vm.isloggedin && _vm.workflowstatus == "0"
               ? _c("div", { staticClass: "card text-white bg-transparent" }, [
                   _c(
                     "h6",
@@ -45096,7 +45094,8 @@ var render = function() {
                     )
                   ])
                 ])
-              : !_vm.isloggedin
+              : (!_vm.isloggedin && _vm.workflowstatus == "1") ||
+                (_vm.isloggedin && _vm.workflowstatus == "1")
                 ? _c("div", { staticClass: "card text-white bg-transparent" }, [
                     _c(
                       "h6",
@@ -45165,7 +45164,11 @@ var render = function() {
                       _vm._v(" "),
                       _vm._m(1),
                       _vm._v(" "),
-                      _vm._m(2)
+                      _c("div", {
+                        staticClass:
+                          "w-100 d-flex justify-content-start align-items-center",
+                        attrs: { id: "licenseContainer" }
+                      })
                     ])
                   ])
                 : _vm._e()
@@ -45318,15 +45321,21 @@ var render = function() {
                               _vm.headerdata.documentCorpusdata.corpus_title
                             )
                           ) +
+                          ", Version " +
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              _vm.headerdata.corpus_version
+                            )
+                          ) +
                           "\n                  "
                       )
                     ]
                   ),
                   _vm._v(" "),
-                  _vm._m(3)
+                  _vm._m(2)
                 ]),
                 _vm._v(" "),
-                _vm._m(4)
+                _vm._m(3)
               ])
             ])
           ]
@@ -45369,41 +45378,6 @@ var staticRenderFns = [
           }
         }),
         _vm._v("\n                 CITE\n              ")
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "w-100 d-flex justify-content-start align-items-center" },
-      [
-        _c("img", {
-          staticClass: "py-1",
-          attrs: { src: "/images/license-cc.svg", alt: "license cc" }
-        }),
-        _vm._v(" "),
-        _c("img", {
-          staticClass: "py-1",
-          attrs: { src: "/images/license-sa.svg", alt: "license sa" }
-        }),
-        _vm._v(" "),
-        _c("img", {
-          staticClass: "py-1",
-          attrs: { src: "/images/license-by.svg", alt: "license by" }
-        }),
-        _vm._v(" "),
-        _c("img", {
-          staticClass: "py-1",
-          attrs: { src: "/images/license-nd.svg", alt: "license nd" }
-        }),
-        _vm._v(" "),
-        _c("img", {
-          staticClass: "py-1",
-          attrs: { src: "/images/license-nc.svg", alt: "license nc" }
-        })
       ]
     )
   },
@@ -45889,11 +45863,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['headerdata', 'header', 'citedata', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath'],
+    props: ['headerdata', 'header', 'citedata', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath', 'workflowstatus', 'ccbaseuri'],
     methods: {
         annotationEditors: function annotationEditors() {
             var editorString = "";
@@ -46127,7 +46099,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "col-2" }, [
-            _vm.isloggedin
+            _vm.isloggedin && _vm.workflowstatus == "0"
               ? _c("div", { staticClass: "card text-white bg-transparent" }, [
                   _c(
                     "h6",
@@ -46167,7 +46139,8 @@ var render = function() {
                     )
                   ])
                 ])
-              : !_vm.isloggedin
+              : (!_vm.isloggedin && _vm.workflowstatus == "1") ||
+                (_vm.isloggedin && _vm.workflowstatus == "1")
                 ? _c("div", { staticClass: "card text-white bg-transparent" }, [
                     _c(
                       "h6",
@@ -46236,7 +46209,11 @@ var render = function() {
                       _vm._v(" "),
                       _vm._m(1),
                       _vm._v(" "),
-                      _vm._m(2)
+                      _c("div", {
+                        staticClass:
+                          "w-100 d-flex justify-content-start align-items-center",
+                        attrs: { id: "licenseContainer" }
+                      })
                     ])
                   ])
                 : _vm._e()
@@ -46253,9 +46230,9 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-                _vm._m(3),
+                _vm._m(2),
                 _vm._v(" "),
-                _vm._m(4),
+                _vm._m(3),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -46342,15 +46319,21 @@ var render = function() {
                               _vm.headerdata.annotationCorpusdata.corpus_title
                             )
                           ) +
+                          ", Version " +
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              _vm.headerdata.corpus_version
+                            )
+                          ) +
                           "\n                      "
                       )
                     ]
                   ),
                   _vm._v(" "),
-                  _vm._m(5)
+                  _vm._m(4)
                 ]),
                 _vm._v(" "),
-                _vm._m(6)
+                _vm._m(5)
               ])
             ])
           ]
@@ -46393,41 +46376,6 @@ var staticRenderFns = [
           }
         }),
         _vm._v("\n                 CITE\n              ")
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "w-100 d-flex justify-content-start align-items-center" },
-      [
-        _c("img", {
-          staticClass: "py-1",
-          attrs: { src: "/images/license-cc.svg", alt: "license cc" }
-        }),
-        _vm._v(" "),
-        _c("img", {
-          staticClass: "py-1",
-          attrs: { src: "/images/license-sa.svg", alt: "license sa" }
-        }),
-        _vm._v(" "),
-        _c("img", {
-          staticClass: "py-1",
-          attrs: { src: "/images/license-by.svg", alt: "license by" }
-        }),
-        _vm._v(" "),
-        _c("img", {
-          staticClass: "py-1",
-          attrs: { src: "/images/license-nd.svg", alt: "license nd" }
-        }),
-        _vm._v(" "),
-        _c("img", {
-          staticClass: "py-1",
-          attrs: { src: "/images/license-nc.svg", alt: "license nc" }
-        })
       ]
     )
   },
