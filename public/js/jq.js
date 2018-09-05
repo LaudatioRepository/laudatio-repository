@@ -116,8 +116,10 @@ jQuery(window).on('load', function () {
         });
     } else {
         //fetch the correct license icon(s)
-        var licenseMarkup = getLicenseMarkup();
-        $('#licenseContainer').html(licenseMarkup);
+        if (typeof window.laudatioApp != 'undefined' && typeof window.laudatioApp.corpusPublicationLicense != 'undefined') {
+            var licenseMarkup = getLicenseMarkup();
+            $("#licenseContainer").html(licenseMarkup);
+        }
     }
 });
 
@@ -778,7 +780,7 @@ $(function () {
         var postData = {};
         postData.corpusid = $('#corpusid').val();
         postData.corpuspath = $('#corpuspath').val();
-        console.log("POSTDATA: " + JSON.stringify(postData));
+
         getValidationData(postData).then(function (data) {
             var json = JSON.parse(data.msg);
             console.log("JSON: " + data.msg);

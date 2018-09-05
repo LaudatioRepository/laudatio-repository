@@ -58,20 +58,6 @@ class CorpusController extends Controller
             ->with('user',$user);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create_old(CorpusProject $corpusproject)
-    {
-        $isLoggedIn = \Auth::check();
-        $user = \Auth::user();
-        return view('project.corpus.create')
-            ->with('isLoggedIn', $isLoggedIn)
-            ->with('corpusProjectId',$corpusproject->id)
-            ->with('user',$user);
-    }
 
     /**
      * Show the form for creating a new resource.

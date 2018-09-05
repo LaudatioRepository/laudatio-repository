@@ -125,7 +125,7 @@
                   <img src="/images/logo-laudatio-mini.svg" alt="copyright-logo">
                    CITE
                 </button>
-                <div class="w-100 d-flex justify-content-start align-items-center" id="licenseContainer"></div>
+                <div class="w-100 d-flex  pull-right" id="licenseContainer"></div>
               </div>
             </div>
 

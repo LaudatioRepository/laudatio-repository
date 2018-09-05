@@ -43906,8 +43906,7 @@ var render = function() {
                       _vm._m(3),
                       _vm._v(" "),
                       _c("div", {
-                        staticClass:
-                          "w-100 d-flex justify-content-start align-items-center",
+                        staticClass: "w-100 d-flex  pull-right",
                         attrs: { id: "licenseContainer" }
                       })
                     ])

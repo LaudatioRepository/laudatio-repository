@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 interface ElasticsearchInterface {
     public function getPublishedCorpora();
     public function setCorpusToPublished($params);
-    public function getCorpus($id,$full);
+    public function getCorpus($id,$full,$index);
     public function deleteCorpus($id);
     public function getDocument($id,$full);
     public function deleteDocument($id,$corpusId);
@@ -44,10 +44,13 @@ interface ElasticsearchInterface {
     public function getDocumentsByAnnotation($searchData,$annotationData);
     public function getCorporaByAnnotation($searchData,$annotationData);
 
-    public function createIndex($name);
+    public function createIndex($params);
+    public function reIndex($params);
+    public function createMappedIndex($indexMappingPath, $new_index_id, $old_index_id,$matchQuery,$new_elasticsearch_id);
     public function deleteIndex($indexId);
     public function truncateIndex($index);
     public function postToIndex($params);
+    public function setMapping($params);
     public function deleteIndexedObject($index,$params);
     public function getElasticIdByObjectId($index,$params);
     public function setWorkflowStatusByCorpusId($corpus_id);

@@ -113,7 +113,7 @@ class BrowseController extends Controller
                         'corpus_encoding_project_description' => $corpusresponse['_source']['corpus_encoding_project_description'][0],
                         'document_genre' => $this->LaudatioUtilService->getDocumentGenreByCorpusId($corpusresponse['_source']['corpus_id'][0]),
                         'document_publication_range' => $document_range,
-                        'download_path' => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusresponse['_source']['corpus_id'][0]),
+                        'download_path' => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusresponse['_id'],$corpusresponse['_index']),
                         'documentcount' => $documentcount,
                         'annotationcount' => $annotationcount,
                         'elasticid' => $corpusresponse['_id']
@@ -209,10 +209,17 @@ class BrowseController extends Controller
         $workFlowStatus = null;
         $corpusName = null;
         $corpusPublicationLicense = null;
+        $current_corpus_index = "";
+
+        if($isLoggedIn) {
+            //dd($user);
+        }
 
         switch ($header){
             case "corpus":
-                $apiData = $this->ElasticService->getCorpus($id);
+                //get the current index for the corpus....
+                $current_corpus_index = $this->LaudatioUtilService->getCurrentCorpusIndexByElasticsearchId($id);
+                $apiData = $this->ElasticService->getCorpus($id,true,$current_corpus_index);
                 $data = json_decode($apiData->getContent(), true);
 
                 $citeData['authors'] = array();
@@ -393,6 +400,8 @@ class BrowseController extends Controller
                     $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $corpusId)),array($id));
 
                     $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
+                    $current_corpus_index = $this->LaudatioUtilService->getCurrentCorpusIndexByElasticsearchId($documentCorpusdata[$id][0]['_id']);
+
                     $citeData['authors'] = array();
                     for($i=0;$i< count($data['result']['documentCorpusdata']['corpus_editor_forename']);$i++) {
                         array_push($citeData['authors'],$data['result']['documentCorpusdata']['corpus_editor_forename'][$i]." ".$data['result']['documentCorpusdata']['corpus_editor_surname'][$i]);
@@ -559,10 +568,10 @@ class BrowseController extends Controller
         JavaScript::put([
             "header" => $header,
             "header_id" => $id,
-            "corpus_elasticsearch_id" => $this->LaudatioUtilService->getElasticSearchIdByCorpusId($corpusId),
+            "corpus_elasticsearch_id" => $this->LaudatioUtilService->getElasticSearchIdByCorpusId($corpusId,$current_corpus_index),
             "corpus_id" => $this->LaudatioUtilService->getDatabaseIdByCorpusId($corpusId),
             "corpus_name" => $corpusName,
-            "corpus_path" => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusId),
+            "corpus_path" => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusId,$current_corpus_index),
             "workflow_status" => $workFlowStatus,
             "corpus_version" => $corpusVersion,
             "corpusPublicationLicense" => $corpusPublicationLicense,

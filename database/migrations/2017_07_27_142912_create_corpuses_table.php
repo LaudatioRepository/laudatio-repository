@@ -25,6 +25,8 @@ class CreateCorpusesTable extends Migration
             $table->string('corpus_id')->nullable();
             $table->string('file_name')->nullable();
             $table->string('elasticsearch_id')->nullable();
+            $table->string('elasticsearch_index')->nullable();
+            $table->string('guidelines_elasticsearch_index')->nullable();
             $table->string('publication_version')->nullable();
             $table->text('gitlab_group_id')->nullable();
             $table->integer('gitlab_id')->nullable();

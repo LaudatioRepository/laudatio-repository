@@ -33,25 +33,108 @@ class ElasticService implements ElasticsearchInterface
         $this->ELASTICSEARCH_PASS = env('ELASTICSEARCH_PASS', null);
     }
 
-    public function createIndex($name){
-        $params = [
-            'index' => $name
-        ];
-        $response = Elasticsearch::indices()->create($params);
-        return array(
-            'error' => false,
-            'result' => $response
-        );
+    public function createIndex($params){
+        return Elasticsearch::indices()->create($params);
+    }
+
+    public function reIndex($params) {
+        return Elasticsearch::reindex($params);
     }
 
     public function deleteIndex($indexId){
 
     }
 
+    public function createMappedIndex($indexMappingPath, $new_index_id, $old_index_id,$matchQuery,$new_elasticsearch_id) {
+        $status = "";
+        $result = array();
+        //set mapping
+        Log::info("getting: ".$indexMappingPath);
+        $mapping = json_decode(file_get_contents($indexMappingPath),true);
+        // Log::info("got: ".print_r($corpusMapping,1));
+
+        $createIndexParams = array(
+            'index' => $new_index_id,
+            'body' => array(
+                'mappings' => array(
+                    'doc'=> array(
+                        '_source' => array(
+                            'enabled' => true
+                        ),
+                        'properties' => $mapping['mappings']['doc']['properties']
+                    )
+                )
+            )
+        );
+
+
+        Log::info("sending creatindexparams: ".print_r($createIndexParams,1));
+        $indexResult = $this->createIndex($createIndexParams);
+        Log::info("create indexResult: ".print_r($indexResult,1));
+
+
+        /*
+         * The Reindex API makes no effort to handle ID collisions. For such issues, the target index will remain valid,
+         *  but it’s not easy to predict which document will survive because the iteration order isn’t well defined.
+         *
+         * setting new id to timestamp:now()_old_elasticsearch_id
+         *
+         */
+        if($indexResult['acknowledged'] == 1
+            && $indexResult['index'] == $new_index_id) {
+            $indexParams = array(
+                "body" => array(
+                    "source" => array(
+                        "index" => $old_index_id,
+                        "query" => array(
+                            "match" => $matchQuery
+                        )
+                    ),
+                    "dest" => array(
+                        "index" => $new_index_id
+                    ),
+                    "script" => array(
+                        "source" => "ctx._id = '".$new_elasticsearch_id."';ctx._source.publication_status = '0'",
+                        "lang" => "painless"
+                    )
+                )
+            );
+            $reIndexResult = $this->reIndex($indexParams);
+            Log::info("create reIndexResult: ".print_r($reIndexResult,1));
+
+            $status = "success";
+            $result['publish_corpus_response'] = "Success";
+
+        }
+        else{
+            $status = "error";
+            $result['publish_corpus_response'] = "There was a problem publishing the Corpus. The error was: The corpus could not be published to git due to failed creation of index. A message has been sent to the site administrator. Please try again later";
+        }
+
+        $response = array(
+            'status' => $status,
+            'message' => $result,
+        );
+
+        return $response;
+    }
+
     public function postToIndex($params) {
         $response = array();
         try {
             $response = Elasticsearch::index($params);
+        }
+        catch (\Exception $e) {
+            $response = array($e);
+        }
+
+        return $response;
+    }
+
+    public function setMapping($params){
+        $response = array();
+        try {
+            $response = Elasticsearch::putMapping($params);
         }
         catch (\Exception $e) {
             $response = array($e);
@@ -99,12 +182,15 @@ class ElasticService implements ElasticsearchInterface
         );
     }
 
+
+
     /**
      * @param $id
      * @param bool $full
-     * @return array
+     * @param $index
+     * @return mixed
      */
-    public function getCorpus($id,$full = true){
+    public function getCorpus($id,$full = true, $index){
         $returned_response = null;
 
         if (Cache::tags(['corpus_'.$id])->has("getCorpus_".$id)) {
@@ -113,7 +199,7 @@ class ElasticService implements ElasticsearchInterface
         else {
             if(!$full){
                 $params = [
-                    'index' => 'corpus',
+                    'index' => $index,
                     'type' => 'doc',
                     'id' => $id,
                     '_source' => ["document_title","document_publication_publishing_date","document_list_of_annotations_name","in_corpora","publication_version","publication_status"]
@@ -121,7 +207,7 @@ class ElasticService implements ElasticsearchInterface
             }
             else{
                 $params = [
-                    'index' => 'corpus',
+                    'index' => $index,
                     'type' => 'doc',
                     'id' => $id,
                     '_source_exclude' => ['message']

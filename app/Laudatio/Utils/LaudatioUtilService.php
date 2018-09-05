@@ -675,9 +675,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $object;
     }
 
-    public function getElasticSearchIdByCorpusId($corpusid)
+    public function getElasticSearchIdByCorpusId($corpusid,$corpus_index)
     {
-        $corpus = Corpus::where("corpus_id",$corpusid)->get();
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$corpus_index]])->get();
         return $corpus[0]->elasticsearch_id;
     }
 
@@ -685,6 +685,13 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     {
         $corpus = Corpus::where("corpus_id",$corpusid)->get();
         return $corpus[0]->id;
+    }
+
+    public function  getCurrentCorpusIndexByElasticsearchId($elasticSearchId) {
+        $corpus = Corpus::where([
+            ["elasticsearch_id","=",$elasticSearchId]
+        ])->get();
+        return $corpus[0]->elasticsearch_index;
     }
 
     public function getDocumentGenreByCorpusId($corpusid)
@@ -708,9 +715,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpus[0]->workflow_status;
     }
 
-    public function getCorpusPathByCorpusId($corpusid){
+    public function getCorpusPathByCorpusId($corpusid,$corpus_index){
         $corpusPath = "";
-        $corpus = Corpus::where("corpus_id",$corpusid)->get();
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$corpus_index]])->get();
         if(isset($corpus[0])){
             $corpusprojects = $corpus[0]->corpusprojects()->get();
             $project = $corpusprojects[0];
