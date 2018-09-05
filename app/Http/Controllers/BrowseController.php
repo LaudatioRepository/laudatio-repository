@@ -397,6 +397,7 @@ class BrowseController extends Controller
 
 
                 if($corpusId){
+                    $current_corpus_index = $this->LaudatioUtilService->getCurrentCorpusIndexByDocumentElasticsearchId($id);
                     $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $corpusId)),array($id));
 
                     $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
@@ -491,7 +492,7 @@ class BrowseController extends Controller
                 //$corpusVersion = $this->LaudatioUtilService->getCorpusVersion($corpusId);
 
                 if($corpusId){
-
+                    $current_corpus_index = $this->LaudatioUtilService->getCurrentCorpusIndexByAnnotationElasticsearchId($id);
                     $annotationCorpusdata = $this->ElasticService->getCorporaByAnnotation(array(array('corpus_id' => $corpusId)),array($id));
                     $data['result']['annotationCorpusdata'] = $annotationCorpusdata[$id][0]['_source'];
 
@@ -564,7 +565,6 @@ class BrowseController extends Controller
                 break;
         }
        //dd($data);
-
         JavaScript::put([
             "header" => $header,
             "header_id" => $id,

@@ -694,6 +694,23 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpus[0]->elasticsearch_index;
     }
 
+    public function getCurrentCorpusIndexByAnnotationElasticsearchId($elasticSearchId){
+        $annotation = Annotation::where([
+            ["elasticsearch_id","=",$elasticSearchId]
+        ])->get();
+
+        $corpus = $annotation[0]->corpus()->get();
+        return $corpus[0]->elasticsearch_index;
+    }
+
+    public function getCurrentCorpusIndexByDocumentElasticsearchId($elasticSearchId){
+        $document = Document::where([
+            ["elasticsearch_id","=",$elasticSearchId]
+        ])->get();
+        $corpus = $document[0]->corpus()->get();
+        return $corpus[0]->elasticsearch_index;
+    }
+
     public function getDocumentGenreByCorpusId($corpusid)
     {
         $genre = "N/A";
