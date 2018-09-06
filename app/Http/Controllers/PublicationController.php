@@ -61,6 +61,7 @@ class PublicationController extends Controller
         $user = \Auth::user();
 
         //try{
+            $now = time();
             $corpusid = $request->input('corpusid');
             $corpus = Corpus::findOrFail($corpusid);
             $corpuspath = $request->input('corpus_path');
@@ -68,14 +69,12 @@ class PublicationController extends Controller
             $auth_user_email = $request->input('auth_user_email');
             $corpusData = json_decode($this->GitRepoService->checkForCorpusFiles($corpuspath."/TEI-HEADERS"), true);
 
-
             //if we can publish, find out what the current publication version is for the corpus
 
             $publicationArray = array();
             $documentArray = array();
-            $reindexDocumentArray = array();
             $annotationArray = array();
-            $reindexAnnotationArray = array();
+            $annotationInDocumentArray = array();
             $guidelineArray = array();
 
             $oldCorpusIndex = $corpus->elasticsearch_index;
@@ -84,11 +83,9 @@ class PublicationController extends Controller
             $oldGuidelineIndex = $corpus->guidelines_elasticsearch_index;
 
             $documents_in_corpus = $corpusData['found_documents'];
-            foreach ($documents_in_corpus as $document) {
-                $id = $document['id'];
-                $dbDocument = Document::where("document_id",$id)->get();
-                $oldDocumentIndex = $dbDocument[0]->elasticsearch_index;
-                array_push($documentArray,$dbDocument[0]->elasticsearch_id);
+            foreach ($corpus->documents()->get() as $document) {
+                $oldDocumentIndex = $document->elasticsearch_index;
+                array_push($documentArray,$document->elasticsearch_id);
             }
 
             $guidelines = $this->elasticService->getGuidelinesByCorpus($corpus->corpus_id);
@@ -98,11 +95,13 @@ class PublicationController extends Controller
             }
 
             $annotations_in_corpus = $corpusData['found_annotations_in_corpus'];
-            foreach ($annotations_in_corpus as $annotation) {
-                $annotation_id = $annotation;
-                $dbAnnotation = Annotation::where("annotation_id",$annotation_id)->get();
-                $oldAnnotationIndex = $dbAnnotation[0]->elasticsearch_index;
-                array_push($annotationArray,$dbAnnotation[0]->elasticsearch_id);
+            foreach ($corpus->annotations()->get() as $annotation) {
+                $oldAnnotationIndex = $annotation->elasticsearch_index;
+                array_push($annotationArray,$annotation->elasticsearch_id);
+                $annotationInDocumentArray[$now."_".$annotation->elasticsearch_id] = array();
+                foreach ($annotation->documents()->get() as $annodocu){
+                     array_push($annotationInDocumentArray[$now."_".$annotation->elasticsearch_id],$now."_".$annodocu->elasticsearch_id);
+                }
             }
 
 
@@ -169,7 +168,7 @@ class PublicationController extends Controller
 
 
                             // create a new index for the next working period
-                            $now = time();
+
                             $new_corpus_index = "corpus_".$corpus->corpus_id."_".$now;
                             $new_corpus_elasticsearch_id = $now."_".$corpus->elasticsearch_id;
 
@@ -204,7 +203,8 @@ class PublicationController extends Controller
 
                             $annotationReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/annotation_mapping.json', $new_annotation_index, $oldCorpusIndex,$documentMatchQuery,$elasticsearchIds['annotation']);
                             Log::info("annotationReindexResponse: ".print_r($annotationReindexResponse,1));
-
+                            $documentAnnotationUpdateResult = $this->elasticService->updateDocumentFieldsInAnnotation($new_annotation_index,$annotationInDocumentArray);
+                            Log::info("documentAnnotationUpdateResult: ".print_r($documentAnnotationUpdateResult,1));
 
                             //$tag = $this->GitRepoService->setCorpusVersionTag($corpuspath,$corpus->name." version ".$corpus->publication_version,$corpus->publication_version,$corpusid,$auth_user_name,$auth_user_email);
                             if($tag) {

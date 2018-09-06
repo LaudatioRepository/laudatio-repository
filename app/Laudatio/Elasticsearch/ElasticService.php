@@ -131,7 +131,7 @@ class ElasticService implements ElasticsearchInterface
                 );
 
                 $reIndexResult = $this->reIndex($indexParams);
-                
+
             }
 
 
@@ -152,6 +152,30 @@ class ElasticService implements ElasticsearchInterface
 
         return $response;
     }
+
+    public function updateDocumentFieldsInAnnotation($new_annotation_index,$annotation_ids){
+        //update the document ids in annotation documents
+        $success = true;
+        foreach($annotation_ids as $annotation_id => $document_ids) {
+            $annotation_update_params = array(
+                'index' => $new_annotation_index,
+                'type' => 'doc',
+                'id' => $annotation_id,
+                'body' => [
+                    'doc' => [
+                        'in_documents' => $document_ids
+                    ]
+                ]
+            );
+            $response = Elasticsearch::update($annotation_update_params);
+            if(empty($response['_shards'])) {
+                $success = false;
+                break;
+            }
+        }
+        return $success;
+    }
+
 
     public function postToIndex($params) {
         $response = array();

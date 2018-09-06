@@ -50,6 +50,7 @@ interface ElasticsearchInterface {
     public function deleteIndex($indexId);
     public function truncateIndex($index);
     public function postToIndex($params);
+    public function updateDocumentFieldsInAnnotation($new_annotation_index,$annotation_ids);
     public function setMapping($params);
     public function deleteIndexedObject($index,$params);
     public function getElasticIdByObjectId($index,$params);
