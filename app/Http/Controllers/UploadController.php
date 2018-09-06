@@ -236,6 +236,7 @@ class UploadController extends Controller
                         'gitlab_web_url' => $gitLabResponse['web_url'],
                         'gitlab_ssh_url' => $remoteRepoUrl,
                         'gitlab_name_with_namespace' => $gitLabResponse['name_with_namespace'],
+                        'elasticsearch_index' => $corpusId,
                         'fileName' => $fileName
                     );
 
@@ -250,6 +251,7 @@ class UploadController extends Controller
                             'publication_version' => $corpusPublicationVersion,
                             'workflow_status' => 0,
                             "file_name" => $fileName,
+                            'elasticsearch_index' => $corpusId
                         );
                         $gitLabCorpusPath = substr($corpusPath,strrpos($corpusPath,"/"));
                         $this->laudatioUtilsService->updateCorpusAttributes($params,$corpusId);
@@ -271,8 +273,6 @@ class UploadController extends Controller
 
                 }
             }
-
-            Log::info("FILEPATH: ".$filePath);
 
         }//end if
 

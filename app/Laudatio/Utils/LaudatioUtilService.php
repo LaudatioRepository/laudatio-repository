@@ -17,6 +17,8 @@ use App\Corpus;
 use App\Document;
 use App\Annotation;
 use App\Preparation;
+use App\Role;
+use App\User;
 use Log;
 use Cache;
 use DB;
@@ -169,6 +171,115 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $corpus = Corpus::find($corpusId);
         $corpus->update($params);
         return $corpus;
+    }
+
+    public function duplicateCorpus($oldCorpus, $new_corpus_elasticsearch_id, $new_corpus_index, $new_guideline_index, $now,$oldDocumentIndex,$oldAnnotationIndex,$new_document_index,$new_annotation_index){
+        $elasticsearchIndexes = array();
+        //create a new corpus to represent the new working period
+        $new_corpus = new Corpus();
+
+        $new_corpus->name = $oldCorpus->name;
+        $new_corpus->uid = $oldCorpus->uid;
+        $new_corpus->description = $oldCorpus->description;
+        $new_corpus->corpus_size_type = $oldCorpus->corpus_size_type;
+        $new_corpus->corpus_size_value = $oldCorpus->corpus_size_value;
+        $new_corpus->directory_path = $oldCorpus->directory_path;
+        $new_corpus->corpus_id = $oldCorpus->corpus_id;
+        $new_corpus->file_name = $oldCorpus->file_name;
+        $new_corpus->elasticsearch_id = $new_corpus_elasticsearch_id;
+        $new_corpus->guidelines_elasticsearch_index = $new_guideline_index;
+        $new_corpus->elasticsearch_index = $new_corpus_index;
+        $new_corpus->publication_version = "working_period";
+        $new_corpus->gitlab_group_id = $oldCorpus->gitlab_group_id;
+        $new_corpus->gitlab_id = $oldCorpus->gitlab_id;
+        $new_corpus->gitlab_web_url = $oldCorpus->gitlab_web_url;
+        $new_corpus->gitlab_namespace_path = $oldCorpus->gitlab_namespace_path;
+        $new_corpus->workflow_status = 0;
+        $new_corpus->save();
+
+        //attach user roles
+
+        $corpusUser = User::find($new_corpus->uid);
+        $corpusAdminRole = Role::findById(3);
+        $corpusUser->roles()->sync($corpusAdminRole);
+        if($corpusUser) {
+            if(!$corpusUser->roles->contains($corpusAdminRole)){
+                $corpusUser->roles()->attach($corpusAdminRole);
+            }
+
+            $new_corpus->users()->save($corpusUser,['role_id' => 3]);
+        }
+
+
+        /* for each corpusproject attached to this corpus, detach the old corpus (?),
+        and attach the new corpus to the corpus project for the next working period
+        */
+
+        $corpusProjects = $oldCorpus->corpusprojects()->get();
+        foreach($corpusProjects as $corpusProject) {
+            //$corpusProject->corpora()->detach($corpus->id);
+            $new_corpus->corpusprojects()->attach($corpusProject);
+        }
+
+        $documentElasticsearchIndexes = array();
+        $documentElasticsearchIndexes['new_in_corpora'] = $new_corpus_elasticsearch_id;
+        $documentElasticsearchIndexes['indexes'] = array();
+        $documentElasticsearchIndexes['indexes'][$oldDocumentIndex] = array();
+        foreach ($oldCorpus->documents()->get() as $document) {
+            $new_document_elasticsearch_id = $now."_".$document->elasticsearch_id;
+            array_push($documentElasticsearchIndexes['indexes'][$oldDocumentIndex],$new_document_elasticsearch_id);
+            $newDocument = new Document();
+            $newDocument->title = $document->title;
+            $newDocument->uid = $document->uid;
+            $newDocument->file_name = $document->file_name;
+            $newDocument->document_genre = $document->document_genre;
+            $newDocument->document_size_type = $document->document_size_type;
+            $newDocument->document_size_value = $document->document_size_value;
+            $newDocument->document_id = $document->document_id;
+            $newDocument->corpus_id = $new_corpus->id;
+            $newDocument->elasticsearch_id = $new_document_elasticsearch_id;
+            $newDocument->elasticsearch_index = $new_document_index;
+            $newDocument->publication_version = $document->publication_version;
+            $newDocument->directory_path = $document->directory_path;
+            $newDocument->workflow_status = 0;
+            $newDocument->save();
+            $new_corpus->documents()->save($newDocument);
+            $document->workflow_status = 1;
+            $document->save();
+        }
+        $elasticsearchIndexes['document'] = $documentElasticsearchIndexes;
+
+        $annotationElasticsearchIndexes = array();
+        $annotationElasticsearchIndexes['new_in_corpora'] = $new_corpus_elasticsearch_id;
+        $annotationElasticsearchIndexes['indexes'] = array();
+        $annotationElasticsearchIndexes['indexes'][$oldAnnotationIndex] = array();
+        foreach ($oldCorpus->annotations()->get() as $annotation) {
+            $new_annotation_elasticsearch_id = $now."_".$annotation->elasticsearch_id;
+            array_push($annotationElasticsearchIndexes['indexes'][$oldAnnotationIndex],$new_annotation_elasticsearch_id);
+            $newAnnotation = new Annotation();
+            $newAnnotation->uid = $annotation->uid;
+            $newAnnotation->file_name = $annotation->file_name;
+            $newAnnotation->annotation_id = $annotation->annotation_id;
+            $newAnnotation->annotation_group = $annotation->annotation_group;
+            $newAnnotation->annotation_size_type = $annotation->annotation_size_type;
+            $newAnnotation->annotation_size_value = $annotation->annotation_size_value;
+            $newAnnotation->corpus_id = $new_corpus->id;
+            $newAnnotation->elasticsearch_id = $new_annotation_elasticsearch_id;
+            $newAnnotation->elasticsearch_index = $new_annotation_index;
+            $newAnnotation->publication_version = $annotation->publication_version;
+            $newAnnotation->directory_path = $annotation->directory_path;
+            $newAnnotation->workflow_status = 0;
+            $newAnnotation->save();
+            foreach ($annotation->documents()->get() as $annodocu){
+                $newAnnotation->documents()->attach($annodocu);
+            }
+            $annotation->workflow_status = 1;
+            $annotation->save();
+        }
+
+        $elasticsearchIndexes['annotation'] = $annotationElasticsearchIndexes;
+
+        return $elasticsearchIndexes;
     }
 
     /**

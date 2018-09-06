@@ -48,10 +48,9 @@ class ElasticService implements ElasticsearchInterface
     public function createMappedIndex($indexMappingPath, $new_index_id, $old_index_id,$matchQuery,$new_elasticsearch_id) {
         $status = "";
         $result = array();
+
         //set mapping
-        Log::info("getting: ".$indexMappingPath);
         $mapping = json_decode(file_get_contents($indexMappingPath),true);
-        // Log::info("got: ".print_r($corpusMapping,1));
 
         $createIndexParams = array(
             'index' => $new_index_id,
@@ -68,9 +67,8 @@ class ElasticService implements ElasticsearchInterface
         );
 
 
-        Log::info("sending creatindexparams: ".print_r($createIndexParams,1));
+
         $indexResult = $this->createIndex($createIndexParams);
-        Log::info("create indexResult: ".print_r($indexResult,1));
 
 
         /*
@@ -80,27 +78,63 @@ class ElasticService implements ElasticsearchInterface
          * setting new id to timestamp:now()_old_elasticsearch_id
          *
          */
+
+        //@todo: for documents and annotation the new elasticsearch id is an array
         if($indexResult['acknowledged'] == 1
             && $indexResult['index'] == $new_index_id) {
-            $indexParams = array(
-                "body" => array(
-                    "source" => array(
-                        "index" => $old_index_id,
-                        "query" => array(
-                            "match" => $matchQuery
+
+            if(is_array($new_elasticsearch_id)){
+                $new_in_corpora = $new_elasticsearch_id['new_in_corpora'];
+                foreach($new_elasticsearch_id['indexes'] as $old_elasticsearch_index => $elasticsearch_ids) {
+                    foreach ($elasticsearch_ids as $elasticsearch_id){
+                        $indexParams = array(
+                            "body" => array(
+                                "source" => array(
+                                    "index" => $old_elasticsearch_index,
+                                    "query" => array(
+                                        "match" => $matchQuery
+                                    )
+                                ),
+                                "dest" => array(
+                                    "index" => $new_index_id
+                                ),
+                                "script" => array(
+                                    "source" => "ctx._id = '".$elasticsearch_id."';ctx._source.publication_status = '0';ctx._source.in_corpora = '".$new_in_corpora."'",
+                                    "lang" => "painless"
+                                )
+                            )
+                        );
+
+                        $reIndexResult = $this->reIndex($indexParams);
+
+                    }
+
+                }
+            }
+            else{
+                $indexParams = array(
+                    "body" => array(
+                        "source" => array(
+                            "index" => $old_index_id,
+                            "query" => array(
+                                "match" => $matchQuery
+                            )
+                        ),
+                        "dest" => array(
+                            "index" => $new_index_id
+                        ),
+                        "script" => array(
+                            "source" => "ctx._id = '".$new_elasticsearch_id."';ctx._source.publication_status = '0'",
+                            "lang" => "painless"
                         )
-                    ),
-                    "dest" => array(
-                        "index" => $new_index_id
-                    ),
-                    "script" => array(
-                        "source" => "ctx._id = '".$new_elasticsearch_id."';ctx._source.publication_status = '0'",
-                        "lang" => "painless"
                     )
-                )
-            );
-            $reIndexResult = $this->reIndex($indexParams);
-            Log::info("create reIndexResult: ".print_r($reIndexResult,1));
+                );
+
+                $reIndexResult = $this->reIndex($indexParams);
+                
+            }
+
+
 
             $status = "success";
             $result['publish_corpus_response'] = "Success";

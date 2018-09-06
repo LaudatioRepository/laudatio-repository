@@ -73,7 +73,9 @@ class PublicationController extends Controller
 
             $publicationArray = array();
             $documentArray = array();
+            $reindexDocumentArray = array();
             $annotationArray = array();
+            $reindexAnnotationArray = array();
             $guidelineArray = array();
 
             $oldCorpusIndex = $corpus->elasticsearch_index;
@@ -89,7 +91,6 @@ class PublicationController extends Controller
                 array_push($documentArray,$dbDocument[0]->elasticsearch_id);
             }
 
-
             $guidelines = $this->elasticService->getGuidelinesByCorpus($corpus->corpus_id);
 
             foreach ($guidelines['result']['hits']['hits'] as $guideline) {
@@ -103,14 +104,14 @@ class PublicationController extends Controller
                 $oldAnnotationIndex = $dbAnnotation[0]->elasticsearch_index;
                 array_push($annotationArray,$dbAnnotation[0]->elasticsearch_id);
             }
-            //Log::info("annotationArray: ".print_r($annotationArray,1));
+
 
             $publicationArray[$corpus->id] = $corpus->elasticsearch_id;
             $publicationArray['documents'] = $documentArray;
             $publicationArray['annotations'] = $annotationArray;
             $publicationArray['guidelines'] = $guidelineArray;
 
-            $result['publicationdata'] = $publicationArray;
+            //$result['publicationdata'] = $publicationArray;
 
 
 
@@ -135,7 +136,6 @@ class PublicationController extends Controller
 
             );
 
-            // Log::info("POSTING PUBLICATION: ".print_r($params,1));
             $response = $this->elasticService->postToIndex($params);
 
 
@@ -172,6 +172,7 @@ class PublicationController extends Controller
                             $now = time();
                             $new_corpus_index = "corpus_".$corpus->corpus_id."_".$now;
                             $new_corpus_elasticsearch_id = $now."_".$corpus->elasticsearch_id;
+
                             $new_guidelines_elasticsearch_id = $now."_".$corpus->guidelines_elasticsearch_id;
 
                             $new_document_index = "document_".$corpus->corpus_id."_".$now;
@@ -182,66 +183,8 @@ class PublicationController extends Controller
                             $corpus->save();
 
 
-                            //create a new corpus to represent the new working period
-                            $new_corpus = new Corpus();
-                            $new_corpus->name = $corpus->name;
-                            $new_corpus->uid = $corpus->uid;
-                            $new_corpus->description = $corpus->description;
-                            $new_corpus->corpus_size_type = $corpus->corpus_size_type;
-                            $new_corpus->corpus_size_value = $corpus->corpus_size_value;
-                            $new_corpus->directory_path = $corpus->directory_path;
-                            $new_corpus->corpus_id = $corpus->corpus_id;
-                            $new_corpus->file_name = $corpus->file_name;
-                            $new_corpus->elasticsearch_id = $new_corpus_elasticsearch_id;
-                            $new_corpus->guidelines_elasticsearch_index = $new_guideline_index;
-                            $new_corpus->elasticsearch_index = $new_corpus_index;
-                            $new_corpus->publication_version = "working_period";
-                            $new_corpus->gitlab_group_id = $corpus->gitlab_group_id;
-                            $new_corpus->gitlab_id = $corpus->gitlab_id;
-                            $new_corpus->gitlab_web_url = $corpus->gitlab_web_url;
-                            $new_corpus->gitlab_namespace_path = $corpus->gitlab_namespace_path;
-                            $new_corpus->workflow_status = 0;
-                            $new_corpus->save();
-
-                            //attach user roles
-
-                            $corpusUser = User::find($new_corpus->uid);
-                            $corpusAdminRole = Role::findById(3);
-                            $corpusUser->roles()->sync($corpusAdminRole);
-                            if($corpusUser) {
-                                if(!$corpusUser->roles->contains($corpusAdminRole)){
-                                    $corpusUser->roles()->attach($corpusAdminRole);
-                                }
-
-                                $new_corpus->users()->save($corpusUser,['role_id' => 3]);
-                            }
-
-
-                            /* for each corpusproject attached to this corpus, detach the old corpus (?),
-                            and attach the new corpus to the corpus project for the next working period
-                            */
-
-                            $corpusProjects = $corpus->corpusprojects()->get();
-                            foreach($corpusProjects as $corpusProject) {
-                                //$corpusProject->corpora()->detach($corpus->id);
-                                $new_corpus->corpusprojects()->attach($corpusProject);
-                            }
-
-
-                            foreach ($corpus->documents()->get() as $document) {
-                                $document->workflow_status = 1;
-                                $new_document_elasticsearch_id = $now."_".$document->elasticsearch_id;
-                                $document->elasticsearch_id = $new_document_elasticsearch_id;
-                                $document->save();
-                            }
-
-                            foreach ($corpus->annotations()->get() as $annotation) {
-                                $annotation->workflow_status = 1;
-                                $new_annotation_elasticsearch_id = $now."_".$annotation->elasticsearch_id;
-                                $annotation->elasticsearch_id = $new_annotation_elasticsearch_id;
-                                $annotation->save();
-                            }
-
+                            $elasticsearchIds = $this->LaudatioUtilService->duplicateCorpus($corpus,$new_corpus_elasticsearch_id,$new_corpus_index,$new_guideline_index,$now,$oldDocumentIndex,$oldAnnotationIndex,$new_document_index,$new_annotation_index);
+                            Log::info("elasticsearchIds: ".print_r($elasticsearchIds,1));
                             $tag = "poo";
 
                             $corpusMatchQuery = array(
@@ -252,6 +195,15 @@ class PublicationController extends Controller
                             Log::info("corpusReindexResponse: ".print_r($corpusReindexResponse,1));
 
 
+                            $documentMatchQuery = array(
+                                "in_corpora" => $corpus->corpus_id
+                            );
+
+                            $documentReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/document_mapping.json', $new_document_index, $oldCorpusIndex,$documentMatchQuery,$elasticsearchIds['document']);
+                            Log::info("documentReindexResponse: ".print_r($documentReindexResponse,1));
+
+                            $annotationReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/annotation_mapping.json', $new_annotation_index, $oldCorpusIndex,$documentMatchQuery,$elasticsearchIds['annotation']);
+                            Log::info("annotationReindexResponse: ".print_r($annotationReindexResponse,1));
 
 
                             //$tag = $this->GitRepoService->setCorpusVersionTag($corpuspath,$corpus->name." version ".$corpus->publication_version,$corpus->publication_version,$corpusid,$auth_user_name,$auth_user_email);
