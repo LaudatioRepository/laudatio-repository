@@ -173,7 +173,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpus;
     }
 
-    public function duplicateCorpus($oldCorpus, $new_corpus_elasticsearch_id, $new_corpus_index, $new_guideline_index, $now,$oldDocumentIndex,$oldAnnotationIndex,$new_document_index,$new_annotation_index){
+    public function duplicateCorpus($oldCorpus, $new_corpus_elasticsearch_id,$new_corpus_id, $new_corpus_index, $new_guideline_index, $now,$oldDocumentIndex,$oldAnnotationIndex,$new_document_index,$new_annotation_index){
         $elasticsearchIndexes = array();
         //create a new corpus to represent the new working period
         $new_corpus = new Corpus();
@@ -184,7 +184,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $new_corpus->corpus_size_type = $oldCorpus->corpus_size_type;
         $new_corpus->corpus_size_value = $oldCorpus->corpus_size_value;
         $new_corpus->directory_path = $oldCorpus->directory_path;
-        $new_corpus->corpus_id = $oldCorpus->corpus_id;
+        $new_corpus->corpus_id = $new_corpus_id;
         $new_corpus->file_name = $oldCorpus->file_name;
         $new_corpus->elasticsearch_id = $new_corpus_elasticsearch_id;
         $new_corpus->guidelines_elasticsearch_index = $new_guideline_index;
@@ -221,12 +221,14 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $new_corpus->corpusprojects()->attach($corpusProject);
         }
 
+        $prefixarray = explode("§",$new_corpus_id);
+
         $documentElasticsearchIndexes = array();
-        $documentElasticsearchIndexes['new_in_corpora'] = $new_corpus_elasticsearch_id;
+        $documentElasticsearchIndexes['prefix'] = $prefixarray[0];
         $documentElasticsearchIndexes['indexes'] = array();
         $documentElasticsearchIndexes['indexes'][$oldDocumentIndex] = array();
         foreach ($oldCorpus->documents()->get() as $document) {
-            $new_document_elasticsearch_id = $now."_".$document->elasticsearch_id;
+            $new_document_elasticsearch_id = $now."§".$document->elasticsearch_id;
             array_push($documentElasticsearchIndexes['indexes'][$oldDocumentIndex],$new_document_elasticsearch_id);
             $newDocument = new Document();
             $newDocument->title = $document->title;
@@ -250,11 +252,11 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $elasticsearchIndexes['document'] = $documentElasticsearchIndexes;
 
         $annotationElasticsearchIndexes = array();
-        $annotationElasticsearchIndexes['new_in_corpora'] = $new_corpus_elasticsearch_id;
+        $annotationElasticsearchIndexes['prefix'] = $prefixarray[0];
         $annotationElasticsearchIndexes['indexes'] = array();
         $annotationElasticsearchIndexes['indexes'][$oldAnnotationIndex] = array();
         foreach ($oldCorpus->annotations()->get() as $annotation) {
-            $new_annotation_elasticsearch_id = $now."_".$annotation->elasticsearch_id;
+            $new_annotation_elasticsearch_id = $now."§".$annotation->elasticsearch_id;
             array_push($annotationElasticsearchIndexes['indexes'][$oldAnnotationIndex],$new_annotation_elasticsearch_id);
             $newAnnotation = new Annotation();
             $newAnnotation->uid = $annotation->uid;
@@ -805,6 +807,20 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpus[0]->elasticsearch_index;
     }
 
+    public function getCurrentDocumentIndexByElasticsearchId($elasticSearchId){
+        $document = Document::where([
+            ["elasticsearch_id","=",$elasticSearchId]
+        ])->get();
+        return $document[0]->elasticsearch_index;
+    }
+
+    public function getCurrentAnnotationIndexByElasticsearchId($elasticSearchId){
+        $annotation = Annotation::where([
+            ["elasticsearch_id","=",$elasticSearchId]
+        ])->get();
+        return $annotation[0]->elasticsearch_index;
+    }
+
     public function getCurrentCorpusIndexByAnnotationElasticsearchId($elasticSearchId){
         $annotation = Annotation::where([
             ["elasticsearch_id","=",$elasticSearchId]
@@ -814,6 +830,8 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpus[0]->elasticsearch_index;
     }
 
+
+
     public function getCurrentCorpusIndexByDocumentElasticsearchId($elasticSearchId){
         $document = Document::where([
             ["elasticsearch_id","=",$elasticSearchId]
@@ -822,11 +840,11 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpus[0]->elasticsearch_index;
     }
 
-    public function getDocumentGenreByCorpusId($corpusid)
+    public function getDocumentGenreByCorpusId($corpusid,$index)
     {
         $genre = "N/A";
 
-        $corpus = Corpus::where("corpus_id",$corpusid)->get();
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$index]])->get();
         if(isset($corpus[0])){
             $documents = $corpus[0]->documents()->get();
             $genre = isset($documents[0]) ? $documents[0]->document_genre : "N/A";

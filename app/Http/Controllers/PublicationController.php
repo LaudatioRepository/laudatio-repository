@@ -98,9 +98,9 @@ class PublicationController extends Controller
             foreach ($corpus->annotations()->get() as $annotation) {
                 $oldAnnotationIndex = $annotation->elasticsearch_index;
                 array_push($annotationArray,$annotation->elasticsearch_id);
-                $annotationInDocumentArray[$now."_".$annotation->elasticsearch_id] = array();
+                $annotationInDocumentArray[$now."§".$annotation->elasticsearch_id] = array();
                 foreach ($annotation->documents()->get() as $annodocu){
-                     array_push($annotationInDocumentArray[$now."_".$annotation->elasticsearch_id],$now."_".$annodocu->elasticsearch_id);
+                     array_push($annotationInDocumentArray[$now."§".$annotation->elasticsearch_id],$now."§".$annodocu->elasticsearch_id);
                 }
             }
 
@@ -157,7 +157,7 @@ class PublicationController extends Controller
                     ];
 
                     $update_response = $this->elasticService->setCorpusToPublished($update_params);
-                    Log::info("UPDATE RESPONSE  ".print_r($update_response,1));
+
                     if(!empty($update_response['_shards'])) {
 
                         $update_responsestatus = $update_response['_shards'];
@@ -170,9 +170,9 @@ class PublicationController extends Controller
                             // create a new index for the next working period
 
                             $new_corpus_index = "corpus_".$corpus->corpus_id."_".$now;
-                            $new_corpus_elasticsearch_id = $now."_".$corpus->elasticsearch_id;
-
-                            $new_guidelines_elasticsearch_id = $now."_".$corpus->guidelines_elasticsearch_id;
+                            $new_corpus_id = $now."§".$corpus->corpus_id;
+                            $new_corpus_elasticsearch_id = $now."§".$corpus->elasticsearch_id;
+                            $new_guidelines_elasticsearch_id = $now."§".$corpus->guidelines_elasticsearch_id;
 
                             $new_document_index = "document_".$corpus->corpus_id."_".$now;
                             $new_annotation_index = "annotation_".$corpus->corpus_id."_".$now;
@@ -182,31 +182,28 @@ class PublicationController extends Controller
                             $corpus->save();
 
 
-                            $elasticsearchIds = $this->LaudatioUtilService->duplicateCorpus($corpus,$new_corpus_elasticsearch_id,$new_corpus_index,$new_guideline_index,$now,$oldDocumentIndex,$oldAnnotationIndex,$new_document_index,$new_annotation_index);
-                            Log::info("elasticsearchIds: ".print_r($elasticsearchIds,1));
-                            $tag = "poo";
+                            $elasticsearchIds = $this->LaudatioUtilService->duplicateCorpus($corpus,$new_corpus_elasticsearch_id,$new_corpus_id,$new_corpus_index,$new_guideline_index,$now,$oldDocumentIndex,$oldAnnotationIndex,$new_document_index,$new_annotation_index);
 
                             $corpusMatchQuery = array(
                                                     "corpus_id" => $corpus->corpus_id
                                                 );
 
-                            $corpusReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/corpus_mapping.json', $new_corpus_index, $oldCorpusIndex,$corpusMatchQuery,$new_corpus_elasticsearch_id);
-                            Log::info("corpusReindexResponse: ".print_r($corpusReindexResponse,1));
-
+                            $corpusReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/corpus_mapping.json', $new_corpus_index, $oldCorpusIndex,$corpusMatchQuery,$new_corpus_elasticsearch_id,$new_corpus_id);
 
                             $documentMatchQuery = array(
                                 "in_corpora" => $corpus->corpus_id
                             );
 
-                            $documentReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/document_mapping.json', $new_document_index, $oldCorpusIndex,$documentMatchQuery,$elasticsearchIds['document']);
-                            Log::info("documentReindexResponse: ".print_r($documentReindexResponse,1));
+                            $documentReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/document_mapping.json', $new_document_index, $oldDocumentIndex,$documentMatchQuery,$elasticsearchIds['document'],$new_corpus_id);
 
-                            $annotationReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/annotation_mapping.json', $new_annotation_index, $oldCorpusIndex,$documentMatchQuery,$elasticsearchIds['annotation']);
-                            Log::info("annotationReindexResponse: ".print_r($annotationReindexResponse,1));
+                            $annotationReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/annotation_mapping.json', $new_annotation_index, $oldAnnotationIndex,$documentMatchQuery,$elasticsearchIds['annotation'],$new_corpus_id);
+
                             $documentAnnotationUpdateResult = $this->elasticService->updateDocumentFieldsInAnnotation($new_annotation_index,$annotationInDocumentArray);
-                            Log::info("documentAnnotationUpdateResult: ".print_r($documentAnnotationUpdateResult,1));
 
-                            //$tag = $this->GitRepoService->setCorpusVersionTag($corpuspath,$corpus->name." version ".$corpus->publication_version,$corpus->publication_version,$corpusid,$auth_user_name,$auth_user_email);
+                            $guidelineReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/guideline_mapping.json', $new_guideline_index, $oldGuidelineIndex, $documentMatchQuery,$new_guidelines_elasticsearch_id,$new_corpus_id);
+
+                            $tag = $this->GitRepoService->setCorpusVersionTag($corpuspath,$corpus->name." version ".$corpus->publication_version,$corpus->publication_version,$corpusid,$auth_user_name,$auth_user_email);
+
                             if($tag) {
                                 $result['publish_corpus_response']  = "The Corpus was successfully published";
                                 $status = "success";

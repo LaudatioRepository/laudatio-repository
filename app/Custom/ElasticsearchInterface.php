@@ -13,16 +13,16 @@ interface ElasticsearchInterface {
     public function setCorpusToPublished($params);
     public function getCorpus($id,$full,$index);
     public function deleteCorpus($id);
-    public function getDocument($id,$full);
+    public function getDocument($id,$full,$index);
     public function deleteDocument($id,$corpusId);
-    public function getAnnotation($id,$full);
+    public function getAnnotation($id,$full,$index);
     public function deleteAnnotation($title,$corpusId);
     public function getAnnotationByName($name, $fields);
-    public function getAnnotationByNameAndCorpusId($name, $corpusId, $fields);
-    public function getAnnotationGroups($matchdata);
+    public function getAnnotationByNameAndCorpusId($name, $corpusId, $fields,$index);
+    public function getAnnotationGroups($matchdata,$index);
     public function getGuidelinesByCorpus($corpusId);
-    public function getGuidelinesByCorpusAndAnnotationId($corpusId,$annotationName);
-    public function getFormatsByCorpus($corpusId);
+    public function getGuidelinesByCorpusAndAnnotationId($corpusId,$annotationName,$index);
+    public function getFormatsByCorpus($corpusId,$index);
     public function search($index, $field, $term);
     public function searchGeneral($searchData);
     public function searchCorpusIndex($searchData);
@@ -31,22 +31,22 @@ interface ElasticsearchInterface {
     public function searchDocumentIndexWithParam(Request $request);
     public function getSearchTotal($searchData,$index);
     public function searchAnnotationIndex($searchData);
-    public function getCorpusByDocument($searchData,$documentData);
+    public function getCorpusByDocument($searchData,$documentData,$index);
     public function getAnnotationByDocument($searchData,$documentData);
     public function getCorpusTitlesByDocument($searchData,$documentData);
     public function getCorpusByAnnotation($searchData);
-    public function getDocumentByCorpus($searchData,$corpusData);
-    public function getDocumentsByAnnotationAndCorpusId($documentList,$corpusId);
-    public function getDocumentsByDocumentId($documentids);
-    public function getAnnotationByCorpus($searchData,$corpusData,$fields);
+    public function getDocumentByCorpus($searchData,$corpusData,$index);
+    public function getDocumentsByAnnotationAndCorpusId($documentList,$corpusId,$index);
+    public function getDocumentsByDocumentId($documentids,$index);
+    public function getAnnotationByCorpus($searchData,$corpusData,$fields,$index);
 
 
     public function getDocumentsByAnnotation($searchData,$annotationData);
-    public function getCorporaByAnnotation($searchData,$annotationData);
+    public function getCorporaByAnnotation($searchData,$annotationData,$index);
 
     public function createIndex($params);
     public function reIndex($params);
-    public function createMappedIndex($indexMappingPath, $new_index_id, $old_index_id,$matchQuery,$new_elasticsearch_id);
+    public function createMappedIndex($indexMappingPath, $new_index_id, $old_index_id,$matchQuery,$new_elasticsearch_id,$new_corpus_id);
     public function deleteIndex($indexId);
     public function truncateIndex($index);
     public function postToIndex($params);

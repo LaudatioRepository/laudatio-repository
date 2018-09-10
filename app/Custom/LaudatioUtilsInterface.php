@@ -15,7 +15,7 @@ interface LaudatioUtilsInterface
 
     public function setCorpusAttributes($json,$params);
     public function updateCorpusAttributes($params,$corpusId);
-    public function duplicateCorpus($oldCorpus, $new_corpus_elasticsearch_id, $new_corpus_index, $new_guideline_index, $now,$oldDocumentIndex,$oldAnnotationIndex, $new_document_index,$new_annotation_index);
+    public function duplicateCorpus($oldCorpus, $new_corpus_elasticsearch_id, $new_corpus_id,$new_corpus_index, $new_guideline_index, $now,$oldDocumentIndex,$oldAnnotationIndex, $new_document_index,$new_annotation_index);
     public function corpusIsVersioned($corpusId);
     public function setDocumentAttributes($json,$corpusId,$uid,$fileName,$isDir);
     public function updateDocumentAttributes($params,$documentId);
@@ -35,7 +35,7 @@ interface LaudatioUtilsInterface
     public function getModelByFileAndCorpus($fileName, $type, $isDir, $corpusId);
     public function getElasticSearchIdByCorpusId($corpusid,$corpus_index);
     public function getDatabaseIdByCorpusId($corpusid);
-    public function getDocumentGenreByCorpusId($corpusid);
+    public function getDocumentGenreByCorpusId($corpusid,$index);
     public function getCorpusPathByCorpusId($corpusid,$corpus_index);
     public function deleteModels($path);
     public function deleteModel($type,$id);
@@ -48,7 +48,11 @@ interface LaudatioUtilsInterface
 
     public function buildCiteFormat($data);
     public function getLicenseByCorpus($data);
+
     public function getCurrentCorpusIndexByElasticsearchId($elasticSearchId);
+    public function getCurrentDocumentIndexByElasticsearchId($elasticSearchId);
+    public function getCurrentAnnotationIndexByElasticsearchId($elasticSearchId);
+
     public function getCurrentCorpusIndexByAnnotationElasticsearchId($elasticSearchId);
     public function getCurrentCorpusIndexByDocumentElasticsearchId($elasticSearchId);
 
