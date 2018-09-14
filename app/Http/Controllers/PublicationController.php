@@ -188,19 +188,19 @@ class PublicationController extends Controller
                                                     "corpus_id" => $corpus->corpus_id
                                                 );
 
-                            $corpusReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/corpus_mapping.json', $new_corpus_index, $oldCorpusIndex,$corpusMatchQuery,$new_corpus_elasticsearch_id,$new_corpus_id);
+                            $corpusReindexResponse = $this->elasticService->createMappedIndexAndReindex($this->indexMappingPath.'/corpus_mapping.json', $new_corpus_index, $oldCorpusIndex,$corpusMatchQuery,$new_corpus_elasticsearch_id,$new_corpus_id);
 
                             $documentMatchQuery = array(
                                 "in_corpora" => $corpus->corpus_id
                             );
 
-                            $documentReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/document_mapping.json', $new_document_index, $oldDocumentIndex,$documentMatchQuery,$elasticsearchIds['document'],$new_corpus_id);
+                            $documentReindexResponse = $this->elasticService->createMappedIndexAndReindex($this->indexMappingPath.'/document_mapping.json', $new_document_index, $oldDocumentIndex,$documentMatchQuery,$elasticsearchIds['document'],$new_corpus_id);
 
-                            $annotationReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/annotation_mapping.json', $new_annotation_index, $oldAnnotationIndex,$documentMatchQuery,$elasticsearchIds['annotation'],$new_corpus_id);
+                            $annotationReindexResponse = $this->elasticService->createMappedIndexAndReindex($this->indexMappingPath.'/annotation_mapping.json', $new_annotation_index, $oldAnnotationIndex,$documentMatchQuery,$elasticsearchIds['annotation'],$new_corpus_id);
 
                             $documentAnnotationUpdateResult = $this->elasticService->updateDocumentFieldsInAnnotation($new_annotation_index,$annotationInDocumentArray);
 
-                            $guidelineReindexResponse = $this->elasticService->createMappedIndex($this->indexMappingPath.'/guideline_mapping.json', $new_guideline_index, $oldGuidelineIndex, $documentMatchQuery,$new_guidelines_elasticsearch_id,$new_corpus_id);
+                            $guidelineReindexResponse = $this->elasticService->createMappedIndexAndReindex($this->indexMappingPath.'/guideline_mapping.json', $new_guideline_index, $oldGuidelineIndex, $documentMatchQuery,$new_guidelines_elasticsearch_id,$new_corpus_id);
 
                             $tag = $this->GitRepoService->setCorpusVersionTag($corpuspath,$corpus->name." version ".$corpus->publication_version,$corpus->publication_version,$corpusid,$auth_user_name,$auth_user_email);
 

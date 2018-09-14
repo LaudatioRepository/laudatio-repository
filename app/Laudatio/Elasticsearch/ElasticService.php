@@ -45,7 +45,64 @@ class ElasticService implements ElasticsearchInterface
 
     }
 
-    public function createMappedIndex($indexMappingPath, $new_index_id, $old_index_id,$matchQuery,$new_elasticsearch_id,$new_id) {
+
+    public function createMappedIndex($indexMappingPath, $index_id) {
+        $status = "";
+        $result = array();
+
+        //set mapping
+        $mapping = json_decode(file_get_contents($indexMappingPath),true);
+
+        $createIndexParams = array(
+            'index' => $index_id,
+            'body' => array(
+                'mappings' => array(
+                    'doc'=> array(
+                        '_source' => array(
+                            'enabled' => true
+                        ),
+                        'properties' => $mapping['mappings']['doc']['properties']
+                    )
+                )
+            )
+        );
+
+
+
+        $indexResult = $this->createIndex($createIndexParams);
+
+
+        /*
+         * The Reindex API makes no effort to handle ID collisions. For such issues, the target index will remain valid,
+         *  but it’s not easy to predict which document will survive because the iteration order isn’t well defined.
+         *
+         * setting new id to timestamp:now()_old_elasticsearch_id
+         *
+         */
+
+
+        if($indexResult['acknowledged'] == 1
+            && $indexResult['index'] == $index_id) {
+
+
+            $status = "success";
+            $result['create_mappedindex_response'] = "Success";
+
+        }
+        else{
+            $status = "error";
+            $result['publish_corpus_response'] = "There was a problem creating the Index. A message has been sent to the site administrator. Please try again later";
+        }
+
+        $response = array(
+            'status' => $status,
+            'message' => $result,
+        );
+
+        return $response;
+    }
+
+    public function createMappedIndexAndReindex($indexMappingPath, $new_index_id, $old_index_id,$matchQuery,$new_elasticsearch_id,$new_id) {
         $status = "";
         $result = array();
 
@@ -539,7 +596,10 @@ class ElasticService implements ElasticsearchInterface
 
             $hits = isset($response['hits']['hits'][0]) ? $response['hits']['hits'][0] : false;
             if($hits){
-                $elasticIds[$objectId] = $response['hits']['hits'][0]['_id'];
+                $elasticIds[$objectId] = array(
+                    "elasticsearchid" => $response['hits']['hits'][0]['_id'],
+                    "elasticsearchindex" => $response['hits']['hits'][0]['_index'],
+                );
             }
 
         }

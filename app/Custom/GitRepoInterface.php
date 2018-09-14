@@ -29,7 +29,7 @@ interface GitRepoInterface {
     public function addHooks($path,$user,$email);
     public function initialPush($path,$user);
     public function addRemote($origin,$path);
-    public function setCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email);
+    public function setCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email,$blame);
 
     /** HELPERS  **/
     public function filterDottedFiles($array);

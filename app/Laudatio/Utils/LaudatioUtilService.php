@@ -160,7 +160,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             'gitlab_web_url' => $params['gitlab_web_url'],
             'gitlab_ssh_url' => $params['gitlab_ssh_url'],
             'gitlab_namespace_path' => $params['gitlab_name_with_namespace'],
-            "file_name" => $params['fileName']
+            "file_name" => $params['file_name'],
+            "elasticsearch_index" => $params['elasticsearch_index'],
+            "guidelines_elasticsearch_index" => $params['guidelines_elasticsearch_index'],
         ]);
 
 
@@ -793,6 +795,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$corpus_index]])->get();
         return $corpus[0]->elasticsearch_id;
     }
+
 
     public function getDatabaseIdByCorpusId($corpusid)
     {

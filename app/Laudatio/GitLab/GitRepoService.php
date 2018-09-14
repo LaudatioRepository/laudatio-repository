@@ -643,10 +643,20 @@ class GitRepoService implements GitRepoInterface
         return $gitFunction->getCommitData($path);
     }
 
-    public function setCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email){
+    public function setCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email,$blame = true){
         $isTagged = false;
         $gitFunction = new  GitFunction();
-        $tag = $gitFunction->setCorpusVersionTag($corpusPath,$tagmessage,$version,$user,$email);
+        $tag = $gitFunction->setCorpusVersionTag($corpusPath,$tagmessage,$version,$user,$email, $blame);
+        if($tag){
+            $isTagged = true;
+        }
+        return $isTagged;
+    }
+
+    public function setInitialCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email){
+        $isTagged = false;
+        $gitFunction = new  GitFunction();
+        $tag = $gitFunction->setInitialCorpusVersionTag($corpusPath,$tagmessage,$version,$user,$email);
         if($tag){
             $isTagged = true;
         }

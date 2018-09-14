@@ -280,9 +280,16 @@ class GitFunction
         return $isCommitted;
     }
 
-    public function setCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email) {
+    public function setCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email, $blame) {
         $isTagged = false;
-        $process = new Process(" git tag -a v".$version." -m \"".$tagmessage." by ".$user." (".$email.") \" ",$this->basePath."/".$corpusPath);
+        $process = null;
+        if($blame) {
+            $process = new Process(" git tag -a v".$version." -m \"".$tagmessage." by ".$user." (".$email.") \" ",$this->basePath."/".$corpusPath);
+        }
+        else {
+            $process = new Process(" git tag -a v".$version." -m \"".$tagmessage."\"",$this->basePath."/".$corpusPath);
+        }
+
         $process->setTimeout(3600);
         $process->run();
 
@@ -324,7 +331,8 @@ class GitFunction
         }
         else{
             $processOutput = $process->getOutput();
-            if(strpos($processOutput,$version) !== false){
+            Log::info ("CHEKING IF TAGGED: ".print_r($processOutput,1)." => ".print_r($version,1));
+            if(strpos($processOutput, strval($version)   ) !== false){
                 $isTagged = true;
             }
         }

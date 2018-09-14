@@ -46,7 +46,8 @@ interface ElasticsearchInterface {
 
     public function createIndex($params);
     public function reIndex($params);
-    public function createMappedIndex($indexMappingPath, $new_index_id, $old_index_id,$matchQuery,$new_elasticsearch_id,$new_corpus_id);
+    public function createMappedIndex($indexMappingPath, $index_id);
+    public function createMappedIndexAndReindex($indexMappingPath, $new_index_id, $old_index_id,$matchQuery,$new_elasticsearch_id,$new_corpus_id);
     public function deleteIndex($indexId);
     public function truncateIndex($index);
     public function postToIndex($params);
