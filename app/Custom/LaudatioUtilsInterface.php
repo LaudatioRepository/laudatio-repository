@@ -15,6 +15,7 @@ interface LaudatioUtilsInterface
 
     public function setCorpusAttributes($json,$params);
     public function updateCorpusAttributes($params,$corpusId);
+    public function updateCorpusFileAttributes($corpus);
     public function duplicateCorpus($oldCorpus, $new_corpus_elasticsearch_id, $new_corpus_id,$new_corpus_index, $new_guideline_index, $now,$oldDocumentIndex,$oldAnnotationIndex, $new_document_index,$new_annotation_index);
     public function corpusIsVersioned($corpusId);
     public function setDocumentAttributes($json,$corpusId,$uid,$fileName,$isDir);

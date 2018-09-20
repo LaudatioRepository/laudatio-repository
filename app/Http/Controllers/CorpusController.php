@@ -319,12 +319,10 @@ class CorpusController extends Controller
         $corpusProjects = $corpus->corpusprojects()->get();
         $corpusproject = null;
         $corpusProject_directory_path = '';
+
         if(count($corpusProjects) == 1) {
             $corpusproject = $corpusProjects->first();
             $corpusProject_directory_path = $corpusproject->directory_path;
-        }
-        else{
-            // what to do when we can assign corpora to many projects?
         }
 
         $path = $corpusProject_directory_path.'/'.$corpus->directory_path;
@@ -397,6 +395,11 @@ class CorpusController extends Controller
         $annotationnewelements = $this->GitRepoService->getUploader($annotationFileData['headerData']['elements'],'annotation');
         $annotationFileData['headerData']['elements'] = $annotationnewelements;
 
+        //$formatfilenewelements = $this->GitRepoService->getUploader($corpusFormatData['fileData']['elements'],'formatfiles');
+        //$formatFileData['headerData']['elements'] = $formatfilenewelements;
+
+
+
 
         $corpusUpload = false;
         if($corpus->gitlab_id == ""){
@@ -412,6 +415,11 @@ class CorpusController extends Controller
 
         if(count($corpus->documents) == 0){
             $documentUpload = true;
+        }
+
+        $formatUpload = false;
+        if(count($corpus->formatfiles) == 0) {
+            $formatUpload = true;
         }
 
         // Get the messageboard for the CorpusProject this corpus is assigned to
@@ -463,7 +471,8 @@ class CorpusController extends Controller
                 'documentFileData' => $documentFileData,
                 'documentUpload' => $documentUpload,
                 'annotationFileData' => $annotationFileData,
-                'annotationUpload' => $annotationUpload
+                'annotationUpload' => $annotationUpload,
+                "formatUpload" => $formatUpload,
             ),
             'corpusFormatData' => $corpusFormatData,
             'boardmessages' => $corpusMessages,

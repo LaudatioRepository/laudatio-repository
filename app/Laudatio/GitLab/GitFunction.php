@@ -471,6 +471,32 @@ class GitFunction
         return $isCopied;
     }
 
+    public function setGitConfig($path,$userEmail, $userName) {
+        $isSet = false;
+
+        $configProcessEmail = new Process("git config user.email \"".$userEmail."\"",$this->basePath."/".$path);
+        $configProcessEmail->run();
+        // executes after the command finishes
+        if (!$configProcessEmail->isSuccessful()) {
+            throw new ProcessFailedException($configProcessEmail->getErrorOutput());
+        }
+        else{
+            $configProcessEmailOutput = $configProcessEmail->getOutput();
+
+            $configProcessName = new Process("git config user.name \"".$userName."\"",$this->basePath."/".$path);
+            $configProcessName->run();
+            if (!$configProcessName->isSuccessful()) {
+                throw new ProcessFailedException($configProcessName->getErrorOutput());
+            }
+            else {
+                $configProcessNameOutput = $configProcessEmail->getOutput();
+                $isSet = true;
+            }
+
+        }
+        return $isSet;
+    }
+
     public function setCoreHooksPath($path){
         $isSet = false;
         /*
@@ -480,7 +506,7 @@ class GitFunction
         $hookProcess->run();
         // executes after the command finishes
         if (!$hookProcess->isSuccessful()) {
-            throw new ProcessFailedException($hookProcess);
+            throw new ProcessFailedException($hookProcess->getErrorOutput());
         }
         else{
             $processOutput = $hookProcess->getOutput();
@@ -559,28 +585,44 @@ class GitFunction
             }
         }
 
-        //write file if exists
-        $fileArray = explode("/", $theFilePath);
 
-        $fileInDirectory = "";
-        if(count($fileArray) == 1){
-            $fileInDirectory = array_pop($fileArray);
-        }
 
 
         #if(file_exists($this->basePath."/".$dirPath."/".$fileInDirectory)){
-            $existingFile = $flySystem->has($dirPath."/".$fileInDirectory);
+
             $stream = null;
+            $fileInDirectory = "";
+            $writePath = "";
+
+            if(strpos($theFilePath,'images') !== false) {
+                $writePath = $theFilePath;
+                $flySystem->has($theFilePath);
+            }
+            else{
+                //write file if exists
+                $fileArray = explode("/", $theFilePath);
+
+
+                if(count($fileArray) == 1){
+                    $fileInDirectory = array_pop($fileArray);
+                }
+
+                $writePath = $dirPath."/".$fileInDirectory;
+            }
+
+
+            $existingFile = $flySystem->has($dirPath."/".$fileInDirectory);
+
             if(!$existingFile){
                 $stream = fopen($fileTempPath, 'r+');
-                $flySystem->writeStream($dirPath."/".$fileInDirectory, $stream);
+                $flySystem->writeStream($writePath, $stream);
             }
             else{
                 $stream = fopen($fileTempPath, 'r+');
-                $flySystem->updateStream($dirPath."/".$fileInDirectory, $stream);
+                $flySystem->updateStream($writePath, $stream);
             }
         #}
-        array_push($createdDirectoryPath,$this->basePath."/".$dirPath."/".$fileInDirectory);
+        array_push($createdDirectoryPath,$this->basePath."/".$writePath);
 
         if (is_resource($stream)) {
             fclose($stream);

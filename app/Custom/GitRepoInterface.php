@@ -23,10 +23,11 @@ interface GitRepoInterface {
     public function addFilesToRepository($path,$file);
     public function deleteFile($flysystem, $path,$user,$email);
     public function deleteUntrackedFile($flysystem,$path);
-    public function addFiles($path,$corpus);
+    public function addFiles($path);
     public function commitFiles($dirname, $commitmessage, $corpusid,$user,$email);
     public function pushFiles($dirname,$corpusid,$user);
     public function addHooks($path,$user,$email);
+    public function setGitConfig($path,$userEmail, $userName);
     public function initialPush($path,$user);
     public function addRemote($origin,$path);
     public function setCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email,$blame);

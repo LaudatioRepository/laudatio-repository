@@ -5,10 +5,10 @@
             <div class="col-2">
                 <nav class="headernav sidebar text-14 nav flex-column border-top border-light mt-7" role="tablist">
                     <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink active" data-toggle="tab" role="tab" data-headertype="corpus" href="#corpusHeaderFiles" id="corpusCount">Corpus (<span>{{$corpus_data['headerdata']['corpusheader']}}</span>)</a>
-                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="document" href="#documentHeaderFiles" id="documentCount">Documents (<span>{{count($corpus_data['headerdata']['found_documents'])}}</span>)</a>
-                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#annotationHeaderFiles" id="annotationCount">Annotations (<span>{{count($corpus_data['headerdata']['found_annotations_in_corpus'])}}</span>)</a>
-                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="formatdata" href="#formatDataFiles" id="formatCount">Format data (<span>{{count($corpus_data['corpusFormatData']['projects'])}}</span>)</a>
-                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink enterLogoUpload" data-toggle="tab" role="tab" data-headertype="license" href="#logoLicense">Logo/License (8)</a>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="document" href="#documentHeaderFiles" id="documentCount">Documents (<span>{{count($corpus_data['filedata']['documentFileData']['headerData']['elements'])}}</span>)</a>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="annotation" href="#annotationHeaderFiles" id="annotationCount">Annotations (<span>{{count($corpus_data['filedata']['annotationFileData']['headerData']['elements'])}}</span>)</a>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink" data-toggle="tab" role="tab" data-headertype="formatdata" href="#formatDataFiles" id="formatCount">Format data (<span>{{count($corpus_data['filedata']['corpusFileData']['corpusData']['projects'])}}</span>)</a>
+                    <a class="font-weight-normal text-uppercase py-3 px-0 border-bottom border-light nav-link tablink enterLogoUpload" data-toggle="tab" role="tab" data-headertype="corpusimage" href="#logoLicense">Logo/License (8)</a>
                 </nav>
             </div>
             <div class="col">
@@ -25,6 +25,9 @@
 
                     <div role="tabpanel"  class="tab-pane fade in" id="annotationHeaderFiles">
                         @include('project.corpus.annotationHeaderFiles')
+                    </div>
+                    <div role="tabpanel"  class="tab-pane fade in" id="formatDataFiles">
+                        @include('project.corpus.formatDataFiles')
                     </div>
                     <div id="previews">
                         <div id="corpusUploadTemplate" class="uploadItem p-3 mt-3 bg-bluegrey-light">
@@ -50,10 +53,6 @@
                             </div>
                         </div>
                     </div>
-                    <div role="tabpanel"  class="tab-pane fade in" id="formatDataFiles">
-                        @include('project.corpus.formatDataFiles')
-                    </div>
-
                     <div role="tabpanel"  class="tab-pane fade in" id="logoLicense">
                         @include('project.corpus.logoLicense')
                     </div>

@@ -143,6 +143,12 @@ $(function () {
         } else {
             $('#annotationFileList').css('display', 'block');
         }
+
+        if (laudatioApp.formatUpload) {
+            $('#formatUploader').css('display', 'block');
+        } else {
+            $('#formatFileList').css('display', 'block');
+        }
     }
 
     // Make sure Bootstrap tabs work correctly to show the correct active states
@@ -202,6 +208,10 @@ $(function () {
             if (typeof window.Laravel != 'undefined') {
                 window.Laravel.directorypath += '/TEI-HEADERS/corpus';
             }
+        } else if ($("nav.headernav").find("a[data-headertype ='formatdata']").hasClass('active')) {
+            window.Laravel.directorypath += "/CORPUS-DATA";
+        } else if ($("nav.headernav").find("a[data-headertype ='corpusimage']").hasClass('active')) {
+            window.Laravel.directorypath += "images";
         } else {
             window.Laravel.directorypath += '/TEI-HEADERS';
         }
@@ -209,8 +219,13 @@ $(function () {
 
     $('nav.headernav a[data-headertype != ""]').bind('click', function (e) {
         if (typeof window.Laravel != 'undefined') {
-            var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
-            window.Laravel.directorypath = oldPath + '/TEI-HEADERS/' + $(this).data('headertype');
+            if ($(this).data('headertype') == "formatdata") {
+                var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
+                window.Laravel.directorypath = oldPath + '/CORPUS-DATA';
+            } else {
+                var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
+                window.Laravel.directorypath = oldPath + '/TEI-HEADERS/' + $(this).data('headertype');
+            }
 
             var previews = $('#previews').detach();
             previews.html("");

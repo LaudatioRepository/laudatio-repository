@@ -46,7 +46,7 @@
     <div id="formatFileList">
         <div class="col">
             <div class="d-flex justify-content-between mt-7 mb-3">
-                <h3 class="h3 font-weight-normal">Corpus Header XML</h3>
+                <h3 class="h3 font-weight-normal">Corpus Format Files</h3>
                 <a href="javascript:" id="format_UploadButton" class="btn btn-primary font-weight-bold text-uppercase rounded uploadcontrols">
                     File Upload
                 </a>

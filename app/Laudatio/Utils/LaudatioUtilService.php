@@ -16,6 +16,7 @@ use App\CorpusProject;
 use App\Corpus;
 use App\Document;
 use App\Annotation;
+use App\CorpusFile;
 use App\Preparation;
 use App\Role;
 use App\User;
@@ -173,6 +174,22 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $corpus = Corpus::find($corpusId);
         $corpus->update($params);
         return $corpus;
+    }
+
+    public function updateCorpusFileAttributes($corpus){
+        $updated = true;
+
+        try{
+            foreach ($corpus->corpusfiles as $corpusfile) {
+                $corpusfile->directory_path = $corpus->directory_path;
+                $corpusfile->save();
+            }
+        }
+        catch(\Exception $e) {
+            $updated = false;
+        }
+
+        return $updated;
     }
 
     public function duplicateCorpus($oldCorpus, $new_corpus_elasticsearch_id,$new_corpus_id, $new_corpus_index, $new_guideline_index, $now,$oldDocumentIndex,$oldAnnotationIndex,$new_document_index,$new_annotation_index){
@@ -729,6 +746,12 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                     ])->get();
                 }
 
+                break;
+            case 'CORPUS-DATA':
+                $object = CorpusFile::where([
+                    ['file_name', '=',$fileName]
+                ])->get();
+                Log::info("NOOBJEKTTT:? : ".print_r($object,1));
                 break;
         }
         return $object;

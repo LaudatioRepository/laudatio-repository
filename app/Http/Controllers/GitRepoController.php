@@ -402,7 +402,7 @@ class GitRepoController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function addFiles($path,$corpus){
-        $isAdded = $this->GitRepoService->addFiles($path,$corpus);
+        $isAdded = $this->GitRepoService->addFiles($path);
 
         if($isAdded){
             return redirect()->action(

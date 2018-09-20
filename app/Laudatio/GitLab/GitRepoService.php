@@ -18,6 +18,7 @@ use Log;
 use App\Corpus;
 use App\Document;
 use App\Annotation;
+use App\CorpusFile;
 use App\User;
 use App\CorpusProject;
 
@@ -192,34 +193,34 @@ class GitRepoService implements GitRepoInterface
         $folder = "";
         $folderType = "";
         $user_roles = array();
-        if(strpos($corpusPath,"Untitled") === false){
-            $corpusBasePath = $pathArray[0]."/".$pathArray[1];
-            if(strpos($corpusPath,"CORPUS-DATA") !== false && strpos($corpusPath,"TEI-HEADERS") === false){
-                $corpusData = $this->getCorpusDataFiles($flysystem,$corpusPath);
-                $headerData = $this->getCorpusFileInfo($flysystem,$corpusBasePath.'/TEI-HEADERS');
-                $folderType = "CORPUS-DATA";
 
-            }
-            else if(strpos($corpusPath,"TEI-HEADERS") !== false && strpos($corpusPath,"CORPUS-DATA") === false){
-                $corpusData = $this->getCorpusDataFiles($flysystem,$corpusBasePath.'/CORPUS-DATA');
-                $headerData = $this->getCorpusFileInfo($flysystem, $corpusPath);
-                $folderType = "TEI-HEADERS";
-            }
-            else{
-                $corpusData = $this->getCorpusDataFiles($flysystem,$corpusPath.'/CORPUS-DATA');
-                $headerData = $this->getCorpusFileInfo($flysystem,$corpusPath.'/TEI-HEADERS');
-            }
+        $corpusBasePath = $pathArray[0]."/".$pathArray[1];
+        if(strpos($corpusPath,"CORPUS-DATA") !== false && strpos($corpusPath,"TEI-HEADERS") === false){
+            $corpusData = $this->getCorpusDataFiles($flysystem,$corpusPath);
+            $headerData = $this->getCorpusFileInfo($flysystem,$corpusBasePath.'/TEI-HEADERS');
+            $folderType = "CORPUS-DATA";
+
+        }
+        else if(strpos($corpusPath,"TEI-HEADERS") !== false && strpos($corpusPath,"CORPUS-DATA") === false){
+            $corpusData = $this->getCorpusDataFiles($flysystem,$corpusBasePath.'/CORPUS-DATA');
+            $headerData = $this->getCorpusFileInfo($flysystem, $corpusPath);
+            $folderType = "TEI-HEADERS";
+        }
+        else{
+            $corpusData = $this->getCorpusDataFiles($flysystem,$corpusPath.'/CORPUS-DATA');
+            $headerData = $this->getCorpusFileInfo($flysystem,$corpusPath.'/TEI-HEADERS');
+        }
 
 
-            $corpusDataFolder = substr($corpusData['path'],strrpos($corpusData['path'],"/")+1);
-            $headerDataFolder = substr($headerData['path'],strrpos($headerData['path'],"/")+1);
-            $fileData = array(
-                "corpusData" => $corpusData,
-                "corpusDataFolder" => $corpusDataFolder,
-                "headerData" => $headerData,
-                "headerDataFolder" => $headerDataFolder,
-                "folderType" => $folderType
-            );
+        $corpusDataFolder = substr($corpusData['path'],strrpos($corpusData['path'],"/")+1);
+        $headerDataFolder = substr($headerData['path'],strrpos($headerData['path'],"/")+1);
+        $fileData = array(
+            "corpusData" => $corpusData,
+            "corpusDataFolder" => $corpusDataFolder,
+            "headerData" => $headerData,
+            "headerDataFolder" => $headerDataFolder,
+            "folderType" => $folderType
+        );
 
 /*
             $corpusUsers = $corpus->users()->get();
@@ -236,12 +237,10 @@ class GitRepoService implements GitRepoInterface
 
             }
 */
-        }
+
         return $fileData;
     }
     public function getUploader($headerData,$headertype){
-
-        //dd($headerData);
         for($i = 0; $i < count($headerData); $i++){
             $extension = $headerData[$i]['extension'];
             $basename = $headerData[$i]['basename'];
@@ -256,6 +255,9 @@ class GitRepoService implements GitRepoInterface
                         break;
                     case 'annotation':
                         $object = Annotation::where(['file_name' => $basename])->get();
+                        break;
+                    case 'formatfiles':
+                        $object = CorpusFile::where(['file_name' => $basename])->get();
                         break;
                 }
 
@@ -296,6 +298,14 @@ class GitRepoService implements GitRepoInterface
 
 
         for ($i = 0; $i < count($projects);$i++){
+
+            if(isset($projects[$i]['extension'])) {
+                if($projects[$i]['extension'] == "md") {
+                    unset($projects[$i]);
+                    continue;
+                }
+            }
+
             $foldercount = count($flysystem->listContents($projects[$i]['path']));
             $projects[$i]['foldercount'] = $foldercount;
             if($gitFunction->isTracked($this->basePath."/".$projects[$i]['path'])){
@@ -304,6 +314,7 @@ class GitRepoService implements GitRepoInterface
             else{
                 $projects[$i]['tracked'] = "false";
             }
+
 
             $headerObject = $this->laudatioUtilsService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id],false);
             if(count($headerObject) > 0){
@@ -422,6 +433,7 @@ class GitRepoService implements GitRepoInterface
         $patharray = explode("/",$path);
         $count = count($patharray);
         $projects = $this->filterDottedFiles($projects);
+        $projects = $this->filterMDFiles($projects);
         $previouspath = substr($path,0,strrpos($path,"/"));
 
 
@@ -484,7 +496,7 @@ class GitRepoService implements GitRepoInterface
         return $isAdded;
     }
 
-    public function addFiles($path,$corpus){
+    public function addFiles($path){
         $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
         $file = substr($path,strrpos($path,"/")+1);
         $isAdded = $this->addFilesToRepository($pathWithOutAddedFolder,$file);
@@ -509,9 +521,16 @@ class GitRepoService implements GitRepoInterface
 
     public function commitFiles($dirname = "", $commitmessage, $corpusid, $user, $email){
         $isHeader = false;
+        $isFile = false;
+
         if(strpos($dirname,'TEI-HEADER') !== false){
             $isHeader = true;
         }
+        else if(strpos($dirname,'CORPUS-DATA') !== false) {
+            $isFile = true;
+        }
+
+
         $gitFunction = new  GitFunction();
         $patharray = explode("/",$dirname);
         end($patharray);
@@ -552,7 +571,6 @@ class GitRepoService implements GitRepoInterface
                     }
 
                 }
-
                 $returnPath = $dirname;
             }
         }
@@ -563,36 +581,39 @@ class GitRepoService implements GitRepoInterface
                     $this->laudatioUtilsService->setVersionMapping($fileName,$patharray[($last_id-1)],false);
                     $object = $this->laudatioUtilsService->getModelByFileName($fileName,$patharray[($last_id-1)], false);
                 }
+                else if($isFile) {
+                    Log::info("LOOKING for object;getModelByFileName: ".$fileName." ".$patharray[($last_id-1)]);
+                    $object = $this->laudatioUtilsService->getModelByFileName($fileName,$patharray[($last_id-1)], false);
+                    Log::info("GOT object;getModelByFileName: ".print_r($object,1));
+                }
 
                 $returnPath = $pathWithOutAddedFolder;
             }
         }
 
         $commitdata = $this->getCommitData($pathWithOutAddedFolder);
-
-        if($isHeader){
-            if(is_dir($this->basePath.'/'.$dirname)){
-                if(count($object) > 0){
-                    if($object[0]->directory_path == $fileName){
-                        $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
-                        $object[0]->gitlab_commit_date = $commitdata['date'];
-                        $object[0]->gitlab_commit_description = $commitdata['message'];
-                        $object[0]->save();
-                    }
+        Log::info("COMMITDATA: ".print_r($commitdata,1));
+        if(is_dir($this->basePath.'/'.$dirname)){
+            if(count($object) > 0){
+                if($object[0]->directory_path == $fileName){
+                    $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
+                    $object[0]->gitlab_commit_date = $commitdata['date'];
+                    $object[0]->gitlab_commit_description = $commitdata['message'];
+                    $object[0]->save();
                 }
             }
-            else{
-                if(count($object) > 0){
-                    if($object[0]->file_name == $fileName){
-                        $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
-                        $object[0]->gitlab_commit_date = $commitdata['date'];
-                        $object[0]->gitlab_commit_description = $commitdata['message'];
-                        $object[0]->save();
-                    }
-                }
-            }
-
         }
+        else{
+            if(count($object) > 0){
+                if($object[0]->file_name == $fileName){
+                    $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
+                    $object[0]->gitlab_commit_date = $commitdata['date'];
+                    $object[0]->gitlab_commit_description = $commitdata['message'];
+                    $object[0]->save();
+                }
+            }
+        }
+
         return $returnPath;
     }
 
@@ -613,6 +634,11 @@ class GitRepoService implements GitRepoInterface
     public function copyGitHooks($path){
         $gitFunction = new  GitFunction();
         return $gitFunction->copyGitHooks($path);
+    }
+
+    public function setGitConfig($path,$userEmail, $userName) {
+        $gitFunction = new  GitFunction();
+        return $gitFunction->setGitConfig($path,$userEmail,$userName);
     }
 
     public function setCoreHooksPath($path){
@@ -672,6 +698,18 @@ class GitRepoService implements GitRepoInterface
         $projects = array();
         foreach ($array as $item){
             $pos = strpos($item['basename'],".");
+            if($pos === false || ($pos > 0)){
+                array_push($projects,$item);
+            }
+        }
+
+        return $projects;
+    }
+
+    public function filterMDFiles($array){
+        $projects = array();
+        foreach ($array as $item){
+            $pos = strpos($item['basename'],".md");
             if($pos === false || ($pos > 0)){
                 array_push($projects,$item);
             }

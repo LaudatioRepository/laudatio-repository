@@ -49,10 +49,9 @@ Route::get('/corpusprojects/corpora/{corpus}/{user}/delete',[ 'as' => 'project.u
 
 
 /** UPLOAD **/
-Route::get('/corpusprojects/upload/{dirname?}',['as' => 'gitRepo.upload.get', 'uses' => 'UploadController@uploadForm'])->where('dirname', '.+')->middleware('auth');
-Route::get('/corpusprojects/uploadFiles/{dirname?}',['as' => 'gitRepo.uploadFiles.get', 'uses' => 'UploadController@uploadDataForm'])->where('dirname', '.+')->middleware('auth');
 Route::post('/corpusprojects/upload',['as' => 'gitRepo.upload.post', 'uses' => 'UploadController@uploadSubmit'])->middleware('auth');
-Route::post('/corpusprojects/uploadFiles',['as' => 'gitRepo.uploadFiles.post', 'uses' => 'UploadController@uploadSubmitFiles'])->middleware('auth');
+Route::post('/corpusprojects/uploadFiles',['as' => 'gitRepo.uploadFiles.post', 'uses' => 'UploadController@uploadSubmitFiles']);
+Route::post('/corpusprojects/uploadCorpusImage',['as' => 'gitRepo.uploadCorpusImage.post', 'uses' => 'UploadController@UploadCorpusImage']);
 /** END UPLOAD **/
 
 

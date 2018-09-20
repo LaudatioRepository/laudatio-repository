@@ -28,10 +28,11 @@ if(previewNode) {
     previewNode.id = "";
     var previewTemplate = previewNode.parentNode.innerHTML;
     previewNode.parentNode.removeChild(previewNode);
+    dropUrl = "/corpusprojects/upload";
 
     // init dropzoneJS
     var corpusUpload = new Dropzone(document.body, { // Make the whole body a dropzone
-        url: "/corpusprojects/upload", // Set the url
+        url: dropUrl, // Set the url
         headers: {"X-Csrf-Token": window.Laravel.csrfToken},parameters: {"_csrf_token": window.Laravel.csrfToken,'directorypath': window.Laravel.directorypath,'corpusid': window.Laravel.corpusid,'filedata': window.Laravel.filedata},sending: function(file, xhr, formData) {
             formData.append("_csrf_token", window.Laravel.csrfToken);formData.append("directorypath", window.Laravel.directorypath);formData.append("corpusid", window.Laravel.corpusid);formData.append("filedata", window.Laravel.filedata);},paramName: "formats",
         parallelUploads: 1,
@@ -44,6 +45,16 @@ if(previewNode) {
 
     // DropzoneJS event methods
     corpusUpload.on("processing", function(file) {
+        if(window.Laravel.directorypath.indexOf("CORPUS-DATA") > -1) {
+            corpusUpload.options.url = "/corpusprojects/uploadFiles"
+        }
+        else if(window.Laravel.directorypath.indexOf("images") > -1) {
+            corpusUpload.options.url = "/corpusprojects/uploadCorpusImage"
+        }
+        else{
+            corpusUpload.options.url = "/corpusprojects/upload"
+        }
+
         $(file.previewElement).find('.uploadStatusText').text('Uploading');
         $(file.previewElement).find('.uploadStatusIcons').find('.uploadCancel').removeClass('hidden');
     });
@@ -75,6 +86,10 @@ if(previewNode) {
         corpusUpload.removeAllFiles(true);
     });
 }
+
+
+
+
 var inputList = ['#formCorpusFormats', '#formAnnotationsFormats'];
 var customPlaceholders = ['"ANNIS"','"ANNIS"'];
 

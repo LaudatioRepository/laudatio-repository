@@ -22,6 +22,7 @@ class CreateCorpusesTable extends Migration
             $table->string('corpus_size_type')->nullable();
             $table->string('corpus_size_value')->nullable();
             $table->string('directory_path');
+            $table->string('corpus_logo')->nullable();
             $table->string('corpus_id')->nullable();
             $table->string('file_name')->nullable();
             $table->string('elasticsearch_id')->nullable();
