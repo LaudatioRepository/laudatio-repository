@@ -534,6 +534,11 @@ class GitRepoService implements GitRepoInterface
         $gitFunction = new  GitFunction();
         $patharray = explode("/",$dirname);
         end($patharray);
+
+        $project = $patharray[0];
+        $corpus = $patharray[1];
+        $type = $patharray[2];
+
         $last_id = key($patharray);
 
         $object = null;
@@ -582,9 +587,8 @@ class GitRepoService implements GitRepoInterface
                     $object = $this->laudatioUtilsService->getModelByFileName($fileName,$patharray[($last_id-1)], false);
                 }
                 else if($isFile) {
-                    Log::info("LOOKING for object;getModelByFileName: ".$fileName." ".$patharray[($last_id-1)]);
-                    $object = $this->laudatioUtilsService->getModelByFileName($fileName,$patharray[($last_id-1)], false);
-                    Log::info("GOT object;getModelByFileName: ".print_r($object,1));
+                    $this->laudatioUtilsService->setVersionMapping($fileName,$type,false);
+                    $object = $this->laudatioUtilsService->getModelByFileName($fileName,$type, false);
                 }
 
                 $returnPath = $pathWithOutAddedFolder;
@@ -592,7 +596,7 @@ class GitRepoService implements GitRepoInterface
         }
 
         $commitdata = $this->getCommitData($pathWithOutAddedFolder);
-        Log::info("COMMITDATA: ".print_r($commitdata,1));
+
         if(is_dir($this->basePath.'/'.$dirname)){
             if(count($object) > 0){
                 if($object[0]->directory_path == $fileName){

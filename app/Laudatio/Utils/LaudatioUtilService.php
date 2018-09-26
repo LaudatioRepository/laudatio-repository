@@ -639,14 +639,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $type
      */
     public function setVersionMapping($fileName,$type, $isDir){
-        $object = null;
-        if($isDir){
-            $object = $this->getModelByFileName($fileName,$type,$isDir);
-        }
-        else{
-            $object = $this->getModelByFileName($fileName,$type, $isDir);
-        }
-
+        Log::info("FILENAME: ".$fileName." TYPE: ".$type." ISDIR: ".$isDir);
+        $object = $this->getModelByFileName($fileName,$type, $isDir);
+        Log::info("GOT OBJECT: ".print_r($object,1));
         if(count($object) > 0){
             if(null != $object[0]->vid){
                 $object[0]->vid++;

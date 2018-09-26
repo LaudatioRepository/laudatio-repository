@@ -100,7 +100,7 @@ class GitFunction
         $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
         $folder = substr($path,strrpos($path,"/")+1);
 
-        $process = new Process("git ls-files --others --exclude-standard $folder",$pathWithOutAddedFolder);
+        $process = new Process("git ls-files --others --exclude-standard \"$folder\"",$pathWithOutAddedFolder);
         $process->run();
 
         // executes after the command finishes
@@ -144,7 +144,7 @@ class GitFunction
         //$pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
         $folder = substr($path,strrpos($path,"/")+1);
 
-        $process = new Process("git diff $file",$path);
+        $process = new Process("git diff \"$file\"",$path);
         $process->run();
 
         // executes after the command finishes
