@@ -605,7 +605,6 @@ class GitRepoService implements GitRepoInterface
         }
 
         $commitdata = $this->getCommitData($pathWithOutAddedFolder);
-        Log::info("commitFiles:WE HAVE THE OBJECT: ".print_r($object,1));
         if(is_dir($this->basePath.'/'.$dirname)){
             if(null != $object){
                 if($object[0]->directory_path == $fileName){

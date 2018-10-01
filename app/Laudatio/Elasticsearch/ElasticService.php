@@ -574,7 +574,6 @@ class ElasticService implements ElasticsearchInterface
     }
 
     public function getElasticIdByObjectId($index,$objectparams){
-        Log::info("getElasticIdByObjectId:TRYING FOR ".$index);
         $elasticIds = array();
         $queryBuilder = new QueryBuilder();
         foreach ($objectparams as $objectId => $objectparam){
@@ -593,9 +592,9 @@ class ElasticService implements ElasticsearchInterface
                 'body' => $queryBody,
                 '_source' => ["_id"]
             ];
-            Log::info("getElasticIdByObjectId: sending ".print_r($params,1));
+
             $response = Elasticsearch::search($params);
-            Log::info("getElasticIdByObjectId: response ".print_r($response,1));
+
             $hits = isset($response['hits']['hits'][0]) ? $response['hits']['hits'][0] : false;
             if($hits){
                 $elasticIds[$objectId] = array(

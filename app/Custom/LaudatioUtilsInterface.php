@@ -35,6 +35,7 @@ interface LaudatioUtilsInterface
     public function getModelByFileName($fileName, $type, $isDir);
     public function getModelByFileAndCorpus($fileName, $type, $isDir, $corpusId);
     public function getElasticSearchIdByCorpusId($corpusid,$corpus_index);
+    public function getElasticSearchIndexByCorpusId($corpusid);
     public function getDatabaseIdByCorpusId($corpusid);
     public function getDocumentGenreByCorpusId($corpusid,$index);
     public function getCorpusPathByCorpusId($corpusid,$corpus_index);

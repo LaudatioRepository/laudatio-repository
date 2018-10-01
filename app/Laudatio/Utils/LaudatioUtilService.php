@@ -639,9 +639,10 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $type
      */
     public function setVersionMapping($fileName,$type, $isDir){
-        Log::info("FILENAME: ".$fileName." TYPE: ".$type." ISDIR: ".$isDir);
+        Log::info("setVersionMapping: ".$fileName." TYPE: ".$type." ISDIR: ".$isDir);
         $object = $this->getModelByFileName($fileName,$type, $isDir);
-        Log::info("GOT OBJECT: ".print_r($object,1));
+
+        Log::info("getModelByFileName: ".print_r($object,1));
         if(count($object) > 0){
             if(null != $object[0]->vid){
                 $object[0]->vid++;
@@ -812,6 +813,12 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     {
         $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$corpus_index]])->get();
         return $corpus[0]->elasticsearch_id;
+    }
+
+    public function getElasticSearchIndexByCorpusId($corpusid)
+    {
+        $corpus = Corpus::find($corpusid);
+        return $corpus->elasticsearch_index;
     }
 
 
