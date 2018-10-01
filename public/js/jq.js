@@ -219,13 +219,29 @@ $(function () {
 
     $('nav.headernav a[data-headertype != ""]').bind('click', function (e) {
         if (typeof window.Laravel != 'undefined') {
+
             if ($(this).data('headertype') == "formatdata") {
-                var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
-                window.Laravel.directorypath = oldPath + '/CORPUS-DATA';
+                var oldPath = window.Laravel.directorypath;
+                var newpath = "";
+                if (oldPath.indexOf('/TEI') > -1) {
+                    newPath = oldPath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
+                } else {
+                    newPath = oldPath.substr(0, window.Laravel.directorypath.indexOf('/CORPUS-DATA'));
+                }
+                window.Laravel.directorypath = newPath + '/CORPUS-DATA';
             } else {
-                var oldPath = window.Laravel.directorypath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
-                window.Laravel.directorypath = oldPath + '/TEI-HEADERS/' + $(this).data('headertype');
+                var oldPath = window.Laravel.directorypath;
+                var newpath = "";
+                if (oldPath.indexOf('/TEI') > -1) {
+                    newPath = oldPath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
+                } else {
+                    newPath = oldPath.substr(0, window.Laravel.directorypath.indexOf('/CORPUS-DATA'));
+                }
+
+                window.Laravel.directorypath = newPath + '/TEI-HEADERS/' + $(this).data('headertype');
             }
+
+            console.log($(this).data('headertype') + " =>" + window.Laravel.directorypath);
 
             var previews = $('#previews').detach();
             previews.html("");

@@ -519,6 +519,11 @@ class GitRepoService implements GitRepoInterface
         return $gitFunction->initialPush($path,$user);
     }
 
+    public function resetAdd($path,$files){
+        $gitFunction = new  GitFunction();
+        return $gitFunction->resetAdd($path, $files);
+    }
+
     public function commitFiles($dirname = "", $commitmessage, $corpusid, $user, $email){
         $isHeader = false;
         $isFile = false;
@@ -537,7 +542,11 @@ class GitRepoService implements GitRepoInterface
 
         $project = $patharray[0];
         $corpus = $patharray[1];
-        $type = $patharray[2];
+        $type = null;
+        if(count($patharray) > 2) {
+            $type = $patharray[2];
+        }
+
 
         $last_id = key($patharray);
 
@@ -596,9 +605,9 @@ class GitRepoService implements GitRepoInterface
         }
 
         $commitdata = $this->getCommitData($pathWithOutAddedFolder);
-
+        Log::info("commitFiles:WE HAVE THE OBJECT: ".print_r($object,1));
         if(is_dir($this->basePath.'/'.$dirname)){
-            if(count($object) > 0){
+            if(null != $object){
                 if($object[0]->directory_path == $fileName){
                     $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
                     $object[0]->gitlab_commit_date = $commitdata['date'];
@@ -608,7 +617,7 @@ class GitRepoService implements GitRepoInterface
             }
         }
         else{
-            if(count($object) > 0){
+            if(null != $object){
                 if($object[0]->file_name == $fileName){
                     $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
                     $object[0]->gitlab_commit_date = $commitdata['date'];

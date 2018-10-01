@@ -71,7 +71,6 @@ class GitFunction
         else{
             $processOutput = $process->getOutput();
             $isAdded = true;
-            $this->commitFiles($this->basePath."/".$path, "Adding githooks", $user,$email);
         }
 
         return $isAdded;
@@ -400,6 +399,33 @@ class GitFunction
             $isPushed = true;
         }
         return $isPushed;
+    }
+
+    public function resetAdd($path,$files){
+        $isReset = false;
+        foreach($files as $file) {
+            //git reset -- main/*
+            $process = null;
+            if(is_dir($file)){
+                $process = new Process("git reset -- ".$file."/*",$this->basePath."/".$path);
+            }
+            else{
+                $process = new Process("git reset -- $file",$this->basePath."/".$path);
+            }
+
+            $process->setTimeout(3600);
+            $process->run();
+
+            // executes after the command finishes
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+            else{
+                $processOutput = $process->getOutput();
+                $isReset = true;
+            }
+        }
+        return $isReset;
     }
 
     public function pushFiles($path,$corpusid) {
