@@ -258,19 +258,19 @@ class CorpusController extends Controller
         if(strpos($corpusPath,"Untitled") === false){
             $corpusBasePath = $pathArray[0]."/".$pathArray[1];
             if(strpos($corpusPath,"CORPUS-DATA") !== false && strpos($corpusPath,"TEI-HEADERS") === false){
-                $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath);
-                $headerData = $this->GitRepoService->getCorpusFileInfo($this->flysystem,$corpusBasePath.'/TEI-HEADERS');
+                $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath,$corpus->id);
+                $headerData = $this->GitRepoService->getCorpusFileInfo($this->flysystem,$corpusBasePath.'/TEI-HEADERS',$corpus->id);
                 $folderType = "CORPUS-DATA";
 
             }
             else if(strpos($corpusPath,"TEI-HEADERS") !== false && strpos($corpusPath,"CORPUS-DATA") === false){
-                $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusBasePath.'/CORPUS-DATA');
-                $headerData = $this->GitRepoService->getCorpusFileInfo($this->flysystem,$corpusPath);
+                $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusBasePath.'/CORPUS-DATA',$corpus->id);
+                $headerData = $this->GitRepoService->getCorpusFileInfo($this->flysystem,$corpusPath,$corpus->id);
                 $folderType = "TEI-HEADERS";
             }
             else{
-                $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath.'/CORPUS-DATA');
-                $headerData = $this->GitRepoService->getCorpusFileInfo($this->flysystem,$corpusPath.'/TEI-HEADERS');
+                $corpusData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$corpusPath.'/CORPUS-DATA',$corpus->id);
+                $headerData = $this->GitRepoService->getCorpusFileInfo($this->flysystem,$corpusPath.'/TEI-HEADERS',$corpus->id);
             }
 
             $corpusDataFolder = substr($corpusData['path'],strrpos($corpusData['path'],"/")+1);
@@ -381,7 +381,7 @@ class CorpusController extends Controller
         $documentFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/document");
         $annotationFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/annotation");
 
-        $corpusFormatData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$path."/CORPUS-DATA");
+        $corpusFormatData = $this->GitRepoService->getCorpusDataFiles($this->flysystem,$path."/CORPUS-DATA",$corpus->id);
 
 
 

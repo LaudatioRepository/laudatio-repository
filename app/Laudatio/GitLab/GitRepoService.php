@@ -97,7 +97,7 @@ class GitRepoService implements GitRepoInterface
         return $corpusPath;
     }
 
-    public function commitStagedFiles($corpusPath) {
+    public function commitStagedFiles($corpusPath,$corpusId) {
         $this->addFilesToRepository($corpusPath,"TEI-HEADERS");
         $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$corpusPath);
         $this->commitFilesToRepository($this->basePath.'/'.$corpusPath,"Created initial corpus file structure for $normalizedCorpusName");
@@ -107,7 +107,7 @@ class GitRepoService implements GitRepoInterface
             if($dirArray[0] != "CORPUS-DATA"){
                 if(count($dirArray) > 1){
                     $fileName = $dirArray[2];
-                    $this->laudatioUtilsService->setVersionMapping($fileName,$dirArray[1],false);
+                    $this->laudatioUtilsService->setVersionMapping($fileName,$dirArray[1],false,$corpusId);
                 }
             }
         }
@@ -196,19 +196,19 @@ class GitRepoService implements GitRepoInterface
 
         $corpusBasePath = $pathArray[0]."/".$pathArray[1];
         if(strpos($corpusPath,"CORPUS-DATA") !== false && strpos($corpusPath,"TEI-HEADERS") === false){
-            $corpusData = $this->getCorpusDataFiles($flysystem,$corpusPath);
-            $headerData = $this->getCorpusFileInfo($flysystem,$corpusBasePath.'/TEI-HEADERS');
+            $corpusData = $this->getCorpusDataFiles($flysystem,$corpusPath,$corpusid);
+            $headerData = $this->getCorpusFileInfo($flysystem,$corpusBasePath.'/TEI-HEADERS',$corpusid);
             $folderType = "CORPUS-DATA";
 
         }
         else if(strpos($corpusPath,"TEI-HEADERS") !== false && strpos($corpusPath,"CORPUS-DATA") === false){
-            $corpusData = $this->getCorpusDataFiles($flysystem,$corpusBasePath.'/CORPUS-DATA');
-            $headerData = $this->getCorpusFileInfo($flysystem, $corpusPath);
+            $corpusData = $this->getCorpusDataFiles($flysystem,$corpusBasePath.'/CORPUS-DATA',$corpusid);
+            $headerData = $this->getCorpusFileInfo($flysystem, $corpusPath,$corpusid);
             $folderType = "TEI-HEADERS";
         }
         else{
-            $corpusData = $this->getCorpusDataFiles($flysystem,$corpusPath.'/CORPUS-DATA');
-            $headerData = $this->getCorpusFileInfo($flysystem,$corpusPath.'/TEI-HEADERS');
+            $corpusData = $this->getCorpusDataFiles($flysystem,$corpusPath.'/CORPUS-DATA',$corpusid);
+            $headerData = $this->getCorpusFileInfo($flysystem,$corpusPath.'/TEI-HEADERS',$corpusid);
         }
 
 
@@ -278,7 +278,7 @@ class GitRepoService implements GitRepoInterface
         return $headerData;
 
     }
-    public function getCorpusFileInfo($flysystem, $path = ""){
+    public function getCorpusFileInfo($flysystem, $path = "",$corpusId){
         $gitFunction = new GitFunction();
         $hasDir = false;
         $projects = array();
@@ -316,7 +316,7 @@ class GitRepoService implements GitRepoInterface
             }
 
 
-            $headerObject = $this->laudatioUtilsService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id],false);
+            $headerObject = $this->laudatioUtilsService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id],false,$corpusId);
             if(count($headerObject) > 0){
                 $projects[$i]['headerObject'] = $headerObject[0];
             }
@@ -374,7 +374,7 @@ class GitRepoService implements GitRepoInterface
         );
     }
 
-    public function getCorpusDataFiles($flysystem,$path = ""){
+    public function getCorpusDataFiles($flysystem,$path = "",$corpusId){
         $gitFunction = new GitFunction();
         $hasDir = false;
         $projects = array();
@@ -524,109 +524,51 @@ class GitRepoService implements GitRepoInterface
         return $gitFunction->resetAdd($path, $files);
     }
 
+    /**
+     * commitFiles by file path
+     * @param string $dirname
+     * @param $commitmessage
+     * @param $corpusid
+     * @param $user
+     * @param $email
+     * @return array|null
+     */
     public function commitFiles($dirname = "", $commitmessage, $corpusid, $user, $email){
-        $isHeader = false;
-        $isFile = false;
-
-        if(strpos($dirname,'TEI-HEADER') !== false){
-            $isHeader = true;
-        }
-        else if(strpos($dirname,'CORPUS-DATA') !== false) {
-            $isFile = true;
-        }
-
-
+        $commitDataArray = array();
         $gitFunction = new  GitFunction();
-        $patharray = explode("/",$dirname);
-        end($patharray);
-
-        $project = $patharray[0];
-        $corpus = $patharray[1];
-        $type = null;
-        if(count($patharray) > 2) {
-            $type = $patharray[2];
-        }
-
-
-        $last_id = key($patharray);
-
-        $object = null;
-        $returnPath = "";
-        $fileName = substr($dirname, strrpos($dirname,"/")+1);
         $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
 
-        if(is_dir($this->basePath.'/'.$dirname)){
-            $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$dirname);
-            $isCommited = $gitFunction->commitFiles($this->basePath."/".$dirname,$commitmessage,$user,$email);
-
+        $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$dirname);
+        Log::info("stagedFiles: ".print_r($stagedFiles,1));
+        foreach ($stagedFiles as $stagedFile){
+            $stagedfileArray = explode("/",$stagedFile);
+            Log::info("comitting: : ".print_r($this->basePath."/".$dirname,1)." FILE: ".$stagedfileArray[2]);
+            $isCommited = $gitFunction->commitFile($this->basePath."/".$dirname."/".$stagedfileArray[1],$stagedfileArray[2],$commitmessage,$user,$email);
             if($isCommited){
-                if($isHeader){
-                    foreach ($stagedFiles as $stagedFile){
-                        $dirArray = explode("/",trim($stagedFile));
-                        if(count($dirArray) >= 3){
-                            $fileName = $dirArray[2];
-
-                            if(is_dir($this->basePath.'/'.$dirname.'/'.$fileName)){
-                                $object = $this->laudatioUtilsService->getModelByFileName($fileName,$patharray[$last_id], true);
-                                if(count($object) > 0){
-                                    $this->laudatioUtilsService->setVersionMapping($fileName,$patharray[$last_id],true);
-                                    $fileName = $object[0]->directory_path;
-                                }
-                            }
-                            else{
-                                $object = $this->laudatioUtilsService->getModelByFileName($fileName,$patharray[$last_id], false);
-                                if(count($object) > 0){
-                                    $this->laudatioUtilsService->setVersionMapping($fileName,$patharray[$last_id],false);
-                                    $fileName = $object[0]->directory_path;
-                                }
-
-                            }
-                        }
-                    }
-
-                }
-                $returnPath = $dirname;
-            }
-        }
-        else{
-            $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$user,$email);
-            if($isCommited){
-                if($isHeader){
-                    $this->laudatioUtilsService->setVersionMapping($fileName,$patharray[($last_id-1)],false);
-                    $object = $this->laudatioUtilsService->getModelByFileName($fileName,$patharray[($last_id-1)], false);
-                }
-                else if($isFile) {
-                    $this->laudatioUtilsService->setVersionMapping($fileName,$type,false);
-                    $object = $this->laudatioUtilsService->getModelByFileName($fileName,$type, false);
-                }
-
-                $returnPath = $pathWithOutAddedFolder;
+                $commitData = $this->getCommitData($pathWithOutAddedFolder);
+                $commitDataArray[$stagedFile] = $commitData;
             }
         }
 
-        $commitdata = $this->getCommitData($pathWithOutAddedFolder);
-        if(is_dir($this->basePath.'/'.$dirname)){
-            if(null != $object){
-                if($object[0]->directory_path == $fileName){
-                    $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
-                    $object[0]->gitlab_commit_date = $commitdata['date'];
-                    $object[0]->gitlab_commit_description = $commitdata['message'];
-                    $object[0]->save();
-                }
-            }
-        }
-        else{
-            if(null != $object){
-                if($object[0]->file_name == $fileName){
-                    $object[0]->gitlab_commit_sha = $commitdata['sha_string'];
-                    $object[0]->gitlab_commit_date = $commitdata['date'];
-                    $object[0]->gitlab_commit_description = $commitdata['message'];
-                    $object[0]->save();
-                }
-            }
+        return $commitDataArray;
+    }
+
+
+    public function commitFile($dirname = "", $commitmessage, $corpusid, $user, $email){
+        $commitdata = null;
+
+        $gitFunction = new  GitFunction();
+
+
+        $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
+
+        $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$user,$email);
+
+        if($isCommited){
+            $commitdata = $this->getCommitData($pathWithOutAddedFolder);
         }
 
-        return $returnPath;
+        return $commitdata;
     }
 
     public function initiateRepository($path){

@@ -279,6 +279,27 @@ class GitFunction
         return $isCommitted;
     }
 
+    public function commitFile($path,$file, $commitmessage, $user, $email){
+        $isCommitted = false;
+
+        $process = new Process("git commit -m \"".$commitmessage." ".$file. " by ".$user." (".$email.") \" ".$file,$path);
+        $process->setTimeout(3600);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            if($this->isCommitted($commitmessage,$processOutput)){
+                $isCommitted = true;
+            }
+        }
+
+        return $isCommitted;
+    }
+
     public function setCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email, $blame) {
         $isTagged = false;
         $process = null;

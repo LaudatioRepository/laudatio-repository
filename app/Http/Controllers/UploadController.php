@@ -132,6 +132,7 @@ class UploadController extends Controller
             $currentFilePath = $corpus->directory_path;
         }
 
+        $gitFunction = new GitFunction();
         // Is the Corpus Header uploaded ? We know that if the Corpus has an Eloquent version set
         $corpusIsVersioned = $this->laudatioUtilsService->corpusIsVersioned($corpusId);
 
@@ -139,6 +140,7 @@ class UploadController extends Controller
             $corpusIndexName = $this->laudatioUtilsService->getElasticSearchIndexByCorpusId($corpusId);
             $documentIndexName = str_replace("corpus","document",$corpusIndexName);
             $annotationIndexName = str_replace("corpus","annotation",$corpusIndexName);
+            $headerId = "";
 
             //set variables and paths
             if($headerPath != 'corpus'){
@@ -146,9 +148,13 @@ class UploadController extends Controller
                 $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
 
                 if($headerPath == 'document') {
+                    //write to db
+                    $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId,$user->id,$fileName,false);
                     $filePath = $corpusProjectPath . '/' . $corpus->directory_path . '/TEI-HEADERS/document/' . $fileName;
                 }
                 else if($headerPath == 'annotation'){
+                    //write to db
+                    $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId,$user->id,$fileName,false);
                     $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/annotation/'.$fileName;
                 }
 
@@ -166,10 +172,11 @@ class UploadController extends Controller
             $isAdded = $this->GitRepoService->addFiles($addPath);
             //commit
             $isPushed = false;
+            $commitData = null;
 
             if($isAdded) {
-                $returnPath = $this->GitRepoService->commitFiles($commitPath."/".$fileName,"Adding files for ".$fileName,$corpusId,$user->name,$user->email);
-                if(!empty($returnPath)){
+                $commitData = $this->GitRepoService->commitFile($commitPath."/".$fileName,"Adding ".$fileName,$corpusId,$user->name,$user->email);
+                if(!empty($commitData)){
                     //push
                     $isPushed = $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);
                 }
@@ -177,8 +184,11 @@ class UploadController extends Controller
 
             if($isPushed){
                 if($headerPath == 'document') {
-                    //write to db
-                    $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId,$user->id,$fileName,false);
+                    if(null != $document && null != $commitData){
+                        $setData = $this->laudatioUtilsService->setCommitData(array($document),array($dirPath.'/'.$document->file_name => $commitData));
+                        $documentVersion = $this->laudatioUtilsService->setVersionMapping($document);
+                    }
+
                     //get elasticids
                     $documentParams = array();
 
@@ -209,8 +219,11 @@ class UploadController extends Controller
                     $this->laudatioUtilsService->emptyDocumentCacheByDocumentId($document->id);
                 }
                 else if($headerPath == 'annotation'){
-                    //write to db
-                    $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId,$user->id,$fileName,false);
+
+                    if(null != $annotation && null != $commitData){
+                        $setData = $this->laudatioUtilsService->setCommitData(array($dirPath.'/'.$annotation->file_name => $commitData),$corpusId);
+                        $annotationVersion = $this->laudatioUtilsService->setVersionMapping($annotation);
+                    }
 
                     //get elasticids
                     $annotationParams = array();
@@ -268,7 +281,6 @@ class UploadController extends Controller
         }
         else {
             //the corpus header is not yet uploaded
-            $gitFunction = new GitFunction();
             $directoryPath = $this->laudatioUtilsService->getDirectoryPath(array($fileName),$fileName);
 
             //upload
@@ -390,7 +402,8 @@ class UploadController extends Controller
             else{
                 $filePath = $updatedCorpusPath.'/TEI-HEADERS/corpus/'.$fileName;
                 $addPath = $updatedCorpusPath.'/TEI-HEADERS/';
-                $initialCommitPath = $updatedCorpusPath.'/TEI-HEADERS/';
+                $initialCommitPath = $updatedCorpusPath;
+                $corpusCommitpath = $updatedCorpusPath.'/TEI-HEADERS/';
                 $initialPushPath = $updatedCorpusPath;
             }
 
@@ -406,8 +419,9 @@ class UploadController extends Controller
 
                 if($isReset) {
                     Log::info("isReset: ".print_r($isReset,1));
-                    $hookReturnPath = $this->GitRepoService->commitFiles($initialCommitPath, "Adding githooks",$corpusId, $user->name, $user->email);
-                    Log::info("INTITALCOMMIT: ".print_r($hookReturnPath,1));
+                    Log::info("comitting to: ".print_r($initialCommitPath,1));
+                    $hookCommitdata = $this->GitRepoService->commitFile($initialCommitPath.'/githooks', "Adding githooks",$corpusId, $user->name, $user->email);
+                    Log::info("INTITALCOMMIT: ".print_r($hookCommitdata,1));
                     $isInitiallyPushed = $this->GitRepoService->initialPush($initialPushPath,$user);
 
                     if($isInitiallyPushed) {
@@ -420,9 +434,12 @@ class UploadController extends Controller
                         $isAdded = $this->GitRepoService->addFiles($addPath);
                         if($isAdded) {
                             Log::info("ISADDEDAGAIN: ".print_r($isAdded,1));
-                            $returnPath = $this->GitRepoService->commitFiles($initialCommitPath . "/" . $fileName, "Adding files for " . $fileName, $corpusId, $user->name, $user->email);
-                            if(!empty($returnPath)){
-                                Log::info("ISCOMMITTED: ".print_r($returnPath,1));
+                            Log::info("COMMITING IT ALL AGAIN: ".$initialCommitPath);
+                            $corpusCommitdata = $this->GitRepoService->commitFiles($corpusCommitpath, "Adding files for ", $corpusId, $user->name, $user->email);
+                            if(!empty($corpusCommitdata)){
+                                Log::info("ISCOMMITTED: ".print_r($corpusCommitdata,1));
+                                $setData = $this->laudatioUtilsService->setCommitData($corpusCommitdata,$corpusId);
+
                                 $isPushed = $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);
 
                                 if($isPushed) {

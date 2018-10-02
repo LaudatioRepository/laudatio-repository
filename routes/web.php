@@ -12,7 +12,7 @@ Route::get('/admin', ['as' => 'admin', 'uses' => 'AdminController@index']);
 Route::get('/published/{perPage?}/{sortKriterium?}', ['as' => 'browse', 'uses' => 'BrowseController@index']);
 Route::get('/publish', ['as' => 'publish', 'uses' => 'IndexController@publish']);
 Route::get('/schema/{path?}',[ 'as' => 'gitRepo.route.schema', 'uses' => 'GitRepoController@listSchema'])->where('path', '.+')->middleware('auth');
-Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
+
 
 
 
@@ -104,6 +104,10 @@ Route::get('/admin/gitlabgroups/{groupId}', ['as' => 'admin.gitlab.getGroups', '
 Route::get('/admin/gitlabgroups/create',[ 'as' => 'admin.gitlab.createGroup.', 'uses' => 'CorpusController@createGitLabGroup'])->middleware('auth');
 /** END GITLAB **/
 
+
+/** SEARCH **/
+Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
+/** END SEARCH **/
 
 
 Route::get('/validatetei/{dirname}',['as' => 'gitRepo.validatetei.get', 'uses' => 'ValidateTEIController@validateFiles'])->where('dirname', '.+')->middleware('auth');

@@ -347,7 +347,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
 
         $document = null;
-        $documentObject = $this->getModelByFileName($fileName,'document',$isDir);
+        $documentObject = $this->getModelByFileAndCorpus($fileName,'document',$isDir,$corpusId);
         $corpus = Corpus::find($corpusId);
 
         if(count($documentObject) > 0){
@@ -421,6 +421,60 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         }//end foreach
 
         return $document;
+    }
+
+    /**
+     * setCommitData
+     *
+     * @param $commitData
+     * @param $corpusId
+     * @return bool
+     */
+    public function setCommitData($commitData,$corpusId) {
+        $setData = true;
+
+        try {
+            foreach ($commitData as $path => $data) {
+                $pathArray = explode("/",$path);
+
+                if(strrpos($path,"corpus") !== false) {
+                    $fileName = $pathArray[2];
+                    $object = $this->getModelByFileAndCorpus($fileName, "corpus", false, $corpusId);
+                }
+                else if(strrpos($path,"document") !== false) {
+                    $fileName = $pathArray[2];
+                    $object = $this->getModelByFileAndCorpus($fileName, "document", false, $corpusId);
+                }
+                else if(strrpos($path,"annotation") !== false) {
+                    $fileName = $pathArray[2];
+                    $object = $this->getModelByFileAndCorpus($fileName, "annotation", false, $corpusId);
+                }
+                else if(strrpos($path,"CORPUS-DATA") !== false) {
+                    $fileName = $pathArray[1];
+                    $object = $this->getModelByFileName($fileName,"CORPUS-DATA",false,$corpusId);
+                }
+
+                $params = array(
+                    "gitlab_commit_sha" => $data['sha_string'],
+                    "gitlab_commit_date" => $data['date'],
+                    "gitlab_commit_description" => $data['date'],
+                );
+                /*
+                $object->gitlab_commit_sha = $data['sha_string'];
+                $object->gitlab_commit_date = $data['message'];
+                $object->gitlab_commit_description = $data['message'];
+                */
+                $object->update($params);
+            }
+        }
+        catch (\Exception $e) {
+            $setData = false;
+            Log::info("setCommitData: error: ".$e->getMessage());
+        }
+
+
+
+        return $setData;
     }
 
     public function updateDocumentAttributes($params,$documentId){
@@ -634,15 +688,61 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     /**
      * Set the version mapping for each version of a header
+     * @param $object
+     * @return mixed
+     */
+    public function setVersionMapping($object){
+
+        if(count($object) > 0){
+            if(null != $object->vid){
+                $object->vid++;
+            }
+            else{
+                $object->vid = 1;
+            }
+
+
+            $object->save();
+
+            $id_vid = DB::table('versions')->select('id', 'vid')->where([
+                    ['id','=',$object->id],
+                    ['type','=',$type],
+                ]
+            )->get();
+
+            if(count($id_vid) > 0){
+                DB::table('versions')->where('id',$object->id)->update(
+                    ['vid' => $object->vid]
+                );
+            }
+            else{
+                DB::table('versions')->insert(
+                    [
+                        'id' => $object->id,
+                        'vid' => $object->vid,
+                        'type' => $type
+                    ]
+                );
+            }
+        }
+
+        return $object->vid;
+
+    }
+
+
+    /**
+     * Set the version mapping for each version of a header
      *
      * @param $fileName
      * @param $type
+     * @param $isDir
+     * @param $corpusid
+     * @return mixed
      */
-    public function setVersionMapping($fileName,$type, $isDir){
-        Log::info("setVersionMapping: ".$fileName." TYPE: ".$type." ISDIR: ".$isDir);
-        $object = $this->getModelByFileName($fileName,$type, $isDir);
+    public function setVersionMapping_old($fileName,$type, $isDir,$corpusid){
+        $object = $this->getModelByFileAndCorpus($fileName,$type, $isDir,$corpusid);
 
-        Log::info("getModelByFileName: ".print_r($object,1));
         if(count($object) > 0){
             if(null != $object[0]->vid){
                 $object[0]->vid++;
@@ -676,8 +776,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             }
         }
 
-    }
+        return $object[0]->vid;
 
+    }
 
     public function getModelByType($id,$type){
         $object = null;
@@ -702,30 +803,34 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @return mixed
      * @todo: This is very brittle, we need some kind of GUID, and to add at least the corpus id to avoid ambiguity
      */
-    public function getModelByFileName($fileName, $type, $isDir){
+    public function getModelByFileName($fileName, $type, $isDir,$corpusId){
         $object = null;
         switch ($type){
             case 'corpus':
                 if($isDir){
                     $object = Corpus::where([
-                        ['directory_path', '=',$fileName]
+                        ['directory_path', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
                     ])->get();
                 }
                 else{
                     $object = Corpus::where([
-                        ['file_name', '=',$fileName]
+                        ['file_name', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
                     ])->get();
                 }
                 break;
             case 'document':
                 if($isDir){
                     $object = Document::where([
-                        ['directory_path', '=',$fileName]
+                        ['directory_path', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
                     ])->get();
                 }
                 else{
                     $object = Document::where([
-                        ['file_name', '=',$fileName]
+                        ['file_name', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
                     ])->get();
                 }
 
@@ -733,24 +838,26 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             case 'annotation':
                 if($isDir){
                     $object = Annotation::where([
-                        ['directory_path', '=',$fileName]
+                        ['directory_path', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
                     ])->get();
                 }
                 else{
                     $object = Annotation::where([
-                        ['file_name', '=',$fileName]
+                        ['file_name', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
                     ])->get();
                 }
 
                 break;
             case 'CORPUS-DATA':
                 $object = CorpusFile::where([
-                    ['file_name', '=',$fileName]
+                    ['file_name', '=',$fileName],
+                    ['corpus_id', '=',$corpusId]
                 ])->get();
-                Log::info("NOOBJEKTTT:? : ".print_r($object,1));
                 break;
         }
-        return $object;
+        return $object[0];
     }
 
     /**
@@ -766,12 +873,14 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             case 'corpus':
                 if($isDir){
                     $object = Corpus::where([
-                        ['directory_path', '=',$fileName]
+                        ['directory_path', '=',$fileName],
+                        ['id', '=',$corpusId]
                     ])->get();
                 }
                 else{
                     $object = Corpus::where([
-                        ['file_name', '=',$fileName]
+                        ['file_name', '=',$fileName],
+                        ['id', '=',$corpusId]
                     ])->get();
                 }
                 break;
@@ -798,6 +907,8 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                     ])->get();
                 }
                 else{
+                    $fileName = substr($fileName,strrpos($fileName,".")-1);
+
                     $object = Annotation::where([
                         ['file_name', '=',$fileName],
                         ['corpus_id', '=',$corpusId]
@@ -806,7 +917,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
                 break;
         }
-        return $object;
+        return $object[0];
     }
 
     public function getElasticSearchIdByCorpusId($corpusid,$corpus_index)
