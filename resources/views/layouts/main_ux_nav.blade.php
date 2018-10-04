@@ -14,7 +14,7 @@
                     <a class="nav-link headerlink published px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('browse') }}">Published Corpora</a>
                 </li>
                 <li class="nav-item headerlink  text-14 font-weight-bold ">
-                    <a class="nav-link headerlink  search  px-5 pt-4 pb-3 text-dark text-uppercase" href="#">Search</a>
+                    <a class="nav-link headerlink  search  px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('search') }}">Search</a>
                 </li>
                 <li class="nav-item headerlink  text-14 font-weight-bold ">
                     <a class="nav-link headerlink corpusprojects  px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('corpusProject.index') }}">Publish</a>

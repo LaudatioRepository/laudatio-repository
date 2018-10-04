@@ -43,6 +43,27 @@ Route::group(array('prefix' => 'searchapi'), function() {
     Route::post('truncateIndex','ElasticController@truncateIndex');
 });
 
+Route::group(array('prefix' => 'corpusapi'), function() {
+    Route::get('corpusprojects','ApiController@getCorpusProjects');
+    Route::get('corpusprojects/{id}','ApiController@getCorpusProject');
+    Route::get('corpusprojects/{id}/corpuses','ApiController@getCorporaByCorpusproject');
+
+    Route::get('corpuses','ApiController@getCorpora');
+    Route::get('corpuses/{id}','ApiController@getCorpus');
+    Route::get('corpuses/{id}/documents','ApiController@getDocumentsByCorpus');
+    Route::get('corpuses/{id}/annotations','ApiController@getAnnotationsByCorpus');
+
+    Route::get('documents','ApiController@getDocuments');
+    Route::get('documents/{id}','ApiController@getDocument');
+    Route::get('documents/{id}/annotations','ApiController@getAnnotationsByDocument');
+
+    Route::get('annotations','ApiController@getDocuments');
+    Route::get('annotations/{id}','ApiController@getDocument');
+    Route::get('annotations/{id}/documents','ApiController@getDocumentsByAnnotation');
+});
+
+
+
 Route::group(array('prefix' => 'adminapi'), function() {
     Route::post('userroles','RoleController@storeRelations');
     Route::post('userrolesbyproject','CorpusProjectController@storeRelationsByProject');

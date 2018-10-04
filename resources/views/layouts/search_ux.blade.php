@@ -23,7 +23,7 @@
 </div>
 <script src="{{ asset('js/vendorscripts.js') }}"></script>
 <script src="{{ asset('js/scripts.js') }}"></script>
-<script src="{{ asset('js/searchjq.js') }}"></script>
+<script src="{{ asset('js/searchapp.js') }}"></script>
 </body>
 
 </html>
