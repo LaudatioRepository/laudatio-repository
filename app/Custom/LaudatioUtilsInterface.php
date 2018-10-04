@@ -43,7 +43,7 @@ interface LaudatioUtilsInterface
     public function deleteModel($type,$id);
     public function updateDirectoryPaths($directory_path,$corpusId);
     public function setVersionMapping_old($filename, $type,$isDir,$corpusid);
-    public function setVersionMapping($object);
+    public function setVersionMapping($object, $type);
     public function setCommitData($commitData,$corpusId);
 
     public function getDirectoryPath($paths,$fileName);

@@ -412,38 +412,38 @@ class UploadController extends Controller
 
             if($pushCorpusStructure && !empty($initialPushPath) && $remoteRepoUrl){
                 $addRemote = $this->GitRepoService->addRemote($remoteRepoUrl,$initialPushPath);
-                Log::info("addRemote: ".print_r($addRemote,1));
+                //Log::info("addRemote: ".print_r($addRemote,1));
                 $hooksAdded = $this->GitRepoService->addHooks($initialPushPath, $user->name, $user->email);
-                Log::info("hooksAdded: ".print_r($hooksAdded,1));
+                //Log::info("hooksAdded: ".print_r($hooksAdded,1));
                 $isReset = $this->GitRepoService->resetAdd($initialPushPath,array("TEI-HEADERS"));
 
                 if($isReset) {
-                    Log::info("isReset: ".print_r($isReset,1));
-                    Log::info("comitting to: ".print_r($initialCommitPath,1));
+                    //Log::info("isReset: ".print_r($isReset,1));
+                    //Log::info("comitting to: ".print_r($initialCommitPath,1));
                     $hookCommitdata = $this->GitRepoService->commitFile($initialCommitPath.'/githooks', "Adding githooks",$corpusId, $user->name, $user->email);
-                    Log::info("INTITALCOMMIT: ".print_r($hookCommitdata,1));
+                    //Log::info("INTITALCOMMIT: ".print_r($hookCommitdata,1));
                     $isInitiallyPushed = $this->GitRepoService->initialPush($initialPushPath,$user);
 
                     if($isInitiallyPushed) {
-                        Log::info("INITIALLYPUSHED: ".print_r($isInitiallyPushed,1));
+                        //Log::info("INITIALLYPUSHED: ".print_r($isInitiallyPushed,1));
                         $tag = $this->GitRepoService->setCorpusVersionTag($initialPushPath,'{\"corpusIndex\":\"'.$corpusIndexName.'\",\"documentIndex\":\"'.$documentIndexName.'\",\"annotationIndex\":\"'.$annotationIndexName.'\",\"guidelineIndex\":\"'.$guidelineIndexName.'\",\"corpusid\": \"'.$corpusId.'\", \"username\": \"'.$user->name.'\", \"useremail\": \"'.$user->email.'\" }',0.0,$user->name,$user->email, false);
-                        Log::info("SET GIT TAG: ".print_r($tag,1));
+                        //Log::info("SET GIT TAG: ".print_r($tag,1));
                         $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
 
                         //add files
                         $isAdded = $this->GitRepoService->addFiles($addPath);
                         if($isAdded) {
-                            Log::info("ISADDEDAGAIN: ".print_r($isAdded,1));
-                            Log::info("COMMITING IT ALL AGAIN: ".$initialCommitPath);
+                            //Log::info("ISADDEDAGAIN: ".print_r($isAdded,1));
+                            //Log::info("COMMITING IT ALL AGAIN: ".$initialCommitPath);
                             $corpusCommitdata = $this->GitRepoService->commitFiles($corpusCommitpath, "Adding files for ", $corpusId, $user->name, $user->email);
                             if(!empty($corpusCommitdata)){
-                                Log::info("ISCOMMITTED: ".print_r($corpusCommitdata,1));
+                                ////Log::info("ISCOMMITTED: ".print_r($corpusCommitdata,1));
                                 $setData = $this->laudatioUtilsService->setCommitData($corpusCommitdata,$corpusId);
-
+                                //Log::info("COMMITDATA SET: : ".print_r($setData,1));
                                 $isPushed = $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);
 
                                 if($isPushed) {
-                                    Log::info("ISPUSHED: ".print_r($isPushed,1));
+                                    //Log::info("ISPUSHED: ".print_r($isPushed,1));
                                     $params = array(
                                         'elasticsearch_index' => $corpusIndexName,
                                         'guidelines_elasticsearch_index' => $guidelineIndexName,
@@ -522,7 +522,7 @@ class UploadController extends Controller
                                         $documentToBeUpdated->directory_path = $updatedCorpusPath;
                                         $documentToBeUpdated->save();
                                     }
-                                    Log::info("ALL DB UPDTAES TO DOCUS AND ANNOS DONE: ");
+                                    //Log::info("ALL DB UPDTAES TO DOCUS AND ANNOS DONE: ");
                                 }//end if pushed
                             }//end if returnpath
 

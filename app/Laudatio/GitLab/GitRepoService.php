@@ -278,7 +278,7 @@ class GitRepoService implements GitRepoInterface
         return $headerData;
 
     }
-    public function getCorpusFileInfo($flysystem, $path = "",$corpusId){
+        public function getCorpusFileInfo($flysystem, $path = "",$corpusId){
         $gitFunction = new GitFunction();
         $hasDir = false;
         $projects = array();
