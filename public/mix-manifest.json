@@ -2,6 +2,7 @@
     "/js/browseapp.js": "/js/browseapp.js",
     "/js/searchapp.js": "/js/searchapp.js",
     "/css/laudatio.css": "/css/laudatio.css",
+    "/css/nouislider.min.css": "/css/nouislider.min.css",
     "/css/browseapp.css": "/css/browseapp.css",
     "/js/jq.js": "/js/jq.js"
 }

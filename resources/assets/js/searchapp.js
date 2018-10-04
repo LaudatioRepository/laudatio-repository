@@ -20,6 +20,7 @@ import { connect } from 'vuex-connect'
 
 Vue.component('searchfilterwrapper', require('./components/SearchFilterWrapper.vue'));
 Vue.component('searchresultwrapper', require('./components/SearchResultWrapper.vue'));
+
 Vue.component('activefilter', require('./components/ActiveFilter.vue'));
 Vue.component('corpusfilter', require('./components/CorpusFilter.vue'));
 Vue.component('documentfilter', require('./components/DocumentFilter.vue'));

@@ -895,50 +895,7 @@ if(previewNode) {
         toggleUploadStatus();
     });
 }
-var rangeSliderList = ['corpusSize','documentSize']
 
-for(var h = 0; h < rangeSliderList.length; h++) {
-    let i = h
-
-    let el = document.getElementById(rangeSliderList[i])
-    if(el) {
-        el.style.height = '8px';
-        el.style.margin = '0 auto 8px';
-
-        noUiSlider.create(el, {
-            animate: true,
-            start: [ 1, 999999 ], // 4 handles, starting at...
-            margin: 1, // Handles must be at least 300 apart
-            limit: 999998, // ... but no more than 600
-            connect: true, // Display a colored bar between the handles
-            orientation: 'horizontal', // Orient the slider vertically
-            behaviour: 'tap-drag', // Move handle on tap, bar is draggable
-            step: 1,
-
-            range: {
-                'min': 1,
-                'max': 999999
-            },
-        });
-
-        let paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
-            paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
-
-        el.noUiSlider.on('update', function ( values, handle ) {
-            if ( handle ) {
-                paddingMax.innerHTML = Math.round(values[handle]);
-            } else {
-                paddingMin.innerHTML = Math.round(values[handle]);
-            }
-        });
-
-        el.noUiSlider.on('change', function(){
-            // Validate corresponding form
-            let parentForm = $(el).closest('form')
-            $(parentForm).find('*[type=submit]').removeClass('disabled');
-        });
-    }
-}
 $('#toTop').on("click", function(event) {
     event.preventDefault();
     $("html, body").animate(
