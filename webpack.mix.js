@@ -38,6 +38,7 @@ mix.webpackConfig({
 mix.autoload({
     //'jquery': ['$', 'window.jQuery', "jQuery", "window.$", "jquery", "window.jquery"],
     'popper.js/dist/umd/popper.js': ['Popper', 'window.Popper'],
+    'nouislider/distribute/nouislider.js': ['noUiSlider', 'window.noUiSlider'],
     //'dropzone/dist/dropzone.js': ['Dropzone', 'window.Dropzone'],
 });
 

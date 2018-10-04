@@ -26675,7 +26675,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     methods: {
         emitCorpusData: function emitCorpusData() {
-
             this.$emit('corpus-search', this.corpusSearchData);
         }
     },
