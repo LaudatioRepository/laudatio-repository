@@ -107,7 +107,7 @@ class UploadController extends Controller
         //GIT
         $addPath = "";
         $commitPath = "";
-        $pushPath = "";
+        $pushPath = $corpusProjectPath.'/'.$corpusPath;
         $initialPushPath = "";
         $gitLabId = "";
         $gitLabTagName = "";
@@ -126,6 +126,7 @@ class UploadController extends Controller
         $corpusIsVersioned = false;
         $canUpload = true;
         $pushCorpusStructure = false;
+
 
         if (isset($request->corpusid)) {
             $corpus = Corpus::find($corpusId);
@@ -146,16 +147,19 @@ class UploadController extends Controller
             if($headerPath != 'corpus'){
                 $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
                 $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/'.$dirPathArray[$last_id];
+                $commitDataPath = "";
 
                 if($headerPath == 'document') {
                     //write to db
                     $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId,$user->id,$fileName,false);
                     $filePath = $corpusProjectPath . '/' . $corpus->directory_path . '/TEI-HEADERS/document/' . $fileName;
+                    $commitDataPath = 'TEI-HEADERS/document/'.$fileName;
                 }
                 else if($headerPath == 'annotation'){
                     //write to db
                     $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId,$user->id,$fileName,false);
                     $filePath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/annotation/'.$fileName;
+                    $commitDataPath = 'TEI-HEADERS/annotation/'.$fileName;
                 }
 
             }
@@ -163,6 +167,7 @@ class UploadController extends Controller
                 $filePath = $corpusProjectPath."/".$corpus->directory_path.'/TEI-HEADERS/corpus/'.$fileName;
                 $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/';
                 $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/'.$fileName;
+                $commitDataPath = 'TEI-HEADERS/corpus/'.$fileName;
             }
 
             //upload
@@ -176,6 +181,7 @@ class UploadController extends Controller
 
             if($isAdded) {
                 $commitData = $this->GitRepoService->commitFile($commitPath."/".$fileName,"Adding ".$fileName,$corpusId,$user->name,$user->email);
+
                 if(!empty($commitData)){
                     //push
                     $isPushed = $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);
@@ -185,8 +191,7 @@ class UploadController extends Controller
             if($isPushed){
                 if($headerPath == 'document') {
                     if(null != $document && null != $commitData){
-                        $setData = $this->laudatioUtilsService->setCommitData(array($document),array($dirPath.'/'.$document->file_name => $commitData));
-                        $documentVersion = $this->laudatioUtilsService->setVersionMapping($document);
+                        $setData = $this->laudatioUtilsService->setCommitData(array($commitDataPath => $commitData),$corpusId);
                     }
 
                     //get elasticids
@@ -221,8 +226,7 @@ class UploadController extends Controller
                 else if($headerPath == 'annotation'){
 
                     if(null != $annotation && null != $commitData){
-                        $setData = $this->laudatioUtilsService->setCommitData(array($dirPath.'/'.$annotation->file_name => $commitData),$corpusId);
-                        $annotationVersion = $this->laudatioUtilsService->setVersionMapping($annotation);
+                        $setData = $this->laudatioUtilsService->setCommitData(array($commitDataPath => $commitData),$corpusId);
                     }
 
                     //get elasticids
@@ -239,8 +243,10 @@ class UploadController extends Controller
 
                     $annotationParams[$annotation->id] = $idParams;
 
-                    if(!isset($corpus->id)){
+                    if(isset($corpus->id)){
+                        Log::info("annotationParams: ".print_r($annotationParams,1));
                         $elasticIds = $this->elasticService->getElasticIdByObjectId($annotationIndexName,$annotationParams);
+                        Log::info("elasticIds: ".print_r($elasticIds,1));
                         foreach ($elasticIds as $annotationId => $elasticId){
                             $annotation->elasticsearch_id = $elasticIds[$annotationId]['elasticsearchid'];
                             $annotation->elasticsearch_index = $elasticIds[$annotationId]['elasticsearchindex'];
