@@ -18,24 +18,24 @@ import { connect } from 'vuex-connect'
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('searchwrapper_corpus', require('./components/SearchWrapperCorpus.vue'));
-Vue.component('searchwrapper_document', require('./components/SearchWrapperDocument.vue'));
-Vue.component('searchwrapper_annotation', require('./components/SearchWrapperAnnotation.vue'));
+Vue.component('searchwrapper_corpus', require('./components/old/SearchWrapperCorpus.vue'));
+Vue.component('searchwrapper_document', require('./components/old/SearchWrapperDocument.vue'));
+Vue.component('searchwrapper_annotation', require('./components/old/SearchWrapperAnnotation.vue'));
 
-Vue.component('searchpanel_general', require('./components/SearchPanelGeneral.vue'));
-Vue.component('searchpanel_corpus', require('./components/SearchBoxPanelCorpus.vue'));
-Vue.component('searchpanel_document', require('./components/SearchBoxPanelDocument.vue'));
-Vue.component('searchpanel_annotation', require('./components/SearchBoxPanelAnnotation.vue'));
+Vue.component('searchpanel_general', require('./components/old/SearchPanelGeneral.vue'));
+Vue.component('searchpanel_corpus', require('./components/old/SearchBoxPanelCorpus.vue'));
+Vue.component('searchpanel_document', require('./components/old/SearchBoxPanelDocument.vue'));
+Vue.component('searchpanel_annotation', require('./components/old/SearchBoxPanelAnnotation.vue'));
 
 
-Vue.component('searchresultpanel_corpus', require('./components/SearchResultPanelCorpus.vue'));
-Vue.component('searchresultheader_corpus', require('./components/SearchResultHeaderCorpus.vue'));
+Vue.component('searchresultpanel_corpus', require('./components/old/SearchResultPanelCorpus.vue'));
+Vue.component('searchresultheader_corpus', require('./components/old/SearchResultHeaderCorpus.vue'));
 
-Vue.component('searchresultpanel_document', require('./components/SearchResultPanelDocument.vue'));
-Vue.component('searchresultheader_document', require('./components/SearchResultHeaderDocument.vue'));
+Vue.component('searchresultpanel_document', require('./components/old/SearchResultPanelDocument.vue'));
+Vue.component('searchresultheader_document', require('./components/old/SearchResultHeaderDocument.vue'));
 
-Vue.component('searchresultpanel_annotation', require('./components/SearchResultPanelAnnotation.vue'));
-Vue.component('searchresultheader_annotation', require('./components/SearchResultHeaderAnnotation.vue'));
+Vue.component('searchresultpanel_annotation', require('./components/old/SearchResultPanelAnnotation.vue'));
+Vue.component('searchresultheader_annotation', require('./components/old/SearchResultHeaderAnnotation.vue'));
 
 
 window.axios.defaults.headers.post['Content-Type'] = 'application/json';

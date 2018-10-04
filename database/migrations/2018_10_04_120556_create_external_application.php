@@ -16,6 +16,7 @@ class CreateExternalApplication extends Migration
         Schema::create('external_applications', function (Blueprint $table) {
             $table->increments('id');
             $table->string('corpus_id')->nullable();
+            $table->string('application_name')->nullable();
             $table->string('application_url')->nullable();
             $table->timestamps();
         });
