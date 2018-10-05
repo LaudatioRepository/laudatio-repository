@@ -246,9 +246,7 @@ class UploadController extends Controller
                     $annotationParams[$annotation->id] = $idParams;
 
                     if(isset($corpus->id)){
-                        Log::info("annotationParams: ".print_r($annotationParams,1));
                         $elasticIds = $this->elasticService->getElasticIdByObjectId($annotationIndexName,$annotationParams);
-                        Log::info("elasticIds: ".print_r($elasticIds,1));
                         foreach ($elasticIds as $annotationId => $elasticId){
                             $annotation->elasticsearch_id = $elasticIds[$annotationId]['elasticsearchid'];
                             $annotation->elasticsearch_index = $elasticIds[$annotationId]['elasticsearchindex'];
@@ -290,10 +288,10 @@ class UploadController extends Controller
         else {
             //the corpus header is not yet uploaded
             $directoryPath = $this->laudatioUtilsService->getDirectoryPath(array($fileName),$fileName);
-            Log::info("going to upload corpusheader: ".print_r($directoryPath,1));
+
             //upload
             $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
-            Log::info("createdPaths: ".print_r($createdPaths,1));
+
             //parse
             if($headerPath == 'corpus'){
                 $now = time();
@@ -301,9 +299,8 @@ class UploadController extends Controller
 
                 //read data
                 $corpusIsVersioned = $this->laudatioUtilsService->corpusIsVersioned($corpusId);
-                //Log::info("jsonPath: ".print_r($jsonPath,1));
                 $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
-                Log::info("corpusTitle: ".print_r($corpusTitle,1));
+
                 $corpusDescription = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
                 $corpusPublicationVersions = $jsonPath->find('$.TEI.teiHeader.revisionDesc.change.n')->data();
 
@@ -311,11 +308,9 @@ class UploadController extends Controller
                     $corpusPublicationVersions = $jsonPath->find('$.TEI.teiHeader.revisionDesc.change[*].n')->data();
                 }
                 $corpusPublicationVersion = max(array_values($corpusPublicationVersions));
-                Log::info("corpusTitle: ".print_r($corpusTitle,1));
+
                 if(!empty($corpusTitle[0])){
                     $updatedCorpusPath = $this->GitRepoService->updateCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus->directory_path,$corpusTitle[0]);
-                    Log::info("updatedCorpusPath: ".print_r($updatedCorpusPath,1));
-
 
                     if(!empty($updatedCorpusPath)){
                         $gitLabCorpusPath = substr($updatedCorpusPath,strrpos($updatedCorpusPath,"/")+1);
@@ -373,22 +368,18 @@ class UploadController extends Controller
                                     'guidelines_elasticsearch_index' => $guidelineIndexName,
                                     'file_name' => $fileName
                                 );
-                                Log::info("gitLabResponse: ".print_r($gitLabResponse,1));
+
                                 $corpus = $this->laudatioUtilsService->setCorpusAttributes($json,$params);
-                                Log::info("UPDATED CORPUS: : ".print_r($corpus,1));
+
                                 $pushCorpusStructure = true;
                                 $pushPath = $corpusProjectPath.'/'.$corpus->directory_path;
 
                                 // create git corpus project
                                 $this->laudatioUtilsService->updateDirectoryPaths($gitLabCorpusPath,$corpusId);
-                                Log::info("UPDATED DIRECTORTYPATHS: : ".print_r($gitLabCorpusPath,1)." ".print_r($corpusId,1));
                             }//end if gitlabResponse
 
                         }//end if creation of new indexes
                     }//end updatedcorpusPath
-
-
-
                 }//end if corpustitle
 
 
@@ -427,16 +418,11 @@ class UploadController extends Controller
 
             if($pushCorpusStructure && !empty($initialPushPath) && $remoteRepoUrl){
                 $addRemote = $this->GitRepoService->addRemote($remoteRepoUrl,$initialPushPath);
-                //Log::info("addRemote: ".print_r($addRemote,1));
                 $hooksAdded = $this->GitRepoService->addHooks($initialPushPath, $user->name, $user->email);
-                //Log::info("hooksAdded: ".print_r($hooksAdded,1));
                 $isReset = $this->GitRepoService->resetAdd($initialPushPath,array("TEI-HEADERS"));
 
                 if($isReset) {
-                    //Log::info("isReset: ".print_r($isReset,1));
-                    //Log::info("comitting to: ".print_r($initialCommitPath,1));
                     $hookCommitdata = $this->GitRepoService->commitFile($initialCommitPath.'/githooks', "Adding githooks",$corpusId, $user->name, $user->email);
-                    //Log::info("INTITALCOMMIT: ".print_r($hookCommitdata,1));
                     $isInitiallyPushed = $this->GitRepoService->initialPush($initialPushPath,$user);
 
                     if($isInitiallyPushed) {
@@ -459,17 +445,12 @@ class UploadController extends Controller
                         //add files
                         $isAdded = $this->GitRepoService->addFiles($addPath);
                         if($isAdded) {
-                            //Log::info("ISADDEDAGAIN: ".print_r($isAdded,1));
-                            //Log::info("COMMITING IT ALL AGAIN: ".$initialCommitPath);
                             $corpusCommitdata = $this->GitRepoService->commitFiles($corpusCommitpath, "Adding files for ", $corpusId, $user->name, $user->email);
                             if(!empty($corpusCommitdata)){
-                                ////Log::info("ISCOMMITTED: ".print_r($corpusCommitdata,1));
                                 $setData = $this->laudatioUtilsService->setCommitData($corpusCommitdata,$corpusId);
-                                //Log::info("COMMITDATA SET: : ".print_r($setData,1));
                                 $isPushed = $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);
 
                                 if($isPushed) {
-                                    //Log::info("ISPUSHED: ".print_r($isPushed,1));
                                     $params = array(
                                         'elasticsearch_index' => $corpusIndexName,
                                         'guidelines_elasticsearch_index' => $guidelineIndexName,
@@ -535,6 +516,7 @@ class UploadController extends Controller
                                         $annotationToBeUpdated->elasticsearch_index = $annotationElasticIds[$annotationId]['elasticsearchindex'];
                                         $annotationToBeUpdated->directory_path = $updatedCorpusPath;
                                         $annotationToBeUpdated->save();
+                                        $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationId($annotationToBeUpdated->id);
                                     }
 
 
@@ -547,8 +529,13 @@ class UploadController extends Controller
                                         $documentToBeUpdated->elasticsearch_index = $documentElasticIds[$documentId]['elasticsearchindex'];
                                         $documentToBeUpdated->directory_path = $updatedCorpusPath;
                                         $documentToBeUpdated->save();
+                                        $this->laudatioUtilsService->emptyDocumentCacheByDocumentId($documentToBeUpdated->id);
                                     }
-                                    //Log::info("ALL DB UPDTAES TO DOCUS AND ANNOS DONE: ");
+
+                                    $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id);
+                                    $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id);
+
+
                                 }//end if pushed
                             }//end if returnpath
 
