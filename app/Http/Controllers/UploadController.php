@@ -100,6 +100,7 @@ class UploadController extends Controller
         if (!empty($xmlpath)) {
             $xmlNode = simplexml_load_file($xmlpath);
             $json = $this->laudatioUtilsService->parseXMLToJson($xmlNode, array());
+            //Log::info("json: ".print_r(json_encode($json),1));
             $jsonPath = new JSONPath($json, JSONPath::ALLOW_MAGIC);
         }
 
@@ -117,6 +118,7 @@ class UploadController extends Controller
 
         //ELASTICSEARCH
         $corpusIndexName = "";
+        $corpus_index_id = "";
         $documentIndexName = "";
         $annotationIndexName = "";
         $guidelineIndexName = "";
@@ -288,10 +290,10 @@ class UploadController extends Controller
         else {
             //the corpus header is not yet uploaded
             $directoryPath = $this->laudatioUtilsService->getDirectoryPath(array($fileName),$fileName);
-
+            Log::info("going to upload corpusheader: ".print_r($directoryPath,1));
             //upload
             $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
-
+            Log::info("createdPaths: ".print_r($createdPaths,1));
             //parse
             if($headerPath == 'corpus'){
                 $now = time();
@@ -299,7 +301,9 @@ class UploadController extends Controller
 
                 //read data
                 $corpusIsVersioned = $this->laudatioUtilsService->corpusIsVersioned($corpusId);
-                $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
+                //Log::info("jsonPath: ".print_r($jsonPath,1));
+                $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
+                Log::info("corpusTitle: ".print_r($corpusTitle,1));
                 $corpusDescription = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
                 $corpusPublicationVersions = $jsonPath->find('$.TEI.teiHeader.revisionDesc.change.n')->data();
 
@@ -307,7 +311,7 @@ class UploadController extends Controller
                     $corpusPublicationVersions = $jsonPath->find('$.TEI.teiHeader.revisionDesc.change[*].n')->data();
                 }
                 $corpusPublicationVersion = max(array_values($corpusPublicationVersions));
-
+                Log::info("corpusTitle: ".print_r($corpusTitle,1));
                 if(!empty($corpusTitle[0])){
                     $updatedCorpusPath = $this->GitRepoService->updateCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus->directory_path,$corpusTitle[0]);
                     Log::info("updatedCorpusPath: ".print_r($updatedCorpusPath,1));
@@ -319,6 +323,7 @@ class UploadController extends Controller
                         //new elasticsearch identifiers
                         $normalizedCorpusName = $this->GitRepoService->normalizeString($corpusTitle[0]);
                         $corpusIndexName = "corpus_".$normalizedCorpusName."_".$now;
+                        $corpus_index_id = "corpus_".$normalizedCorpusName."_".$now;
                         $documentIndexName = "document_".$normalizedCorpusName."_".$now;
                         $annotationIndexName = "annotation_".$normalizedCorpusName."_".$now;
                         $guidelineIndexName = "guideline_".$normalizedCorpusName."_".$now;
@@ -338,8 +343,6 @@ class UploadController extends Controller
                             //set new path for what ? where is it used ?
                             $dirPath =  $updatedCorpusPath.'/TEI-HEADERS/corpus';
 
-                            // create git corpus project
-                            $this->laudatioUtilsService->updateDirectoryPaths($gitLabCorpusPath,$corpusId);
 
                             $gitLabResponse = $this->GitLabService->createGitLabProject(
                                 $this->GitRepoService->normalizeTitle($corpusTitle[0]),
@@ -356,6 +359,7 @@ class UploadController extends Controller
                                 $remoteRepoUrl = $gitLabResponse['ssh_url_to_repo'];
                                 $params = array(
                                     'corpusId' => $corpusId,
+                                    'corpus_id' => $corpus_index_id,
                                     "uid" => $user->id,
                                     'corpus_path' => $gitLabCorpusPath,
                                     'publication_version' => $corpusPublicationVersion,
@@ -369,10 +373,15 @@ class UploadController extends Controller
                                     'guidelines_elasticsearch_index' => $guidelineIndexName,
                                     'file_name' => $fileName
                                 );
-
+                                Log::info("gitLabResponse: ".print_r($gitLabResponse,1));
                                 $corpus = $this->laudatioUtilsService->setCorpusAttributes($json,$params);
+                                Log::info("UPDATED CORPUS: : ".print_r($corpus,1));
                                 $pushCorpusStructure = true;
                                 $pushPath = $corpusProjectPath.'/'.$corpus->directory_path;
+
+                                // create git corpus project
+                                $this->laudatioUtilsService->updateDirectoryPaths($gitLabCorpusPath,$corpusId);
+                                Log::info("UPDATED DIRECTORTYPATHS: : ".print_r($gitLabCorpusPath,1)." ".print_r($corpusId,1));
                             }//end if gitlabResponse
 
                         }//end if creation of new indexes
@@ -432,8 +441,19 @@ class UploadController extends Controller
 
                     if($isInitiallyPushed) {
                         //Log::info("INITIALLYPUSHED: ".print_r($isInitiallyPushed,1));
-                        $tag = $this->GitRepoService->setCorpusVersionTag($initialPushPath,'{\"corpusIndex\":\"'.$corpusIndexName.'\",\"documentIndex\":\"'.$documentIndexName.'\",\"annotationIndex\":\"'.$annotationIndexName.'\",\"guidelineIndex\":\"'.$guidelineIndexName.'\",\"corpusid\": \"'.$corpusId.'\", \"username\": \"'.$user->name.'\", \"useremail\": \"'.$user->email.'\" }',0.0,$user->name,$user->email, false);
-                        //Log::info("SET GIT TAG: ".print_r($tag,1));
+                        $tagMessage = array(
+                            "corpusIndex" => $corpusIndexName,
+                            "documentIndex" => $documentIndexName,
+                            "annotationIndex" => $annotationIndexName,
+                            "guidelineIndex" => $guidelineIndexName,
+                            "corpusid" => $corpusId,
+                            "corpusIndexedId" => $corpus_index_id,
+                            "username" => $user->name,
+                            "useremail" =>  $user->email
+                        );
+
+                        $hexedJson = str_replace('"','\"',json_encode( $tagMessage));
+                        $tag = $this->GitRepoService->setCorpusVersionTag($initialPushPath,$hexedJson,0.0,$user->name,$user->email, false);
                         $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
 
                         //add files

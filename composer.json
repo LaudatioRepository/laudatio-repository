@@ -11,7 +11,7 @@
         "doctrine/dbal": "^2.5",
         "elasticsearch/elasticsearch": "~5.0",
         "fabpot/goutte": "^3.2",
-        "flow/jsonpath": "^0.3.4",
+        "flow/jsonpath": "^0.4.0",
         "graham-campbell/flysystem": "^4.1",
         "laracasts/utilities": "~2.0",
         "laravel/framework": "5.4.*",
