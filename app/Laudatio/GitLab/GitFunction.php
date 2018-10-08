@@ -281,7 +281,7 @@ class GitFunction
 
     public function commitFile($path,$file, $commitmessage, $user, $email){
         $isCommitted = false;
-
+        Log::info("comittmessage: : ".$commitmessage." ".$file. " by ".$user." (".$email.") \"");
         $process = new Process("git commit -m \"".$commitmessage." ".$file. " by ".$user." (".$email.") \" ".$file,$path);
         $process->setTimeout(3600);
         $process->run();

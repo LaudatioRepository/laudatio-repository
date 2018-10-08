@@ -265,14 +265,14 @@ class ElasticService implements ElasticsearchInterface
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
 
-        $queryBody = $queryBuilder->buildSingleMatchQuery(array(array('publication_status' => "1")));
+        $queryBody = $queryBuilder->buildMatchAllQuery(array());
         //$queryBody = $queryBuilder->buildMatchAllQuery($searchData);
 
 
         $resultData = array();
         $params = [
             'size' => 1000,
-            'index' => 'corpus',
+            'index' => 'publication',
             'type' => 'doc',
             'body' => $queryBody,
         ];
@@ -1729,7 +1729,7 @@ class ElasticService implements ElasticsearchInterface
         return $results;
     }
 
-    public function getGuidelinesByCorpus($corpusId){
+    public function getGuidelinesByCorpus($corpusId,$index){
         $results = array();
         if (Cache::tags(['guidelines_'.$corpusId])->has("getGuidelinesByCorpus_".$corpusId)) {
             $results = Cache::tags(['guidelines_'.$corpusId])->get("getGuidelinesByCorpus_".$corpusId);
@@ -1743,7 +1743,7 @@ class ElasticService implements ElasticsearchInterface
             ));
 
             $params = [
-                'index' => 'guideline',
+                'index' => $index,
                 'type' => 'doc',
                 'body' => $queryBody,
                 'size'=> 1000,

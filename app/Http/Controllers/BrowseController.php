@@ -30,7 +30,7 @@ class BrowseController extends Controller
         $user = \Auth::user();
 
         $corpusresponses = $this->ElasticService->getPublishedCorpora();
-
+        //dd($corpusresponses);
         $corpusdata = array();
         $documentcount = 0;
         $annotationcount = 0;
@@ -40,27 +40,43 @@ class BrowseController extends Controller
         //dd($corpusresponses);
         if(count($corpusresponses['result']) > 0){
             $document_range = "";
-            foreach($corpusresponses['result'][0] as $corpusresponse){
-                //dd($corpusresponse);
-                $current_corpus_index = $corpusresponse['_index'];
-                $current_document_index = str_replace("corpus","document",$current_corpus_index);
-                $current_annotation_index = str_replace("corpus","annotation",$current_corpus_index);
+            foreach($corpusresponses['result'][0] as $publicationresponse){
+                //dd($publicationresponse);
+
+                if(isset($publicationresponse['_source']['corpus_index'])) {
+                    $current_corpus_index = $publicationresponse['_source']['corpus_index'];
+                }
+
+                if(isset($publicationresponse['_source']['documents'])) {
+                    $documentcount = count($publicationresponse['_source']['documents']);
+                }
+
+                if(isset($publicationresponse['_source']['annotations'])) {
+                    $annotationcount = count($publicationresponse['_source']['annotations']);
+                }
+
+
+                if(isset($publicationresponse['_source']['document_index'])) {
+                    $current_document_index = $publicationresponse['_source']['document_index'];
+                }
+
+                if(isset($publicationresponse['_source']['annotation_index'])) {
+                    $current_annotation_index = $publicationresponse['_source']['annotation_index'];
+                }
+
 
                 $documentResult = $this->ElasticService->getDocumentByCorpus(
-                    array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
-                    array($corpusresponse['_source']['corpus_id'][0]),
+                    array(array("in_corpora" => $publicationresponse['_source']['corpus'])),
+                    array($publicationresponse['_source']['corpus']),
                     $current_document_index
                 );
 
-                if(isset($documentResult[$corpusresponse['_source']['corpus_id'][0]])) {
-                    $documentcount = count($documentResult[$corpusresponse['_source']['corpus_id'][0]]);
-                }
 
                 $document_dates = array();
 
-                if (count($documentResult) > 0 && isset($documentResult[$corpusresponse['_source']['corpus_id'][0]])){
-                    for($d = 0; $d < count($documentResult[$corpusresponse['_source']['corpus_id'][0]]); $d++) {
-                        $doc = $documentResult[$corpusresponse['_source']['corpus_id'][0]][$d];
+                if (count($documentResult) > 0 && isset($documentResult[$publicationresponse['_source']['corpus']])){
+                    for($d = 0; $d < count($documentResult[$publicationresponse['_source']['corpus']]); $d++) {
+                        $doc = $documentResult[$publicationresponse['_source']['corpus']][$d];
                         array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
                     }
 
@@ -76,52 +92,42 @@ class BrowseController extends Controller
                     }
                 }
 
+                if(!array_key_exists($publicationresponse['_source']['corpus'],$corpusdata)){
 
 
-
-                $annotationResult = $this->ElasticService->getAnnotationByCorpus(
-                    array(array("in_corpora" => $corpusresponse['_source']['corpus_id'][0])),
-                    array($corpusresponse['_source']['corpus_id'][0]),
-                    array("preparation_title", "in_corpora", "in_documents"),
-                    $current_annotation_index
-                );
-                //dd($annotationResult);
-                if(isset($annotationResult[$corpusresponse['_source']['corpus_id'][0]])){
-                    $annotationcount = count($annotationResult[$corpusresponse['_source']['corpus_id'][0]]);
-                }
-
-               // dd($annotationResult);
-                if(!array_key_exists($corpusresponse['_source']['corpus_id'][0],$corpusdata)){
+                    $publishedCorpusid = $this->LaudatioUtilService->getElasticSearchIdByCorpusId($publicationresponse['_source']['corpus'],$current_corpus_index);
+                    $apiData = $this->ElasticService->getCorpus($publishedCorpusid,true,$current_corpus_index);
+                    $corpusresponse = json_decode($apiData->getContent(), true);
 
                     $authors = "";
-                    for($i = 0; $i < count($corpusresponse['_source']['corpus_editor_forename']); $i++){
-                        $authors .= $corpusresponse['_source']['corpus_editor_surname'][$i].", ".$corpusresponse['_source']['corpus_editor_forename'][$i].";";
+                    for($i = 0; $i < count($corpusresponse['result']['corpus_editor_forename']); $i++){
+                        $authors .= $corpusresponse['result']['corpus_editor_surname'][$i].", ".$corpusresponse['result']['corpus_editor_forename'][$i].";";
                     }
 
 
                     $corpus_publication_date = "01.01.1900";
-                    for($j = 0; $j < count($corpusresponse['_source']['corpus_publication_publication_date']); $j++) {
-                        $date =   $corpusresponse['_source']['corpus_publication_publication_date'][$j];
+                    for($j = 0; $j < count($corpusresponse['result']['corpus_publication_publication_date']); $j++) {
+                        $date =   $corpusresponse['result']['corpus_publication_publication_date'][$j];
                         if($date > $corpus_publication_date) {
                             $corpus_publication_date = $date;
                         }
                     }
 
-                    $corpusdata[$corpusresponse['_source']['corpus_id'][0]] = array(
-                        'corpus_title' => $corpusresponse['_source']['corpus_title'][0],
-                        'corpus_version' => $corpusresponse['_source']['publication_version'][0],
+                    $corpusdata[$publicationresponse['_source']['corpus']] = array(
+                        'corpus_title' => $publicationresponse['_source']['name'],
+                        'corpus_version' => $publicationresponse['_source']['publication_version'],
                         'authors' => $authors,
-                        'corpus_languages_language' => $corpusresponse['_source']['corpus_languages_language'][0],
-                        'corpus_size_value' => str_replace(array(',','.'),'',$corpusresponse['_source']['corpus_size_value'][0]),
+                        'corpus_languages_language' => $corpusresponse['result']['corpus_languages_language'][0],
+                        'corpus_size_value' => str_replace(array(',','.'),'',$corpusresponse['result']['corpus_size_value'][0]),
                         'corpus_publication_date' => $corpus_publication_date,
-                        'corpus_publication_license' => $corpusresponse['_source']['corpus_publication_license'][0],
-                        'corpus_encoding_project_description' => $corpusresponse['_source']['corpus_encoding_project_description'][0],
-                        'document_genre' => $this->LaudatioUtilService->getDocumentGenreByCorpusId($corpusresponse['_source']['corpus_id'][0],$current_corpus_index),
+                        'corpus_publication_license' => $corpusresponse['result']['corpus_publication_license'][0],
+                        'corpus_encoding_project_description' => $publicationresponse['_source']['description'],
+                        'document_genre' => $this->LaudatioUtilService->getDocumentGenreByCorpusId($corpusresponse['result']['corpus_id'][0],$current_corpus_index),
                         'document_publication_range' => $document_range,
-                        'download_path' => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusresponse['_id'],$corpusresponse['_index']),
+                        'download_path' => $this->LaudatioUtilService->getCorpusPathByCorpusId($publishedCorpusid,$current_corpus_index),
                         'documentcount' => $documentcount,
                         'annotationcount' => $annotationcount,
-                        'elasticid' => $corpusresponse['_id']
+                        'elasticid' => $publishedCorpusid
                     );
                 }
 

@@ -446,6 +446,7 @@ class UploadController extends Controller
                         $isAdded = $this->GitRepoService->addFiles($addPath);
                         if($isAdded) {
                             $corpusCommitdata = $this->GitRepoService->commitFiles($corpusCommitpath, "Adding files for ", $corpusId, $user->name, $user->email);
+                            Log::info("CORCORPUSCOMMITDATA: ".print_r($corpusCommitdata,1));
                             if(!empty($corpusCommitdata)){
                                 $setData = $this->laudatioUtilsService->setCommitData($corpusCommitdata,$corpusId);
                                 $isPushed = $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);

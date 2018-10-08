@@ -88,7 +88,7 @@ class PublicationController extends Controller
                 array_push($documentArray,$document->elasticsearch_id);
             }
 
-            $guidelines = $this->elasticService->getGuidelinesByCorpus($corpus->corpus_id);
+            $guidelines = $this->elasticService->getGuidelinesByCorpus($corpus->corpus_id,$oldGuidelineIndex);
 
             foreach ($guidelines['result']['hits']['hits'] as $guideline) {
                 array_push($guidelineArray,$guideline['_id']);
@@ -130,7 +130,6 @@ class PublicationController extends Controller
                     "corpus_index" => $oldCorpusIndex,
                     "document_index" => $oldDocumentIndex,
                     "annotation_index" => $oldAnnotationIndex
-
                 ]
 
             );
