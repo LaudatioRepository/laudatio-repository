@@ -452,6 +452,7 @@ class UploadController extends Controller
                                 $isPushed = $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);
 
                                 if($isPushed) {
+                                    Log::info("CORPUS ID PUSHED: ");
                                     $params = array(
                                         'elasticsearch_index' => $corpusIndexName,
                                         'guidelines_elasticsearch_index' => $guidelineIndexName,
@@ -477,7 +478,7 @@ class UploadController extends Controller
                                     }
 
                                     $this->laudatioUtilsService->emptyCorpusCache($corpus->corpus_id);
-
+                                    Log::info("CORPUS ELASTICDATA UPDATED: ".print_r($corpus->elasticsearch_id,1));
 
                                     $annotationParams = array();
                                     foreach($corpus->annotations as $paramannotation) {
@@ -491,7 +492,6 @@ class UploadController extends Controller
                                         ));
                                         $annotationParams[$paramannotation->id] = $annotationIdParams;
                                     }
-
 
 
                                     $documentParams = array();
@@ -508,7 +508,6 @@ class UploadController extends Controller
                                     }
 
 
-
                                     $annotationElasticIds = $this->elasticService->getElasticIdByObjectId($annotationIndexName,$annotationParams);
 
                                     foreach ($annotationElasticIds as $annotationId => $annotationElasticId){
@@ -520,6 +519,7 @@ class UploadController extends Controller
                                         $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationId($annotationToBeUpdated->id);
                                     }
 
+                                    Log::info("ANNOTATION ELASTICDATA UPDATED: ".print_r($annotationElasticIds,1));
 
 
                                     $documentElasticIds = $this->elasticService->getElasticIdByObjectId($documentIndexName,$documentParams);
@@ -532,20 +532,18 @@ class UploadController extends Controller
                                         $documentToBeUpdated->save();
                                         $this->laudatioUtilsService->emptyDocumentCacheByDocumentId($documentToBeUpdated->id);
                                     }
+                                    Log::info("DOCUMENT ELASTICDATA UPDATED: ".print_r($documentElasticIds,1));
 
                                     $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id);
                                     $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id);
-
+                                    Log::info("EMPTIED DOCUMENT AND ANNOTATION CACHE: ".print_r($documentElasticIds,1));
 
                                 }//end if pushed
                             }//end if returnpath
-
                         }//end if added
                     }//end if initiallypushed
                 }//end if reset
-
             }//end if pushcorpus
-
         }//end if corpus is versioned
 
         return redirect()->route('corpus.edit', ['corpus' => $corpusId]);

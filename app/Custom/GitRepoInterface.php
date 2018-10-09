@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 interface GitRepoInterface {
     public function createProjectFileStructure($flysystem,$projectName);
-    public function createCorpusFileStructure($flysystem,$corpusProjectPath,$corpusName);
+    public function createCorpusFileStructure($flysystem,$corpusProjectPath,$corpusName,$user);
     public function updateCorpusFileStructure($flysystem,$corpusProjectPath,$oldCorpusPath,$corpusName);
     public function commitStagedFiles($corpusPath,$corpusId);
     public function hasCorpusFileStructure($flysystem , $corpusProjectPath, $corpusPath);
@@ -30,7 +30,7 @@ interface GitRepoInterface {
     public function commitFile($dirname = "", $commitmessage, $corpusid, $user, $email);
     public function pushFiles($dirname,$corpusid,$user);
     public function addHooks($path,$user,$email);
-    public function setGitConfig($path,$userEmail, $userName);
+    public function setGitConfig($path,$configs);
     public function initialPush($path,$user);
     public function addRemote($origin,$path);
     public function setCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email,$blame);

@@ -75,7 +75,7 @@ class CorpusController extends Controller
         $corpusProjectPath = $corpusproject->directory_path;
         $corpusCount = count($corpusproject->corpora()->get());
         $corpus_name = "Untitled_".$corpusProjectId."_".($corpusCount++);
-        $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus_name);
+        $corpusPath = $this->GitRepoService->createCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus_name,$user);
 
         $corpus = null;
         $user_role = array();

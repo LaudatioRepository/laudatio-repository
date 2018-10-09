@@ -518,31 +518,24 @@ class GitFunction
         return $isCopied;
     }
 
-    public function setGitConfig($path,$userEmail, $userName) {
-        $isSet = false;
 
-        $configProcessEmail = new Process("git config user.email \"".$userEmail."\"",$this->basePath."/".$path);
-        $configProcessEmail->run();
-        // executes after the command finishes
-        if (!$configProcessEmail->isSuccessful()) {
-            throw new ProcessFailedException($configProcessEmail->getErrorOutput());
-        }
-        else{
-            $configProcessEmailOutput = $configProcessEmail->getOutput();
-
-            $configProcessName = new Process("git config user.name \"".$userName."\"",$this->basePath."/".$path);
-            $configProcessName->run();
-            if (!$configProcessName->isSuccessful()) {
-                throw new ProcessFailedException($configProcessName->getErrorOutput());
+    public function setGitConfig($path,$configs) {
+        $listOfErrors = array();
+        foreach ($configs as $config) {
+            $process = new Process("git config ".$config,$this->basePath."/".$path);
+            $process->run();
+            // executes after the command finishes
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
             }
-            else {
-                $configProcessNameOutput = $configProcessEmail->getOutput();
-                $isSet = true;
-            }
+            else{
+                array_push($listOfErrors, $process->getOutput());
 
+            }
         }
-        return $isSet;
+        return $listOfErrors;
     }
+
 
     public function setCoreHooksPath($path){
         $isSet = false;
@@ -930,6 +923,8 @@ class GitFunction
     public function isDottedFile($file){
         return strpos($file,".") == 0;
     }
+
+
 
     public function getListOfStagedFiles($path){
         $listOfFiles = array();

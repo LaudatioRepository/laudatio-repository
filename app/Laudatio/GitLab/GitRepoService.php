@@ -46,7 +46,7 @@ class GitRepoService implements GitRepoInterface
     }
 
 
-    public function createCorpusFileStructure($flysystem,$corpusProjectPath,$corpusName){
+    public function createCorpusFileStructure($flysystem,$corpusProjectPath,$corpusName,$user){
         $corpusPath = $this->normalizeString($corpusName);
         $dirPath = $corpusProjectPath.'/'.$corpusPath;
 
@@ -64,6 +64,11 @@ class GitRepoService implements GitRepoInterface
 
             $initiated = $this->initiateRepository($dirPath);
             if($initiated){
+                $this->setGitConfig($dirPath,
+                    array(
+                        "core.precomposeUnicode false",
+                        "core.quotepath false"
+                    ));
                 $this->copyGitHooks($dirPath);
                 $this->setCoreHooksPath($dirPath);
                 $this->copyScripts($dirPath);
@@ -590,9 +595,9 @@ class GitRepoService implements GitRepoInterface
         return $gitFunction->copyGitHooks($path);
     }
 
-    public function setGitConfig($path,$userEmail, $userName) {
+    public function setGitConfig($path,$configs) {
         $gitFunction = new  GitFunction();
-        return $gitFunction->setGitConfig($path,$userEmail,$userName);
+        return $gitFunction->setGitConfig($path,$configs);
     }
 
     public function setCoreHooksPath($path){

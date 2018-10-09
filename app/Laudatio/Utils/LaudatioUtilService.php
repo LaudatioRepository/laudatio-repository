@@ -946,8 +946,12 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     public function getElasticSearchIdByCorpusId($corpusid,$corpus_index)
     {
+        $elasticSearchId = null;
         $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$corpus_index]])->get();
-        return $corpus[0]->elasticsearch_id;
+        if(count($corpus) > 0) {
+            $elasticSearchId = $corpus[0]->elasticsearch_id;
+        }
+        return $elasticSearchId;
     }
 
     public function getElasticSearchIndexByCorpusId($corpusid)
@@ -1183,7 +1187,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         Cache::tags(['document_'.$corpusId])->flush();
 
         // @todo: flushes too all docs, and not only the relevant ones ?
-        Cache::tags(['document'])->flush();
+        //Cache::tags(['document'])->flush();
 
     }
     public function emptyDocumentCacheByDocumentId($documentId){
