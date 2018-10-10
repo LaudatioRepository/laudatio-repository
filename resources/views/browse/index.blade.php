@@ -38,113 +38,115 @@
                         <div class="">
                             <div class="container p-0">
                                 <div class="row">
-                                    @foreach($corpusdata as $index => $corpus)
-                                    <div class="col-6">
-                                        <div class="container bg-corpus-superlight mt-3 mb-3">
-                                            <div class="row d-flex flex-column p-3">
-                                                <div class="align-self-end d-flex justify-content-end align-items-center licenseContainer" data-publicationlicense="{{$corpus['corpus_publication_license']}}"></div>
-                                            </div>
-                                            <div class="row px-3">
-                                                <div class="col-4">
-                                                    <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
-                                                </div>
-                                                <div class="col">
-                                                    <div class="h4 font-weight-bold">
-                                                        <a class="text-dark" href="/browse/corpus/{{$corpus['elasticid']}}">
-                                                            {{$corpus['corpus_title']}} (Version {{$corpus['corpus_version']}})
-                                                        </a>
+                                    @if (null != $corpusdata)
+                                        @foreach($corpusdata as $index => $corpus)
+                                            <div class="col-6">
+                                                <div class="container bg-corpus-superlight mt-3 mb-3">
+                                                    <div class="row d-flex flex-column p-3">
+                                                        <div class="align-self-end d-flex justify-content-end align-items-center licenseContainer" data-publicationlicense="{{$corpus['corpus_publication_license']}}"></div>
                                                     </div>
-                                                    <p class="text-wine text-14">
-                                                        {{$corpus['authors']}}
-                                                    </p>
-                                                    <div class="row mt-2">
-                                                        <div class="col-auto">
-                                                            <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
-                                                                <i class="fa fa-fw fa-clock-o mr-1"></i>
-                                                                <span>
+                                                    <div class="row px-3">
+                                                        <div class="col-4">
+                                                            <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="h4 font-weight-bold">
+                                                                <a class="text-dark" href="/browse/corpus/{{$corpus['elasticid']}}">
+                                                                    {{$corpus['corpus_title']}} (Version {{$corpus['corpus_version']}})
+                                                                </a>
+                                                            </div>
+                                                            <p class="text-wine text-14">
+                                                                {{$corpus['authors']}}
+                                                            </p>
+                                                            <div class="row mt-2">
+                                                                <div class="col-auto">
+                                                                    <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                                                                        <i class="fa fa-fw fa-clock-o mr-1"></i>
+                                                                        <span>
                                                                     @if(strpos($corpus['document_publication_range'],"-") !== false)
-                                                                        D. from {{$corpus['document_publication_range']}}
-                                                                    @else
-                                                                        D. {{$corpus['document_publication_range']}}
-                                                                    @endif
+                                                                                D. from {{$corpus['document_publication_range']}}
+                                                                            @else
+                                                                                D. {{$corpus['document_publication_range']}}
+                                                                            @endif
                                                                 </span>
-                                                            </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
-                                                                <i class="fa fa-fw fa-globe mr-1"></i>
-                                                                <span>
+                                                                    </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                                                                        <i class="fa fa-fw fa-globe mr-1"></i>
+                                                                        <span>
                                                                     {{ StringHelper::truncate($corpus['corpus_languages_language'], 40) }}
                                                                   </span>
-                                                            </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
-                                                                <i class="fa fa-fw fa-th-list  mr-1"></i>
-                                                                <span>
+                                                                    </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                                                                        <i class="fa fa-fw fa-th-list  mr-1"></i>
+                                                                        <span>
                                                                     {{$corpus['document_genre']}}
                                                                     </span>
-                                                            </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
-                                                                <i class="fa fa-fw fa-cubes mr-1"></i>
-                                                                <span>
+                                                                    </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                                                                        <i class="fa fa-fw fa-cubes mr-1"></i>
+                                                                        <span>
                                                                 {{$corpus['corpus_size_value']}}
                                                               </span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                            <div class="row d-flex align-items-center px-4 mt-2">
-                                                <div class="col-4">
-                                                    <div class="dropdown">
-                                                        <button class="btn btn-sm btn-outline-corpus-dark w-100 dropdown-toggle font-weight-bold text-uppercase rounded "
-                                                                type="button" id="serviceRowDownload" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                            Download
-                                                        </button>
-                                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                            <a class="dropdown-item text-14" href="/download/tei/{{$corpus['download_path']}}">TEI-Header</a>
-                                                            <!--a class="dropdown-item text-14" href="#">EXCEL</a>
-                                                            <a class="dropdown-item text-14" href="#">PAULA</a>
-                                                            <a class="dropdown-item text-14" href="#">ANNIS</a-->
+                                                    <div class="row d-flex align-items-center px-4 mt-2">
+                                                        <div class="col-4">
+                                                            <div class="dropdown">
+                                                                <button class="btn btn-sm btn-outline-corpus-dark w-100 dropdown-toggle font-weight-bold text-uppercase rounded "
+                                                                        type="button" id="serviceRowDownload" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    Download
+                                                                </button>
+                                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                                    <a class="dropdown-item text-14" href="/download/tei/{{$corpus['download_path']}}">TEI-Header</a>
+                                                                    <!--a class="dropdown-item text-14" href="#">EXCEL</a>
+                                                                    <a class="dropdown-item text-14" href="#">PAULA</a>
+                                                                    <a class="dropdown-item text-14" href="#">ANNIS</a-->
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
-                                                        <i class="fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"></i>
-                                                        <span class="text-primary text-14 font-weight-bold">{{$corpus['documentcount']}}</span>
-                                                    </a>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <a href="# " class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
-                                                        <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
-                                                        <span class="text-14 font-weight-bold">{{$corpus['annotationcount']}}</span>
-                                                    </a>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <div class="corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 flex-nowrap">
-                                                        <i class="fa fa-fw fa-arrow-up mr-1 border-top border-dark"></i>
-                                                        <span>
+                                                        <div class="col-auto">
+                                                            <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
+                                                                <i class="fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"></i>
+                                                                <span class="text-primary text-14 font-weight-bold">{{$corpus['documentcount']}}</span>
+                                                            </a>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <a href="# " class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
+                                                                <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
+                                                                <span class="text-14 font-weight-bold">{{$corpus['annotationcount']}}</span>
+                                                            </a>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <div class="corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 flex-nowrap">
+                                                                <i class="fa fa-fw fa-arrow-up mr-1 border-top border-dark"></i>
+                                                                <span>
                                                         {{$corpus['corpus_publication_date']}}
                                                       </span>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row p-6">
+                                                        <p class="text-14">
+                                                            {{ StringHelper::truncate($corpus['corpus_encoding_project_description'], 300) }}
+                                                            <a href="/browse/corpus/{{$corpus['elasticid']}}">MORE</a>
+                                                        </p>
                                                     </div>
                                                 </div>
-
                                             </div>
-                                            <div class="row p-6">
-                                                <p class="text-14">
-                                                    {{ StringHelper::truncate($corpus['corpus_encoding_project_description'], 300) }}
-                                                    <a href="/browse/corpus/{{$corpus['elasticid']}}">MORE</a>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
                                         @endforeach
-                    </div>
-                </div>
-            </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
         </div>
         <div class="container d-flex flex-column align-items-center justify-content-center mb-5 mt-5">
-            {!! $corpusdata->appends(Request::capture()->except('page'))->render() !!}
-            <input type="hidden" name="pageTotal" id="pageTotal" value="{{$totalCount}}" />
-            <div class="form-row">
-                <div class="col-auto">
-                    <select class="custom-select custom-select-sm font-weight-bold text-uppercase" id="pageResultButton">
-                        @foreach($perPageArray as $item => $value)
+            @if (null != $corpusdata)
+                {!! $corpusdata->appends(Request::capture()->except('page'))->render() !!}
+                <div class="form-row">
+                    <div class="col-auto">
+                        <select class="custom-select custom-select-sm font-weight-bold text-uppercase" id="pageResultButton">
+                            @foreach($perPageArray as $item => $value)
 
                                 @if ($value == "selected")
                                     <option value="{{$item}}" selected>{{$item}} results / page</option>
@@ -152,10 +154,13 @@
                                     <option value="{{$item}}"{{$item}}>{{$item}} results / page</option>
                                 @endif
 
-                        @endforeach
-                    </select>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            </div>
+            @endif
+
+            <input type="hidden" name="pageTotal" id="pageTotal" value="{{$totalCount}}" />
         </div>
     </div>
 @stop

@@ -40,7 +40,7 @@ class BrowseController extends Controller
         $sortedCollection = array();
         $perPage = null;
 
-
+        $entries = null;
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
 
         //dd($corpusresponses);
@@ -200,8 +200,8 @@ class BrowseController extends Controller
 
             $currentPageSearchResults = $sortedCollection->slice(($currentPage - 1) * $perPage, $perPage)->all();
             $entries = new LengthAwarePaginator($currentPageSearchResults, count($sortedCollection), $perPage, $currentPage,['path' => LengthAwarePaginator::resolveCurrentPath()] );
-//dd($entries);
-                }
+
+        }
 
         return view('browse.index')
             ->with('isLoggedIn', $isLoggedIn)
@@ -238,8 +238,11 @@ class BrowseController extends Controller
             case "corpus":
                 //get the current index for the corpus....
                 $current_corpus_index = $this->LaudatioUtilService->getCurrentCorpusIndexByElasticsearchId($id);
+                Log::info("CURRENTCORPUSINDEX: ".$current_corpus_index);
                 $current_document_index = str_replace("corpus","document",$current_corpus_index);
+                Log::info("CURRENTDOCINDEX: ".$current_document_index);
                 $current_annotation_index = str_replace("corpus","annotation",$current_corpus_index);
+                Log::info("current_annotation_index: ".$current_annotation_index);
 
                 $apiData = $this->ElasticService->getCorpus($id,true,$current_corpus_index);
                 $data = json_decode($apiData->getContent(), true);

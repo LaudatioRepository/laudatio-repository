@@ -17,9 +17,8 @@ class ValidatorService implements ValidatorInterface
     protected $rng_schema;
     protected $xml_reader;
 
-    public function __construct($xmlFile)
+    public function __construct()
     {
-        $this->xml = $xmlFile;
         $this->xml_reader = new XMLReader();
 
     }

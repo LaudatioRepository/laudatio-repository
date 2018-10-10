@@ -281,7 +281,7 @@ class GitFunction
 
     public function commitFile($path,$file, $commitmessage, $user, $email){
         $isCommitted = false;
-        Log::info("comittmessage: : ".$commitmessage." ".$file. " by ".$user." (".$email.") \"");
+
         $process = new Process("git commit -m \"".$commitmessage." ".$file. " by ".$user." (".$email.") \" ".$file,$path);
         $process->setTimeout(3600);
         $process->run();
@@ -315,7 +315,6 @@ class GitFunction
 
         // executes after the command finishes
         if (!$process->isSuccessful()) {
-            Log::info ("THERE WAS A PROCESS ERROR: ".print_r($process->getErrorOutput(),1));
             throw new ProcessFailedException($process);
         }
         else{
@@ -351,7 +350,6 @@ class GitFunction
         }
         else{
             $processOutput = $process->getOutput();
-            Log::info ("CHEKING IF TAGGED: ".print_r($processOutput,1)." => ".print_r($version,1));
             if(strpos($processOutput, strval($version)   ) !== false){
                 $isTagged = true;
             }
@@ -381,13 +379,11 @@ class GitFunction
 
 
         if($shouldAdd){
-            //Log::info("trying to: git remote add origin ".$origin." => ".$this->basePath."/".$path);
             $process = new Process("git remote add origin ".$origin,$this->basePath."/".$path);
             $process->setTimeout(3600);
             $process->run();
         }
         else{
-            //Log::info("trying to: git remote set-url origin ".$origin." => ".$this->basePath."/".$path);
             $process = new Process("git remote set-url origin ".$origin,$this->basePath."/".$path);
             $process->setTimeout(3600);
             $process->run();

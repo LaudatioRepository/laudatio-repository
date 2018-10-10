@@ -27,46 +27,18 @@ class ValidateTEIController extends Controller
             $dirPath = $request->directorypath;
             $xmlfile = $request->fileName;
 
+            $this->validationService->setXml($xmlfile);
+
             $corpusproject = CorpusProject::findOrFail($request->input('project_id'));
-            $messageboard = MessageBoard::where(['corpus_project_id' => $corpusproject->id])->get();
-
-            if(count($messageboard) == 0){
-                $messageboard = new MessageBoard();
-                $messageboard->corpus_project_id = $corpusproject->id;
-                $messageboard->save();
-
-                $boardmessage = new BoardMessage();
-                $boardmessage->message_board_id = $messageboard->id;
-                $boardmessage->corpus_id = $request->input('corpus_id');
-                $boardmessage->user_id = $request->input('user_id');
-                $boardmessage->message = $request->input('message');
-                $boardmessage->status = 1;
-
-                $boardmessage->save();
-
-                $messageboard->boardmessages()->save($boardmessage);
-            }
-            else {
-                $boardmessage = new BoardMessage();
-                $boardmessage->message_board_id = $messageboard[0]->id;
-                $boardmessage->corpus_id = $request->input('corpus_id');
-                $boardmessage->user_id = $request->input('user_id');
-                $boardmessage->message = $request->input('message');
-                $boardmessage->status = 1;
-
-                $boardmessage->save();
-
-                $messageboard[0]->boardmessages()->save($boardmessage);
-            }
 
 
 
-            $result['messageboard_response']  = "Message was successfully registered";
+            $result['validatexml_response']  = "";
             $status = "success";
         }
         catch (\Exception $e) {
             $status = "error";
-            $result['messageboard_response']  = "There was a problem creating the Board message. A message has been sent to the site administrator. Please try again later";
+            $result['validatexml_response']  = "There was a problem validating the XML";
             //$e->getMessage();
 
         }

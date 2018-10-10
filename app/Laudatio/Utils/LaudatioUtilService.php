@@ -138,18 +138,12 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @return mixed|static
      */
     public function setCorpusAttributes($json,$params){
-        Log::info("PARTAMS: : ".print_r($params,1));
         $jsonPath = new JSONPath($json,JSONPath::ALLOW_MAGIC);
         $corpus_id = $params['corpus_id'];
-        Log::info("CORPUSID: ".print_r($corpus_id,1));
         $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
-        Log::info("corpusTitle: ".print_r($corpusTitle,1));
         $corpusDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
-        Log::info("corpusDesc: ".print_r($corpusDesc,1));
         $corpusSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
-        Log::info("corpusSizeType: ".print_r($corpusSizeType,1));
         $corpusSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text')->data();
-        Log::info("corpusSizeValue: ".print_r($corpusSizeValue,1));
 
         $corpus = Corpus::find($params['corpusId']);
         $corpus->update([
@@ -171,7 +165,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             "elasticsearch_index" => $params['elasticsearch_index'],
             "guidelines_elasticsearch_index" => $params['guidelines_elasticsearch_index'],
         ]);
-        Log::info("corpusSizeValue: ".print_r($corpusSizeValue,1));
 
         return $corpus;
     }

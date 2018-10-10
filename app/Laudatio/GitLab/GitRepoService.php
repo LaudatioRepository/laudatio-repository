@@ -544,10 +544,10 @@ class GitRepoService implements GitRepoInterface
         $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
 
         $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$dirname);
-        Log::info("stagedFiles: ".print_r($stagedFiles,1));
+
         foreach ($stagedFiles as $stagedFile){
             $stagedfileArray = explode("/",$stagedFile);
-            Log::info("comitting: : ".print_r($this->basePath."/".$dirname,1)." FILE: ".$stagedfileArray[2]);
+
             $isCommited = $gitFunction->commitFile($this->basePath."/".$dirname."/".$stagedfileArray[1],$stagedfileArray[2],$commitmessage,$user,$email);
             if($isCommited){
                 $commitData = $this->getCommitData($pathWithOutAddedFolder);

@@ -126,10 +126,12 @@ class PublicationController extends Controller
                     "guidelines" => $guidelineArray,
                     "git_tag" => "v".$corpus->publication_version,
                     "name" => $corpus->name." Version ".$corpus->publication_version,
+                    "description" => $corpus->description,
                     "publication_version" => $corpus->publication_version,
                     "corpus_index" => $oldCorpusIndex,
                     "document_index" => $oldDocumentIndex,
-                    "annotation_index" => $oldAnnotationIndex
+                    "annotation_index" => $oldAnnotationIndex,
+                    "guideline_index" => $oldGuidelineIndex
                 ]
 
             );
@@ -168,14 +170,14 @@ class PublicationController extends Controller
 
                             // create a new index for the next working period
 
-                            $new_corpus_index = "corpus_".$corpus->corpus_id."_".$now;
+                            $new_corpus_index = $now."_".$corpus->corpus_id;
                             $new_corpus_id = $now."§".$corpus->corpus_id;
                             $new_corpus_elasticsearch_id = $now."§".$corpus->elasticsearch_id;
                             $new_guidelines_elasticsearch_id = $now."§".$corpus->guidelines_elasticsearch_id;
 
-                            $new_document_index = "document_".$corpus->corpus_id."_".$now;
-                            $new_annotation_index = "annotation_".$corpus->corpus_id."_".$now;
-                            $new_guideline_index = "guideline_".$corpus->corpus_id."_".$now;
+                            $new_document_index = $now."_".str_replace("corpus","document",$corpus->corpus_id);
+                            $new_annotation_index = $now."_".str_replace("corpus","annotation",$corpus->corpus_id);
+                            $new_guideline_index = $now."_".str_replace("corpus","guideline",$corpus->corpus_id);
 
                             $corpus->workflow_status = 1;
                             $corpus->save();
