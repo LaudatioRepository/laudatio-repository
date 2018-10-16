@@ -163,4 +163,4 @@
             <input type="hidden" name="pageTotal" id="pageTotal" value="{{$totalCount}}" />
         </div>
     </div>
-@stop
+@endsection

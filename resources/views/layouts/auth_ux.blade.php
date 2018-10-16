@@ -17,8 +17,9 @@
 </head>
 
 <body>
-<div class="container-fluid m-0 p-0">
+<div id="rootContainer" class="container-fluid m-0 p-0">
     @include ('layouts.main_ux_nav')
+    @include ('layouts.auth_ux_breadcrumb')
     @if($flash = session('message'))
         <div id="flash-message" class="alert alert-success">
             {{ $flash }}
@@ -29,9 +30,5 @@
 </div>
 <script src="{{ asset('js/vendorscripts_old.js') }}"></script>
 <script src="{{ asset('js/scripts.js') }}"></script>
-<script src="{{ asset('js/browseapp.js') }}"></script>
-<script src="{{ asset('js/jq.js') }}"></script>
-
 </body>
-
 </html>

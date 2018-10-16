@@ -26,7 +26,7 @@
 
             @if (Auth::guest())
             <div class="nav-item text-14 font-weight-bold ">
-                <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('register') }}">Register</a>
+                <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('registeruser') }}">Register</a>
             </div>
             <button type="button" data-toggle="modal" data-target="#signInModal" class="btn btn-outline-corpus-dark ml-1 font-weight-bold text-14 rounded text-dark text-uppercase">
                 Sign In
