@@ -60,6 +60,8 @@ interface LaudatioUtilsInterface
     public function getCurrentCorpusIndexByAnnotationElasticsearchId($elasticSearchId);
     public function getCurrentCorpusIndexByDocumentElasticsearchId($elasticSearchId);
 
+    public function getPublishedCorpusData($corpusresponses,$elasticService, $perPage ,$sortKriterium, $currentPage);
+
 
     /* CACHE */
     public function emptyCorpusCache($corpusId);

@@ -32,7 +32,8 @@ class ValidatorServiceProvider extends ServiceProvider
     {
         //
         $this->app->singleton('App\Custom\ValidatorInterface', function ($app){
-            return new ValidatorService();
+            $instance = $this->app->make('App\Laudatio\Utils\ValidatorService');
+            return new ValidatorService($instance);
         });
     }
 }

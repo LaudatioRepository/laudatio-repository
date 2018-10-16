@@ -41,40 +41,6 @@
             </div>
             <!-- CARD END  -->
             <div id="corpusUploadPreview"></div>
-            <p class="mt-5">
-                It seems that you just added a new corpus. The name of the new corpus will be defined through the according
-                .xml file.
-            </p>
-            <p>Within our
-                <a href="#"></a>Help section you will find detailed instructions how to structure .xml data and upload
-                files. Following data needs to be provided to be able to publish a corpus to laudatio:
-            </p>
-            <div class="mt-5">
-
-
-                <ul class="list-group list-group-flush mb-3 mt-3">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <b>1 Corpus Header uploaded</b>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <b>According number of Document Header</b>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div class="d-flex flex-column">
-                            <b>According number of Annotation Header</b>
-                        </div>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div class="d-flex flex-column">
-                            <b>at least 1 Corpus Data Format</b>
-                        </div>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <b>Defined License</b>
-                    </li>
-                </ul>
-
-            </div>
         </div>
 
         <div id="corpusFileList">

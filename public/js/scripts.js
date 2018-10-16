@@ -70,8 +70,31 @@ if(previewNode) {
         $('.uploadActions .btn').removeClass('disabled');
     });
 
-    corpusUpload.on("error", function(file) {
-        $(file.previewElement).find('.uploadStatusText').text('');
+    corpusUpload.on("error", function(file,response) {
+        var errMsg = ""
+        if(typeof response != 'undefined' ){
+            errMsg += '<ul class="list-unstyled">';
+            for(var i = 0; i < response.length; i++) {
+                var notification = response[i]
+                errMsg += '<li class="error text-danger">'+notification.error;
+                errMsg += "<ul>";
+                for(var j = 0; j < notification.payload.length; j++) {
+                    errMsg += "<li>"+notification.payload[j]+"</li>";
+                }
+                errMsg += "</ul>";
+                errMsg += "</li>";
+            }
+
+            errMsg += "</ul>";
+        }
+        $('#alert-laudatio').addClass('alert-danger');
+        $('#alert-laudatio').html(errMsg)
+
+        $("#alert-laudatio").fadeTo(2000, 2000).slideUp(500, function(){
+
+        });
+        $(file.previewElement).find('.uploadStatusText').html(errMsg);
+        $(file.previewElement).find('.error.text-14.text-danger').html('');
         $(file.previewElement).find('.uploadStatusIcons').children().addClass('hidden');
         $(file.previewElement).find('.uploadErrorIcon').removeClass('hidden');
     });

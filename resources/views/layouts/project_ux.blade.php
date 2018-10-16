@@ -27,7 +27,7 @@
     @yield('content')
     @include('layouts.main_ux_footer')
 </div>
-<script src="{{ asset('js/vendorscripts.js') }}"></script>
+<script src="{{ asset('js/vendorscripts_old.js') }}"></script>
 @if(isset($corpus_data))
 <script>
     window.Laravel = <?php echo json_encode([

@@ -16,9 +16,15 @@ use App\Custom\GitRepoInterface;
 use App\Custom\GitLabInterface;
 use App\Custom\ElasticsearchInterface;
 use App\Laudatio\GitLaB\GitFunction;
+use App\Custom\ValidatorInterface;
+use App\Exceptions\XMLNotWellformedException;
+use App\Exceptions\XMLNotValidException;
 use Log;
 use Flow\JSONPath\JSONPath;
 use Cache;
+use Session;
+//use Illuminate\Http\Response;
+use Response;
 
 class UploadController extends Controller
 {
@@ -32,9 +38,10 @@ class UploadController extends Controller
     protected $GitRepoService;
     protected $elasticService;
     protected $indexMappingPath;
+    protected $validationService;
 
 
-    public function __construct(FlysystemManager $flysystem, LaudatioUtilsInterface $laudatioUtilsService, GitLabInterface $GitLabService,GitRepoInterface $Gitservice, ElasticsearchInterface $elasticService)
+    public function __construct(FlysystemManager $flysystem, LaudatioUtilsInterface $laudatioUtilsService, GitLabInterface $GitLabService,GitRepoInterface $Gitservice, ElasticsearchInterface $elasticService, ValidatorInterface $validationService)
     {
         $this->flysystem = $flysystem;
         $this->GitRepoService = $Gitservice;
@@ -44,6 +51,7 @@ class UploadController extends Controller
         $this->connection = $this->flysystem->getDefaultConnection();
         $this->GitLabService = $GitLabService;
         $this->elasticService = $elasticService;
+        $this->validationService = $validationService;
     }
 
 
@@ -98,10 +106,61 @@ class UploadController extends Controller
 
         //Fetch XML by file path and parse it into JSONPATH
         if (!empty($xmlpath)) {
+
+            $xmlfile = preg_replace_callback('/\\\\([0-7]{1,3})/', array($this, 'convertOctalToCharacter'), $xmlpath);
+            $xmlfile = str_replace('"',"",$xmlfile);
+
+            $this->validationService->setXml($xmlfile);
+
+            // wellformed?
+            $response = new Response();
+            $responsearray = array();
+            try {
+                Log::info("IS IT WELL FORMED? ".$xmlfile);
+                $isWellFormed = $this->validationService->isWellFormed(true);
+                Log::info("IS IT WELL FORMED THEN? ".$isWellFormed);
+                $isValid = $this->validationService->isValidByRNG(true);
+                Log::info("IS IT VALID THEN? ".$isValid);
+            } catch (XMLNotWellformedException $exception) {
+                Log::info("THERE WAS AN XMLNotWellformedException ".$exception->getMessage());
+                //return back()->withError($exception->getMessage());
+
+                $notification = array(
+                    'error' => 'XMLNotWellformedException',
+                    'payload' => explode(",",$exception->getMessage()),
+                    'alert_type' => 'error',
+                );
+                array_push($responsearray,$notification);
+
+                return Response::json($responsearray, 400);
+
+            }
+            catch (XMLNotValidException $valid_exception) {
+                Log::info("THERE WAS AN XMLNotValidException ".$valid_exception->getMessage());
+                //return back()->withError($exception->getMessage());
+
+                $notification = array(
+                    'error' => 'XMLNotValidException',
+                    'payload' => explode(",",$valid_exception->getMessage()),
+                    'alert_type' => 'error',
+                );
+                array_push($responsearray,$notification);
+                return Response::json($responsearray, 400);
+            }
+
+            // validate xml
+
             $xmlNode = simplexml_load_file($xmlpath);
-            $json = $this->laudatioUtilsService->parseXMLToJson($xmlNode, array());
-            //Log::info("json: ".print_r(json_encode($json),1));
-            $jsonPath = new JSONPath($json, JSONPath::ALLOW_MAGIC);
+
+            if($xmlNode) {
+                $json = $this->laudatioUtilsService->parseXMLToJson($xmlNode, array());
+                //Log::info("json: ".print_r(json_encode($json),1));
+
+            }
+            if(isset($json)){
+                $jsonPath = new JSONPath($json, JSONPath::ALLOW_MAGIC);
+            }
+
         }
 
 
@@ -299,15 +358,18 @@ class UploadController extends Controller
 
                 //read data
                 $corpusIsVersioned = $this->laudatioUtilsService->corpusIsVersioned($corpusId);
-                $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
+                if(isset($jsonPath)){
+                    $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
 
-                $corpusDescription = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
-                $corpusPublicationVersions = $jsonPath->find('$.TEI.teiHeader.revisionDesc.change.n')->data();
+                    $corpusDescription = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
+                    $corpusPublicationVersions = $jsonPath->find('$.TEI.teiHeader.revisionDesc.change.n')->data();
 
-                if(empty($corpusPublicationVersions)) {
-                    $corpusPublicationVersions = $jsonPath->find('$.TEI.teiHeader.revisionDesc.change[*].n')->data();
+                    if(empty($corpusPublicationVersions)) {
+                        $corpusPublicationVersions = $jsonPath->find('$.TEI.teiHeader.revisionDesc.change[*].n')->data();
+                    }
+                    $corpusPublicationVersion = max(array_values($corpusPublicationVersions));
                 }
-                $corpusPublicationVersion = max(array_values($corpusPublicationVersions));
+
 
                 if(!empty($corpusTitle[0])){
                     $updatedCorpusPath = $this->GitRepoService->updateCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus->directory_path,$corpusTitle[0]);
@@ -406,17 +468,26 @@ class UploadController extends Controller
                 }
             }
             else{
-                $filePath = $updatedCorpusPath.'/TEI-HEADERS/corpus/'.$fileName;
-                $addPath = $updatedCorpusPath.'/TEI-HEADERS/';
-                $initialCommitPath = $updatedCorpusPath;
-                $corpusCommitpath = $updatedCorpusPath.'/TEI-HEADERS/';
-                $initialPushPath = $updatedCorpusPath;
+                if(isset($updatedCorpusPath)){
+                    $filePath = $updatedCorpusPath.'/TEI-HEADERS/corpus/'.$fileName;
+                    $addPath = $updatedCorpusPath.'/TEI-HEADERS/';
+                    $initialCommitPath = $updatedCorpusPath;
+                    $corpusCommitpath = $updatedCorpusPath.'/TEI-HEADERS/';
+                    $initialPushPath = $updatedCorpusPath;
+                }
+
             }
 
             $isPushed = false;
             $pushPath = $corpusProjectPath.'/'.$corpus->directory_path;
 
-            if($pushCorpusStructure && !empty($initialPushPath) && $remoteRepoUrl){
+            if($pushCorpusStructure && !empty($initialPushPath) && $remoteRepoUrl
+            && isset($initialPushPath)
+            && isset($corpusCommitpath)
+            && isset($initialCommitPath)
+            && isset($addPath)
+            && isset($filePath)
+            ){
                 $addRemote = $this->GitRepoService->addRemote($remoteRepoUrl,$initialPushPath);
                 $hooksAdded = $this->GitRepoService->addHooks($initialPushPath, $user->name, $user->email);
                 $isReset = $this->GitRepoService->resetAdd($initialPushPath,array("TEI-HEADERS"));
@@ -426,7 +497,7 @@ class UploadController extends Controller
                     $isInitiallyPushed = $this->GitRepoService->initialPush($initialPushPath,$user);
 
                     if($isInitiallyPushed) {
-                        //Log::info("INITIALLYPUSHED: ".print_r($isInitiallyPushed,1));
+
                         $tagMessage = array(
                             "corpusIndex" => $corpusIndexName,
                             "documentIndex" => $documentIndexName,
@@ -446,13 +517,13 @@ class UploadController extends Controller
                         $isAdded = $this->GitRepoService->addFiles($addPath);
                         if($isAdded) {
                             $corpusCommitdata = $this->GitRepoService->commitFiles($corpusCommitpath, "Adding files for ", $corpusId, $user->name, $user->email);
-                            Log::info("CORCORPUSCOMMITDATA: ".print_r($corpusCommitdata,1));
+
                             if(!empty($corpusCommitdata)){
                                 $setData = $this->laudatioUtilsService->setCommitData($corpusCommitdata,$corpusId);
                                 $isPushed = $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);
 
                                 if($isPushed) {
-                                    Log::info("CORPUS ID PUSHED: ");
+
                                     $params = array(
                                         'elasticsearch_index' => $corpusIndexName,
                                         'guidelines_elasticsearch_index' => $guidelineIndexName,
@@ -478,7 +549,7 @@ class UploadController extends Controller
                                     }
 
                                     $this->laudatioUtilsService->emptyCorpusCache($corpus->corpus_id);
-                                    Log::info("CORPUS ELASTICDATA UPDATED: ".print_r($corpus->elasticsearch_id,1));
+
 
                                     $annotationParams = array();
                                     foreach($corpus->annotations as $paramannotation) {
@@ -519,7 +590,6 @@ class UploadController extends Controller
                                         $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationId($annotationToBeUpdated->id);
                                     }
 
-                                    Log::info("ANNOTATION ELASTICDATA UPDATED: ".print_r($annotationElasticIds,1));
 
 
                                     $documentElasticIds = $this->elasticService->getElasticIdByObjectId($documentIndexName,$documentParams);
@@ -532,11 +602,9 @@ class UploadController extends Controller
                                         $documentToBeUpdated->save();
                                         $this->laudatioUtilsService->emptyDocumentCacheByDocumentId($documentToBeUpdated->id);
                                     }
-                                    Log::info("DOCUMENT ELASTICDATA UPDATED: ".print_r($documentElasticIds,1));
 
                                     //$this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id);
-                                    $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id);
-                                    Log::info("EMPTIED DOCUMENT AND ANNOTATION CACHE: ".print_r($documentElasticIds,1));
+                                    //$this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id);
 
                                 }//end if pushed
                             }//end if returnpath
@@ -602,8 +670,6 @@ class UploadController extends Controller
                         $returnPath = $this->GitRepoService->commitFiles($commitPath, "Adding files for " . $fileName, $corpusId, $user->name, $user->email);
                         if (!empty($returnPath)) {
                             $isPushed = $this->GitRepoService->pushFiles($pushPath, $corpusId, $user);
-                            Log::info("ISPUSHED: " . print_r($isPushed, 1));
-
                         }
                     }
 
@@ -633,6 +699,10 @@ class UploadController extends Controller
         $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),public_path('images'));
 
         return redirect()->route('corpus.edit', ['corpus' => $corpusId]);
+    }
+
+    public function convertOctalToCharacter($octal) {
+        return chr(octdec($octal[1]));
     }
 
 }

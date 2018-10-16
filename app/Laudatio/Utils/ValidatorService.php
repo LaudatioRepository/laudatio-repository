@@ -9,6 +9,8 @@
 namespace App\Laudatio\Utils;
 
 use App\Custom\ValidatorInterface;
+use App\Exceptions\XMLNotWellformedException;
+use XMLReader;
 
 class ValidatorService implements ValidatorInterface
 {
@@ -77,46 +79,47 @@ class ValidatorService implements ValidatorInterface
     }
 
     /**
-     * @param $xml
      * @param bool $json
      * @return string
      */
-    public function isWellFormed($xml,$json = true){
-        $isValid = array(
+    public function isWellFormed($json = true){
+        $this->xml_reader->open($this->xml);
+        $isWellformed = array(
             "isWellFormed" => "true",
             "errors" => array()
         );
         libxml_use_internal_errors(true);
 
-        $sxe = simplexml_load_string(file_get_contents($xml));
+        $sxe = simplexml_load_string(file_get_contents($this->xml));
         if ($sxe === false) {
-            $isValid['isWellFormed'] = "false";
+            $isWellformed['isWellFormed'] = "false";
 
             foreach(libxml_get_errors() as $error) {
-                array_push($isValid['errors'],str_replace("\n","",$error->message));
+                array_push($isWellformed['errors'],str_replace("\n","",$error->message));
             }
+
+            throw new XMLNotWellformedException(join(",",$isWellformed['errors']),0,null);
         }
         if($json){
-            return json_encode($isValid);
+            return json_encode($isWellformed);
         }
         else{
-            return $isValid['isWellFormed'];
+            return $isWellformed['isWellFormed'];
         }
 
     }
 
 
     /**
-     * @param $rngSchema
      * @param bool $json
      * @return mixed|string
      */
-    public function isValidByRNG($rngSchema, $json = true){
+    public function isValidByRNG($json = true){
         $isValid = array(
             "isValid" => "true",
             "errors" => array()
         );
-        $this->setRelaxNGSchema($rngSchema);
+
         libxml_use_internal_errors(true);
         $xmlError = "";
         while($this->xml_reader->read()){

@@ -51,126 +51,39 @@
                 <div class="col">
 
                     <div class="homeCarousel matchedHeight">
-                        <ul class="homeCarouselContainer px-4">
-
-                            <li class="homeCarouselSlide">
-                                <div class="card bg-corpus-superlight border-0 px-4 pb-7">
-                                    <div class="card-body p-6">
-                                        <div class="d-flex flex-column align-items-center">
-                                            <img class="rounded-circle w-30 bg-white" src="{{ asset('images/placeholder_flower.svg') }}" alt="circle-image">
-                                            <h4 class="h4 font-weight-bold text-center mt-4">
-                                                Take part and publish a corpus within the Laudatio repository
-                                            </h4>
-                                            <p class="text-center text-grey my-2">
-                                                Petrova, Svetlana; Donhauser, Karin; Odebrecht, Carolin; Humboldt-Universität zu Berlin
-                                            </p>
-                                            <div class="d-flex">
-                                                <div class="corpusProp text-16 d-flex align-items-center align-self-start pr-1 my-1 mr-3 flex-nowrap">
-                                                    <i class="fa fa-fw fa-cubes mr-1"></i>
-                                                    <span>
-                                225.000 Tokens
-                              </span>
-                                                </div>
-                                                <div class="corpusProp smaller text-16 d-flex align-items-center align-self-start my-1 pl-2 flex-nowrap">
-                                                    <i class="fa fa-fw fa-arrow-up mr-1 border-top border-dark"></i>
-                                                    <span>
-                                2017
-                              </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="homeCarouselSlide">
-                                <div class="card bg-corpus-superlight border-0 px-4 pb-7">
-                                    <div class="card-body p-6">
-                                        <div class="d-flex flex-column align-items-center">
-                                            <img class="rounded-circle w-30 bg-white" src="{{ asset('images/placeholder_flower.svg') }}" alt="circle-image">
-                                            <h4 class="h4 font-weight-bold text-center mt-4">
-                                                Take part and publish a corpus within the Laudatio repository
-                                            </h4>
-                                            <p class="text-center text-grey my-2">
-                                                Petrova, Svetlana; Donhauser, Karin; Odebrecht, Carolin; Humboldt-Universität zu Berlin
-                                            </p>
-                                            <div class="d-flex">
-                                                <div class="corpusProp text-16 d-flex align-items-center align-self-start pr-1 my-1 mr-3 flex-nowrap">
-                                                    <i class="fa fa-fw fa-cubes mr-1"></i>
-                                                    <span>
-                                225.000 Tokens
-                              </span>
-                                                </div>
-                                                <div class="corpusProp smaller text-16 d-flex align-items-center align-self-start my-1 pl-2 flex-nowrap">
-                                                    <i class="fa fa-fw fa-arrow-up mr-1 border-top border-dark"></i>
-                                                    <span>
-                                2017
-                              </span>
+                        @if (null != $corpusdata)
+                            <ul class="homeCarouselContainer px-4">
+                                @foreach($corpusdata as $index => $corpus)
+                                    <li class="homeCarouselSlide">
+                                        <div class="card bg-corpus-superlight border-0 px-4 pb-7">
+                                            <div class="card-body p-6">
+                                                <div class="d-flex flex-column align-items-center">
+                                                    <img class="rounded-circle w-30 bg-white" src="{{ asset('images/placeholder_flower.svg') }}" alt="circle-image">
+                                                    <div class="h4 font-weight-bold text-center mt-4">
+                                                        <a class="text-dark" href="/browse/corpus/{{$corpus['elasticid']}}">
+                                                            {{$corpus['corpus_title']}} (Version {{$corpus['corpus_version']}})
+                                                        </a>
+                                                    </div>
+                                                    <p class="text-center text-grey my-2">
+                                                        {{$corpus['authors']}}
+                                                    </p>
+                                                    <div class="d-flex">
+                                                        <div class="corpusProp text-16 d-flex align-items-center align-self-start pr-1 my-1 mr-3 flex-nowrap">
+                                                            <i class="fa fa-fw fa-cubes mr-1"></i>
+                                                            <span>{{$corpus['corpus_size_value']}} Tokens</span>
+                                                        </div>
+                                                        <div class="corpusProp smaller text-16 d-flex align-items-center align-self-start my-1 pl-2 flex-nowrap">
+                                                            <i class="fa fa-fw fa-arrow-up mr-1 border-top border-dark"></i>
+                                                            <span>{{$corpus['corpus_publication_date']}}</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="homeCarouselSlide">
-                                <div class="card bg-corpus-superlight border-0 px-4 pb-7">
-                                    <div class="card-body p-6">
-                                        <div class="d-flex flex-column align-items-center">
-                                            <img class="rounded-circle w-30 bg-white" src="{{ asset('images/placeholder_flower.svg') }}" alt="circle-image">
-                                            <h4 class="h4 font-weight-bold text-center mt-4">
-                                                Take part and publish a corpus within the Laudatio repository
-                                            </h4>
-                                            <p class="text-center text-grey my-2">
-                                                Petrova, Svetlana; Donhauser, Karin; Odebrecht, Carolin; Humboldt-Universität zu Berlin
-                                            </p>
-                                            <div class="d-flex">
-                                                <div class="corpusProp text-16 d-flex align-items-center align-self-start pr-1 my-1 mr-3 flex-nowrap">
-                                                    <i class="fa fa-fw fa-cubes mr-1"></i>
-                                                    <span>
-                                225.000 Tokens
-                              </span>
-                                                </div>
-                                                <div class="corpusProp smaller text-16 d-flex align-items-center align-self-start my-1 pl-2 flex-nowrap">
-                                                    <i class="fa fa-fw fa-arrow-up mr-1 border-top border-dark"></i>
-                                                    <span>
-                                2017
-                              </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="homeCarouselSlide">
-                                <div class="card bg-corpus-superlight border-0 px-4 pb-7">
-                                    <div class="card-body p-6">
-                                        <div class="d-flex flex-column align-items-center">
-                                            <img class="rounded-circle w-30 bg-white" src="{{ asset('images/placeholder_flower.svg') }}" alt="circle-image">
-                                            <h4 class="h4 font-weight-bold text-center mt-4">
-                                                Take part and publish a corpus within the Laudatio repository
-                                            </h4>
-                                            <p class="text-center text-grey my-2">
-                                                Petrova, Svetlana; Donhauser, Karin; Odebrecht, Carolin; Humboldt-Universität zu Berlin
-                                            </p>
-                                            <div class="d-flex">
-                                                <div class="corpusProp text-16 d-flex align-items-center align-self-start pr-1 my-1 mr-3 flex-nowrap">
-                                                    <i class="fa fa-fw fa-cubes mr-1"></i>
-                                                    <span>
-                                225.000 Tokens
-                              </span>
-                                                </div>
-                                                <div class="corpusProp smaller text-16 d-flex align-items-center align-self-start my-1 pl-2 flex-nowrap">
-                                                    <i class="fa fa-fw fa-arrow-up mr-1 border-top border-dark"></i>
-                                                    <span>
-                                2017
-                              </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-
-
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
                     </div>
                 </div>
 

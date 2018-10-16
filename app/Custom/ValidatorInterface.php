@@ -17,7 +17,7 @@ interface ValidatorInterface
     public function setSchema($schema);
     public function getRelaxNGSchema();
     public function setRelaxNGSchema($rng_schema);
-    public function isWellFormed($xml,$json);
-    public function isValidByRNG($rngSchema, $json);
+    public function isWellFormed($json);
+    public function isValidByRNG($json);
 
 }

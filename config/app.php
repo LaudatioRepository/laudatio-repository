@@ -188,6 +188,7 @@ return [
         App\Providers\GitRepoProvider::class,
         App\Providers\GitLabServiceProvider::class,
         App\Providers\LaudatioUtilsServiceProvider::class,
+        App\Providers\ValidatorServiceProvider::class,
         //Laravel\Socialite\SocialiteServiceProvider::class,
         \SocialiteProviders\Manager\ServiceProvider::class,
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,

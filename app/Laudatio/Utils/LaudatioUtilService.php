@@ -20,6 +20,9 @@ use App\CorpusFile;
 use App\Preparation;
 use App\Role;
 use App\User;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Log;
 use Cache;
 use DB;
@@ -1096,6 +1099,189 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             }
         }
         return $directoryPath;
+    }
+
+
+    /**
+     * getPublishedCorpora for listings
+     * @param $corpusresponses
+     * @return array
+     */
+    public function getPublishedCorpusData($corpusresponses, $elasticService, $perPage ,$sortKriterium, $currentPage){
+
+        $responseArray = array();
+        $corpusdata = array();
+        $entries = null;
+        $perPageArray = array();
+        $sortedCollection = array();
+        $perPage = null;
+
+        if(count($corpusresponses['result']) > 0){
+            $document_range = "";
+            foreach($corpusresponses['result'][0] as $publicationresponse){
+                //dd($publicationresponse);
+
+                if(isset($publicationresponse['_source']['corpus_index'])) {
+                    $current_corpus_index = $publicationresponse['_source']['corpus_index'];
+                }
+
+                if(isset($publicationresponse['_source']['documents'])) {
+                    $documentcount = count($publicationresponse['_source']['documents']);
+                }
+
+                if(isset($publicationresponse['_source']['annotations'])) {
+                    $annotationcount = count($publicationresponse['_source']['annotations']);
+                }
+
+
+                if(isset($publicationresponse['_source']['document_index'])) {
+                    $current_document_index = $publicationresponse['_source']['document_index'];
+                }
+
+                if(isset($publicationresponse['_source']['annotation_index'])) {
+                    $current_annotation_index = $publicationresponse['_source']['annotation_index'];
+                }
+
+
+                $documentResult = $elasticService->getDocumentByCorpus(
+                    array(array("in_corpora" => $publicationresponse['_source']['corpus'])),
+                    array($publicationresponse['_source']['corpus']),
+                    $current_document_index
+                );
+
+
+                if(!empty($current_corpus_index)){
+                    $document_dates = array();
+
+                    if (count($documentResult) > 0 && isset($documentResult[$publicationresponse['_source']['corpus']])){
+                        for($d = 0; $d < count($documentResult[$publicationresponse['_source']['corpus']]); $d++) {
+                            $doc = $documentResult[$publicationresponse['_source']['corpus']][$d];
+                            array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+                        }
+
+                        sort($document_dates);
+                    }
+
+                    if(count($document_dates) > 0){
+                        if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
+                            $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
+                        }
+                        else{
+                            $document_range = $document_dates[0];
+                        }
+                    }
+
+                    if(!array_key_exists($publicationresponse['_source']['corpus'],$corpusdata)){
+
+
+                        $publishedCorpusid = $this->getElasticSearchIdByCorpusId($publicationresponse['_source']['corpus'],$current_corpus_index);
+
+                        if(!empty($publishedCorpusid)){
+                            $apiData = $elasticService->getCorpus($publishedCorpusid,true,$current_corpus_index);
+                            $corpusresponse = json_decode($apiData->getContent(), true);
+
+                            $authors = "";
+                            for($i = 0; $i < count($corpusresponse['result']['corpus_editor_forename']); $i++){
+                                $authors .= $corpusresponse['result']['corpus_editor_surname'][$i].", ".$corpusresponse['result']['corpus_editor_forename'][$i].";";
+                            }
+
+
+                            $corpus_publication_date = "01.01.1900";
+                            for($j = 0; $j < count($corpusresponse['result']['corpus_publication_publication_date']); $j++) {
+                                $date =   $corpusresponse['result']['corpus_publication_publication_date'][$j];
+                                if($date > $corpus_publication_date) {
+                                    $corpus_publication_date = $date;
+                                }
+                            }
+
+                            $corpusdata[$publicationresponse['_source']['corpus']] = array(
+                                'corpus_title' => $publicationresponse['_source']['name'],
+                                'corpus_version' => $publicationresponse['_source']['publication_version'],
+                                'authors' => $authors,
+                                'corpus_languages_language' => $corpusresponse['result']['corpus_languages_language'][0],
+                                'corpus_size_value' => str_replace(array(',','.'),'',$corpusresponse['result']['corpus_size_value'][0]),
+                                'corpus_publication_date' => $corpus_publication_date,
+                                'corpus_publication_license' => $corpusresponse['result']['corpus_publication_license'][0],
+                                'corpus_encoding_project_description' => $publicationresponse['_source']['description'],
+                                'document_genre' => $this->getDocumentGenreByCorpusId($corpusresponse['result']['corpus_id'][0],$current_corpus_index),
+                                'document_publication_range' => $document_range,
+                                'download_path' => $this->getCorpusPathByCorpusId($publishedCorpusid,$current_corpus_index),
+                                'documentcount' => $documentcount,
+                                'annotationcount' => $annotationcount,
+                                'elasticid' => $publishedCorpusid
+                            );
+                        }
+                    }
+                }
+            }
+
+            $collection = new Collection($corpusdata);
+            //dd($collection);
+            $kriterium = null;
+            $sortKriteria = array(
+                "1" => "corpus_title",
+                "2" => "corpus_size_value",
+                "3_desc" => "corpus_size_value",
+                "4" => "corpus_publication_date",
+                "5_desc" => "corpus_publication_date",
+                "6" => "document_publication_range",
+                "7_desc" => "document_publication_range"
+            );
+
+            if(!isset($sortKriterium)) {
+                $kriterium = "corpus_title";
+            }
+            else{
+                switch($sortKriterium){
+                    case 3:
+                    case 5:
+                    case 7:
+                        $sortKriterium .= "_desc";
+                        break;
+                }
+                $kriterium = $sortKriteria[$sortKriterium];
+            }
+
+            $sortedCollection = null;
+            if(strpos($sortKriterium, "desc") !== false) {
+                $sortedCollection = $collection->sortByDesc($kriterium, SORT_NATURAL|SORT_FLAG_CASE);
+            }
+            else{
+                $sortedCollection = $collection->sortBy($kriterium,SORT_NATURAL|SORT_FLAG_CASE);
+            }
+
+            if(!isset($perPage)) {
+                $perPage  = 4;
+            }
+
+            $perPageArray = array(
+                $perPage => "",
+                "6" => "",
+                "12" => "",
+                "18" => "",
+                "all" => ""
+            );
+
+            if($perPage == count($sortedCollection)){
+                $perPageArray['all'] = "selected";
+            }
+            else{
+                $perPageArray[$perPage] = "selected";
+            }
+
+
+            $currentPageSearchResults = $sortedCollection->slice(($currentPage - 1) * $perPage, $perPage)->all();
+            $entries = new LengthAwarePaginator($currentPageSearchResults, count($sortedCollection), $perPage, $currentPage,['path' => LengthAwarePaginator::resolveCurrentPath()] );
+
+            $responseArray = array(
+                "entries" => $entries,
+                "totalcount" => count($sortedCollection),
+                "perPageArray" => $perPageArray,
+                "perPage" => $perPage
+            );
+        }
+
+        return $responseArray;
     }
 
     /**

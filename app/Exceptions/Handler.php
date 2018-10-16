@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use App\Exceptions\XMLNotWellformedException;
 
 class Handler extends ExceptionHandler
 {
@@ -73,6 +74,27 @@ class Handler extends ExceptionHandler
             ], config('errors.not_found'));
 
             $status = 404;
+        }
+        else if($e instanceOf XMLNotWellformedException) {
+            $data = [
+                'errors' => 'Sorry, something went wrong.'
+            ];
+
+            // If the app is in debug mode
+            if (config('app.debug')) {
+                // Add the exception class name, message and stack trace to response
+                $data['payload'] = $e->getMessage();
+                $data['trace'] = $e->getTrace();
+            }
+
+            // Default response of 400
+            $status = 400;
+
+            // If this exception is an instance of HttpException
+            if ($this->isHttpException($e)) {
+                // Grab the HTTP status code from the Exception
+                $status = $e->getStatusCode();
+            }
         }
 
         return response()->json($data, $status);

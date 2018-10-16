@@ -64,10 +64,10 @@
                                                                         <i class="fa fa-fw fa-clock-o mr-1"></i>
                                                                         <span>
                                                                     @if(strpos($corpus['document_publication_range'],"-") !== false)
-                                                                                D. from {{$corpus['document_publication_range']}}
-                                                                            @else
-                                                                                D. {{$corpus['document_publication_range']}}
-                                                                            @endif
+                                                                        D. from {{$corpus['document_publication_range']}}
+                                                                    @else
+                                                                        D. {{$corpus['document_publication_range']}}
+                                                                    @endif
                                                                 </span>
                                                                     </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                                                         <i class="fa fa-fw fa-globe mr-1"></i>
