@@ -95,9 +95,7 @@
 
                         <div class="form-row mt-5">
                             <div class="col">
-                                <button type="submit" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-100">
-                                    Continue to Terms Of Use
-                                </button>
+                                    <input type="submit" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-100" value="Continue to Terms Of Use" />
                             </div>
                         </div>
                     </form>

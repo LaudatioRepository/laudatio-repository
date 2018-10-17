@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Log;
+use App\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
@@ -20,7 +21,6 @@ class LaudatioRegisterController extends Controller
     |
     */
 
-    use RegistersUsers;
 
     /**
      * RegisterController constructor.
@@ -61,13 +61,27 @@ class LaudatioRegisterController extends Controller
             'affiliation' => $request->input('affiliation'),
             'laudatio-password' => $request->input('laudatio-password')
         );
-        Log::info("GOT DATA: ".print_r($formArray, 1));
-        return view('auth.registerconsent')->with("formdata",$formArray);
+
+        $request->session()->put($request->input('gitlabemail'), $formArray);
+        return view('auth.registerconsent')->with("gitlabemail",$request->input('gitlabemail'));
     }
 
     public function registerForm(){
         return view('auth.registerform');
     }
 
+    public function storeRegister(Request $request) {
+        $data = $request->session()->get($request->input('gitlabemail'));
+        User::create([
+            'name' => $data['name'],
+            'email' => $data['gitlabemail'],
+            'gitlab_ssh_pubkey' => $data['ssh-key'],
+            'gitlab-use-agree' => $data['gitlab-use-check'],
+            'terms-of-use-agree' => 1,
+            'affiliation' => $data['affiliation'],
+            'password' => bcrypt($data['laudatio-password']),
+        ]);
+        return redirect('admin');
+    }
 }
 

@@ -45,7 +45,7 @@
                         felis fringilla rhoncus eget eget magna.
                     </p>
 
-                    <form class="form-horizontal" role="form" method="POST" action="{{ route('register') }}">
+                    <form class="form-horizontal" role="form" method="POST" action="{{ route('storeregister') }}">
                         {{ csrf_field() }}
                         <div class="form-group">
                             <div class="custom-control custom-checkbox">
@@ -54,12 +54,10 @@
                                     I agree with Laudatio terms of use
                                 </label>
                             </div>
+                            <input type="hidden" name="gitlabemail" value="{{$gitlabemail}}" />
                             <div class="form-row mt-5">
                                 <div class="col">
-                                    <a href="registration_withDFNAAI_2.html" class="btn btn-outline-corpus-mid text-uppercase font-weight-bold rounded w-100">Back</a>
-                                </div>
-                                <div class="col">
-                                    <a href="registration_success.html" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-100">Finish registration</a>
+                                    <input type="submit" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-100" value="Finish registration" />
                                 </div>
                             </div>
                         </div>
