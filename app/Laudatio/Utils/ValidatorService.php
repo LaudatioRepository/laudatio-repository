@@ -155,7 +155,6 @@ class ValidatorService implements ValidatorInterface
         while($this->xml_reader->read()){
             if(!$this->xml_reader->isValid()){
                 $isValid['isValid'] = "false";
-                //$xmlError = libxml_get_last_error();
                 foreach(libxml_get_errors() as $error) {
                     array_push($isValid['errors'],str_replace("\n","",$error->message));
                 }
@@ -164,11 +163,6 @@ class ValidatorService implements ValidatorInterface
             }
         }
 
-        /*
-        if(!empty($xmlError))
-            Log::info("XMLSERRROR: ".print_r($xmlError,1));
-            array_push($isValid['errors'],str_replace("\n","",$xmlError->message));
-         */
 
         $this->xml_reader->close();
 

@@ -73,13 +73,13 @@ if(previewNode) {
     corpusUpload.on("error", function(file,response) {
         var errMsg = ""
         if(typeof response != 'undefined' ){
-            errMsg += '<ul class="list-unstyled">';
+            errMsg += "<ul class=\"list-unstyled\">";
             for(var i = 0; i < response.length; i++) {
                 var notification = response[i]
-                errMsg += '<li class="error text-danger">'+notification.error;
-                errMsg += "<ul>";
+                errMsg += "<li class=\"error text-danger list-unstyled\">"+notification.error;
+                errMsg += "<ul class=\"list-unstyled\">";
                 for(var j = 0; j < notification.payload.length; j++) {
-                    errMsg += "<li>"+notification.payload[j]+"</li>";
+                    errMsg += "<li class=\"error text-danger list-unstyled\">"+notification.payload[j]+"</li>";
                 }
                 errMsg += "</ul>";
                 errMsg += "</li>";

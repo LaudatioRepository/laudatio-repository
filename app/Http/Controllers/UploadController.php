@@ -38,6 +38,7 @@ class UploadController extends Controller
     protected $GitRepoService;
     protected $elasticService;
     protected $indexMappingPath;
+    protected $schemaBasePath;
     protected $validationService;
 
 
@@ -47,6 +48,7 @@ class UploadController extends Controller
         $this->GitRepoService = $Gitservice;
         $this->basePath = config('laudatio.basePath');
         $this->indexMappingPath = config('laudatio.indexMappingPath');
+        $this->schemaBasePath = config('laudatio.schemaPath');
         $this->laudatioUtilsService = $laudatioUtilsService;
         $this->connection = $this->flysystem->getDefaultConnection();
         $this->GitLabService = $GitLabService;
@@ -112,20 +114,32 @@ class UploadController extends Controller
 
             $this->validationService->setXml($xmlfile);
 
-            // wellformed?
+            //validate xml
             $response = new Response();
             $responsearray = array();
-            try {
-                Log::info("IS IT WELL FORMED? ".$xmlfile);
-                $isWellFormed = $this->validationService->isWellFormed(true);
-                Log::info("IS IT WELL FORMED THEN? ".$isWellFormed);
-                //$isValid = $this->validationService->isValidByRNG(true);
-                $isValid = $this->validationService->isXMLContentValid();
-                Log::info("IS IT VALID THEN? ".$isValid);
-            } catch (XMLNotWellformedException $exception) {
-                Log::info("THERE WAS AN XMLNotWellformedException ".$exception->getMessage());
-                //return back()->withError($exception->getMessage());
 
+            try {
+                //wellformed?
+                $isWellFormed = $this->validationService->isWellFormed(true);
+
+                //wellformed valid
+                $this->validationService->setRelaxNGSchema($this->schemaBasePath.'/'.$headerPath.'/'.$headerPath.'.rng');
+                $isValid = $this->validationService->isValidByRNG(true);
+
+
+                //parse xml
+                $xmlNode = simplexml_load_file($xmlpath);
+
+                if($xmlNode) {
+                    $json = $this->laudatioUtilsService->parseXMLToJson($xmlNode, array());
+                    //Log::info("json: ".print_r(json_encode($json),1));
+
+                }
+                if(isset($json)){
+                    $jsonPath = new JSONPath($json, JSONPath::ALLOW_MAGIC);
+                }
+
+            } catch (XMLNotWellformedException $exception) {
                 $notification = array(
                     'error' => 'XMLNotWellformedException',
                     'payload' => explode(",",$exception->getMessage()),
@@ -137,9 +151,6 @@ class UploadController extends Controller
 
             }
             catch (XMLNotValidException $valid_exception) {
-                Log::info("THERE WAS AN XMLNotValidException ".$valid_exception->getMessage());
-                //return back()->withError($exception->getMessage());
-
                 $notification = array(
                     'error' => 'XMLNotValidException',
                     'payload' => explode(",",$valid_exception->getMessage()),
@@ -148,20 +159,6 @@ class UploadController extends Controller
                 array_push($responsearray,$notification);
                 return Response::json($responsearray, 400);
             }
-
-            // validate xml
-            return;
-            $xmlNode = simplexml_load_file($xmlpath);
-
-            if($xmlNode) {
-                $json = $this->laudatioUtilsService->parseXMLToJson($xmlNode, array());
-                //Log::info("json: ".print_r(json_encode($json),1));
-
-            }
-            if(isset($json)){
-                $jsonPath = new JSONPath($json, JSONPath::ALLOW_MAGIC);
-            }
-
         }
 
 
