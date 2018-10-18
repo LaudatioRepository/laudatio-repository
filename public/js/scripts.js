@@ -327,6 +327,21 @@ $('#formAnnotationsLanguage').autocomplete({
 // After DOM is ready ...
 $(document).ready(() => {
 
+
+    /**
+     * fix to ensure that submit buttons aren't klickable before the toBeValidated-checkbox is checked
+     */
+    if( $(':input.toCheckValidation').length && $(':input.toBeValidated-checkbox').length && $(document).find('input.toBeValidated-checkbox:not(:checked)')){
+        if(!$('.toCheckValidation').hasClass('disabled')) {
+            $('.toCheckValidation').addClass('disabled')
+        }
+
+        if($(':input[type="submit"]').prop('disabled', false)) {
+            $(':input[type="submit"]').prop('disabled', true);
+        }
+
+    }
+
     // validate all text inputs in corresponding form, if they are empty. If not, activate submit button
     $('input.toBeValidated').blur(function(){
         let parentForm = $(this).closest('form')
@@ -359,6 +374,7 @@ $(document).ready(() => {
             }
         } else {
             $(submitBtn).removeClass('disabled')
+            $('.toCheckValidation').prop("disabled", false)
         }
     });
 

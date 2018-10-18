@@ -5,6 +5,11 @@ Auth::routes();
 Route::post('login', ['as' => 'login', 'uses' => 'Auth\LoginController@doLogin']);
 Route::get('signin', ['as' => 'signin', 'uses' => 'Auth\LoginController@signin']);
 
+Route::get('/registeruser', ['as' => 'registeruser', 'uses' => 'LaudatioRegisterController@registerUser']);
+Route::get('/registerform', ['as' => 'registerform', 'uses' => 'LaudatioRegisterController@registerForm']);
+Route::post('/registerconsent', ['as' => 'registerconsent', 'uses' => 'LaudatioRegisterController@registerConsent']);
+Route::post('/storeregister', ['as' => 'storeregister', 'uses' => 'LaudatioRegisterController@storeRegister']);
+
 
 Route::get('/', ['as' => 'frontpage', 'uses' => 'IndexController@index']);
 Route::get('/dashboard', ['as' => 'dashboard', 'uses' => 'DashboardController@index'])->middleware('auth');

@@ -100,8 +100,24 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'name' => [
+            'required' => 'The Name field is required',
+        ],
+        'email' => [
+            'required' => 'The GitLab / HU email field is required',
+            'unique' => 'The GitLab / HU email already exists'
+        ],
+        'gitlab_ssh_pubkey' => [
+            'required' => 'The SSH Key field is required',
+            'unique' => 'The SSH Key already exists'
+        ],
+        'affiliation' => [
+            'required' => 'The Affiliation field is required',
+        ],
+        'laudatiopassword' => [
+            'required' => 'The Password field is required',
+            'confirmed' => 'The password confirmation does not match',
+            'between'   => 'The password must be between :min and :max.'
         ],
     ],
 

@@ -26,7 +26,7 @@
 
             @if (Auth::guest())
             <div class="nav-item text-14 font-weight-bold ">
-                <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('register') }}">Register</a>
+                <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('registeruser') }}">Register</a>
             </div>
             <button type="button" data-toggle="modal" data-target="#signInModal" class="btn btn-outline-corpus-dark ml-1 font-weight-bold text-14 rounded text-dark text-uppercase">
                 Sign In
@@ -67,9 +67,9 @@
                             <div id="login-error-message" class="alert alert-danger" role="alert"></div>
                             <div class="form-group mt-3">
                                 <label for="email" class="text-14 text-dark-trans mb-0 pl-3">
-                                    <small>DFN-AAI or Dariah Username / Email</small>
+                                    <small>Your GitLab / HU email address</small>
                                 </label>
-                                <input id="email" type="text" class="toBeValidated form-control" name="email" value="{{ old('email') }}" required autofocus>
+                                <input type="text" class="toBeValidated form-control" name="email" value="{{ old('email') }}" required autofocus>
 
                             </div>
 
@@ -107,7 +107,6 @@
                             <button type="submit" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-30 float-right">
                                 Login
                             </button>
-                            <!--a href="{{ route('dashboard') }}" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-30 float-right">Login</a-->
                         </div>
                     </form>
                 </div>

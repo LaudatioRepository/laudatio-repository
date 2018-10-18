@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'oauth_id', 'avatar','password','affiliation'
+        'name', 'email','password','affiliation', 'gitlab_ssh_pubkey', 'gitlab-use-agree', 'terms-of-use-agree'
     ];
 
     /**

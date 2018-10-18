@@ -24,6 +24,11 @@
     @else
         @include ('layouts.project_ux_breadcrumb')
     @endif
+    @if($flash = session('message'))
+        <div id="flash-message" class="alert alert-success">
+            {{ $flash }}
+        </div>
+    @endif
     @yield('content')
     @include('layouts.main_ux_footer')
 </div>
