@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->string('email')->unique();
-            $table->longText('gitlab_ssh_pubkey')->unique()->nullable();
+            $table->longText('gitlab_ssh_pubkey')->unique();
             $table->integer('gitlab-use-agree');
             $table->integer('terms-of-use-agree');
             $table->string('affiliation')->nullable();

@@ -16,8 +16,8 @@ class CreateUsersTable extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('email')->unique();
-            $table->longText('gitlab_ssh_pubkey')->unique()->nullable();
+            $table->string('gitlabemail')->unique();
+            $table->longText('gitlab_ssh_pubkey')->unique();
             $table->integer('gitlab-use-agree');
             $table->integer('terms-of-use-agree');
             $table->string('affiliation')->nullable();

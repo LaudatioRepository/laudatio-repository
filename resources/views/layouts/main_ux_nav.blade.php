@@ -67,9 +67,9 @@
                             <div id="login-error-message" class="alert alert-danger" role="alert"></div>
                             <div class="form-group mt-3">
                                 <label for="email" class="text-14 text-dark-trans mb-0 pl-3">
-                                    <small>DFN-AAI or Dariah Username / Email</small>
+                                    <small>Your GitLab / HU email address</small>
                                 </label>
-                                <input id="email" type="text" class="toBeValidated form-control" name="email" value="{{ old('email') }}" required autofocus>
+                                <input type="text" class="toBeValidated form-control" name="email" value="{{ old('email') }}" required autofocus>
 
                             </div>
 
@@ -107,7 +107,6 @@
                             <button type="submit" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-30 float-right">
                                 Login
                             </button>
-                            <!--a href="{{ route('dashboard') }}" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-30 float-right">Login</a-->
                         </div>
                     </form>
                 </div>

@@ -54,7 +54,7 @@
                                     I agree with Laudatio terms of use
                                 </label>
                             </div>
-                            <input type="hidden" name="gitlabemail" value="{{$gitlabemail}}" />
+                            <input type="hidden" name="email" value="{{$email}}" />
                             <div class="form-row mt-5">
                                 <div class="col">
                                     <input type="submit" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-100" value="Finish registration" />

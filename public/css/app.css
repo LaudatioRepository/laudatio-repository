@@ -3785,7 +3785,8 @@ select[multiple].input-lg,
 
 .has-warning .input-group-addon {
   color: #8a6d3b;
-  border-color: #8a6d3b;
+  bo .help-block,
+  .has-error rder-color: #8a6d3b;
   background-color: #fcf8e3;
 }
 
@@ -3793,8 +3794,7 @@ select[multiple].input-lg,
   color: #8a6d3b;
 }
 
-.has-error .help-block,
-.has-error .control-label,
+.^.control-label,
 .has-error .radio,
 .has-error .checkbox,
 .has-error .radio-inline,

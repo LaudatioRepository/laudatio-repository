@@ -7,7 +7,7 @@ use Log;
 use App\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
-
+use App\Http\Controllers\Controller as Controller;
 class LaudatioRegisterController extends Controller
 {
     /*
@@ -21,7 +21,7 @@ class LaudatioRegisterController extends Controller
     |
     */
 
-
+    use RegistersUsers;
     /**
      * RegisterController constructor.
      */
@@ -35,35 +35,27 @@ class LaudatioRegisterController extends Controller
         return view('auth.registeruser');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'gitlabemail' => 'required|string|email|max:255|unique:users',
-            'ssh-key' => 'required|string|max:255',
-            'laudatio-password' => 'required|string|min:6|confirmed',
-            'affiliation' => 'required|string|max:255'
-        ]);
-    }
 
     public function registerConsent(Request $request){
+        $validated = $this->validate($request,[
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users|max:255',
+            'gitlab_ssh_pubkey' => 'required|string|unique:users',
+            'affiliation' => 'required|string|max:255',
+            'laudatiopassword' => 'required|between:8,255|confirmed'
+        ]);
+
         $formArray = array(
             'name' => $request->input('name'),
-            'gitlabemail' => $request->input('gitlabemail'),
-            'ssh-key' => $request->input('ssh-key'),
+            'email' => $request->input('email'),
+            'gitlab_ssh_pubkey' => $request->input('gitlab_ssh_pubkey'),
             'gitlab-use-check' => 1,
             'affiliation' => $request->input('affiliation'),
-            'laudatio-password' => $request->input('laudatio-password')
+            'laudatiopassword' => $request->input('laudatiopassword')
         );
 
-        $request->session()->put($request->input('gitlabemail'), $formArray);
-        return view('auth.registerconsent')->with("gitlabemail",$request->input('gitlabemail'));
+        $request->session()->put($request->input('email'), $formArray);
+        return view('auth.registerconsent')->with("email",$request->input('email'));
     }
 
     public function registerForm(){
@@ -71,15 +63,15 @@ class LaudatioRegisterController extends Controller
     }
 
     public function storeRegister(Request $request) {
-        $data = $request->session()->get($request->input('gitlabemail'));
+        $data = $request->session()->get($request->input('email'));
         User::create([
             'name' => $data['name'],
-            'email' => $data['gitlabemail'],
-            'gitlab_ssh_pubkey' => $data['ssh-key'],
+            'email' => $data['email'],
+            'gitlab_ssh_pubkey' => $data['gitlab_ssh_pubkey'],
             'gitlab-use-agree' => $data['gitlab-use-check'],
             'terms-of-use-agree' => 1,
             'affiliation' => $data['affiliation'],
-            'password' => bcrypt($data['laudatio-password']),
+            'password' => bcrypt($data['laudatiopassword']),
         ]);
         return redirect('admin');
     }

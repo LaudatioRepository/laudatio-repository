@@ -14,6 +14,20 @@
     <link href="{{ asset('css/ux_style.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/unslider.css') }}" rel="stylesheet">
     <link href="{{ asset('css/laudatio.css') }}" rel="stylesheet">
+    <style>
+        .has-error .help-block,
+        .has-error .control-label,
+        .has-error .radio,
+        .has-error .checkbox,
+        .has-error .radio-inline,
+        .has-error .checkbox-inline,
+        .has-error.radio label,
+        .has-error.checkbox label,
+        .has-error.radio-inline label,
+        .has-error.checkbox-inline label {
+            color: #a94442;
+        }
+    </style>
 </head>
 
 <body>
