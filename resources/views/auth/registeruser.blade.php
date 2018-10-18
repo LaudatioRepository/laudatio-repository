@@ -10,7 +10,7 @@
 
 
                 <div class="d-flex justify-content-between mt-7 mb-3">
-                    <h3 class="h3 font-weight-normal">Registration step 1/3 - Sign in for GutLab and register your SSH Public Key</h3>
+                    <h3 class="h3 font-weight-normal">Registration step 1/3 - Sign in for GitLab and register your SSH Public Key</h3>
                 </div>
                 <div class="my-4">
                     <p>
