@@ -119,7 +119,8 @@ class UploadController extends Controller
                 Log::info("IS IT WELL FORMED? ".$xmlfile);
                 $isWellFormed = $this->validationService->isWellFormed(true);
                 Log::info("IS IT WELL FORMED THEN? ".$isWellFormed);
-                $isValid = $this->validationService->isValidByRNG(true);
+                //$isValid = $this->validationService->isValidByRNG(true);
+                $isValid = $this->validationService->isXMLContentValid();
                 Log::info("IS IT VALID THEN? ".$isValid);
             } catch (XMLNotWellformedException $exception) {
                 Log::info("THERE WAS AN XMLNotWellformedException ".$exception->getMessage());
@@ -149,7 +150,7 @@ class UploadController extends Controller
             }
 
             // validate xml
-
+            return;
             $xmlNode = simplexml_load_file($xmlpath);
 
             if($xmlNode) {

@@ -664,8 +664,11 @@ class CorpusController extends Controller
             $corpus = Corpus::findOrFail($corpusid);
 
             foreach ($toBeDeletedCollection as $toBeDeleted) {
-                $deleteData = json_decode($toBeDeleted);
-                $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$deleteData['fileName'],$auth_user_name,$auth_user_email);
+                if(!is_array($toBeDeleted)){
+                    $toBeDeleted = json_decode($toBeDeleted);
+                }
+
+                $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName'],$auth_user_name,$auth_user_email);
                 DB::table('corpuses')
                     ->where([['id', '=' ,$deleteData['databaseId']],['corpus_id','=',$corpusid]])
                     ->update(['file_name' => null]);

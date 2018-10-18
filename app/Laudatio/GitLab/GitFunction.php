@@ -99,7 +99,7 @@ class GitFunction
         $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
         $folder = substr($path,strrpos($path,"/")+1);
 
-        $process = new Process("git ls-files --others --exclude-standard \"$folder\"",$pathWithOutAddedFolder);
+        $process = new Process("git ls-files --exclude-standard \"$folder\"",$pathWithOutAddedFolder);
         $process->run();
 
         // executes after the command finishes
@@ -824,7 +824,7 @@ class GitFunction
 
             $process = null;
             $folder = str_replace(" ","\\ ",$folder);
-
+            Log::info("ISFILE: ".$folder. "CWDPAF: ".$cwdPath);
             $process = new Process("rm -rf $folder",$cwdPath);
             $process->run();
 

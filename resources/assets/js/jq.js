@@ -1014,7 +1014,7 @@ $(function(){
             currentCount = parseInt($('#annotationCount span').html());
 
         }
-
+        console.log(postDeleteData)
         var trashcan = $(this);
 
         deleteCorpusContent(postDeleteData,contentType).then(function(data){
@@ -1341,7 +1341,7 @@ function deleteCorpusContent(postData, documentType) {
         });
 
         var postUri = '/api/adminapi/'+documentType;
-
+        console.log("POSTURI: "+postUri);
         $.ajax({
             url: postUri,
             type:"POST",

@@ -465,10 +465,17 @@ class GitRepoService implements GitRepoInterface
     public function deleteFile($flysystem, $path, $user,$email){
         $result = null;
         if($flysystem->has($path)){
+            log::info("WE HAVE PAF: ".print_r($path,1));
             $gitFunction = new  GitFunction();
             $isTracked = $gitFunction->isTracked($this->basePath."/".$path);
+
             if($isTracked){
+                log::info("IZTRACKED: ".print_r($this->basePath."/".$path,1));
                 $result = $gitFunction->deleteFiles($path,$user,$email);
+            }
+            else {
+                log::info("IZNOTTRACKED: ".print_r($this->basePath."/".$path,1));
+                $result = $gitFunction->deleteUntrackedFiles($path,false,false);
             }
         }
         return $result;

@@ -35,7 +35,7 @@ host('depot1-6.cms.hu-berlin.de')
     ->user('root')
     ->identityFile('/Users/rolfguescini/.ssh/deploy', '/Users/rolfguescini/.ssh/deploy', '')
     ->set('deploy_path', '/var/www/html/laravelaudatio')
-    ->set('branch', 'userregistration')
+    ->set('branch', 'dataupload')
     ->user('rolfguescini');
 
 

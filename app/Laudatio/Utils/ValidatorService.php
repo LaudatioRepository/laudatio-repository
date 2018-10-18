@@ -9,8 +9,11 @@
 namespace App\Laudatio\Utils;
 
 use App\Custom\ValidatorInterface;
+use App\Exceptions\XMLNotValidException;
 use App\Exceptions\XMLNotWellformedException;
 use XMLReader;
+use DOMDocument;
+use Log;
 
 class ValidatorService implements ValidatorInterface
 {
@@ -100,12 +103,39 @@ class ValidatorService implements ValidatorInterface
 
             throw new XMLNotWellformedException(join(",",$isWellformed['errors']),0,null);
         }
+
+
         if($json){
             return json_encode($isWellformed);
         }
         else{
             return $isWellformed['isWellFormed'];
         }
+
+    }
+
+    public function isXMLContentValid()
+    {
+
+        libxml_use_internal_errors(true);
+
+        $this->debug('$this->nodes->length' .': '.$this->nodes->length);
+        if ($this->nodes->length > 0) {
+            foreach ($this->nodes as $node) {
+                $part = new \DOMDocument('1.0', 'utf-8');
+                $part->appendChild($part->importNode($node, true));
+            }
+            if (!$part->relaxNGValidate($this->schema)) {
+                foreach(libxml_get_errors() as $error) {
+                    $this->error(trim($error->message) .' (line '.$error->line. ')');
+                }
+                return false;
+            }
+        } else {
+            throw new XMLNotValidException(join(",",$isValid['errors']),0,null);
+        }
+
+        return true;
 
     }
 
@@ -125,11 +155,20 @@ class ValidatorService implements ValidatorInterface
         while($this->xml_reader->read()){
             if(!$this->xml_reader->isValid()){
                 $isValid['isValid'] = "false";
-                $xmlError = libxml_get_last_error();
+                //$xmlError = libxml_get_last_error();
+                foreach(libxml_get_errors() as $error) {
+                    array_push($isValid['errors'],str_replace("\n","",$error->message));
+                }
+
+                throw new XMLNotValidException(join(",",$isValid['errors']),0,null);
             }
         }
+
+        /*
         if(!empty($xmlError))
+            Log::info("XMLSERRROR: ".print_r($xmlError,1));
             array_push($isValid['errors'],str_replace("\n","",$xmlError->message));
+         */
 
         $this->xml_reader->close();
 
