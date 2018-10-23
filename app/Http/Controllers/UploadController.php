@@ -224,8 +224,8 @@ class UploadController extends Controller
             }
             else{
                 $filePath = $corpusProjectPath."/".$corpus->directory_path.'/TEI-HEADERS/corpus/'.$fileName;
-                $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/';
-                $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/'.$fileName;
+                $addPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/'.$fileName;
+                $commitPath = $corpusProjectPath.'/'.$corpus->directory_path.'/TEI-HEADERS/corpus/';
                 $commitDataPath = 'TEI-HEADERS/corpus/'.$fileName;
             }
 
@@ -279,8 +279,8 @@ class UploadController extends Controller
 
 
                     //empty cache
-                    $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id);
-                    $this->laudatioUtilsService->emptyDocumentCacheByDocumentId($document->id);
+                    $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id,$corpusIndexName);
+                    $this->laudatioUtilsService->emptyDocumentCacheByDocumentIndex($documentIndexName);
                 }
                 else if($headerPath == 'annotation'){
 
@@ -311,12 +311,14 @@ class UploadController extends Controller
                             $annotation->publication_version = $corpus->publication_version;
                             $annotation->workflow_status = $corpus->workflow_status;
                             $annotation->save();
+                            $this->laudatioUtilsService->emptyAnnotationCacheByNameAndCorpusId($annotation->annotation_id, $corpusId, $annotationIndexName);
                         }
                     }
 
                     //empty cache
-                    $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id);
-                    $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationId($annotation->id);
+                    $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$corpusIndexName);
+
+                    $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationIndex($annotationIndexName);
 
                 }
                 else if($headerPath == 'corpus'){
@@ -336,8 +338,34 @@ class UploadController extends Controller
                         }
                     }
 
+                    if(isset($jsonPath)){
+                        $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
+
+                        $corpusDescription = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
+                        $corpusPublicationVersions = $jsonPath->find('$.TEI.teiHeader.revisionDesc.change.n')->data();
+
+                        if(empty($corpusPublicationVersions)) {
+                            $corpusPublicationVersions = $jsonPath->find('$.TEI.teiHeader.revisionDesc.change[*].n')->data();
+                        }
+                        $corpusPublicationVersion = max(array_values($corpusPublicationVersions));
+
+                        if(isset($corpusTitle[0])) {
+                            $corpus->name = $corpusTitle[0];
+
+                            if(isset($corpusDescription[0])) {
+                                $corpus->description = $corpusDescription[0];
+                            }
+
+                            if(isset($corpusPublicationVersion)) {
+                                $corpus->publication_version = $corpusPublicationVersion;
+                            }
+
+                            $corpus->save();
+
+                        }
+                    }
                     //empty cache
-                    $this->laudatioUtilsService->emptyCorpusCache($corpus->corpus_id);
+                    $this->laudatioUtilsService->emptyCorpusCache($corpus->elasticsearch_id,$corpusIndexName);
                 }
             }
 
@@ -546,7 +574,7 @@ class UploadController extends Controller
                                         $corpus->save();
                                     }
 
-                                    $this->laudatioUtilsService->emptyCorpusCache($corpus->corpus_id);
+                                    $this->laudatioUtilsService->emptyCorpusCache($corpus->elasticsearch_id,$corpusIndexName);
 
 
                                     $annotationParams = array();
@@ -585,10 +613,11 @@ class UploadController extends Controller
                                         $annotationToBeUpdated->elasticsearch_index = $annotationElasticIds[$annotationId]['elasticsearchindex'];
                                         $annotationToBeUpdated->directory_path = $updatedCorpusPath;
                                         $annotationToBeUpdated->save();
-                                        $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationId($annotationToBeUpdated->id);
+                                        $this->laudatioUtilsService->emptyAnnotationCacheByNameAndCorpusId($annotationToBeUpdated->annotation_id,$corpusId,$annotationIndexName);
                                     }
 
-
+                                    $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$corpusIndexName);
+                                    $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationIndex($annotationIndexName);
 
                                     $documentElasticIds = $this->elasticService->getElasticIdByObjectId($documentIndexName,$documentParams);
 
@@ -598,12 +627,10 @@ class UploadController extends Controller
                                         $documentToBeUpdated->elasticsearch_index = $documentElasticIds[$documentId]['elasticsearchindex'];
                                         $documentToBeUpdated->directory_path = $updatedCorpusPath;
                                         $documentToBeUpdated->save();
-                                        $this->laudatioUtilsService->emptyDocumentCacheByDocumentId($documentToBeUpdated->id);
+                                        $this->laudatioUtilsService->emptyDocumentCacheByDocumentIndex($documentIndexName);
                                     }
 
-                                    //$this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id);
-                                    //$this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id);
-
+                                    $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id,$documentIndexName);
                                 }//end if pushed
                             }//end if returnpath
                         }//end if added

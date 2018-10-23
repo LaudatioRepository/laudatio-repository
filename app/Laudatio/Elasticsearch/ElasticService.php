@@ -458,7 +458,7 @@ class ElasticService implements ElasticsearchInterface
      * @param bool $full
      * @return array
      */
-    public function getAnnotation($id,$full = true,$index){
+    public function getAnnotation($id,$full = true, $index){
         $returned_response = array();
         
         if (Cache::tags(['annotation_'.$index])->has("getAnnotation_".$id."_".$index)) {
@@ -541,7 +541,6 @@ class ElasticService implements ElasticsearchInterface
 
 
     public function deleteIndexedObject($index,$params){
-        Cache::flush();
         $result = array();
         $queryBody = null;
         $queryBuilder = new QueryBuilder();
@@ -566,7 +565,7 @@ class ElasticService implements ElasticsearchInterface
         if($response['deleted'] > 0){
             array_push($result,$response);
         }
-        Cache::flush();
+
         return array(
             'error' => false,
             'result' => $result
@@ -759,12 +758,12 @@ class ElasticService implements ElasticsearchInterface
         $resultData = array();
 
         /*
-        if (Cache::tags(['corpus_'.$searchData[0]['corpus_id']])->has("getCorpusByDocument_".$searchData[0]['corpus_id'])) {
-            $resultData = Cache::tags(['corpus_'.$searchData[0]['corpus_id']])->get("getCorpusByDocument_".$searchData[0]['corpus_id']);
+        if (Cache::tags(['corpus_'.$searchData[0]['corpus_id'].'_'.$index])->has("getCorpusByDocument_".$searchData[0]['corpus_id'].'_'.$index)) {
+            $resultData = Cache::tags(['corpus_'.$searchData[0]['corpus_id'].'_'.$index])->get("getCorpusByDocument_".$searchData[0]['corpus_id'].'_'.$index);
         }
         else {
-            Cache::tags(['corpus_'.$searchData[0]['corpus_id']])->flush();
-            //end foreach queries
+
+
         }
         */
         $queryBuilder = new QueryBuilder();
@@ -793,12 +792,9 @@ class ElasticService implements ElasticsearchInterface
             }
 
             if(count($resultData) > 0) {
-                Cache::tags(['corpus_'.$searchData[0]['corpus_id']])->forever("getCorpusByDocument_".$searchData[0]['corpus_id'],$resultData);
+                Cache::tags(['corpus_'.$searchData[0]['corpus_id'].'_'.$index])->forever("getCorpusByDocument_".$searchData[0]['corpus_id'].'_'.$index,$resultData);
             }
-
         }
-
-
         return $resultData;
     }
 

@@ -22,6 +22,7 @@
                         @else
                             {{$corpus_data['name']}}
                         @endif
+                        Version {{$corpus_data['version']}}
                     </h3>
                     <div class="mt-1">
                         <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">

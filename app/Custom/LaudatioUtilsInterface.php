@@ -64,11 +64,12 @@ interface LaudatioUtilsInterface
 
 
     /* CACHE */
-    public function emptyCorpusCache($corpusId);
+    public function emptyCorpusCache($corpusId,$index);
 
-    public function emptyDocumentCacheByCorpusId($corpusId);
-    public function emptyDocumentCacheByDocumentId($documentId);
+    public function emptyDocumentCacheByCorpusId($corpusId,$index);
+    public function emptyDocumentCacheByDocumentIndex($documentIndex);
 
-    public function emptyAnnotationCacheByCorpusId($corpusId);
-    public function emptyAnnotationCacheByAnnotationId($annotationId);
+    public function emptyAnnotationCacheByCorpusId($corpusId,$index);
+    public function emptyAnnotationCacheByAnnotationIndex($index);
+    public function emptyAnnotationGroupCacheByAnnotationAndCorpusId($annotationId,$corpusId, $index);
 }

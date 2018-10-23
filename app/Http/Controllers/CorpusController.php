@@ -457,6 +457,7 @@ class CorpusController extends Controller
 
         $corpus_data = array(
             'name' => $corpus->name,
+            'version' => $corpus->publication_version,
             'project_name' => $corpusproject->name,
             'project_id' => $corpusproject->id,
             'filepath' => $path,

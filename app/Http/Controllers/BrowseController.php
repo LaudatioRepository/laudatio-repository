@@ -56,7 +56,7 @@ class BrowseController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($header,$id){
-        $data = null;
+        $data = array();
         $isLoggedIn = \Auth::check();
         $user = \Auth::user();
         $corpusElasticId = null;
@@ -75,180 +75,182 @@ class BrowseController extends Controller
             case "corpus":
                 //get the current index for the corpus....
                 $current_corpus_index = $this->LaudatioUtilService->getCurrentCorpusIndexByElasticsearchId($id);
-                Log::info("CURRENTCORPUSINDEX: ".$current_corpus_index);
                 $current_document_index = str_replace("corpus","document",$current_corpus_index);
-                Log::info("CURRENTDOCINDEX: ".$current_document_index);
                 $current_annotation_index = str_replace("corpus","annotation",$current_corpus_index);
-                Log::info("current_annotation_index: ".$current_annotation_index);
 
                 $apiData = $this->ElasticService->getCorpus($id,true,$current_corpus_index);
-                $data = json_decode($apiData->getContent(), true);
-                //dd($data);
-                //dd($current_corpus_index);
-                $citeData['authors'] = array();
-                for($i=0;$i< count($data['result']['corpus_editor_forename']);$i++) {
-                    array_push($citeData['authors'],$data['result']['corpus_editor_forename'][$i]." ".$data['result']['corpus_editor_surname'][$i]);
-                }
-
-                $corpusName = $data['result']['corpus_title'][0];
-
-                $citeData['title'] = $data['result']['corpus_title'][0];
-                $citeData['version'] = $data['result']['corpus_version'][count($data['result']['corpus_version']) -1];
-                $citeData['publishing_year'] = $citeData['publishing_year'] = date('Y',strtotime($data['result']['corpus_publication_publication_date'][0]));//Carbon::createFromFormat ('Y-m-d' , $data['result']['corpus_publication_publication_date'][0])->format ('Y');
-                $citeData['publishing_institution'] = $data['result']['corpus_publication_publisher'][0];
-                $citeData['corpus_publication_license'] = $data['result']['corpus_publication_license'][0];
-                $citeData['published_handle'] = "";
-
-                $corpusId = is_array($data['result']['corpus_id']) ? $data['result']['corpus_id'][0]: $data['result']['corpus_id'];
-
-                //@todo: get the correct docs and annotations based on the correct corpus_id => in_corpora
-
-                $corpusVersion =  $data['result']['publication_version'][0];
-                $workFlowStatus = $data['result']['publication_status'];
-                $corpusPublicationLicense = $data['result']['corpus_publication_license'][0];
-
-
-                $formatSearchResult = $this->ElasticService->getFormatsByCorpus($corpusId,$current_corpus_index);
-                $formats = array();
-                if(isset($formatSearchResult['aggregations'])){
-                    foreach ($formatSearchResult['aggregations']['formats']['buckets'] as $formatSearchResult) {
-                        array_push($formats,$formatSearchResult['key']);
-                    }
-                }
-
-                $data['result']['formats'] = $formats;
-
-                $documentResult = $this->ElasticService->getDocumentByCorpus(
-                    array(array("in_corpora" => $corpusId)),
-                    array($corpusId),
-                    $current_document_index
-                );
-
-                $document_dates = array();
-                $document_range = "";
-
-                if (array_key_exists($data['result']['corpus_id'][0],$documentResult)){
-                    for($d = 0; $d < count($documentResult[$data['result']['corpus_id'][0]]); $d++) {
-                        $doc = $documentResult[$data['result']['corpus_id'][0]][$d];
-                        array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+                //dd($apiData);
+                if($apiData) {
+                    $data = json_decode($apiData->getContent(), true);
+                    //dd($data);
+                    //dd($current_corpus_index);
+                    $citeData['authors'] = array();
+                    for($i=0;$i< count($data['result']['corpus_editor_forename']);$i++) {
+                        array_push($citeData['authors'],$data['result']['corpus_editor_forename'][$i]." ".$data['result']['corpus_editor_surname'][$i]);
                     }
 
-                    sort($document_dates);
+                    $corpusName = $data['result']['corpus_title'][0];
 
-                    if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
-                        $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
-                    }
-                    else{
-                        $document_range = $document_dates[0];
-                    }
-                }
+                    $citeData['title'] = $data['result']['corpus_title'][0];
+                    $citeData['version'] = $data['result']['corpus_version'][count($data['result']['corpus_version']) -1];
+                    $citeData['publishing_year'] = $citeData['publishing_year'] = date('Y',strtotime($data['result']['corpus_publication_publication_date'][0]));//Carbon::createFromFormat ('Y-m-d' , $data['result']['corpus_publication_publication_date'][0])->format ('Y');
+                    $citeData['publishing_institution'] = $data['result']['corpus_publication_publisher'][0];
+                    $citeData['corpus_publication_license'] = $data['result']['corpus_publication_license'][0];
+                    $citeData['published_handle'] = "";
 
+                    $corpusId = is_array($data['result']['corpus_id']) ? $data['result']['corpus_id'][0]: $data['result']['corpus_id'];
 
-                $allDocumentsResult = $this->ElasticService->getDocumentsByDocumentId($data['result']['corpus_documents'],$current_document_index);
+                    //@todo: get the correct docs and annotations based on the correct corpus_id => in_corpora
 
-                $corpusDocuments = array();
-
-                $documentcount = 0;
-                foreach ($documentResult as $cid => $cdata) {
-                    foreach ($cdata as $citem) {
-                        $documentArray = array();
-                        $documentArray['document_id'] = $citem['_id'];
-                        $documentArray["document_title"] = $citem['_source']["document_title"];
-                        $documentArray["document_publication_publishing_date"] = $citem['_source']["document_publication_publishing_date"];
-                        $documentArray["document_publication_place"] = $citem['_source']["document_publication_place"];
-                        $documentArray["document_list_of_annotations_name"] = $citem['_source']["document_list_of_annotations_name"];
-                        $documentArray["document_size_extent"] = $citem['_source']["document_size_extent"];
-                        array_push($corpusDocuments, $documentArray);
-                        $documentcount++;
-                    }
-                }
-                $data['result']['corpusdocuments'] = $corpusDocuments;
-                $data['result']['corpusdocumentcount'] = $documentcount;
-
-                //dd($data);
-
-                $annotationMapping = array();
-                $annotationcount = 0;
-                $totalannotationcount = count($data['result']['annotation_id']);
-                $foundAnnotationCorpus = array();
-                foreach($data['result']['annotation_id'] as $annotationId){
-                    $annotators = array();
-
-                    $annotationData = $this->ElasticService->getAnnotationByNameAndCorpusId($annotationId,$corpusId, array(
-                        "preparation_encoding_annotation_group",
-                        "preparation_annotation_id",
-                        "_id",
-                        "preparation_title",
-                        "in_documents",
-                        "in_corpora",
-                        "preparation_author_annotator_forename",
-                        "preparation_author_annotator_surname",
-                        "generated_id"
-                    ),$current_annotation_index);
-                    //dd($corpusId);
-                    if(!$annotationData['error'] && count($annotationData['result']) > 0){
-
-                        if(array_key_exists('preparation_encoding_annotation_group', $annotationData['result'][0]['_source'])){
-                            if(!array_key_exists($annotationData['result'][0]['_id'],$annotators)){
-                                $annotators[$annotationData['result'][0]['_id']] = array();
-                                if(array_key_exists('preparation_author_annotator_forename', $annotationData['result'][0]['_source'])){
-                                    for($a=0; $a < count($annotationData['result'][0]['_source']['preparation_author_annotator_forename']); $a++){
-                                        array_push($annotators[$annotationData['result'][0]['_id']], $annotationData['result'][0]['_source']['preparation_author_annotator_forename'][$a]." ".$annotationData['result'][0]['_source']['preparation_author_annotator_surname'][$a]);
-                                    }
-                                }
-
-                            }
+                    $corpusVersion =  $data['result']['publication_version'][0];
+                    $workFlowStatus = $data['result']['publication_status'];
+                    $corpusPublicationLicense = $data['result']['corpus_publication_license'][0];
 
 
-
-                            $groups = array_unique($annotationData['result'][0]['_source']['preparation_encoding_annotation_group']);
-                            foreach ($groups as $group){
-                                if(!array_key_exists($group,$annotationMapping)){
-                                    $annotationMapping[$group] = array();
-                                }
-                                $dataArray = array();
-                                if(array_key_exists('in_documents', $annotationData['result'][0]['_source'])){
-                                    $dataArray['document_count'] = floatval(count($annotationData['result'][0]['_source']['in_documents']));
-                                }
-                                $dataArray['title'] = $annotationData['result'][0]['_source']['preparation_annotation_id'][0];
-                                $dataArray['preparation_annotation_id'] = $annotationData['result'][0]['_id'];
-
-                                $dataArray['annotators'] = $annotators;
-                                array_push($annotationMapping[$group],$dataArray);
-                            }
-                            if(!in_array($annotationData['result'][0]['_source']['preparation_annotation_id'][0],$foundAnnotationCorpus)){
-                                $annotationcount++;
-                            }
-                            array_push($foundAnnotationCorpus,$annotationData['result'][0]['_source']['preparation_annotation_id'][0]);
+                    $formatSearchResult = $this->ElasticService->getFormatsByCorpus($corpusId,$current_corpus_index);
+                    $formats = array();
+                    if(isset($formatSearchResult['aggregations'])){
+                        foreach ($formatSearchResult['aggregations']['formats']['buckets'] as $formatSearchResult) {
+                            array_push($formats,$formatSearchResult['key']);
                         }
                     }
 
-                }
+                    $data['result']['formats'] = $formats;
 
-                $allAnnotationGroupResult = $this->ElasticService->getAnnotationGroups(
-                    array(
-                        "field" => "in_corpora",
-                        "value" => $corpusId
-                    ),$current_annotation_index
-                );
+                    $documentResult = $this->ElasticService->getDocumentByCorpus(
+                        array(array("in_corpora" => $corpusId)),
+                        array($corpusId),
+                        $current_document_index
+                    );
 
-                $allAnnotationGroups = array();
-                if(isset($allAnnotationGroupResult['aggregations'])){
-                    foreach($allAnnotationGroupResult['aggregations']['annotations']['buckets'] as $groupdata) {
-                        array_push($allAnnotationGroups,$groupdata['key']);
+                    $document_dates = array();
+                    $document_range = "";
+
+                    if (array_key_exists($data['result']['corpus_id'][0],$documentResult)){
+                        for($d = 0; $d < count($documentResult[$data['result']['corpus_id'][0]]); $d++) {
+                            $doc = $documentResult[$data['result']['corpus_id'][0]][$d];
+                            array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+                        }
+
+                        sort($document_dates);
+
+                        if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
+                            $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
+                        }
+                        else{
+                            $document_range = $document_dates[0];
+                        }
                     }
-                }
 
 
-                $data['result']['workflow_status'] = $workFlowStatus;
-                $data['result']['corpus_version'] = $corpusVersion;
-                $data['result']['corpusPublicationLicense'] = $corpusPublicationLicense;
-                $data['result']['corpusAnnotationGroups'] = $annotationMapping;
-                $data['result']['allAnnotationGroups'] = $allAnnotationGroups;
-                $data['result']['corpusannotationcount'] = $annotationcount;
-                $data['result']['totalcorpusannotationcount'] = $totalannotationcount;
-                $data['result']['document_genre'] = $this->LaudatioUtilService->getDocumentGenreByCorpusId($corpusId,$current_corpus_index);
-                $data['result']['document_range'] = $document_range;
+                    $allDocumentsResult = $this->ElasticService->getDocumentsByDocumentId($data['result']['corpus_documents'],$current_document_index);
+
+                    $corpusDocuments = array();
+
+                    $documentcount = 0;
+                    foreach ($documentResult as $cid => $cdata) {
+                        foreach ($cdata as $citem) {
+                            $documentArray = array();
+                            $documentArray['document_id'] = $citem['_id'];
+                            $documentArray["document_title"] = $citem['_source']["document_title"];
+                            $documentArray["document_publication_publishing_date"] = $citem['_source']["document_publication_publishing_date"];
+                            $documentArray["document_publication_place"] = $citem['_source']["document_publication_place"];
+                            $documentArray["document_list_of_annotations_name"] = $citem['_source']["document_list_of_annotations_name"];
+                            $documentArray["document_size_extent"] = $citem['_source']["document_size_extent"];
+                            array_push($corpusDocuments, $documentArray);
+                            $documentcount++;
+                        }
+                    }
+                    $data['result']['corpusdocuments'] = $corpusDocuments;
+                    $data['result']['corpusdocumentcount'] = $documentcount;
+
+                    //dd($data);
+
+                    $annotationMapping = array();
+                    $annotationcount = 0;
+                    $totalannotationcount = count($data['result']['annotation_id']);
+                    $foundAnnotationCorpus = array();
+                    foreach($data['result']['annotation_id'] as $annotationId){
+                        $annotators = array();
+
+                        $annotationData = $this->ElasticService->getAnnotationByNameAndCorpusId($annotationId,$corpusId, array(
+                            "preparation_encoding_annotation_group",
+                            "preparation_annotation_id",
+                            "_id",
+                            "preparation_title",
+                            "in_documents",
+                            "in_corpora",
+                            "preparation_author_annotator_forename",
+                            "preparation_author_annotator_surname",
+                            "generated_id"
+                        ),$current_annotation_index);
+                        //dd($corpusId);
+                        if(!$annotationData['error'] && count($annotationData['result']) > 0){
+
+                            if(array_key_exists('preparation_encoding_annotation_group', $annotationData['result'][0]['_source'])){
+                                if(!array_key_exists($annotationData['result'][0]['_id'],$annotators)){
+                                    $annotators[$annotationData['result'][0]['_id']] = array();
+                                    if(array_key_exists('preparation_author_annotator_forename', $annotationData['result'][0]['_source'])){
+                                        for($a=0; $a < count($annotationData['result'][0]['_source']['preparation_author_annotator_forename']); $a++){
+                                            array_push($annotators[$annotationData['result'][0]['_id']], $annotationData['result'][0]['_source']['preparation_author_annotator_forename'][$a]." ".$annotationData['result'][0]['_source']['preparation_author_annotator_surname'][$a]);
+                                        }
+                                    }
+
+                                }
+
+
+
+                                $groups = array_unique($annotationData['result'][0]['_source']['preparation_encoding_annotation_group']);
+                                foreach ($groups as $group){
+                                    if(!array_key_exists($group,$annotationMapping)){
+                                        $annotationMapping[$group] = array();
+                                    }
+                                    $dataArray = array();
+                                    if(array_key_exists('in_documents', $annotationData['result'][0]['_source'])){
+                                        $dataArray['document_count'] = floatval(count($annotationData['result'][0]['_source']['in_documents']));
+                                    }
+                                    $dataArray['title'] = $annotationData['result'][0]['_source']['preparation_annotation_id'][0];
+                                    $dataArray['preparation_annotation_id'] = $annotationData['result'][0]['_id'];
+
+                                    $dataArray['annotators'] = $annotators;
+                                    array_push($annotationMapping[$group],$dataArray);
+                                }
+                                if(!in_array($annotationData['result'][0]['_source']['preparation_annotation_id'][0],$foundAnnotationCorpus)){
+                                    $annotationcount++;
+                                }
+                                array_push($foundAnnotationCorpus,$annotationData['result'][0]['_source']['preparation_annotation_id'][0]);
+                            }
+                        }
+
+                    }
+
+                    $allAnnotationGroupResult = $this->ElasticService->getAnnotationGroups(
+                        array(
+                            "field" => "in_corpora",
+                            "value" => $corpusId
+                        ),$current_annotation_index
+                    );
+
+                    $allAnnotationGroups = array();
+                    if(isset($allAnnotationGroupResult['aggregations'])){
+                        foreach($allAnnotationGroupResult['aggregations']['annotations']['buckets'] as $groupdata) {
+                            array_push($allAnnotationGroups,$groupdata['key']);
+                        }
+                    }
+
+
+                    $data['result']['workflow_status'] = $workFlowStatus;
+                    $data['result']['corpus_version'] = $corpusVersion;
+                    $data['result']['corpusPublicationLicense'] = $corpusPublicationLicense;
+                    $data['result']['corpusAnnotationGroups'] = $annotationMapping;
+                    $data['result']['allAnnotationGroups'] = $allAnnotationGroups;
+                    $data['result']['corpusannotationcount'] = $annotationcount;
+                    $data['result']['totalcorpusannotationcount'] = $totalannotationcount;
+                    $data['result']['document_genre'] = $this->LaudatioUtilService->getDocumentGenreByCorpusId($corpusId,$current_corpus_index);
+                    $data['result']['document_range'] = $document_range;
+                }//end if we have data
+
+
 
 
                 break;
@@ -265,7 +267,7 @@ class BrowseController extends Controller
                 if($corpusId){
 
                     $documentCorpusdata = $this->ElasticService->getCorpusByDocument(array(array('corpus_id' => $corpusId)),array($id),$current_corpus_index);
-
+                    Log::info("REY: ".print_r($documentCorpusdata,1));
                     $data['result']['documentCorpusdata'] = $documentCorpusdata[$id][0]['_source'];
 
                     $citeData['authors'] = array();

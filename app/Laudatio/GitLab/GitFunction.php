@@ -584,9 +584,14 @@ class GitFunction
     }
 
     /**
+     * writeFiles
+     *
      * @param $dirPath
      * @param $fileDataArray
-     * @return string
+     * @param $flySystem
+     * @param $fileTempPath
+     * @param $theFilePath
+     * @return array
      */
     public function writeFiles($dirPath, $fileDataArray,$flySystem,$fileTempPath,$theFilePath){
         foreach($fileDataArray as $fileData) {
@@ -624,42 +629,37 @@ class GitFunction
         }
 
 
+        $stream = null;
+        $fileInDirectory = "";
+        $writePath = "";
+
+        if(strpos($theFilePath,'images') !== false) {
+            $writePath = $theFilePath;
+            $flySystem->has($theFilePath);
+        }
+        else{
+            //write file if exists
+            $fileArray = explode("/", $theFilePath);
 
 
-        #if(file_exists($this->basePath."/".$dirPath."/".$fileInDirectory)){
-
-            $stream = null;
-            $fileInDirectory = "";
-            $writePath = "";
-
-            if(strpos($theFilePath,'images') !== false) {
-                $writePath = $theFilePath;
-                $flySystem->has($theFilePath);
-            }
-            else{
-                //write file if exists
-                $fileArray = explode("/", $theFilePath);
-
-
-                if(count($fileArray) == 1){
-                    $fileInDirectory = array_pop($fileArray);
-                }
-
-                $writePath = $dirPath."/".$fileInDirectory;
+            if(count($fileArray) == 1){
+                $fileInDirectory = array_pop($fileArray);
             }
 
+            $writePath = $dirPath."/".$fileInDirectory;
+        }
 
-            $existingFile = $flySystem->has($dirPath."/".$fileInDirectory);
 
-            if(!$existingFile){
-                $stream = fopen($fileTempPath, 'r+');
-                $flySystem->writeStream($writePath, $stream);
-            }
-            else{
-                $stream = fopen($fileTempPath, 'r+');
-                $flySystem->updateStream($writePath, $stream);
-            }
-        #}
+        $existingFile = $flySystem->has($dirPath."/".$fileInDirectory);
+
+        if(!$existingFile){
+            $stream = fopen($fileTempPath, 'r+');
+            $flySystem->writeStream($writePath, $stream);
+        }
+        else{
+            $stream = fopen($fileTempPath, 'r+');
+            $flySystem->updateStream($writePath, $stream);
+        }
         array_push($createdDirectoryPath,$this->basePath."/".$writePath);
 
         if (is_resource($stream)) {

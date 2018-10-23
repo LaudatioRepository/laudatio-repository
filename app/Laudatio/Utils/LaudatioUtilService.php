@@ -77,7 +77,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 $attributesArray[$attributeKey] = (string)$attribute;
             }
 
-            
+
         }
 
         //get child nodes from all namespaces
@@ -101,7 +101,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                     $tagsArray[$childTagName] =
                         in_array($childTagName, $options['alwaysArray']) || !$options['autoArray']
                             ? array($childProperties) : $childProperties;
-                            //? array($childProperties) : array($childProperties);
+                    //? array($childProperties) : array($childProperties);
                 } elseif (
                     is_array($tagsArray[$childTagName]) && array_keys($tagsArray[$childTagName])
                     === range(0, count($tagsArray[$childTagName]) - 1)
@@ -487,9 +487,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             }
         }
         catch (\Exception $e) {
-          $setData = false;
-          Log::info("setCommitData: error: ".$e->getMessage());
-       }
+            $setData = false;
+            Log::info("setCommitData: error: ".$e->getMessage());
+        }
 
 
 
@@ -543,13 +543,13 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
         if(count($annotationsFromDB) > 0){
             foreach($annotationsFromDB as $annotationFromDB)
-              $annotationFromDB->update([
-                  "annotation_size_type" => $annotationSizeType[0],
-                  "annotation_size_value" => $annotationSizeValue[0],
-                  "directory_path" => $corpus->directory_path,
-                  "file_name" => $fileName,
-                  "uid" => $uid
-            ]);
+                $annotationFromDB->update([
+                    "annotation_size_type" => $annotationSizeType[0],
+                    "annotation_size_value" => $annotationSizeValue[0],
+                    "directory_path" => $corpus->directory_path,
+                    "file_name" => $fileName,
+                    "uid" => $uid
+                ]);
 
             $annotationFromDB->save();
 
@@ -1303,7 +1303,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $citedauthors = substr($citedauthors,0,strrpos($citedauthors,","));
         $authorstring = substr($authorstring,0,strrpos($authorstring,","));
         $citedauthors .= $data['publishing_year'];
-        
+
         $APAcite = $namearray[1].", ".
             substr($namearray[0],0,1).
             ". (".$data['publishing_year']."). ".
@@ -1353,33 +1353,40 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $citations;
     }
 
-    public function emptyCorpusCache($corpusId){
-        Cache::tags(['corpus_'.$corpusId])->flush();
+    public function emptyCorpusCache($corpusId, $index){
+        Cache::tags(['corpus_'.$corpusId.'_'.$index])->flush();
 
-        Cache::tags(['formats_'.$corpusId])->flush();
+        Cache::tags(['formats_'.$corpusId.'_'.$index])->flush();
 
-        Cache::tags(['guidelines_'.$corpusId])->flush();
+        $guidelineIndex = str_replace("corpus","guideline",$index);
+        Cache::tags(['guidelines_'.$corpusId.'_'.$guidelineIndex])->flush();
     }
 
-    public function emptyDocumentCacheByCorpusId($corpusId){
+    public function emptyDocumentCacheByCorpusId($corpusId,$index){
 
-        Cache::tags(['document_'.$corpusId])->flush();
+        Cache::tags(['document_'.$corpusId.'_'.$index])->flush();
 
         // @todo: flushes too all docs, and not only the relevant ones ?
         //Cache::tags(['document'])->flush();
 
     }
-    public function emptyDocumentCacheByDocumentId($documentId){
-        Cache::tags(['document_'.$documentId])->flush();
+    public function emptyDocumentCacheByDocumentIndex($documentIndex){
+        Cache::tags(['document_'.$documentIndex])->flush();
     }
 
-    public function emptyAnnotationCacheByCorpusId($corpusId){
-        Cache::tags(['annotation_'.$corpusId])->flush();
-        Cache::tags(['annotationgroup_'.$corpusId])->flush();
-
+    public function emptyAnnotationCacheByCorpusId($corpusId, $index){
+        Cache::tags(['annotation_'.$corpusId.'_'.$index])->flush();
     }
 
-    public function emptyAnnotationCacheByAnnotationId($annotationId){
-        Cache::tags(['annotation_'.$annotationId])->flush();
+    public function emptyAnnotationCacheByAnnotationIndex($index){
+        Cache::tags(['annotation_'.$index])->flush();
+    }
+
+    public function emptyAnnotationCacheByNameAndCorpusId($name, $corpusId, $index) {
+        Cache::tags([ 'annotation_'.$name.'_'.$corpusId.'_'.$index])->flush();
+    }
+
+    public function emptyAnnotationGroupCacheByAnnotationAndCorpusId($annotationId,$corpusId, $index){
+        Cache::tags(['annotationgroup_'.$corpusId.'_'.$index])->flush();
     }
 }
