@@ -68,7 +68,7 @@ interface LaudatioUtilsInterface
 
     public function emptyDocumentCacheByCorpusId($corpusId,$index);
     public function emptyDocumentCacheByDocumentIndex($documentIndex);
-
+    public function emptyDocumentCacheByDocumentElasticsearchId($documentId, $documentIndex);
     public function emptyAnnotationCacheByCorpusId($corpusId,$index);
     public function emptyAnnotationCacheByAnnotationIndex($index);
     public function emptyAnnotationGroupCacheByAnnotationAndCorpusId($annotationId,$corpusId, $index);

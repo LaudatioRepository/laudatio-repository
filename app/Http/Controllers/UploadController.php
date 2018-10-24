@@ -132,7 +132,6 @@ class UploadController extends Controller
 
                 if($xmlNode) {
                     $json = $this->laudatioUtilsService->parseXMLToJson($xmlNode, array());
-                    //Log::info("json: ".print_r(json_encode($json),1));
 
                 }
                 if(isset($json)){
@@ -275,10 +274,11 @@ class UploadController extends Controller
                         $document->publication_version = $corpus->publication_version;
                         $document->workflow_status = $corpus->workflow_status;
                         $document->save();
+                        $this->laudatioUtilsService->emptyDocumentCacheByDocumentElasticsearchId($document->elasticsearch_id,$documentIndexName);
                     }
 
                     //empty cache
-                    $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id,$corpusIndexName);
+                    $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id,$documentIndexName);
                     $this->laudatioUtilsService->emptyDocumentCacheByDocumentIndex($documentIndexName);
                 }
                 else if($headerPath == 'annotation'){
@@ -315,7 +315,7 @@ class UploadController extends Controller
                     }
 
                     //empty cache
-                    $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$corpusIndexName);
+                    $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$annotationIndexName);
                     $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationIndex($annotationIndexName);
 
                 }
@@ -474,14 +474,15 @@ class UploadController extends Controller
                 //write to db
                 $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId,$user->id,$fileName,false);
                 //empty cache
-                $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id,$corpusIndexName);
+                $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id,$documentIndexName);
                 $this->laudatioUtilsService->emptyDocumentCacheByDocumentIndex($documentIndexName);
+                $this->laudatioUtilsService->emptyDocumentCacheByDocumentElasticsearchId($document->elasticsearch_id,$documentIndexName);
             }
             else if($headerPath == 'annotation') {
                 //write to db
                 $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId,$user->id,$fileName,false);
                 //empty cache
-                $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$corpusIndexName);
+                $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$annotationIndexName);
                 $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationIndex($annotationIndexName);
             }
 
@@ -620,7 +621,7 @@ class UploadController extends Controller
                                         $this->laudatioUtilsService->emptyAnnotationCacheByNameAndCorpusId($annotationToBeUpdated->annotation_id,$corpusId,$annotationIndexName);
                                     }
 
-                                    $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$corpusIndexName);
+                                    $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$annotationIndexName);
                                     $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationIndex($annotationIndexName);
 
                                     $documentElasticIds = $this->elasticService->getElasticIdByObjectId($documentIndexName,$documentParams);
@@ -631,9 +632,9 @@ class UploadController extends Controller
                                         $documentToBeUpdated->elasticsearch_index = $documentElasticIds[$documentId]['elasticsearchindex'];
                                         $documentToBeUpdated->directory_path = $updatedCorpusPath;
                                         $documentToBeUpdated->save();
-                                        $this->laudatioUtilsService->emptyDocumentCacheByDocumentIndex($documentIndexName);
+                                        $this->laudatioUtilsService->emptyDocumentCacheByDocumentElasticsearchId($documentToBeUpdated->elasticsearch_id,$documentIndexName);
                                     }
-
+                                    $this->laudatioUtilsService->emptyDocumentCacheByDocumentIndex($documentIndexName);
                                     $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id,$documentIndexName);
                                 }//end if pushed
                             }//end if returnpath

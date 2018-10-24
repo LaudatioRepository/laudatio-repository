@@ -1379,6 +1379,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     public function emptyDocumentCacheByDocumentIndex($documentIndex){
         Cache::tags(['document_'.$documentIndex])->flush();
     }
+    public function emptyDocumentCacheByDocumentElasticsearchId($documentId, $documentIndex){
+        Cache::tags(['document_'.$documentId.'_'.$documentIndex])->flush();
+    }
 
     public function emptyAnnotationCacheByCorpusId($corpusId, $index){
         Cache::tags(['annotation_'.$corpusId.'_'.$index])->flush();
