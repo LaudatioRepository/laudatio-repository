@@ -47755,16 +47755,8 @@ var render = function() {
                                 attrs: { role: "tabpanel", id: "corpusLicense" }
                               },
                               [
-                                _vm._v(
-                                  "\n                                " +
-                                    _vm._s(
-                                      _vm._f("arrayToString")(
-                                        _vm.headerdata
-                                          .corpus_publication_license_description
-                                      )
-                                    ) +
-                                    "\n                                "
-                                ),
+                                _c("br"),
+                                _vm._v(" "),
                                 _c("div", { attrs: { id: "license-deed" } })
                               ]
                             )

@@ -41,40 +41,6 @@
         </div>
         <!-- CARD END  -->
         <div id="annotationUploadPreview"></div>
-        <p class="mt-5">
-            It seems that you just added a new annotation. The name of the new annotation will be defined through the according
-            .xml file.
-        </p>
-        <p>Within our
-            <a href="#"></a>Help section you will find detailed instructions how to structure .xml data and upload
-            files. Following data needs to be provided to be able to publish a annotation to laudatio:
-        </p>
-        <div class="mt-5">
-
-
-            <ul class="list-group list-group-flush mb-3 mt-3">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <b>1 Annotation Header uploaded</b>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <b>According number of Document Header</b>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex flex-column">
-                        <b>According number of Annotation Header</b>
-                    </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex flex-column">
-                        <b>at least 1 Annotation Data Format</b>
-                    </div>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <b>Defined License</b>
-                </li>
-            </ul>
-
-        </div>
     </div>
 
     <div id="annotationFileList">

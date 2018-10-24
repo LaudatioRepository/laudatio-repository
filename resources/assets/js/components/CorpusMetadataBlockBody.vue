@@ -135,7 +135,7 @@
                             </div>
 
                             <div role="tabpanel"  class="tab-pane fade in" id="corpusLicense" v-if="header == 'corpus'">
-                                {{headerdata.corpus_publication_license_description  | arrayToString }}
+                            <br />
                                 <div id="license-deed"></div>
                             </div>
 
