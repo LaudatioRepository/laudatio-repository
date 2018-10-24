@@ -277,7 +277,6 @@ class UploadController extends Controller
                         $document->save();
                     }
 
-
                     //empty cache
                     $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id,$corpusIndexName);
                     $this->laudatioUtilsService->emptyDocumentCacheByDocumentIndex($documentIndexName);
@@ -317,7 +316,6 @@ class UploadController extends Controller
 
                     //empty cache
                     $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$corpusIndexName);
-
                     $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationIndex($annotationIndexName);
 
                 }
@@ -475,10 +473,16 @@ class UploadController extends Controller
             else if($headerPath == 'document') {
                 //write to db
                 $document = $this->laudatioUtilsService->setDocumentAttributes($json,$corpusId,$user->id,$fileName,false);
+                //empty cache
+                $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id,$corpusIndexName);
+                $this->laudatioUtilsService->emptyDocumentCacheByDocumentIndex($documentIndexName);
             }
             else if($headerPath == 'annotation') {
                 //write to db
                 $annotation = $this->laudatioUtilsService->setAnnotationAttributes($json,$corpusId,$user->id,$fileName,false);
+                //empty cache
+                $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$corpusIndexName);
+                $this->laudatioUtilsService->emptyAnnotationCacheByAnnotationIndex($annotationIndexName);
             }
 
             //set paths

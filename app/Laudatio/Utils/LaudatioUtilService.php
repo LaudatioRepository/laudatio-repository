@@ -1109,7 +1109,13 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      */
     public function getPublishedCorpusData($corpusresponses, $elasticService, $perPage ,$sortKriterium, $currentPage){
 
-        $responseArray = array();
+        $responseArray = array(
+            "entries" => array(),
+            "totalcount" => 0,
+            "perPageArray" => array(),
+            "perPage" => 0
+        );
+
         $corpusdata = array();
         $entries = null;
         $perPageArray = array();
