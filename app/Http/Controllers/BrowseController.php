@@ -67,9 +67,6 @@ class BrowseController extends Controller
         $corpusPublicationLicense = null;
         $current_corpus_index = "";
 
-        if($isLoggedIn) {
-            //dd($user);
-        }
 
         switch ($header){
             case "corpus":
@@ -89,6 +86,7 @@ class BrowseController extends Controller
                         array_push($citeData['authors'],$data['result']['corpus_editor_forename'][$i]." ".$data['result']['corpus_editor_surname'][$i]);
                     }
 
+                    $corpusId = is_array($data['result']['corpus_id']) ? $data['result']['corpus_id'][0]: $data['result']['corpus_id'];
                     $corpusName = $data['result']['corpus_title'][0];
 
                     $citeData['title'] = $data['result']['corpus_title'][0];
@@ -98,9 +96,7 @@ class BrowseController extends Controller
                     $citeData['corpus_publication_license'] = $data['result']['corpus_publication_license'][0];
                     $citeData['published_handle'] = "";
 
-                    $corpusId = is_array($data['result']['corpus_id']) ? $data['result']['corpus_id'][0]: $data['result']['corpus_id'];
 
-                    //@todo: get the correct docs and annotations based on the correct corpus_id => in_corpora
 
                     $corpusVersion =  $data['result']['publication_version'][0];
                     $workFlowStatus = $data['result']['publication_status'];
@@ -465,13 +461,20 @@ class BrowseController extends Controller
                 break;
         }
        //dd($data);
+        $corpus_path = $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusId,$current_corpus_index);
+        $corpusPathArray = explode("/",$corpus_path);
+        $data['result']['project_path'] = $corpusPathArray[0];
+        $corpusLogo = $this->LaudatioUtilService->getCorpusLogoByCorpusId($corpusId);
+        $data['result']['corpus_logo'] = $corpusLogo;
         JavaScript::put([
             "header" => $header,
             "header_id" => $id,
             "corpus_elasticsearch_id" => $this->LaudatioUtilService->getElasticSearchIdByCorpusId($corpusId,$current_corpus_index),
             "corpus_id" => $this->LaudatioUtilService->getDatabaseIdByCorpusId($corpusId),
+            "corpus_logo" => $corpusLogo,
             "corpus_name" => $corpusName,
-            "corpus_path" => $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusId,$current_corpus_index),
+            "project_path" => $corpusPathArray[0],
+            "corpus_path" => $corpus_path,
             "workflow_status" => $workFlowStatus,
             "corpus_version" => $corpusVersion,
             "corpusPublicationLicense" => $corpusPublicationLicense,

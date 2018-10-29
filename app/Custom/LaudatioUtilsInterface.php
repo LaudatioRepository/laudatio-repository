@@ -37,6 +37,7 @@ interface LaudatioUtilsInterface
     public function getElasticSearchIdByCorpusId($corpusid,$corpus_index);
     public function getElasticSearchIndexByCorpusId($corpusid);
     public function getDatabaseIdByCorpusId($corpusid);
+    public function getCorpusLogoByCorpusId($corpusid);
     public function getDocumentGenreByCorpusId($corpusid,$index);
     public function getCorpusPathByCorpusId($corpusid,$corpus_index);
     public function deleteModels($path);
@@ -51,7 +52,7 @@ interface LaudatioUtilsInterface
     public function getWorkFlowStatus($corpusId);
 
     public function buildCiteFormat($data);
-    public function getLicenseByCorpus($data);
+    //public function getLicenseByCorpus($data);
 
     public function getCurrentCorpusIndexByElasticsearchId($elasticSearchId);
     public function getCurrentDocumentIndexByElasticsearchId($elasticSearchId);
@@ -61,6 +62,8 @@ interface LaudatioUtilsInterface
     public function getCurrentCorpusIndexByDocumentElasticsearchId($elasticSearchId);
 
     public function getPublishedCorpusData($corpusresponses,$elasticService, $perPage ,$sortKriterium, $currentPage);
+
+    public function setCorpusLogoSymLink($path);
 
 
     /* CACHE */

@@ -546,14 +546,14 @@ class UploadController extends Controller
                         $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
 
                         //add files
-                        Log::info("INITAL DONE; ADDING FILES: ".print_r($addStructurePath,1));
+                        //Log::info("INITAL DONE; ADDING FILES: ".print_r($addStructurePath,1));
                         $isAdded = $this->GitRepoService->addFiles($this->flysystem, $addStructurePath);
                         if($isAdded) {
-                            Log::info("INITAL DONE; IS ADDED: COMMITTING ".$corpusCommitpath);
+                            //Log::info("INITAL DONE; IS ADDED: COMMITTING ".$corpusCommitpath);
                             $corpusCommitdata = $this->GitRepoService->commitFiles($corpusCommitpath, "Adding files for ", $corpusId, $user->name, $user->email);
 
                             if(!empty($corpusCommitdata)){
-                                Log::info("INITAL DONE; IS COMMITED ".print_r($corpusCommitdata,1));
+                                //Log::info("INITAL DONE; IS COMMITED ".print_r($corpusCommitdata,1));
                                 $setData = $this->laudatioUtilsService->setCommitData($corpusCommitdata,$corpusId);
                                 $isPushed = $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);
 
@@ -740,25 +740,23 @@ class UploadController extends Controller
             $directoryPath = $this->laudatioUtilsService->getDirectoryPath(array($fileName),$fileName);
 
             $gitFunction = new GitFunction();
-            Log::info("DIRPATH: ".$dirPath." DIRECTORYPATH: ".$directoryPath." FILENAME: ".$fileName);
+            
             $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
             if(strpos($createdPaths[0],$dirPath) !== false){
-                Log::info("CREATEDPATHS: ".$createdPaths[0]);
-
-                $addPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder;
+                $addPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder.'/'.$fileName;
                 $commitPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder;
                 $pushPath = $corpusProjectPath.'/'.$corpus->directory_path.'/'.$uploadFolder;
 
                 //add files
-                Log::info("ADDING: ".$addPath);
                 $isAdded = $this->GitRepoService->addFiles($this->flysystem, $addPath);
 
                 //git commit The files
                 if($isAdded) {
-                    Log::info("ISADDED: ".$isAdded);
                     $corpus->corpus_logo = $fileName;
                     $corpus->save();
-                    Log::info("IS SAVED: ".$corpus->corpus_logo);
+
+                    $this->laudatioUtilsService->setCorpusLogoSymLink($addPath);
+                    
                     if($corpusIsVersioned){
                         $returnPath = $this->GitRepoService->commitFiles($commitPath, "Adding files for " . $fileName, $corpusId, $user->name, $user->email);
                         if (!empty($returnPath)) {

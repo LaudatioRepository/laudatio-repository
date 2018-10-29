@@ -43548,6 +43548,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'citedata', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath', 'workflowstatus', 'corpusversion', 'ccbaseuri'],
@@ -43586,7 +43589,28 @@ var render = function() {
         _vm._m(0),
         _vm._v(" "),
         _c("div", { staticClass: "row" }, [
-          _vm._m(1),
+          _vm.headerdata.corpus_logo == ""
+            ? _c("div", { staticClass: "col-2" }, [
+                _c("img", {
+                  staticClass: "w-100",
+                  attrs: {
+                    src: "/images/placeholder_circle.svg",
+                    alt: "circle-image"
+                  }
+                })
+              ])
+            : _c("div", { staticClass: "col-2" }, [
+                _c("img", {
+                  staticClass: "w-100",
+                  attrs: {
+                    src: "/images/"
+                      .concat(_vm.headerdata.project_path)
+                      .concat("_")
+                      .concat(_vm.headerdata.corpus_logo),
+                    alt: "corpus-logo"
+                  }
+                })
+              ]),
           _vm._v(" "),
           _c("div", { staticClass: "col pr-5" }, [
             _c("h3", { staticClass: "h3 font-weight-bold" }, [
@@ -43872,11 +43896,11 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _vm._m(2),
+                      _vm._m(1),
                       _vm._v(" "),
                       _c("br"),
                       _vm._v(" "),
-                      _vm._m(3),
+                      _vm._m(2),
                       _vm._v(" "),
                       _c("div", {
                         staticClass: "w-100 d-flex  pull-right",
@@ -43898,7 +43922,7 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-                _vm._m(4),
+                _vm._m(3),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -44006,7 +44030,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _vm._m(5),
+        _vm._m(4),
         _vm._v(" "),
         _c(
           "div",
@@ -44047,10 +44071,10 @@ var render = function() {
                     ]
                   ),
                   _vm._v(" "),
-                  _vm._m(6)
+                  _vm._m(5)
                 ]),
                 _vm._v(" "),
-                _vm._m(7)
+                _vm._m(6)
               ])
             ])
           ]
@@ -44091,17 +44115,6 @@ var staticRenderFns = [
         )
       ]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-2" }, [
-      _c("img", {
-        staticClass: "w-100",
-        attrs: { src: "/images/placeholder_circle.svg", alt: "circle-image" }
-      })
-    ])
   },
   function() {
     var _vm = this

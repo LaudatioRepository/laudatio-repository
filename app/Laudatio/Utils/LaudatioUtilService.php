@@ -23,12 +23,22 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Log;
 use Cache;
 use DB;
 
 class LaudatioUtilService implements LaudatioUtilsInterface
 {
+
+
+    protected $basePath;
+
+    public function __construct()
+    {
+        $this->basePath = config('laudatio.basePath');
+    }
 
     /**
      * Parse xml to json
@@ -753,6 +763,24 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     }
 
+    public function setCorpusLogoSymLink($path) {
+
+        $pathArray = explode("/",$path);
+        end($pathArray);
+        $last_id = key($pathArray);
+
+        $imagePath = public_path('images');
+
+        $process = new Process("ln -s ".$this->basePath."/".$path." ".$imagePath."/".$pathArray[0]."_".$pathArray[$last_id]);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        return $process->getOutput();
+    }
 
     /**
      * Set the version mapping for each version of a header
@@ -965,6 +993,12 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpus[0]->id;
     }
 
+
+    public function getCorpusLogoByCorpusId($corpusid){
+        $corpus = Corpus::where("corpus_id",$corpusid)->get();
+        return $corpus[0]->corpus_logo;
+    }
+
     public function  getCurrentCorpusIndexByElasticsearchId($elasticSearchId) {
         $corpus = Corpus::where([
             ["elasticsearch_id","=",$elasticSearchId]
@@ -1038,9 +1072,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpusPath;
     }
 
-    public function getLicenseByCorpus($data){
-
-    }
 
     public function deleteModels($path){
         $dirArray = explode("/",$path);

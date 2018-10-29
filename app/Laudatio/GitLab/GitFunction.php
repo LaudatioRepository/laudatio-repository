@@ -720,7 +720,7 @@ class GitFunction
 
         $process = null;
         $folder = str_replace(" ","\\ ",$folder);
-        //dd("FOLDER: ".$folder." CWDPATH: ".$cwdPath);
+
 
         if($isFile){
             $process = new Process("git rm $folder",$cwdPath);
@@ -821,7 +821,6 @@ class GitFunction
 
             $process = null;
             $folder = str_replace(" ","\\ ",$folder);
-            Log::info("ISFILE: ".$folder. "CWDPAF: ".$cwdPath);
             $process = new Process("rm -rf $folder",$cwdPath);
             $process->run();
 
@@ -837,7 +836,7 @@ class GitFunction
         else{
             //we are deleting contents of a folder
             $dirArray = explode("/",$path);
-            //dd($dirArray);
+
             if(!$isCorpus && !$isProject){
                 $type = $dirArray[3];
                 $objects = null;

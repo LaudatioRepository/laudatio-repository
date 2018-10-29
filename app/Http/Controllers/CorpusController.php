@@ -459,6 +459,7 @@ class CorpusController extends Controller
             'name' => $corpus->name,
             'version' => $corpus->publication_version,
             'project_name' => $corpusproject->name,
+            'project_path' => $corpusproject->directory_path,
             'project_id' => $corpusproject->id,
             'filepath' => $path,
             'user_roles' => $user_roles,
