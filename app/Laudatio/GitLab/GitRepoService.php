@@ -55,12 +55,15 @@ class GitRepoService implements GitRepoInterface
             $flysystem->createDir($dirPath."/githooks");
             $flysystem->createDir($dirPath."/TEI-HEADERS");
             $flysystem->createDir($dirPath."/TEI-HEADERS/corpus");
-            $flysystem->write($dirPath."/TEI-HEADERS/corpus/README.md","#CORPUS HEADERS#\n This folder holds Corpus header meta data");
+            $flysystem->write($dirPath."/TEI-HEADERS/corpus/README.md","# CORPUS HEADERS #\n This folder contains Corpus header meta data");
             $flysystem->createDir($dirPath."/TEI-HEADERS/document");
-            $flysystem->write($dirPath."/TEI-HEADERS/document/README.md","#DOCUMENT HEADERS#\n This folder holds Document header meta data");
+            $flysystem->write($dirPath."/TEI-HEADERS/document/README.md","# DOCUMENT HEADERS #\n This folder contains Document header meta data");
             $flysystem->createDir($dirPath."/TEI-HEADERS/annotation");
-            $flysystem->write($dirPath."/TEI-HEADERS/annotation/README.md","#ANNOTATION HEADERS#\n This folder holds Annotation header meta data");
+            $flysystem->write($dirPath."/TEI-HEADERS/annotation/README.md","# ANNOTATION HEADERS #\n This folder contains Annotation header meta data");
             $flysystem->createDir($dirPath."/CORPUS-DATA");
+            $flysystem->write($dirPath."/CORPUS-DATA/README.md","# CORPUS DATA #\n This folder contains the Corpus Data itself");
+            $flysystem->createDir($dirPath."/CORPUS-IMAGES");
+            $flysystem->write($dirPath."/CORPUS-IMAGES/README.md","# CORPUS IMAGES #\n This folder contains any images associated with the corpus");
 
             $initiated = $this->initiateRepository($dirPath);
             if($initiated){
@@ -508,10 +511,55 @@ class GitRepoService implements GitRepoInterface
         return $isAdded;
     }
 
-    public function addFiles($path){
-        $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
-        $file = substr($path,strrpos($path,"/")+1);
-        $isAdded = $this->addFilesToRepository($pathWithOutAddedFolder,$file);
+    public function addFiles2($path){
+        if(is_dir($this->basePath."/".$path)) {
+            Log::info("IS DIR: path ".$this->basePath."/".$path);
+            $contents = $filesystem->listContents($path, true);
+            Log::info("GOT CONTENTS ".print_r($contents));
+            foreach ($contents as $pathelm) {
+                $pathWithOutAddedFolder = substr($pathelm,0,strrpos($pathelm,"/"));
+                $file = substr($pathelm,strrpos($pathelm,"/")+1);
+                Log::info("IS DIR: pathWithOutAddedFolder".$pathWithOutAddedFolder." FILE ".$file);
+                $isAdded = $this->addFilesToRepository($pathWithOutAddedFolder,$file);
+                Log::info("IS ARRAY: ISADDED".$isAdded);
+                if(!$isAdded) {
+                    break;
+                }
+            }
+        }
+        else {
+            $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
+            $file = substr($path,strrpos($path,"/")+1);
+            Log::info("pathWithOutAddedFolder: ".$pathWithOutAddedFolder." FILE: ".$file);
+            $isAdded = $this->addFilesToRepository($pathWithOutAddedFolder,$file);
+        }
+
+        return $isAdded;
+    }
+
+    public function addFiles($flysystem, $path) {
+        $isAdded = false;
+        try{
+            if(is_dir($this->basePath."/".$path)) {
+                $contents = $flysystem->listContents($path, true);
+                //Log::info("GOT CONTENTS ".print_r($contents,1));
+                foreach ($contents as $pathElm) {
+                    if($pathElm['type'] == "file" && strpos($pathElm['path'], '.git') === false && strpos($pathElm['path'], 'githooks') === false) {
+                        $isAdded = $this->addFilesToRepository($pathElm['dirname'],$pathElm['basename']);
+                    }
+                }
+            }
+            else {
+                $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
+                $file = substr($path,strrpos($path,"/")+1);
+                $isAdded = $this->addFilesToRepository($pathWithOutAddedFolder,$file);
+            }
+        }
+        catch(Exception $e) {
+            $isAdded = false;
+            Log::info("addFiles: error: ".$e->getMessage());
+        }
+
         return $isAdded;
     }
 
@@ -552,10 +600,25 @@ class GitRepoService implements GitRepoInterface
 
         $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$dirname);
 
+
         foreach ($stagedFiles as $stagedFile){
             $stagedfileArray = explode("/",$stagedFile);
 
-            $isCommited = $gitFunction->commitFile($this->basePath."/".$dirname."/".$stagedfileArray[1],$stagedfileArray[2],$commitmessage,$user,$email);
+            if(isset($stagedfileArray[2])){
+                $isCommited = $gitFunction->commitFile($this->basePath."/".$dirname."/".$stagedfileArray[1],$stagedfileArray[2],$commitmessage,$user,$email);
+            }
+            else {
+                $dirPathArray = explode("/", $dirname);
+                $newpath = $dirPathArray[0]."/".$dirPathArray[1];
+                if(is_array($stagedfileArray[0] && empty($stagedfileArray[1]))) {
+                    $isCommited = $gitFunction->commitFiles($this->basePath."/".$newpath,$commitmessage,$user,$email);
+                }
+                else {
+                    $isCommited = $gitFunction->commitFile($this->basePath."/".$newpath."/".$stagedfileArray[0],$stagedfileArray[1],$commitmessage,$user,$email);
+                }
+
+
+            }
             if($isCommited){
                 $commitData = $this->getCommitData($pathWithOutAddedFolder);
                 $commitDataArray[$stagedFile] = $commitData;
@@ -570,7 +633,6 @@ class GitRepoService implements GitRepoInterface
         $commitdata = null;
 
         $gitFunction = new  GitFunction();
-
 
         $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
 

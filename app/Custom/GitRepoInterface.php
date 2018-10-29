@@ -24,7 +24,7 @@ interface GitRepoInterface {
     public function addFilesToRepository($path,$file);
     public function deleteFile($flysystem, $path,$user,$email);
     public function deleteUntrackedFile($flysystem,$path);
-    public function addFiles($path);
+    public function addFiles($flysystem, $path);
     public function resetAdd($path,$files);
     public function commitFiles($dirname, $commitmessage, $corpusid,$user,$email);
     public function commitFile($dirname = "", $commitmessage, $corpusid, $user, $email);

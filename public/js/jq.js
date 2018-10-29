@@ -211,7 +211,7 @@ $(function () {
         } else if ($("nav.headernav").find("a[data-headertype ='formatdata']").hasClass('active')) {
             window.Laravel.directorypath += "/CORPUS-DATA";
         } else if ($("nav.headernav").find("a[data-headertype ='corpusimage']").hasClass('active')) {
-            window.Laravel.directorypath += "images";
+            window.Laravel.directorypath += "/IMAGES";
         } else {
             window.Laravel.directorypath += '/TEI-HEADERS';
         }
@@ -219,7 +219,7 @@ $(function () {
 
     $('nav.headernav a[data-headertype != ""]').bind('click', function (e) {
         if (typeof window.Laravel != 'undefined') {
-
+            console.log("PUNDUFF: " + $(this).data('headertype'));
             if ($(this).data('headertype') == "formatdata") {
                 var oldPath = window.Laravel.directorypath;
                 var newpath = "";
@@ -229,6 +229,14 @@ $(function () {
                     newPath = oldPath.substr(0, window.Laravel.directorypath.indexOf('/CORPUS-DATA'));
                 }
                 window.Laravel.directorypath = newPath + '/CORPUS-DATA';
+            } else if ($(this).data('headertype') == "corpusimage") {
+                var oldPath = window.Laravel.directorypath;
+                var newpath = "";
+                if (oldPath.indexOf('/TEI') > -1) {
+                    newPath = oldPath.substr(0, window.Laravel.directorypath.indexOf('/TEI'));
+                }
+
+                window.Laravel.directorypath = newPath + '/CORPUS-IMAGES';
             } else {
                 var oldPath = window.Laravel.directorypath;
                 var newpath = "";

@@ -232,7 +232,7 @@ class UploadController extends Controller
             $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
 
             //add
-            $isAdded = $this->GitRepoService->addFiles($addPath);
+            $isAdded = $this->GitRepoService->addFiles($this->flysystem, $filePath);
             //commit
             $isPushed = false;
             $commitData = null;
@@ -501,9 +501,10 @@ class UploadController extends Controller
             else{
                 if(isset($updatedCorpusPath)){
                     $filePath = $updatedCorpusPath.'/TEI-HEADERS/corpus/'.$fileName;
-                    $addPath = $updatedCorpusPath.'/TEI-HEADERS/';
+                    $addPath = $updatedCorpusPath.'/TEI-HEADERS';
+                    $addStructurePath = $updatedCorpusPath;
                     $initialCommitPath = $updatedCorpusPath;
-                    $corpusCommitpath = $updatedCorpusPath.'/TEI-HEADERS/';
+                    $corpusCommitpath = $updatedCorpusPath.'/TEI-HEADERS';
                     $initialPushPath = $updatedCorpusPath;
                 }
 
@@ -521,7 +522,7 @@ class UploadController extends Controller
             ){
                 $addRemote = $this->GitRepoService->addRemote($remoteRepoUrl,$initialPushPath);
                 $hooksAdded = $this->GitRepoService->addHooks($initialPushPath, $user->name, $user->email);
-                $isReset = $this->GitRepoService->resetAdd($initialPushPath,array("TEI-HEADERS"));
+                $isReset = $this->GitRepoService->resetAdd($initialPushPath,array("TEI-HEADERS", "CORPUS-DATA", "CORPUS-IMAGES"));
 
                 if($isReset) {
                     $hookCommitdata = $this->GitRepoService->commitFile($initialCommitPath.'/githooks', "Adding githooks",$corpusId, $user->name, $user->email);
@@ -545,11 +546,14 @@ class UploadController extends Controller
                         $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
 
                         //add files
-                        $isAdded = $this->GitRepoService->addFiles($addPath);
+                        Log::info("INITAL DONE; ADDING FILES: ".print_r($addStructurePath,1));
+                        $isAdded = $this->GitRepoService->addFiles($this->flysystem, $addStructurePath);
                         if($isAdded) {
+                            Log::info("INITAL DONE; IS ADDED: COMMITTING ".$corpusCommitpath);
                             $corpusCommitdata = $this->GitRepoService->commitFiles($corpusCommitpath, "Adding files for ", $corpusId, $user->name, $user->email);
 
                             if(!empty($corpusCommitdata)){
+                                Log::info("INITAL DONE; IS COMMITED ".print_r($corpusCommitdata,1));
                                 $setData = $this->laudatioUtilsService->setCommitData($corpusCommitdata,$corpusId);
                                 $isPushed = $this->GitRepoService->pushFiles($pushPath,$corpusId,$user);
 
@@ -660,8 +664,6 @@ class UploadController extends Controller
         $corpusPath = $dirPathArray[1];
         $uploadFolder = $dirPathArray[2];
 
-        $corpusProjectDB = DB::table('corpus_projects')->where('directory_path',$corpusProjectPath)->get();
-        $corpusProjectId = $corpusProjectDB[0]->gitlab_id;
         $corpus = null;
 
         if(isset($request->corpusid)) {
@@ -684,7 +686,7 @@ class UploadController extends Controller
                 $pushPath = $corpusProjectPath.'/'.$corpus->directory_path.'/'.$uploadFolder;
 
                 //add files
-                $isAdded = $this->GitRepoService->addFiles($addPath);
+                $isAdded = $this->GitRepoService->addFiles($this->flysystem, $addPath);
 
                 //git commit The files
                 if($isAdded) {
@@ -718,15 +720,55 @@ class UploadController extends Controller
         $dirPath = $request->directorypath;;
         $dirPathArray = explode("/",$dirPath);
         $corpusId = $request->corpusid;
-        $corpus = Corpus::find($corpusId);
+        $corpusIsVersioned = null;
+
+        $corpusProjectPath = $dirPathArray[0];
+        $corpusPath = $dirPathArray[1];
+        $uploadFolder = $dirPathArray[2];
+
+        $corpus = null;
+
+        if(isset($request->corpusid)) {
+            $corpus = Corpus::find($corpusId);
+            $corpusIsVersioned = $this->laudatioUtilsService->corpusIsVersioned($corpusId);
 
 
-        $fileName = $request->formats->getClientOriginalName();
-        $pathname = $request->formats->getPathName();
-        $directoryPath = $this->laudatioUtilsService->getDirectoryPath(array($fileName),$fileName);
+            $fileName = $request->formats->getClientOriginalName();
+            $directoryPath = $this->laudatioUtilsService->getDirectoryPath(array($fileName),$fileName);
 
-        $gitFunction = new GitFunction();
-        $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),public_path('images'));
+            $pathname = $request->formats->getPathName();
+            $directoryPath = $this->laudatioUtilsService->getDirectoryPath(array($fileName),$fileName);
+
+            $gitFunction = new GitFunction();
+            Log::info("DIRPATH: ".$dirPath." DIRECTORYPATH: ".$directoryPath." FILENAME: ".$fileName);
+            $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
+            if(strpos($createdPaths[0],$dirPath) !== false){
+                Log::info("CREATEDPATHS: ".$createdPaths[0]);
+
+                $addPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder;
+                $commitPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder;
+                $pushPath = $corpusProjectPath.'/'.$corpus->directory_path.'/'.$uploadFolder;
+
+                //add files
+                Log::info("ADDING: ".$addPath);
+                $isAdded = $this->GitRepoService->addFiles($this->flysystem, $addPath);
+
+                //git commit The files
+                if($isAdded) {
+                    Log::info("ISADDED: ".$isAdded);
+                    $corpus->corpus_logo = $fileName;
+                    $corpus->save();
+                    Log::info("IS SAVED: ".$corpus->corpus_logo);
+                    if($corpusIsVersioned){
+                        $returnPath = $this->GitRepoService->commitFiles($commitPath, "Adding files for " . $fileName, $corpusId, $user->name, $user->email);
+                        if (!empty($returnPath)) {
+                            $isPushed = $this->GitRepoService->pushFiles($pushPath, $corpusId, $user);
+                        }
+                    }
+                }
+
+            }
+        }
 
         return redirect()->route('corpus.edit', ['corpus' => $corpusId]);
     }

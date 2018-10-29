@@ -468,8 +468,10 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 }
                 else if(strrpos($path,"CORPUS-DATA") !== false) {
                     $fileName = $pathArray[1];
-                    $tempObject = $this->getModelByFileName($fileName,"CORPUS-DATA",false,$corpusId);
-                    $object = CorpusFile::findOrFail($tempObject->id);
+                    if(strpos($fileName,".md") === false) {
+                        $tempObject = $this->getModelByFileName($fileName, "CORPUS-DATA", false, $corpusId);
+                        $object = CorpusFile::findOrFail($tempObject->id);
+                    }
                 }
 
 

@@ -45,10 +45,12 @@ if(previewNode) {
 
     // DropzoneJS event methods
     corpusUpload.on("processing", function(file) {
+
         if(window.Laravel.directorypath.indexOf("CORPUS-DATA") > -1) {
             corpusUpload.options.url = "/corpusprojects/uploadFiles"
         }
-        else if(window.Laravel.directorypath.indexOf("images") > -1) {
+        else if(window.Laravel.directorypath.indexOf("CORPUS-IMAGES") > -1) {
+            console.log("dirpwth: "+window.Laravel.directorypath)
             corpusUpload.options.url = "/corpusprojects/uploadCorpusImage"
         }
         else{

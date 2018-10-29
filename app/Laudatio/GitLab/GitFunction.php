@@ -91,7 +91,7 @@ class GitFunction
 
 
     public function isUntracked($status){
-        return (strpos($status,"untracked files present") !== false);
+        return (strpos($status,"untracked files present") !== false || strpos($status,"Untracked files:") !== false);
     }
 
     public function isTracked($path){
@@ -208,7 +208,6 @@ class GitFunction
     public function addUntracked($pathWithOutAddedFolder, $folder = ""){
         $isAdded = false;
         $status = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
-
         if($folder == ""){
             if($this->isUntracked($status)){
                 $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder);
@@ -219,13 +218,11 @@ class GitFunction
             }
         }
         else {
-            if(!$this->isTracked($this->basePath."/".$pathWithOutAddedFolder."/".$folder)){
-
+            if($this->isUntracked($status)){
                 if (is_dir($folder)) {
                     $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder."/".$folder);
                 }
                 else{
-
                     $addResult = $this->doAddFile($folder,$this->basePath."/".$pathWithOutAddedFolder);
                 }
 
