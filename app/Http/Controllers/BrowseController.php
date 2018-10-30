@@ -39,7 +39,7 @@ class BrowseController extends Controller
 
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $responseArray = $this->LaudatioUtilService->getPublishedCorpusData($corpusresponses,$this->ElasticService, $perPage ,$sortKriterium, $currentPage);
-        
+
         return view('browse.index')
             ->with('isLoggedIn', $isLoggedIn)
             ->with('corpusdata',$responseArray['entries'])
@@ -464,7 +464,7 @@ class BrowseController extends Controller
         $corpus_path = $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusId,$current_corpus_index);
         $corpusPathArray = explode("/",$corpus_path);
         $data['result']['project_path'] = $corpusPathArray[0];
-        $corpusLogo = $this->LaudatioUtilService->getCorpusLogoByCorpusId($corpusId);
+        $corpusLogo = $this->LaudatioUtilService->getCorpusLogoByCorpusId($corpusId, $current_corpus_index);
         $data['result']['corpus_logo'] = $corpusLogo;
         JavaScript::put([
             "header" => $header,
