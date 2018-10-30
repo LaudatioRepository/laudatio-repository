@@ -149,6 +149,12 @@ $(function () {
         } else {
             $('#formatFileList').css('display', 'block');
         }
+
+        if (laudatioApp.logoUpload) {
+            $('#logoUploader').css('display', 'block');
+        } else {
+            $('#logoFileList').css('display', 'block');
+        }
     }
 
     // Make sure Bootstrap tabs work correctly to show the correct active states
@@ -219,7 +225,6 @@ $(function () {
 
     $('nav.headernav a[data-headertype != ""]').bind('click', function (e) {
         if (typeof window.Laravel != 'undefined') {
-            console.log("PUNDUFF: " + $(this).data('headertype'));
             if ($(this).data('headertype') == "formatdata") {
                 var oldPath = window.Laravel.directorypath;
                 var newpath = "";
@@ -248,8 +253,6 @@ $(function () {
 
                 window.Laravel.directorypath = newPath + '/TEI-HEADERS/' + $(this).data('headertype');
             }
-
-            console.log($(this).data('headertype') + " =>" + window.Laravel.directorypath);
 
             var previews = $('#previews').detach();
             previews.html("");

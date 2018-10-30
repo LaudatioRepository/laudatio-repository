@@ -745,7 +745,9 @@ class UploadController extends Controller
             $newFileName = "corpusLogo".$extension;
             $createdPaths = $gitFunction->writeFiles($dirPath,array($newFileName), $this->flysystem,$request->formats->getRealPath(),$newFileName);
 
+
             if(strpos($createdPaths[0],$dirPath) !== false){
+
                 $addPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder.'/'.$newFileName;
                 $commitPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder;
                 $pushPath = $corpusProjectPath.'/'.$corpus->directory_path.'/'.$uploadFolder;
@@ -758,7 +760,10 @@ class UploadController extends Controller
                     $corpus->corpus_logo = $newFileName;
                     $corpus->save();
 
-                    $this->laudatioUtilsService->setCorpusLogoSymLink($addPath);
+                    if(!$this->flysystem->has($addPath)){
+                        $this->laudatioUtilsService->setCorpusLogoSymLink($addPath);
+                    }
+
                     
                     if($corpusIsVersioned){
                         $returnPath = $this->GitRepoService->commitFiles($commitPath, "Adding files for " . $newFileName, $corpusId, $user->name, $user->email);

@@ -2,7 +2,7 @@
 
     <div id="documentUploader">
         <div class="d-flex justify-content-between mt-7 mb-3">
-            <h3 class="h3 font-weight-normal">File Upload Document Header XML</h3>
+            <h3 class="h3 font-weight-normal">Document Header XML File Upload </h3>
         </div>
         <!-- CARD START  -->
         <div class="card border-0 mt-3">

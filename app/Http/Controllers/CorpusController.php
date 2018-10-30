@@ -422,6 +422,11 @@ class CorpusController extends Controller
             $formatUpload = true;
         }
 
+        $logoUpload = false;
+        if( null == $corpus->corpus_logo) {
+            $logoUpload = true;
+        }
+
         // Get the messageboard for the CorpusProject this corpus is assigned to
         $messageboard = MessageBoard::where(['corpus_project_id' => $corpusproject->id])->get();
         $allMessages = array();
@@ -475,6 +480,7 @@ class CorpusController extends Controller
                 'annotationFileData' => $annotationFileData,
                 'annotationUpload' => $annotationUpload,
                 "formatUpload" => $formatUpload,
+                "logoUpload" => $logoUpload
             ),
             'corpusFormatData' => $corpusFormatData,
             'boardmessages' => $corpusMessages,
@@ -487,6 +493,8 @@ class CorpusController extends Controller
             'corpusUpload' => $corpusUpload,
             'documentUpload' => $documentUpload,
             'annotationUpload' => $annotationUpload,
+            'formatUpload' => $formatUpload,
+            'logoUpload' => $logoUpload,
             'corpus_id' => $corpus->id,
             'corpus_path' => $path,
             'auth_user_name' => $user->name,

@@ -46,6 +46,7 @@ task('environment', function () {
     run('cp /var/www/html/laravelaudatio/gitlab.php {{release_path}}/config/gitlab.php');
     run('cp /var/www/html/laravelaudatio/laudatio.php {{release_path}}/config/laudatio.php');
     run('cp /var/www/html/laravelaudatio/deployenv {{release_path}}/.env');
+    run('mkdir {{release_path}}/public/images/corpuslogos');
     //run('cp /var/www/html/laravelaudatio/Groups.php {{release_path}}/vendor/m4tthumphrey/php-gitlab-api/lib/Gitlab/Api/Groups.php');
 })->desc('Environment setup');
 

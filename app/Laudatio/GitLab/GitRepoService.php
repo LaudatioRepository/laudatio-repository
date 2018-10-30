@@ -508,41 +508,19 @@ class GitRepoService implements GitRepoInterface
     public function addFilesToRepository($path,$file){
         $gitFunction = new  GitFunction();
         $isAdded = $gitFunction->addUntracked($path,$file);
+        if(!$isAdded) {
+            $isAdded = $gitFunction->addModified($path, $file);
+        }
         return $isAdded;
     }
 
-    public function addFiles2($path){
-        if(is_dir($this->basePath."/".$path)) {
-            Log::info("IS DIR: path ".$this->basePath."/".$path);
-            $contents = $filesystem->listContents($path, true);
-            Log::info("GOT CONTENTS ".print_r($contents));
-            foreach ($contents as $pathelm) {
-                $pathWithOutAddedFolder = substr($pathelm,0,strrpos($pathelm,"/"));
-                $file = substr($pathelm,strrpos($pathelm,"/")+1);
-                Log::info("IS DIR: pathWithOutAddedFolder".$pathWithOutAddedFolder." FILE ".$file);
-                $isAdded = $this->addFilesToRepository($pathWithOutAddedFolder,$file);
-                Log::info("IS ARRAY: ISADDED".$isAdded);
-                if(!$isAdded) {
-                    break;
-                }
-            }
-        }
-        else {
-            $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
-            $file = substr($path,strrpos($path,"/")+1);
-            Log::info("pathWithOutAddedFolder: ".$pathWithOutAddedFolder." FILE: ".$file);
-            $isAdded = $this->addFilesToRepository($pathWithOutAddedFolder,$file);
-        }
 
-        return $isAdded;
-    }
 
     public function addFiles($flysystem, $path) {
         $isAdded = false;
         try{
             if(is_dir($this->basePath."/".$path)) {
                 $contents = $flysystem->listContents($path, true);
-                //Log::info("GOT CONTENTS ".print_r($contents,1));
                 foreach ($contents as $pathElm) {
                     if($pathElm['type'] == "file" && strpos($pathElm['path'], '.git') === false && strpos($pathElm['path'], 'githooks') === false) {
                         $isAdded = $this->addFilesToRepository($pathElm['dirname'],$pathElm['basename']);
@@ -599,7 +577,7 @@ class GitRepoService implements GitRepoInterface
         $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
 
         $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$dirname);
-
+        Log::info("STAGEDFILES: ".print_r($stagedFiles,1));
 
         foreach ($stagedFiles as $stagedFile){
             $stagedfileArray = explode("/",$stagedFile);

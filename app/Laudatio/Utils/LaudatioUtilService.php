@@ -763,6 +763,11 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     }
 
+    /**
+     * setCorpusLogoSymLink
+     * @param $path
+     * @return string
+     */
     public function setCorpusLogoSymLink($path) {
 
         $pathArray = explode("/",$path);
@@ -781,6 +786,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
         return $process->getOutput();
     }
+
 
     /**
      * Set the version mapping for each version of a header

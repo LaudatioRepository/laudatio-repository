@@ -1,8 +1,8 @@
-#corpusUploader, #documentUploader, #annotationUploader, #formatUploader{
+#corpusUploader, #documentUploader, #annotationUploader, #formatUploader, #logoUploader{
   display: none;
 }
 
-#corpusFileList{
+#corpusFileList, #documentFileList, #annotationFileList, #logoFileList, #formatFileList{
   display: none;
 }
 
