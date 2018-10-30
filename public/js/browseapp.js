@@ -43589,7 +43589,7 @@ var render = function() {
         _vm._m(0),
         _vm._v(" "),
         _c("div", { staticClass: "row" }, [
-          _vm.headerdata.corpus_logo == ""
+          _vm.headerdata.corpus_logo == null
             ? _c("div", { staticClass: "col-2" }, [
                 _c("img", {
                   staticClass: "w-100",
@@ -43603,7 +43603,7 @@ var render = function() {
                 _c("img", {
                   staticClass: "w-100",
                   attrs: {
-                    src: "/images/"
+                    src: "/images/corpuslogos/"
                       .concat(_vm.headerdata.project_path)
                       .concat("_")
                       .concat(_vm.headerdata.corpus_logo),

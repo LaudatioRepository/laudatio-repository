@@ -646,7 +646,6 @@ class GitFunction
             $writePath = $dirPath."/".$fileInDirectory;
         }
 
-
         $existingFile = $flySystem->has($dirPath."/".$fileInDirectory);
 
         if(!$existingFile){

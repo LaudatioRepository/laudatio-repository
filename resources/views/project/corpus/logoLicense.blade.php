@@ -84,16 +84,4 @@
         </div>
     </div>
 
-    <div class="d-flex justify-content-between mt-7 mb-3">
-        <h3 class="h3 font-weight-normal">Corpus License</h3>
-    </div>
-
-    <div class="w-75">
-        <p class="mt-3">
-            Introduction about License. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-            eirmod tempor invidunt ut labore et dolore. If you miss a License format please contact
-            the laudatio admimistrator Max Superuser@laudatio.de
-        </p>
-    </div>
-
 </div>

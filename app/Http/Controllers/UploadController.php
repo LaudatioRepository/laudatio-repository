@@ -740,10 +740,13 @@ class UploadController extends Controller
             $directoryPath = $this->laudatioUtilsService->getDirectoryPath(array($fileName),$fileName);
 
             $gitFunction = new GitFunction();
-            
-            $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
+
+            $extension = substr($fileName,strrpos($fileName,"."));
+            $newFileName = "corpusLogo".$extension;
+            $createdPaths = $gitFunction->writeFiles($dirPath,array($newFileName), $this->flysystem,$request->formats->getRealPath(),$newFileName);
+
             if(strpos($createdPaths[0],$dirPath) !== false){
-                $addPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder.'/'.$fileName;
+                $addPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder.'/'.$newFileName;
                 $commitPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder;
                 $pushPath = $corpusProjectPath.'/'.$corpus->directory_path.'/'.$uploadFolder;
 
@@ -752,13 +755,13 @@ class UploadController extends Controller
 
                 //git commit The files
                 if($isAdded) {
-                    $corpus->corpus_logo = $fileName;
+                    $corpus->corpus_logo = $newFileName;
                     $corpus->save();
 
                     $this->laudatioUtilsService->setCorpusLogoSymLink($addPath);
                     
                     if($corpusIsVersioned){
-                        $returnPath = $this->GitRepoService->commitFiles($commitPath, "Adding files for " . $fileName, $corpusId, $user->name, $user->email);
+                        $returnPath = $this->GitRepoService->commitFiles($commitPath, "Adding files for " . $newFileName, $corpusId, $user->name, $user->email);
                         if (!empty($returnPath)) {
                             $isPushed = $this->GitRepoService->pushFiles($pushPath, $corpusId, $user);
                         }

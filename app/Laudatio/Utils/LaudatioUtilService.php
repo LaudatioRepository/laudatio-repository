@@ -771,7 +771,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
         $imagePath = public_path('images');
 
-        $process = new Process("ln -s ".$this->basePath."/".$path." ".$imagePath."/".$pathArray[0]."_".$pathArray[$last_id]);
+        $process = new Process("ln -s ".$this->basePath."/".$path." ".$imagePath."/corpuslogos/".$pathArray[0]."_".$pathArray[$last_id]);
         $process->run();
 
         // executes after the command finishes
