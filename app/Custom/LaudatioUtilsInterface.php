@@ -37,7 +37,7 @@ interface LaudatioUtilsInterface
     public function getElasticSearchIdByCorpusId($corpusid,$corpus_index);
     public function getElasticSearchIndexByCorpusId($corpusid);
     public function getDatabaseIdByCorpusId($corpusid);
-    public function getCorpusLogoByCorpusId($corpusid);
+    public function getCorpusLogoByCorpusId($corpusid,$corpus_index);
     public function getDocumentGenreByCorpusId($corpusid,$index);
     public function getCorpusPathByCorpusId($corpusid,$corpus_index);
     public function deleteModels($path);

@@ -39,7 +39,7 @@ class BrowseController extends Controller
 
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $responseArray = $this->LaudatioUtilService->getPublishedCorpusData($corpusresponses,$this->ElasticService, $perPage ,$sortKriterium, $currentPage);
-
+        
         return view('browse.index')
             ->with('isLoggedIn', $isLoggedIn)
             ->with('corpusdata',$responseArray['entries'])

@@ -1000,9 +1000,14 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     }
 
 
-    public function getCorpusLogoByCorpusId($corpusid){
-        $corpus = Corpus::where("corpus_id",$corpusid)->get();
-        return $corpus[0]->corpus_logo;
+    public function getCorpusLogoByCorpusId($corpusid,$index){
+        $corpus_logo = "";
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$index]])->get();
+        if(isset($corpus[0])){
+            $corpus_logo = $corpus[0]->corpus_logo;
+        }
+
+        return $corpus_logo;
     }
 
     public function  getCurrentCorpusIndexByElasticsearchId($elasticSearchId) {
@@ -1061,9 +1066,25 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $corpus = Corpus::where("corpus_id",$corpusId)->get();
         return $corpus[0]->publication_version;
     }
+
+
     public function getWorkFlowStatus($corpusId){
         $corpus = Corpus::where("corpus_id",$corpusId)->get();
         return $corpus[0]->workflow_status;
+    }
+
+
+
+    public function getCorpusProjectPathByCorpusId($corpusId,$corpus_index){
+        $projectPath = "";
+        $corpus = Corpus::where([["corpus_id","=",$corpusId],["elasticsearch_index","=",$corpus_index]])->get();
+        if(isset($corpus[0])){
+            $corpusprojects = $corpus[0]->corpusprojects()->get();
+            $project = $corpusprojects[0];
+            $projectPath = $project->directory_path;
+        }
+
+        return $projectPath;
     }
 
     public function getCorpusPathByCorpusId($corpusid,$corpus_index){
@@ -1242,6 +1263,8 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                             $corpusdata[$publicationresponse['_source']['corpus']] = array(
                                 'corpus_title' => $publicationresponse['_source']['name'],
                                 'corpus_version' => $publicationresponse['_source']['publication_version'],
+                                'corpus_logo' => $this->getCorpusLogoByCorpusId($publishedCorpusid,$current_corpus_index),
+                                'corpus_project_path' => $this->getCorpusProjectPathByCorpusId($publishedCorpusid,$current_corpus_index),
                                 'authors' => $authors,
                                 'corpus_languages_language' => $corpusresponse['result']['corpus_languages_language'][0],
                                 'corpus_size_value' => str_replace(array(',','.'),'',$corpusresponse['result']['corpus_size_value'][0]),

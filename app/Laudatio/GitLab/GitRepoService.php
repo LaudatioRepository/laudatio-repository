@@ -577,7 +577,6 @@ class GitRepoService implements GitRepoInterface
         $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
 
         $stagedFiles = $gitFunction->getListOfStagedFiles($this->basePath."/".$dirname);
-        Log::info("STAGEDFILES: ".print_r($stagedFiles,1));
 
         foreach ($stagedFiles as $stagedFile){
             $stagedfileArray = explode("/",$stagedFile);

@@ -102,7 +102,11 @@
                                     <div class="container bg-bluegrey-midlight mt-1 mb-1 p-5">
                                         <div class="row">
                                             <div class="col-2 pl-4">
-                                                <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
+                                                @if (isset($corpus['corpus_logo']))
+                                                    <img class="w-100" src="/images/corpuslogos/{{$corpusProject['directory_path']}}_{{$corpus['corpus_logo']}}" alt="corpus-logo">
+                                                @else
+                                                    <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
+                                                @endif
                                             </div>
                                             <div class="col">
                                                 <small class="text-14 text-grey">

@@ -51,6 +51,7 @@ class CorpusProjectController extends Controller
 
             $corpus_projects[$corpusProject->id]['name'] = $corpusProject->name;
             $corpus_projects[$corpusProject->id]['description'] = $corpusProject->description;
+            $corpus_projects[$corpusProject->id]['directory_path'] = $corpusProject->directory_path;
 
 
             $corpusProjectUsers = $corpusProject->users()->get();
@@ -77,6 +78,7 @@ class CorpusProjectController extends Controller
                 $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['corpuspath'] = $corpusProject->directory_path."/".$projectCorpus->directory_path;
                 $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['workflow_status'] = $projectCorpus->workflow_status;
                 $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['elasticsearch_id'] = $projectCorpus->elasticsearch_id;
+                $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['corpus_logo'] = $projectCorpus->corpus_logo;
 
                 $corpusUsers = $projectCorpus->users()->get();
                 foreach ($corpusUsers as $corpusUser){
