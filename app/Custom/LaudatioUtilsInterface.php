@@ -63,7 +63,7 @@ interface LaudatioUtilsInterface
 
     public function getPublishedCorpusData($corpusresponses,$elasticService, $perPage ,$sortKriterium, $currentPage);
 
-    public function setCorpusLogoSymLink($path);
+    public function setCorpusLogoSymLink($flysystem,$path);
 
 
     /* CACHE */

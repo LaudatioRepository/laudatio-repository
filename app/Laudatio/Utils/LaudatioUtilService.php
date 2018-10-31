@@ -768,23 +768,28 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $path
      * @return string
      */
-    public function setCorpusLogoSymLink($path) {
+    public function setCorpusLogoSymLink($flysystem, $path) {
 
         $pathArray = explode("/",$path);
         end($pathArray);
         $last_id = key($pathArray);
 
         $imagePath = public_path('images');
+        $toPath = $imagePath."/corpuslogos/".$pathArray[0]."_".$pathArray[$last_id];
 
-        $process = new Process("ln -s ".$this->basePath."/".$path." ".$imagePath."/corpuslogos/".$pathArray[0]."_".$pathArray[$last_id]);
-        $process->run();
+        if(!file_exists ($toPath)){
 
-        // executes after the command finishes
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
+            $process = new Process("ln -s ".$this->basePath."/".$path." ".$toPath);
+            $process->run();
+
+            // executes after the command finishes
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+
+            return $process->getOutput();
         }
 
-        return $process->getOutput();
     }
 
 
