@@ -3,12 +3,13 @@
 @section('content')
     <div class="container-fluid bg-bluegrey-mid bsh-1" {{ Session::has('notification') ? 'data-notification' : '' }} data-notification-type='{{ Session::get('alert_type', 'info') }}' data-notification-message='{{ json_encode(Session::get('message')) }}'>
         <div class="container pt-5">
+            <div class="alert alert-dismissible fade show" role="alert" id="alert-laudatio">
+                <span class="alert-laudatio-message"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
             <div class="row">
-                <div id="reload-wrapper">
-
-                    <div id="alert-laudatio"></div>
-
-                </div>
                 <div class="col-2 pl-7 pr-7">
                     @if (isset($corpus->corpus_logo))
                         <img class="w-100" src="/images/corpuslogos/{{$corpus_data['project_path']}}_{{$corpus->corpus_logo}}" alt="corpus-logo">

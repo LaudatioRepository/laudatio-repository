@@ -180,40 +180,43 @@ class BrowseController extends Controller
                     ));
 
                     //dd($annotationData);
-                    if(!$annotationData['error'] && count($annotationData['result']) > 0){
+                    if(!$annotationData['error'] && count($annotationData['result'][0]) > 0){
                         $annotators = array();
-                        if(array_key_exists('preparation_encoding_annotation_group', $annotationData['result'][0]['_source'])){
-                            if(!array_key_exists($annotationData['result'][0]['_id'],$annotators)){
-                                $annotators[$annotationData['result'][0]['_id']] = array();
-                                if(array_key_exists('preparation_author_annotator_forename', $annotationData['result'][0]['_source'])){
-                                    for($a=0; $a < count($annotationData['result'][0]['_source']['preparation_author_annotator_forename']); $a++){
-                                        array_push($annotators[$annotationData['result'][0]['_id']], $annotationData['result'][0]['_source']['preparation_author_annotator_forename'][$a]." ".$annotationData['result'][0]['_source']['preparation_author_annotator_surname'][$a]);
+                        foreach ($annotationData['result'][0] as $annotationDatum) {
+                            if(array_key_exists('preparation_encoding_annotation_group', $annotationDatum['_source'])){
+                                if(!array_key_exists($annotationDatum['_id'],$annotators)){
+                                    $annotators[$annotationDatum['_id']] = array();
+                                    if(array_key_exists('preparation_author_annotator_forename', $annotationDatum['_source'])){
+                                        for($a=0; $a < count($annotationDatum['_source']['preparation_author_annotator_forename']); $a++){
+                                            array_push($annotators[$annotationDatum['_id']], $annotationDatum['_source']['preparation_author_annotator_forename'][$a]." ".$annotationDatum['_source']['preparation_author_annotator_surname'][$a]);
+                                        }
                                     }
                                 }
-                            }
 
 
-                            $groups = array_unique($annotationData['result'][0]['_source']['preparation_encoding_annotation_group']);
-                            foreach ($groups as $group){
-                                if(!array_key_exists($group,$annotationMapping)){
-                                    $annotationMapping[$group] = array();
+                                $groups = array_unique($annotationDatum['_source']['preparation_encoding_annotation_group']);
+                                foreach ($groups as $group){
+                                    if(!array_key_exists($group,$annotationMapping)){
+                                        $annotationMapping[$group] = array();
+                                    }
+                                    $dataArray = array();
+                                    if(array_key_exists('in_documents', $annotationDatum['_source'])){
+                                        $in_documents = array_unique(array_filter($annotationDatum['_source']['in_documents'],function($elm){return !is_array($elm);}));
+                                        $dataArray['document_count'] = floatval(count($in_documents));
+                                    }
+                                    $dataArray['title'] = $annotationDatum['_source']['preparation_title'][0];
+                                    $dataArray['preparation_annotation_id'] = $annotationDatum['_id'];
+
+                                    $dataArray['annotators'] = $annotators;
+                                    array_push($annotationMapping[$group],$dataArray);
                                 }
-                                $dataArray = array();
-                                if(array_key_exists('in_documents', $annotationData['result'][0]['_source'])){
-                                    $in_documents = array_unique(array_filter($annotationData['result'][0]['_source']['in_documents'],function($elm){return !is_array($elm);}));
-                                    $dataArray['document_count'] = floatval(count($in_documents));
+                                if(!in_array($annotationDatum['_source']['preparation_annotation_id'][0],$foundAnnotationCorpus)){
+                                    $annotationcount++;
                                 }
-                                $dataArray['title'] = $annotationData['result'][0]['_source']['preparation_title'][0];
-                                $dataArray['preparation_annotation_id'] = $annotationData['result'][0]['_id'];
-
-                                $dataArray['annotators'] = $annotators;
-                                array_push($annotationMapping[$group],$dataArray);
+                                array_push($foundAnnotationCorpus,$annotationDatum['_source']['preparation_annotation_id'][0]);
                             }
-                            if(!in_array($annotationData['result'][0]['_source']['preparation_annotation_id'][0],$foundAnnotationCorpus)){
-                                $annotationcount++;
-                            }
-                            array_push($foundAnnotationCorpus,$annotationData['result'][0]['_source']['preparation_annotation_id'][0]);
                         }
+
                     }
 
                     /*
@@ -314,6 +317,7 @@ class BrowseController extends Controller
                     ));
 
 
+                    /*
                     if(!$annotationData['error'] && count($annotationData['result']) > 0){
                         $annotators = array();
                         if(array_key_exists('preparation_encoding_annotation_group', $annotationData['result'][0]['_source'])){
@@ -349,6 +353,45 @@ class BrowseController extends Controller
                             array_push($foundAnnotationDocument,$annotationData['result'][0]['_source']['preparation_annotation_id'][0]);
                         }
                     }
+                    */
+                    if(!$annotationData['error'] && count($annotationData['result'][0]) > 0){
+                        $annotators = array();
+                        foreach ($annotationData['result'][0] as $annotationDatum) {
+                            if(array_key_exists('preparation_encoding_annotation_group', $annotationDatum['_source'])){
+                                if(!array_key_exists($annotationDatum['_id'],$annotators)){
+                                    $annotators[$annotationDatum['_id']] = array();
+                                    if(array_key_exists('preparation_author_annotator_forename', $annotationDatum['_source'])){
+                                        for($a=0; $a < count($annotationDatum['_source']['preparation_author_annotator_forename']); $a++){
+                                            array_push($annotators[$annotationDatum['_id']], $annotationDatum['_source']['preparation_author_annotator_forename'][$a]." ".$annotationDatum['_source']['preparation_author_annotator_surname'][$a]);
+                                        }
+                                    }
+                                }
+
+
+                                $groups = array_unique($annotationDatum['_source']['preparation_encoding_annotation_group']);
+                                foreach ($groups as $group){
+                                    if(!array_key_exists($group,$annotationMapping)){
+                                        $annotationMapping[$group] = array();
+                                    }
+                                    $dataArray = array();
+                                    if(array_key_exists('in_documents', $annotationDatum['_source'])){
+                                        $in_documents = array_unique(array_filter($annotationDatum['_source']['in_documents'],function($elm){return !is_array($elm);}));
+                                        $dataArray['document_count'] = floatval(count($in_documents));
+                                    }
+                                    $dataArray['title'] = $annotationDatum['_source']['preparation_title'][0];
+                                    $dataArray['preparation_annotation_id'] = $annotationDatum['_id'];
+
+                                    $dataArray['annotators'] = $annotators;
+                                    array_push($annotationMapping[$group],$dataArray);
+                                }
+                                if(!in_array($annotationDatum['_source']['preparation_annotation_id'][0],$foundAnnotationDocument)){
+                                    $documentannotationcount++;
+                                }
+                                array_push($foundAnnotationDocument,$annotationDatum['_source']['preparation_annotation_id'][0]);
+                            }
+                        }
+
+                    }
 
                     $allAnnotationGroupResult = $this->ElasticService->getAnnotationGroups(
                         array(
@@ -380,7 +423,7 @@ class BrowseController extends Controller
 
                 $apiData = $this->ElasticService->getAnnotation($id,true,$current_annotation_index);
                 $data = json_decode($apiData->getContent(), true);
-                //dd($data);
+
                 $corpusId = is_array($data['result']['in_corpora']) ? $data['result']['in_corpora'][0]: $data['result']['in_corpora'];
                 //$workFlowStatus = $this->LaudatioUtilService->getWorkFlowStatus($corpusId);
                 //$corpusVersion = $this->LaudatioUtilService->getCorpusVersion($corpusId);

@@ -423,36 +423,6 @@ class ElasticService implements ElasticsearchInterface
     }
 
 
-    public function deleteDocument($id,$corpusId){
-        $result = array();
-        $queryBuilder = new QueryBuilder();
-
-        $searchData = array();
-        array_push($searchData,array(
-            "document_id" => $id
-        ));
-
-        array_push($searchData,array(
-            "in_corpora" => $corpusId
-        ));
-        $queryBody = $queryBuilder->buildMustQuery($searchData);
-        $params = [
-            'size' => 1,
-            'index' => 'document',
-            'type' => 'doc',
-            'body' => $queryBody,
-        ];
-
-        $response = Elasticsearch::deletebyquery($params);
-        if($response['deleted'] > 0){
-            array_push($result,$response);
-        }
-        return array(
-            'error' => false,
-            'result' => $result
-        );
-    }
-
     /**
      * @param $id
      * @param bool $full
@@ -510,46 +480,21 @@ class ElasticService implements ElasticsearchInterface
 
     }
 
-    public function deleteAnnotation($id,$corpusId){
+
+
+    public function deleteIndexedObject($index,$args){
         $result = array();
-        $queryBuilder = new QueryBuilder();
-        array_push($searchData,array(
-            "preparation_annotation_id" => $id
-        ));
+        $error = false;
 
-        array_push($searchData,array(
-            "in_corpora" => $corpusId
-        ));
-        $queryBody = $queryBuilder->buildMustQuery($searchData);
-
-        $params = [
-            'size' => 1,
-            'index' => 'annotation',
-            'type' => 'doc',
-            'body' => $queryBody,
-        ];
-
-        $response = Elasticsearch::deletebyquery($params);
-        if($response['deleted'] > 0){
-            array_push($result,$response);
-        }
-        return array(
-            'error' => false,
-            'result' => $result
-        );
-    }
-
-
-    public function deleteIndexedObject($index,$params){
-        $result = array();
         $queryBody = null;
         $queryBuilder = new QueryBuilder();
-        if(count($params) == 1){
-            $queryBody = $queryBuilder->buildSingleMatchQuery($params);
+
+        if(count($args) == 1){
+            $queryBody = $queryBuilder->buildSingleMatchQuery($args);
 
         }
         else if(count($params) >  1){
-            $queryBody = $queryBuilder->buildMustQuery($params);
+            $queryBody = $queryBuilder->buildMustQuery($args);
         }
 
 
@@ -558,16 +503,21 @@ class ElasticService implements ElasticsearchInterface
             'index' => $index,
             'type' => 'doc',
             'body' => $queryBody,
-            //'conflicts' => 'proceed'
         ];
 
         $response = Elasticsearch::deletebyquery($params);
-        if($response['deleted'] > 0){
+
+
+        if($response['deleted'] > 0 && count($response['failures']) == 0){
             array_push($result,$response);
+        }
+        else {
+            $error = true;
+            array_push($result,$response['failures']);
         }
 
         return array(
-            'error' => false,
+            'error' => $error,
             'result' => $result
         );
     }
@@ -685,13 +635,13 @@ class ElasticService implements ElasticsearchInterface
         }
         else {
             $queryBuilder = new QueryBuilder();
-            $queryBody = $queryBuilder->buildMustQuery(array(
+            $queryBody = $queryBuilder->buildSingleMatchQuery(array(
                 array(
                     'in_corpora' => $corpusId
                 )
             ));
             $params = [
-                'size' => 1,
+                'size' => 1000,
                 'index' => $index,
                 'type' => 'doc',
                 'body' => $queryBody,
@@ -702,7 +652,7 @@ class ElasticService implements ElasticsearchInterface
             $response = Elasticsearch::search($params);
 
             if(count($response['hits']['hits']) > 0){
-                array_push($result,$response['hits']['hits'][0]);
+                array_push($result,$response['hits']['hits']);
                 Cache::tags(['annotation_'.$corpusId.'_'.$index])->forever("getAnnotationsByCorpusId_".$corpusId."_".$index, $result);
             }
 
@@ -1378,7 +1328,7 @@ class ElasticService implements ElasticsearchInterface
                     'index' => $index,
                     'type' => 'doc',
                     'body' => $queryBody,
-                    'size'=> 100,
+                    'size'=> 1000,
                     '_source' => ["document_title","document_size_extent","document_publication_publishing_date","document_id","document_history_original_place","document_list_of_annotations_id","_id"]
                 ];
 

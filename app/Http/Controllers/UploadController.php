@@ -301,18 +301,18 @@ class UploadController extends Controller
 
                     $annotationParams[$annotation->id] = $idParams;
 
-                    if(isset($corpus->id)){
-                        $elasticIds = $this->elasticService->getElasticIdByObjectId($annotationIndexName,$annotationParams);
-                        foreach ($elasticIds as $annotationId => $elasticId){
-                            $annotation->elasticsearch_id = $elasticIds[$annotationId]['elasticsearchid'];
-                            $annotation->elasticsearch_index = $elasticIds[$annotationId]['elasticsearchindex'];
-                            $annotation->directory_path = $corpus->directory_path;
-                            $annotation->publication_version = $corpus->publication_version;
-                            $annotation->workflow_status = $corpus->workflow_status;
-                            $annotation->save();
-                            $this->laudatioUtilsService->emptyAnnotationCacheByNameAndCorpusId($annotation->annotation_id, $corpusId, $annotationIndexName);
-                        }
+
+                    $elasticIds = $this->elasticService->getElasticIdByObjectId($annotationIndexName,$annotationParams);
+                    foreach ($elasticIds as $annotationId => $elasticId){
+                        $annotation->elasticsearch_id = $elasticIds[$annotationId]['elasticsearchid'];
+                        $annotation->elasticsearch_index = $elasticIds[$annotationId]['elasticsearchindex'];
+                        $annotation->directory_path = $corpus->directory_path;
+                        $annotation->publication_version = $corpus->publication_version;
+                        $annotation->workflow_status = $corpus->workflow_status;
+                        $annotation->save();
+                        $this->laudatioUtilsService->emptyAnnotationCacheByNameAndCorpusId($annotation->annotation_id, $corpusId, $annotationIndexName);
                     }
+
 
                     //empty cache
                     $this->laudatioUtilsService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$annotationIndexName);
