@@ -230,24 +230,12 @@ class GitRepoService implements GitRepoInterface
             "folderType" => $folderType
         );
 
-/*
-            $corpusUsers = $corpus->users()->get();
-
-            foreach ($corpusUsers as $corpusUser){
-                if(!isset($user_roles[$corpusUser->id])){
-                    $user_roles[$corpusUser->id] = array();
-                }
-
-                $role = Role::find($corpusUser->pivot->role_id);
-                if($role){
-                    array_push($user_roles[$corpusUser->id],$role->name);
-                }
-
-            }
-*/
 
         return $fileData;
     }
+
+
+
     public function getUploader($headerData,$headertype){
         for($i = 0; $i < count($headerData); $i++){
             $extension = $headerData[$i]['extension'];
@@ -291,7 +279,6 @@ class GitRepoService implements GitRepoInterface
         $hasDir = false;
         $projects = array();
 
-
         if($path == ""){
             $projects = $flysystem->listContents();
         }
@@ -303,54 +290,52 @@ class GitRepoService implements GitRepoInterface
         $pathArray = explode("/",$path);
         end($pathArray);
         $last_id = key($pathArray);
-
+        $elements = array();
 
         for ($i = 0; $i < count($projects);$i++){
+            if(isset($projects[$i]['extension']) && $projects[$i]['extension'] !== "md") {
 
-            if(isset($projects[$i]['extension'])) {
-                if($projects[$i]['extension'] == "md") {
-                    unset($projects[$i]);
-                    continue;
+                $foldercount = count($flysystem->listContents($projects[$i]['path']));
+                $projects[$i]['foldercount'] = $foldercount;
+
+                if($gitFunction->isTracked($this->basePath."/".$projects[$i]['path'])){
+                    $projects[$i]['tracked'] = "true";
                 }
-            }
-
-            $foldercount = count($flysystem->listContents($projects[$i]['path']));
-            $projects[$i]['foldercount'] = $foldercount;
-            if($gitFunction->isTracked($this->basePath."/".$projects[$i]['path'])){
-                $projects[$i]['tracked'] = "true";
-            }
-            else{
-                $projects[$i]['tracked'] = "false";
-            }
+                else{
+                    $projects[$i]['tracked'] = "false";
+                }
 
 
-            $headerObject = $this->laudatioUtilsService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id],false,$corpusId);
-            if(count($headerObject) > 0){
-                $projects[$i]['headerObject'] = $headerObject[0];
-            }
+                $headerObject = $this->laudatioUtilsService->getModelByFileName($projects[$i]['basename'],$pathArray[$last_id],false,$corpusId);
+                if(count($headerObject) > 0){
+                    $projects[$i]['headerObject'] = $headerObject[0];
+                }
 
 
-            $projects[$i]['lastupdated'] = Carbon::createFromTimestamp($projects[$i]['timestamp'])->toDateTimeString();
+                $projects[$i]['lastupdated'] = Carbon::createFromTimestamp($projects[$i]['timestamp'])->toDateTimeString();
 
-            if($projects[$i]["type"] == "dir"){
-                $hasDir = true;
-            }
-
-
-            $projects[$i]['filesize'] = $this->calculateFileSize(filesize($this->basePath."/".$projects[$i]['path']));
-            $hasDiff = $gitFunction->hasDiff($this->basePath."/".$projects[$i]['path']);
+                if($projects[$i]["type"] == "dir"){
+                    $hasDir = true;
+                }
 
 
-            if($hasDiff){
-                $projects[$i]['hasDiff'] = "true";
-            }
-            else{
-                $projects[$i]['hasDiff'] = "false";
-            }
+                $projects[$i]['filesize'] = $this->calculateFileSize(filesize($this->basePath."/".$projects[$i]['path']));
+                $hasDiff = $gitFunction->hasDiff($this->basePath."/".$projects[$i]['path']);
 
-            if($projects[$i]['hasDiff'] == "true"){
-                $projects[$i]['diffFiles'] = array();
-                array_push($projects[$i]['diffFiles'],$hasDiff);
+
+                if($hasDiff){
+                    $projects[$i]['hasDiff'] = "true";
+                }
+                else{
+                    $projects[$i]['hasDiff'] = "false";
+                }
+
+                if($projects[$i]['hasDiff'] == "true"){
+                    $projects[$i]['diffFiles'] = array();
+                    array_push($projects[$i]['diffFiles'],$hasDiff);
+                }
+
+                array_push($elements,$projects[$i]);
             }
 
         }
@@ -360,20 +345,10 @@ class GitRepoService implements GitRepoInterface
         $projects = $this->filterDottedFiles($projects);
 
         $previouspath = "";
-
-        /*
-        if(strpos($path,"show") !== false){
-            $previouspath = substr($path,0,strrpos($path,"/"));
-        }
-        else{
-            $previouspath = $path;
-        }
-        */
         $previouspath = substr($path,0,strrpos($path,"/"));
 
-
         return array(
-            "elements" => $projects,
+            "elements" => $elements,
             "headertype" => $pathArray[$last_id],
             "hasdir" => $hasDir,
             "pathcount" => $count,
@@ -471,7 +446,8 @@ class GitRepoService implements GitRepoInterface
             log::info("WE HAVE PAF: ".print_r($path,1));
             $gitFunction = new  GitFunction();
             $isTracked = $gitFunction->isTracked($this->basePath."/".$path);
-
+            $result = $gitFunction->deleteFiles($path,$user,$email);
+            /*
             if($isTracked){
                 log::info("IZTRACKED: ".print_r($this->basePath."/".$path,1));
                 $result = $gitFunction->deleteFiles($path,$user,$email);
@@ -480,6 +456,7 @@ class GitRepoService implements GitRepoInterface
                 log::info("IZNOTTRACKED: ".print_r($this->basePath."/".$path,1));
                 $result = $gitFunction->deleteUntrackedFiles($path,false,false);
             }
+            */
         }
         return $result;
     }

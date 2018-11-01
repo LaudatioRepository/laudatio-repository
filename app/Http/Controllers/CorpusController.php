@@ -9,27 +9,30 @@ use App\MessageBoard;
 use App\User;
 use App\Role;
 use App\Custom\GitRepoInterface;
-use App\Custom\GitLabInterface;
 use App\Custom\LaudatioUtilsInterface;
 use GrahamCampbell\Flysystem\FlysystemManager;
-use Illuminate\Support\Facades\Auth;
+use App\Custom\ElasticsearchInterface;
 use Response;
 use JavaScript;
 use Log;
 
 class CorpusController extends Controller
 {
+
+
     protected $GitRepoService;
     protected $LaudatioUtilService;
+    protected $elasticService;
     protected $flysystem;
 
-    public function __construct(GitRepoInterface $Gitservice, FlysystemManager $flysystem,LaudatioUtilsInterface $laudatioUtils)
+    public function __construct(GitRepoInterface $GitRepoService, FlysystemManager $flysystem,LaudatioUtilsInterface $laudatioUtils,ElasticsearchInterface $elasticService)
     {
-        $this->GitRepoService = $Gitservice;
+        $this->GitRepoService = $GitRepoService;
         $this->LaudatioUtilService = $laudatioUtils;
         $this->flysystem = $flysystem;
-
+        $this->elasticService = $elasticService;
     }
+
 
     /**
      * Display a listing of the resource.
@@ -661,7 +664,7 @@ class CorpusController extends Controller
     {
 
         $result = array();
-        $status = "";
+        $status = "success";
 
         try{
             $corpusid = $request->input('corpusid');
@@ -678,21 +681,41 @@ class CorpusController extends Controller
                     $toBeDeleted = json_decode($toBeDeleted);
                 }
 
-                $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName'],$auth_user_name,$auth_user_email);
-                DB::table('corpuses')
-                    ->where([['id', '=' ,$deleteData['databaseId']],['corpus_id','=',$corpusid]])
-                    ->update(['file_name' => null]);
+                $fileDeleteResult = $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName'],$auth_user_name,$auth_user_email);
+                if($fileDeleteResult) {
+                    $corpus = Corpus::findOrFail($toBeDeleted['databaseId']);
+
+                    //@todo: What should actually happen on corpus header xml deletion ?
+
+                    $searchData = array();
+                    array_push($searchData,array(
+                        "_id" => $corpus->elasticsearch_id
+                    ));
+
+
+                    $elasticSearchDeleteResult = $this->elasticService->deleteIndexedObject($corpus->elasticsearch_index,$searchData);
+
+                    if(!$elasticSearchDeleteResult['error']) {
+                        if(count($corpus->annotations()) > 0) {
+                            $corpus->annotations()->detach();
+                        }
+
+                        if(count($corpus->documents()) > 0) {
+                            $corpus->documents()->detach();
+                        }
+
+                        $pushResult = $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
+                    }
+                    $this->LaudatioUtilService->emptyCorpusCache($corpus->elasticsearch_id,$corpus->elasticsearch_index);
+                }
             }
 
-            $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
-
-            $status = "success";
-            $result['delete_corpus_content_response']  = "Corpus content was successfully deleted";
+            $result['delete_content_response']  = "Corpus content was successfully deleted";
 
         }
         catch (\Exception $e) {
             $status = "error";
-            $result['delete_corpus_content_response']  = "There was a problem deleting the Corpus content. The error was: ($e) A message has been sent to the site administrator. Please try again later";
+            $result['delete_content_response']  = "There was a problem deleting the Corpus content. The error was: ($e) A message has been sent to the site administrator. Please try again later";
         }
 
 

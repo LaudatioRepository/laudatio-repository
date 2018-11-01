@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Annotation;
 use App\Document;
+use App\Corpus;
 use App\Custom\GitRepoInterface;
 use App\Custom\LaudatioUtilsInterface;
 use GrahamCampbell\Flysystem\FlysystemManager;
+use App\Custom\ElasticsearchInterface;
 use Illuminate\Http\Request;
 use Response;
 use Log;
@@ -15,13 +17,15 @@ class AnnotationController extends Controller
 {
     protected $GitRepoService;
     protected $LaudatioUtilService;
+    protected $elasticService;
     protected $flysystem;
 
-    public function __construct(GitRepoInterface $GitRepoService, FlysystemManager $flysystem,LaudatioUtilsInterface $laudatioUtils)
+    public function __construct(GitRepoInterface $GitRepoService, FlysystemManager $flysystem,LaudatioUtilsInterface $laudatioUtils,ElasticsearchInterface $elasticService)
     {
         $this->GitRepoService = $GitRepoService;
         $this->LaudatioUtilService = $laudatioUtils;
         $this->flysystem = $flysystem;
+        $this->elasticService = $elasticService;
     }
 
     /**
@@ -129,11 +133,12 @@ class AnnotationController extends Controller
 
     public function destroyAnnotationContent(Request $request) {
         $result = array();
-        $status = "";
+        $status = "success";
         $loggedInUser = \Auth::user();
 
         try{
             $corpusid = $request->input('corpusid');
+            $corpus = Corpus::findOrFail($corpusid);
             $corpusPath = $request->input('path');
             $auth_user_name = $request->input('auth_user_name');
             $auth_user_id = $request->input('auth_user_id');
@@ -141,24 +146,38 @@ class AnnotationController extends Controller
             $toBeDeletedCollection = $request->input('tobedeleted');
 
             foreach ($toBeDeletedCollection as $toBeDeleted) {
-                $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName'],$auth_user_name,$auth_user_email);
-                $annotation = Annotation::findOrFail($toBeDeleted['databaseId']);
+                $fileDeleteResult = $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName'],$auth_user_name,$auth_user_email);
 
-                if(count($annotation->documents()) > 0) {
-                    $annotation->documents()->detach();
+                if($fileDeleteResult) {
+                    $annotation = Annotation::findOrFail($toBeDeleted['databaseId']);
+
+                    $searchData = array();
+                    array_push($searchData,array(
+                        "_id" => $annotation->elasticsearch_id
+                    ));
+
+                    $elasticSearchDeleteResult = $this->elasticService->deleteIndexedObject($annotation->elasticsearch_index,$searchData);
+
+                    if(!$elasticSearchDeleteResult['error']) {
+                        if(count($annotation->documents()) > 0) {
+                            $annotation->documents()->detach();
+                        }
+                        $annotation->delete();
+
+                        $pushResult = $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
+                    }
+                    $this->LaudatioUtilService->emptyAnnotationCacheByNameAndCorpusId($annotation->annotation_id, $corpusid, $annotation->elasticsearch_index);
+                    $this->LaudatioUtilService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$annotation->elasticsearch_index);
+                    $this->LaudatioUtilService->emptyAnnotationCacheByAnnotationIndex($annotation->elasticsearch_index);
                 }
-                $annotation->delete();
             }
 
-            $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
-
-            $status = "success";
-            $result['delete_annotation_content_response']  = "Annotation content was successfully deleted";
+            $result['delete_content_response']  = "Annotation content was successfully deleted";
 
         }
         catch (\Exception $e) {
             $status = "error";
-            $result['delete_annotation_content_response']  = "There was a problem deleting the Annotation content. The error was: ($e) A message has been sent to the site administrator. Please try again later";
+            $result['delete_content_response']  = "There was a problem deleting the Annotation content. The error was: ($e) A message has been sent to the site administrator. Please try again later";
         }
 
 

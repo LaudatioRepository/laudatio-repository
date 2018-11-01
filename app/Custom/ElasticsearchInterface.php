@@ -13,10 +13,9 @@ interface ElasticsearchInterface {
     public function setCorpusToPublished($params);
     public function getCorpus($id,$full,$index);
     public function deleteCorpus($id);
+    public function deleteIndexedObject($index,$params);
     public function getDocument($id,$full,$index);
-    public function deleteDocument($id,$corpusId);
     public function getAnnotation($id,$full,$index);
-    public function deleteAnnotation($title,$corpusId);
     public function getAnnotationByName($name, $fields);
     public function getAnnotationByNameAndCorpusId($name, $corpusId, $fields,$index);
     public function getAnnotationGroups($matchdata,$index);
@@ -39,6 +38,7 @@ interface ElasticsearchInterface {
     public function getDocumentsByAnnotationAndCorpusId($documentList,$corpusId,$index);
     public function getDocumentsByDocumentId($documentids,$index);
     public function getAnnotationByCorpus($searchData,$corpusData,$fields,$index);
+    public function getAnnotationsByCorpusId($corpusId,$index,$fields);
 
 
     public function getDocumentsByAnnotation($searchData,$annotationData);
@@ -53,7 +53,6 @@ interface ElasticsearchInterface {
     public function postToIndex($params);
     public function updateDocumentFieldsInAnnotation($new_annotation_index,$annotation_ids);
     public function setMapping($params);
-    public function deleteIndexedObject($index,$params);
     public function getElasticIdByObjectId($index,$params);
     public function setWorkflowStatusByCorpusId($corpus_id);
 

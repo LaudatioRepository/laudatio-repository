@@ -1000,6 +1000,7 @@ $(function () {
         postDeleteData.auth_user_email = $('#auth_user_email').val();
 
         var checkedId = $(this).parent().attr("id");
+        checkedIds.push(checkedId);
 
         var checkedIdArray = checkedId.split('§');
         var deletionObject = {};
@@ -1021,22 +1022,35 @@ $(function () {
             contentType = 'deleteAnnotationContent';
             currentCount = parseInt($('#annotationCount span').html());
         }
-        console.log(postDeleteData);
+
         var trashcan = $(this);
 
         deleteCorpusContent(postDeleteData, contentType).then(function (data) {
             trashcan.closest("tr").remove();
-            var deletedAnnotations = removeDeletedElements(checkedIds);
+
+            var deletedElements = removeDeletedElements(checkedIds);
+
             if (postDeleteData.path.indexOf('TEI-HEADERS/corpus') > -1) {
-                $('#corpusCount span').html(currentCount - deletedAnnotations);
+                $('#corpusCount span').html(currentCount - deletedElements);
             } else if (postDeleteData.path.indexOf('TEI-HEADERS/document') > -1) {
-                $('#documentCount span').html(currentCount - deletedAnnotations);
+                $('#documentCount span').html(currentCount - deletedElements);
             } else if (postDeleteData.path.indexOf('TEI-HEADERS/annotation') > -1) {
-                $('#annotationCount span').html(currentCount - deletedAnnotations);
+                $('#annotationCount span').html(currentCount - deletedElements);
             }
+
+            $('#alert-laudatio').addClass('alert-success');
+            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response);
+            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
+                $("#alert-laudatio").slideUp(500);
+            });
         }).catch(function (err) {
             // Run this when promise was rejected via reject()
-            console.log(err);
+            $('#alert-laudatio').addClass('alert-danger');
+            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response);
+
+            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
+                $("#alert-laudatio").slideUp(500);
+            });
         });
     });
 
@@ -1070,12 +1084,18 @@ $(function () {
 
         postDeleteData.tobedeleted = toBeDeleted;
 
-        var currentAnnotationCount = parseInt($('#corpusCount span').html());
-        deleteCorpusContent(postDeleteData, 'deleteCorpusContent').then(function (postDeleteData) {
-            var deletedAnnotations = removeDeletedElements(checkedIds);
-            $('#corpusCount span').html(currentAnnotationCount - deletedAnnotations);
+        var currentCorpusCount = parseInt($('#corpusCount span').html());
+        deleteCorpusContent(postDeleteData, 'deleteCorpusContent').then(function (data) {
+            var deletedCorpora = removeDeletedElements(checkedIds);
+            $('#corpusCount span').html(currentCorpusCount - deletedCorpora);
             $('#selectAll_corpusEdit').attr("checked", false);
             $('#deleteSelectedCorpusButtonButton').attr("disabled", true);
+
+            $('#alert-laudatio').addClass('alert-success');
+            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response);
+            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
+                $("#alert-laudatio").slideUp(500);
+            });
         }).catch(function (err) {
             // Run this when promise was rejected via reject()
             console.log(err);
@@ -1112,15 +1132,28 @@ $(function () {
 
         postDeleteData.tobedeleted = toBeDeleted;
 
-        var currentAnnotationCount = parseInt($('#documentCount span').html());
-        deleteCorpusContent(postDeleteData, 'deleteDocumentContent').then(function (postDeleteData) {
-            var deletedAnnotations = removeDeletedElements(checkedIds);
-            $('#documentCount span').html(currentAnnotationCount - deletedAnnotations);
+        var currentDocumentCount = parseInt($('#documentCount span').html());
+        console.log("currentDocumentCount: " + currentDocumentCount);
+        deleteCorpusContent(postDeleteData, 'deleteDocumentContent').then(function (data) {
+            var deletedDocuments = removeDeletedElements(checkedIds);
+            console.log("deletedDocuments: " + deletedDocuments);
+            $('#documentCount span').html(currentDocumentCount - deletedDocuments);
             $('#selectAll_documentEdit').attr("checked", false);
             $('#deleteSelectedDocumentsButton').attr("disabled", true);
+
+            $('#alert-laudatio').addClass('alert-success');
+            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response);
+            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
+                $("#alert-laudatio").slideUp(500);
+            });
         }).catch(function (err) {
             // Run this when promise was rejected via reject()
-            console.log(err);
+            $('#alert-laudatio').addClass('alert-danger');
+            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response);
+
+            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
+                $("#alert-laudatio").slideUp(500);
+            });
         });
     });
 
@@ -1157,13 +1190,27 @@ $(function () {
         postDeleteData.tobedeleted = toBeDeleted;
 
         var currentAnnotationCount = parseInt($('#annotationCount span').html());
-        deleteCorpusContent(postDeleteData, 'deleteAnnotationContent').then(function (postDeleteData) {
+        deleteCorpusContent(postDeleteData, 'deleteAnnotationContent').then(function (data) {
             var deletedAnnotations = removeDeletedElements(checkedIds);
             $('#annotationCount span').html(currentAnnotationCount - deletedAnnotations);
             $('#selectAll_annotationEdit').attr("checked", false);
             $('#deleteSelectedAnnotationsButton').attr("disabled", true);
+
+            $('#alert-laudatio').addClass('alert-success');
+            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response);
+            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
+                $("#alert-laudatio").slideUp(500);
+                location.reload();
+            });
         }).catch(function (err) {
             // Run this when promise was rejected via reject()
+            $('#alert-laudatio').addClass('alert-danger');
+            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response);
+
+            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
+                $("#alert-laudatio").slideUp(500);
+            });
+
             console.log(err);
         });
     });

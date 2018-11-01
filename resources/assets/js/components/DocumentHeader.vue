@@ -1,9 +1,12 @@
 <template lang="html">
    <div class="container pt-5" v-if="header == 'document'">
     <div class="row">
-      <div class="col-2">
-        <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
-      </div>
+      <div class="col-2" v-if="headerdata.corpus_logo == null">
+            <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
+        </div>
+        <div class="col-2" v-else>
+            <img class="w-100" v-bind:src="('/images/corpuslogos/').concat(headerdata.project_path).concat('_').concat(headerdata.corpus_logo)" alt="corpus-logo">
+        </div>
       <div class="col pr-5">
         <h3 class="h3 font-weight-bold">
          {{ headerdata.document_title | arrayToString }}
