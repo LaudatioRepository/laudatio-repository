@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Annotation;
 use App\Document;
+use App\Corpus;
 use App\Custom\GitRepoInterface;
 use App\Custom\LaudatioUtilsInterface;
 use GrahamCampbell\Flysystem\FlysystemManager;
@@ -137,6 +138,7 @@ class AnnotationController extends Controller
 
         try{
             $corpusid = $request->input('corpusid');
+            $corpus = Corpus::findOrFail($corpusid);
             $corpusPath = $request->input('path');
             $auth_user_name = $request->input('auth_user_name');
             $auth_user_id = $request->input('auth_user_id');
@@ -164,6 +166,9 @@ class AnnotationController extends Controller
 
                         $pushResult = $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
                     }
+                    $this->LaudatioUtilService->emptyAnnotationCacheByNameAndCorpusId($annotation->annotation_id, $corpusid, $annotation->elasticsearch_index);
+                    $this->LaudatioUtilService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$annotation->elasticsearch_index);
+                    $this->LaudatioUtilService->emptyAnnotationCacheByAnnotationIndex($annotation->elasticsearch_index);
                 }
             }
 

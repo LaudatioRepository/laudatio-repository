@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Corpus;
 use App\Document;
-use App\Association;
 use App\Custom\GitRepoInterface;
 use App\Custom\LaudatioUtilsInterface;
 use GrahamCampbell\Flysystem\FlysystemManager;
@@ -143,6 +142,7 @@ class DocumentController extends Controller
 
         try{
             $corpusid = $request->input('corpusid');
+            $corpus = Corpus::findOrFail($corpusid);
             $corpusPath = $request->input('path');
             $auth_user_name = $request->input('auth_user_name');
             $auth_user_id = $request->input('auth_user_id');
@@ -171,8 +171,8 @@ class DocumentController extends Controller
                         $pushResult = $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
                     }
 
-                    $this->laudatioUtilsService->emptyDocumentCacheByCorpusId($corpus->corpus_id,$document->elasticsearch_index);
-                    $this->laudatioUtilsService->emptyDocumentCacheByDocumentIndex($document->elasticsearch_index);
+                    $this->LaudatioUtilService->emptyDocumentCacheByCorpusId($corpus->corpus_id,$document->elasticsearch_index);
+                    $this->LaudatioUtilService->emptyDocumentCacheByDocumentIndex($document->elasticsearch_index);
                 }//end if filedeleted
             }
 

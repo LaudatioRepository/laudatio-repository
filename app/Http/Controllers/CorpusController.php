@@ -685,6 +685,8 @@ class CorpusController extends Controller
                 if($fileDeleteResult) {
                     $corpus = Corpus::findOrFail($toBeDeleted['databaseId']);
 
+                    //@todo: What should actually happen on corpus header xml deletion ?
+
                     $searchData = array();
                     array_push($searchData,array(
                         "_id" => $corpus->elasticsearch_id
@@ -704,6 +706,7 @@ class CorpusController extends Controller
 
                         $pushResult = $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
                     }
+                    $this->LaudatioUtilService->emptyCorpusCache($corpus->elasticsearch_id,$corpus->elasticsearch_index);
                 }
             }
 
