@@ -58,7 +58,12 @@
                                         <div class="card bg-corpus-superlight border-0 px-4 pb-7">
                                             <div class="card-body p-6">
                                                 <div class="d-flex flex-column align-items-center">
-                                                    <img class="rounded-circle w-30 bg-white" src="{{ asset('images/placeholder_flower.svg') }}" alt="circle-image">
+                                                    @if (isset($corpus['corpus_logo']) && $corpus['corpus_logo'] != "")
+                                                        <img class="w-30" src="/images/corpuslogos/{{$corpus['corpus_project_directorypath']}}_{{$corpus['corpus_directorypath']}}_{{$corpus['corpus_logo']}}" alt="corpus-logo">
+                                                    @else
+                                                        <img class="rounded-circle w-30 bg-white" src="{{ asset('images/placeholder_flower.svg') }}" alt="circle-image">
+                                                    @endif
+
                                                     <div class="h4 font-weight-bold text-center mt-4">
                                                         <a class="text-dark" href="/browse/corpus/{{$corpus['elasticid']}}">
                                                             {{$corpus['corpus_title']}} (Version {{$corpus['corpus_version']}})
