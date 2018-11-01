@@ -487,7 +487,7 @@ class BrowseController extends Controller
                     }
 
 
-                    if(count($data['result']['in_documents']) > 0){
+                    if(isset($data['result']['in_documents']) && count($data['result']['in_documents']) > 0){
                         $in_documents = array_unique(array_filter($data['result']['in_documents'],function($elm){return !is_array($elm);}));
                         $documentsByAnnotation = $this->ElasticService->getDocumentsByAnnotationAndCorpusId($in_documents,$corpusId,$current_document_index);
                         //dd($documentsByAnnotation);
