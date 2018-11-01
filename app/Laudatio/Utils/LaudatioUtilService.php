@@ -776,7 +776,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $last_id = key($pathArray);
 
         $imagePath = public_path('images');
-        $toPath = $imagePath."/corpuslogos/".$pathArray[0]."_".$pathArray[1].$pathArray[$last_id];
+        $toPath = $imagePath."/corpuslogos/".$pathArray[0]."_".$pathArray[1]."_".$pathArray[$last_id];
 
         if(!file_exists ($toPath)){
 

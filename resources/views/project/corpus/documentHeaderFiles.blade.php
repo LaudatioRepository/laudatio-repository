@@ -68,7 +68,7 @@
                         <tr>
                             <td>
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" id="documentEditItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
+                                    <input type="checkbox" class="custom-control-input" id="documentsEditItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
                                     <label class="custom-control-label font-weight-bold" for="documentsEditItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
                                         {{$fileData['basename']}}
                                     </label>
