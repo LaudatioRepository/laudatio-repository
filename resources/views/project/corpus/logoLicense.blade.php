@@ -73,7 +73,7 @@
                     <div class="col-3 px-5 d-flex">
                         <div class="w-100 dashed rounded uploadPlaceholder">
                             @if (isset($corpus->corpus_logo))
-                                <img class="w-100" src="/images/corpuslogos/{{$corpus_data['project_path']}}_{{$corpus->corpus_logo}}" alt="corpus-logo">
+                                <img class="w-100" src="/images/corpuslogos/{{$corpus_data['project_directorypath']}}_{{$corpus->directory_path}}_{{$corpus->corpus_logo}}" alt="corpus-logo">
                             @else
                                 <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
                             @endif

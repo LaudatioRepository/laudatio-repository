@@ -12,7 +12,7 @@
             <div class="row">
                 <div class="col-2 pl-7 pr-7">
                     @if (isset($corpus->corpus_logo))
-                        <img class="w-100" src="/images/corpuslogos/{{$corpus_data['project_path']}}_{{$corpus->corpus_logo}}" alt="corpus-logo">
+                        <img class="w-100" src="/images/corpuslogos/{{$corpus_data['project_directorypath']}}_{{$corpus->directory_path}}_{{$corpus->corpus_logo}}" alt="corpus-logo">
                     @else
                         <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
                     @endif
@@ -40,7 +40,7 @@
                     </div>
 
                 </div>
-
+                @if($corpus_data['headerdata']['corpusheader'] == 1)
                 <div class="col-2">
                     <div class="card text-white bg-transparent">
                         <h6 class="corpus-title h6 text-uppercase text-12 text-wine-trans">
@@ -59,6 +59,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
             <div class="row mt-5">
 

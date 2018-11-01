@@ -226,6 +226,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $new_corpus->gitlab_web_url = $oldCorpus->gitlab_web_url;
         $new_corpus->gitlab_namespace_path = $oldCorpus->gitlab_namespace_path;
         $new_corpus->workflow_status = 0;
+        $new_corpus->corpus_logo = $oldCorpus->corpus_logo;
         $new_corpus->save();
 
         //attach user roles
@@ -775,7 +776,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $last_id = key($pathArray);
 
         $imagePath = public_path('images');
-        $toPath = $imagePath."/corpuslogos/".$pathArray[0]."_".$pathArray[$last_id];
+        $toPath = $imagePath."/corpuslogos/".$pathArray[0]."_".$pathArray[1].$pathArray[$last_id];
 
         if(!file_exists ($toPath)){
 
@@ -1008,6 +1009,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     public function getCorpusLogoByCorpusId($corpusid,$index){
         $corpus_logo = "";
         $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$index]])->get();
+
         if(isset($corpus[0])){
             $corpus_logo = $corpus[0]->corpus_logo;
         }
@@ -1082,7 +1084,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     public function getCorpusProjectPathByCorpusId($corpusId,$corpus_index){
         $projectPath = "";
-        $corpus = Corpus::where([["corpus_id","=",$corpusId],["elasticsearch_index","=",$corpus_index]])->get();
+        $corpus = Corpus::where([["elasticsearch_id","=",$corpusId],["elasticsearch_index","=",$corpus_index]])->get();
         if(isset($corpus[0])){
             $corpusprojects = $corpus[0]->corpusprojects()->get();
             $project = $corpusprojects[0];
@@ -1092,7 +1094,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $projectPath;
     }
 
-    public function getCorpusPathByCorpusId($corpusid,$corpus_index){
+    public function getCorpusAndProjectPathByCorpusId($corpusid,$corpus_index){
         $corpusPath = "";
         $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$corpus_index]])->get();
         if(isset($corpus[0])){
@@ -1264,12 +1266,15 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                                     $corpus_publication_date = $date;
                                 }
                             }
-
+                            $corpus_path = $this->getCorpusAndProjectPathByCorpusId($publicationresponse['_source']['corpus'],$current_corpus_index);
+                            $corpusPathArray = explode("/",$corpus_path);
                             $corpusdata[$publicationresponse['_source']['corpus']] = array(
                                 'corpus_title' => $publicationresponse['_source']['name'],
                                 'corpus_version' => $publicationresponse['_source']['publication_version'],
-                                'corpus_logo' => $this->getCorpusLogoByCorpusId($publishedCorpusid,$current_corpus_index),
-                                'corpus_project_path' => $this->getCorpusProjectPathByCorpusId($publishedCorpusid,$current_corpus_index),
+                                'corpus_logo' => $this->getCorpusLogoByCorpusId($publicationresponse['_source']['corpus'],$current_corpus_index),
+                                'corpus_project_directorypath' => $corpusPathArray[0],
+                                'corpus_directorypath' => $corpusPathArray[1],
+                                'corpus_path' => $corpus_path,
                                 'authors' => $authors,
                                 'corpus_languages_language' => $corpusresponse['result']['corpus_languages_language'][0],
                                 'corpus_size_value' => str_replace(array(',','.'),'',$corpusresponse['result']['corpus_size_value'][0]),
@@ -1278,7 +1283,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                                 'corpus_encoding_project_description' => $publicationresponse['_source']['description'],
                                 'document_genre' => $this->getDocumentGenreByCorpusId($corpusresponse['result']['corpus_id'][0],$current_corpus_index),
                                 'document_publication_range' => $document_range,
-                                'download_path' => $this->getCorpusPathByCorpusId($publishedCorpusid,$current_corpus_index),
+                                'download_path' => $this->getCorpusAndProjectPathByCorpusId($publishedCorpusid,$current_corpus_index),
                                 'documentcount' => $documentcount,
                                 'annotationcount' => $annotationcount,
                                 'elasticid' => $publishedCorpusid

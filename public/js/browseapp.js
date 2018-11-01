@@ -43589,7 +43589,7 @@ var render = function() {
         _vm._m(0),
         _vm._v(" "),
         _c("div", { staticClass: "row" }, [
-          _vm.headerdata.corpus_logo == null
+          _vm.headerdata.corpus_logo == ""
             ? _c("div", { staticClass: "col-2" }, [
                 _c("img", {
                   staticClass: "w-100",
@@ -43604,7 +43604,9 @@ var render = function() {
                   staticClass: "w-100",
                   attrs: {
                     src: "/images/corpuslogos/"
-                      .concat(_vm.headerdata.project_path)
+                      .concat(_vm.headerdata.project_directorypath)
+                      .concat("_")
+                      .concat(_vm.headerdata.corpus_directorypath)
                       .concat("_")
                       .concat(_vm.headerdata.corpus_logo),
                     alt: "corpus-logo"
@@ -43800,7 +43802,7 @@ var render = function() {
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "col-2" }, [
-            _vm.isloggedin && _vm.workflowstatus == "0"
+            _vm.isloggedin && _vm.workflowstatus === "0"
               ? _c("div", { staticClass: "card text-white bg-transparent" }, [
                   _c(
                     "h6",
@@ -43841,8 +43843,8 @@ var render = function() {
                     )
                   ])
                 ])
-              : (!_vm.isloggedin && _vm.workflowstatus == "1") ||
-                (_vm.isloggedin && _vm.workflowstatus == "1")
+              : (!_vm.isloggedin && _vm.workflowstatus === "1") ||
+                (_vm.isloggedin && _vm.workflowstatus === "1")
                 ? _c("div", { staticClass: "card text-white bg-transparent" }, [
                     _c(
                       "h6",
@@ -44849,7 +44851,9 @@ var render = function() {
                   staticClass: "w-100",
                   attrs: {
                     src: "/images/corpuslogos/"
-                      .concat(_vm.headerdata.project_path)
+                      .concat(_vm.headerdata.project_directorypath)
+                      .concat("_")
+                      .concat(_vm.headerdata.corpus_directorypath)
                       .concat("_")
                       .concat(_vm.headerdata.corpus_logo),
                     alt: "corpus-logo"
@@ -45861,6 +45865,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'citedata', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath', 'workflowstatus', 'ccbaseuri'],
@@ -45901,7 +45908,30 @@ var render = function() {
   return _vm.header == "annotation"
     ? _c("div", { staticClass: "container pt-5" }, [
         _c("div", { staticClass: "row" }, [
-          _vm._m(0),
+          _vm.headerdata.corpus_logo == null
+            ? _c("div", { staticClass: "col-2" }, [
+                _c("img", {
+                  staticClass: "w-100",
+                  attrs: {
+                    src: "/images/placeholder_circle.svg",
+                    alt: "circle-image"
+                  }
+                })
+              ])
+            : _c("div", { staticClass: "col-2" }, [
+                _c("img", {
+                  staticClass: "w-100",
+                  attrs: {
+                    src: "/images/corpuslogos/"
+                      .concat(_vm.headerdata.project_directorypath)
+                      .concat("_")
+                      .concat(_vm.headerdata.corpus_directorypath)
+                      .concat("_")
+                      .concat(_vm.headerdata.corpus_logo),
+                    alt: "corpus-logo"
+                  }
+                })
+              ]),
           _vm._v(" "),
           _c("div", { staticClass: "col pr-5" }, [
             _c("h3", { staticClass: "h3 font-weight-bold" }, [
@@ -46205,7 +46235,7 @@ var render = function() {
                         ]
                       ),
                       _vm._v(" "),
-                      _vm._m(1),
+                      _vm._m(0),
                       _vm._v(" "),
                       _c("div", {
                         staticClass:
@@ -46228,9 +46258,9 @@ var render = function() {
             },
             [
               _c("div", { staticClass: "navbar-nav nav row w-100 px-5" }, [
-                _vm._m(2),
+                _vm._m(1),
                 _vm._v(" "),
-                _vm._m(3),
+                _vm._m(2),
                 _vm._v(" "),
                 _c(
                   "div",
@@ -46328,10 +46358,10 @@ var render = function() {
                     ]
                   ),
                   _vm._v(" "),
-                  _vm._m(4)
+                  _vm._m(3)
                 ]),
                 _vm._v(" "),
-                _vm._m(5)
+                _vm._m(4)
               ])
             ])
           ]
@@ -46340,17 +46370,6 @@ var render = function() {
     : _vm._e()
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-2" }, [
-      _c("img", {
-        staticClass: "w-100",
-        attrs: { src: "/images/placeholder_circle.svg", alt: "circle-image" }
-      })
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -48442,7 +48461,7 @@ var render = function() {
             )
           : _vm._e(),
         _vm._v(" "),
-        _vm.workflowstatus == 0
+        _vm.workflowstatus === 0
           ? _c(
               "div",
               {
@@ -50094,7 +50113,7 @@ var render = function() {
             )
           : _vm._e(),
         _vm._v(" "),
-        _vm.workflowstatus == 0
+        (_vm.workflowstatus = 0)
           ? _c(
               "div",
               {
@@ -51733,7 +51752,7 @@ var render = function() {
           ]
         ),
         _vm._v(" "),
-        _vm.workflowstatus == 0
+        (_vm.workflowstatus = 0)
           ? _c(
               "div",
               {

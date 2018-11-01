@@ -219,26 +219,7 @@ class BrowseController extends Controller
 
                     }
 
-                    /*
-                    foreach($data['result']['annotation_id'] as $annotationId){
-                        $annotators = array();
-                        $annotationData = $this->ElasticService->getAnnotationByNameAndCorpusId($annotationId,$corpusId, array(
-                            "preparation_encoding_annotation_group",
-                            "preparation_annotation_id",
-                            "_id",
-                            "preparation_title",
-                            "in_documents",
-                            "in_corpora",
-                            "preparation_author_annotator_forename",
-                            "preparation_author_annotator_surname",
-                            "generated_id"
-                        ),$current_annotation_index);
 
-                        //dd($corpusId);
-
-
-                    }
-                    */
                     $allAnnotationGroupResult = $this->ElasticService->getAnnotationGroups(
                         array(
                             "field" => "in_corpora",
@@ -504,11 +485,13 @@ class BrowseController extends Controller
                 break;
         }
        //dd($data);
-        $corpus_path = $this->LaudatioUtilService->getCorpusPathByCorpusId($corpusId,$current_corpus_index);
+        $corpus_path = $this->LaudatioUtilService->getCorpusAndProjectPathByCorpusId($corpusId,$current_corpus_index);
         $corpusPathArray = explode("/",$corpus_path);
-        $data['result']['project_path'] = $corpusPathArray[0];
+        $data['result']['project_directorypath'] = $corpusPathArray[0];
+        $data['result']['corpus_directorypath'] = $corpusPathArray[1];
         $corpusLogo = $this->LaudatioUtilService->getCorpusLogoByCorpusId($corpusId, $current_corpus_index);
         $data['result']['corpus_logo'] = $corpusLogo;
+        //dd($data);
         JavaScript::put([
             "header" => $header,
             "header_id" => $id,
@@ -516,7 +499,8 @@ class BrowseController extends Controller
             "corpus_id" => $this->LaudatioUtilService->getDatabaseIdByCorpusId($corpusId),
             "corpus_logo" => $corpusLogo,
             "corpus_name" => $corpusName,
-            "project_path" => $corpusPathArray[0],
+            "project_directorypath" => $corpusPathArray[0],
+            "corpus_directorypath" => $corpusPathArray[1],
             "corpus_path" => $corpus_path,
             "workflow_status" => $workFlowStatus,
             "corpus_version" => $corpusVersion,

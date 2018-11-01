@@ -8,11 +8,11 @@
         </div>
 
         <div class="row">
-        <div class="col-2" v-if="headerdata.corpus_logo == null">
+        <div class="col-2" v-if="headerdata.corpus_logo == ''">
             <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
         </div>
         <div class="col-2" v-else>
-            <img class="w-100" v-bind:src="('/images/corpuslogos/').concat(headerdata.project_path).concat('_').concat(headerdata.corpus_logo)" alt="corpus-logo">
+            <img class="w-100" v-bind:src="('/images/corpuslogos/').concat(headerdata.project_directorypath).concat('_').concat(headerdata.corpus_directorypath).concat('_').concat(headerdata.corpus_logo)" alt="corpus-logo">
         </div>
         <div class="col pr-5">
           <h3 class="h3 font-weight-bold">
@@ -73,7 +73,7 @@
           </div>
         </div>
         <div class="col-2">
-          <div class="card text-white bg-transparent" v-if="isloggedin && workflowstatus == '0'">
+          <div class="card text-white bg-transparent" v-if="isloggedin && workflowstatus === '0'">
               <h6 class="corpus-title h6 text-uppercase text-12 text-wine-trans">
                 Corpus
               </h6>
@@ -90,7 +90,7 @@
                  &nbsp; <a id="validateCorpusButton" class="btn btn-primary pull-right" href="#" role="button">Publish corpus</a-->
               </div>
             </div>
-            <div class="card text-white bg-transparent" v-else-if="!isloggedin && workflowstatus == '1' || isloggedin && workflowstatus == '1'">
+            <div class="card text-white bg-transparent" v-else-if="!isloggedin && workflowstatus === '1' || isloggedin && workflowstatus === '1'">
               <h6 class="corpus-title h6 text-uppercase text-12 text-wine">
                 Corpus
               </h6>

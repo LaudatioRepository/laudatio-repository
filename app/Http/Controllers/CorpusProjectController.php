@@ -75,6 +75,7 @@ class CorpusProjectController extends Controller
                 }
                 $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['name'] = $projectCorpus->name;
                 $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['id'] = $projectCorpus->id;
+                $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['corpus_directorypath'] = $projectCorpus->directory_path;
                 $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['corpuspath'] = $corpusProject->directory_path."/".$projectCorpus->directory_path;
                 $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['workflow_status'] = $projectCorpus->workflow_status;
                 $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['elasticsearch_id'] = $projectCorpus->elasticsearch_id;

@@ -103,7 +103,7 @@
                                         <div class="row">
                                             <div class="col-2 pl-4">
                                                 @if (isset($corpus['corpus_logo']))
-                                                    <img class="w-100" src="/images/corpuslogos/{{$corpusProject['directory_path']}}_{{$corpus['corpus_logo']}}" alt="corpus-logo">
+                                                    <img class="w-100" src="/images/corpuslogos/{{$corpusProject['directory_path']}}_{{$corpus['corpus_directorypath']}}_{{$corpus['corpus_logo']}}" alt="corpus-logo">
                                                 @else
                                                     <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
                                                 @endif

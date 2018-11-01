@@ -39,7 +39,7 @@ interface LaudatioUtilsInterface
     public function getDatabaseIdByCorpusId($corpusid);
     public function getCorpusLogoByCorpusId($corpusid,$corpus_index);
     public function getDocumentGenreByCorpusId($corpusid,$index);
-    public function getCorpusPathByCorpusId($corpusid,$corpus_index);
+    public function getCorpusAndProjectPathByCorpusId($corpusid,$corpus_index);
     public function deleteModels($path);
     public function deleteModel($type,$id);
     public function updateDirectoryPaths($directory_path,$corpusId);
