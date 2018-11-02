@@ -63,6 +63,11 @@ Route::group(array('prefix' => 'corpusapi'), function() {
 });
 
 
+Route::group(array('prefix' => 'dbapi'), function() {
+    Route::post('getdatabaseid','ApiController@getDatabaseIdByFilenameAndCorpusId');
+});
+
+
 
 Route::group(array('prefix' => 'adminapi'), function() {
     Route::post('userroles','RoleController@storeRelations');

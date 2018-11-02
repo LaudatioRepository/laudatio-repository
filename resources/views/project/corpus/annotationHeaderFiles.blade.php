@@ -31,7 +31,7 @@
                         <a href="javascript:" id="annotation_CancelButton" class="btn btn-outline-corpus-dark text-uppercase font-weight-bold rounded px-5 mr-3 uploadcontrols">
                             Cancel
                         </a>
-                        <a href="{{ route('corpus.edit',['corpus' =>$corpus->id ])}}" id="annotation_FinishButton" class="disabled btn btn-primary text-uppercase font-weight-bold rounded uploadcontrols">
+                        <a href="javascript:" id="annotation_FinishButton" class="disabled btn btn-primary text-uppercase font-weight-bold rounded uploadcontrols finishbutton">
                             Finish Upload
                         </a>
                         <!-- Submit can happen at this place -->
@@ -52,7 +52,7 @@
                 </a>
             </div>
 
-            <table class="custom-table condensed documents-table table table-bluegrey-dark  table-striped">
+            <table class="custom-table condensed documents-table table table-bluegrey-dark  table-striped" id="annotation_table">
                 <thead class="bg-bluegrey-mid">
                 <tr class="text-14 text-grey">
                     <th scope="col">Uploaded Files</th>
@@ -121,5 +121,14 @@
                 </tfoot>
             </table>
         </div>
+    </div>
+    <div class="alert alert-info mt-5 bg-bluegrey-dark" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <p> Info:</p>
+        <ul>
+            <li>A preview of the metadata is possible only after having uploaded a Corpus Header TEI xml file</li>
+        </ul>
     </div>
 </div>

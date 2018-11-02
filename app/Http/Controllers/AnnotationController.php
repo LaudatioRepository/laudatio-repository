@@ -144,31 +144,54 @@ class AnnotationController extends Controller
             $auth_user_id = $request->input('auth_user_id');
             $auth_user_email = $request->input('auth_user_email');
             $toBeDeletedCollection = $request->input('tobedeleted');
+            $corpusIsVersioned = $this->LaudatioUtilService->corpusIsVersioned($corpusid);
 
             foreach ($toBeDeletedCollection as $toBeDeleted) {
-                $fileDeleteResult = $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName'],$auth_user_name,$auth_user_email);
+
+                $fileDeleteResult = false;
+
+                if($corpusIsVersioned) {
+                    $fileDeleteResult = $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName'],$auth_user_name,$auth_user_email);
+                }
+                else{
+                    $fileDeleteResult = $this->GitRepoService->deleteUntrackedFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName']);
+                }
+
+
 
                 if($fileDeleteResult) {
+
                     $annotation = Annotation::findOrFail($toBeDeleted['databaseId']);
 
-                    $searchData = array();
-                    array_push($searchData,array(
-                        "_id" => $annotation->elasticsearch_id
-                    ));
 
-                    $elasticSearchDeleteResult = $this->elasticService->deleteIndexedObject($annotation->elasticsearch_index,$searchData);
+                    if($corpusIsVersioned) {
+                        $searchData = array();
+                        array_push($searchData,array(
+                            "_id" => $annotation->elasticsearch_id
+                        ));
 
-                    if(!$elasticSearchDeleteResult['error']) {
+                        $elasticSearchDeleteResult = $this->elasticService->deleteIndexedObject($annotation->elasticsearch_index,$searchData);
+
+                        if(!$elasticSearchDeleteResult['error']) {
+                            if(count($annotation->documents()) > 0) {
+                                $annotation->documents()->detach();
+                            }
+                            $annotation->delete();
+
+                            $pushResult = $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
+                        }
+
+                        $this->LaudatioUtilService->emptyAnnotationCacheByNameAndCorpusId($annotation->annotation_id, $corpusid, $annotation->elasticsearch_index);
+                        $this->LaudatioUtilService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$annotation->elasticsearch_index);
+                        $this->LaudatioUtilService->emptyAnnotationCacheByAnnotationIndex($annotation->elasticsearch_index);
+                    }
+                    else {
                         if(count($annotation->documents()) > 0) {
                             $annotation->documents()->detach();
                         }
                         $annotation->delete();
-
-                        $pushResult = $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
                     }
-                    $this->LaudatioUtilService->emptyAnnotationCacheByNameAndCorpusId($annotation->annotation_id, $corpusid, $annotation->elasticsearch_index);
-                    $this->LaudatioUtilService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$annotation->elasticsearch_index);
-                    $this->LaudatioUtilService->emptyAnnotationCacheByAnnotationIndex($annotation->elasticsearch_index);
+
                 }
             }
 

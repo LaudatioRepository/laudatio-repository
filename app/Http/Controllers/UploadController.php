@@ -122,10 +122,9 @@ class UploadController extends Controller
                 //wellformed?
                 $isWellFormed = $this->validationService->isWellFormed(true);
 
-                //wellformed valid
+                //valid?
                 $this->validationService->setRelaxNGSchema($this->schemaBasePath.'/'.$headerPath.'/'.$headerPath.'.rng');
                 $isValid = $this->validationService->isValidByRNG(true);
-
 
                 //parse xml
                 $xmlNode = simplexml_load_file($xmlpath);

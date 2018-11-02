@@ -499,9 +499,11 @@ class CorpusController extends Controller
             'formatUpload' => $formatUpload,
             'logoUpload' => $logoUpload,
             'corpus_id' => $corpus->id,
+            'corpus_generated_id' => $corpus->corpus_id,
             'corpus_path' => $path,
             'auth_user_name' => $user->name,
             'auth_user_email' => $user->email,
+            'auth_user_affiliation' => $user->affiliation
         ]);
 
         return view('project.corpus.edit', compact('corpus'))

@@ -873,7 +873,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 if($isDir){
                     $object = Corpus::where([
                         ['directory_path', '=',$fileName],
-                        ['corpus_id', '=',$corpusId]
+                        ['id', '=',$corpusId]
                     ])->get();
                 }
                 else{
@@ -1268,10 +1268,19 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                             }
                             $corpus_path = $this->getCorpusAndProjectPathByCorpusId($publicationresponse['_source']['corpus'],$current_corpus_index);
                             $corpusPathArray = explode("/",$corpus_path);
+
+                            $corpusLogo = "";
+                            $corpusLogobyCorpusid = $this->getCorpusLogoByCorpusId($publicationresponse['_source']['corpus'],$current_corpus_index);
+
+                            if(null != $corpusLogobyCorpusid) {
+                                $corpusLogo = $corpusLogobyCorpusid;
+                            }
+                            $data['result']['corpus_logo'] = $corpusLogo;
+
                             $corpusdata[$publicationresponse['_source']['corpus']] = array(
                                 'corpus_title' => $publicationresponse['_source']['name'],
                                 'corpus_version' => $publicationresponse['_source']['publication_version'],
-                                'corpus_logo' => $this->getCorpusLogoByCorpusId($publicationresponse['_source']['corpus'],$current_corpus_index),
+                                'corpus_logo' => $corpusLogo,
                                 'corpus_project_directorypath' => $corpusPathArray[0],
                                 'corpus_directorypath' => $corpusPathArray[1],
                                 'corpus_path' => $corpus_path,

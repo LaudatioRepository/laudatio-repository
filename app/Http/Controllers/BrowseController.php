@@ -180,7 +180,7 @@ class BrowseController extends Controller
                     ));
 
                     //dd($annotationData);
-                    if(!$annotationData['error'] && count($annotationData['result'][0]) > 0){
+                    if(!$annotationData['error'] && isset($annotationData['result'][0]) && count($annotationData['result'][0]) > 0){
                         $annotators = array();
                         foreach ($annotationData['result'][0] as $annotationDatum) {
                             if(array_key_exists('preparation_encoding_annotation_group', $annotationDatum['_source'])){
@@ -489,9 +489,14 @@ class BrowseController extends Controller
         $corpusPathArray = explode("/",$corpus_path);
         $data['result']['project_directorypath'] = $corpusPathArray[0];
         $data['result']['corpus_directorypath'] = $corpusPathArray[1];
-        $corpusLogo = $this->LaudatioUtilService->getCorpusLogoByCorpusId($corpusId, $current_corpus_index);
+
+        $corpusLogo = "";
+        $corpusLogobyCorpusid = $this->LaudatioUtilService->getCorpusLogoByCorpusId($corpusId, $current_corpus_index);
+        if(null != $corpusLogobyCorpusid) {
+            $corpusLogo = $corpusLogobyCorpusid;
+        }
         $data['result']['corpus_logo'] = $corpusLogo;
-        //dd($data);
+
         JavaScript::put([
             "header" => $header,
             "header_id" => $id,

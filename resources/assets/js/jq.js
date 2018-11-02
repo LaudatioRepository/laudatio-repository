@@ -1067,6 +1067,51 @@ $(function(){
 
     });
 
+    $(document).on('click','.finishbutton', function (){
+        var headerType = $(this).attr("id").substring(0,$(this).attr("id").indexOf("_"));
+        var currentCount = parseInt($('#'+headerType+'Count span').html());
+        var acceptedFiles = corpusUpload.getAcceptedFiles();
+        var uploadedFileCount = acceptedFiles.length;
+
+
+        var postData = {};
+        postData.dataArray = [];
+
+        for(var i = 0; i < uploadedFileCount; i++) {
+            var postFetchData = {}
+            postFetchData.corpusid = window.Laravel.corpusid;
+            postFetchData.type = headerType;
+            postFetchData.filename = acceptedFiles[i].upload.filename;
+            postData.dataArray.push(postFetchData);
+        }
+
+
+        getDocumentIdByFileNameAndCorpusId(postData).then(function(data){
+            for(var j=0; j < data.msg.length; j++) {
+                var addedFilesMarkup = '<tr><td><div class="custom-control custom-checkbox">';
+                var documentId = headerType+'EditItem§'+data.msg[j].file_name+'§'+data.msg[j].database_id;
+                var deleteDocumentId = headerType+'DeleteItem§'+data.msg[j].file_name+'§'+data.msg[j].database_id;
+                addedFilesMarkup += '<input type="checkbox" class="custom-control-input" id="'+documentId+'">' +
+                    '<label class="custom-control-label font-weight-bold" for="'+documentId+'">'+data.msg[j].file_name+'</label>';
+                addedFilesMarkup += '</div></td>' +
+                                    '<td class="text-14 text-grey-light">'+window.laudatioApp.auth_user_name+'</td>' +
+                                    '<td class="text-14 text-grey-light">'+window.laudatioApp.auth_user_affiliation+'</td>' +
+                                    '<td class="text-14 text-grey-light">'+moment(data.msg[j].created_at.date).format('HH:mm,MMM DD')+'</td>' +
+                                    '<td><a href="javascript:" id="'+deleteDocumentId+'"><i class="fa fa-trash-o fa-fw fa-lg text-dark headerDeleteTrashcan"></i></a></td></tr>';
+                $('#'+headerType+'_table tbody').append(addedFilesMarkup);
+            }
+        }).catch(function(err) {
+            console.log(err)
+        })
+
+        $('#'+headerType+'Count span').html(currentCount+uploadedFileCount);
+        $('#'+headerType+'Uploader').css('display','none');
+        var previews = $('#previews').detach();
+        previews.html("");
+        previews.appendTo($('#tabcontainer'));
+        $('#'+headerType+'FileList').css('display','block');
+
+    });
 
 
     $(document).on('click', '#deleteSelectedCorpusButton',function () {
@@ -1449,6 +1494,41 @@ function getCitationData(postData) {
 
         $.ajax({
             url: '/download/citation',
+            type:"POST",
+            data: postData,
+            async: true,
+            statusCode: {
+                500: function () {
+                    alert("server down");
+                }
+            },
+            success: function(data) {
+                resolve(data) // Resolve promise and go to then()
+            },
+            error: function(err) {
+                reject(err) // Reject the promise and go to catch()
+            }
+        })
+    });
+}
+
+/**
+ * getDocumentIdByFileNameAndCorpusId promise
+ * @param postData
+ * @returns {Promise}
+ */
+function getDocumentIdByFileNameAndCorpusId(postData) {
+    return new Promise(function(resolve, reject) {
+
+        var token = $('#_token').val();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $.ajax({
+            url: '/api/dbapi/getdatabaseid',
             type:"POST",
             data: postData,
             async: true,

@@ -461,7 +461,16 @@ class GitRepoService implements GitRepoInterface
         return $result;
     }
 
-    public function deleteUntrackedFile($flysystem,$path,$isProject = false,$isCorpus = false){
+    public function deleteUntrackedFile($flysystem, $path,$isProject = false,$isCorpus = false){
+        $result = null;
+        if($flysystem->has($path)){
+            $gitFunction = new  GitFunction();
+            $result = $gitFunction->deleteUntrackedFiles($path,$isProject,$isCorpus);
+        }
+        return $result;
+    }
+
+    public function deleteUntrackedFile_old($flysystem,$path,$isProject = false,$isCorpus = false){
 
         $result = null;
         if($flysystem->has($path)){
