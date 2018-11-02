@@ -240,34 +240,34 @@ class GitRepoService implements GitRepoInterface
         for($i = 0; $i < count($headerData); $i++){
             $extension = $headerData[$i]['extension'];
             $basename = $headerData[$i]['basename'];
-            if($extension == "xml") {
-                $obrect = null;
-                switch ($headertype){
-                    case 'corpus':
-                        $object = Corpus::where(['file_name' => $basename])->get();
-                        break;
-                    case 'document':
-                        $object = Document::where(['file_name' => $basename])->get();
-                        break;
-                    case 'annotation':
-                        $object = Annotation::where(['file_name' => $basename])->get();
-                        break;
-                    case 'formatfiles':
-                        $object = CorpusFile::where(['file_name' => $basename])->get();
-                        break;
-                }
 
-                if(isset($object[0]) && $object[0]->uid != ""){
-                    $uploader = User::find($object[0]->uid);
-                    $headerData[$i]['uploader_affiliation'] = $uploader->affiliation;
-                    $headerData[$i]['uploader_name'] = $uploader->name;
-                    $headerData[$i]['uploader_uid'] = $uploader->id;
-                }
-                else{
-                    $headerData[$i]['uploader_affiliation'] = "NA";
-                    $headerData[$i]['uploader_name'] = "NA";
-                    $headerData[$i]['uploader_uid'] = "NA";
-                }
+            $object = null;
+            switch ($headertype){
+                case 'corpus':
+                    $object = Corpus::where(['file_name' => $basename])->get();
+                    break;
+                case 'document':
+                    $object = Document::where(['file_name' => $basename])->get();
+                    break;
+                case 'annotation':
+                    $object = Annotation::where(['file_name' => $basename])->get();
+                    break;
+                case 'formatfiles':
+                    $object = CorpusFile::where(['file_name' => $basename])->get();
+                    break;
+            }
+
+
+            if(isset($object[0]) && $object[0]->uid != ""){
+                $uploader = User::find($object[0]->uid);
+                $headerData[$i]['uploader_affiliation'] = $uploader->affiliation;
+                $headerData[$i]['uploader_name'] = $uploader->name;
+                $headerData[$i]['uploader_uid'] = $uploader->id;
+            }
+            else{
+                $headerData[$i]['uploader_affiliation'] = "NA";
+                $headerData[$i]['uploader_name'] = "NA";
+                $headerData[$i]['uploader_uid'] = "NA";
             }
         }
 
@@ -386,6 +386,11 @@ class GitRepoService implements GitRepoInterface
             }
             else{
                 $projects[$i]['tracked'] = "false";
+            }
+
+            $headerObject = $this->laudatioUtilsService->getModelByFileName($projects[$i]['basename'],'CORPUS-DATA',false,$corpusId);
+            if(count($headerObject) > 0){
+                $projects[$i]['headerObject'] = $headerObject[0];
             }
 
 

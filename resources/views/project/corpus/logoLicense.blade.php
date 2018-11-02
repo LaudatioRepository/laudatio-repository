@@ -45,7 +45,7 @@
                         <a href="javascript:" id="logo_CancelButton" class="btn btn-outline-corpus-dark text-uppercase font-weight-bold rounded px-5 mr-3 uploadcontrols">
                             Cancel
                         </a>
-                        <a href="{{ route('corpus.edit',['corpus' =>$corpus->id ])}}" id="logo_FinishButton" class="disabled btn btn-primary text-uppercase font-weight-bold rounded uploadcontrols">
+                        <a href="javascript: " id="logo_FinishButton" class="disabled btn btn-primary text-uppercase font-weight-bold rounded uploadcontrols datafinishbutton">
                             Finish Upload
                         </a>
                         <!-- Submit can happen at this place -->

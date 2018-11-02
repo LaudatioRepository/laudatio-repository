@@ -398,8 +398,8 @@ class CorpusController extends Controller
         $annotationnewelements = $this->GitRepoService->getUploader($annotationFileData['headerData']['elements'],'annotation');
         $annotationFileData['headerData']['elements'] = $annotationnewelements;
 
-        //$formatfilenewelements = $this->GitRepoService->getUploader($corpusFormatData['fileData']['elements'],'formatfiles');
-        //$formatFileData['headerData']['elements'] = $formatfilenewelements;
+        $formatfilenewelements = $this->GitRepoService->getUploader($corpusFormatData['projects'],'formatfiles');
+        $corpusFormatData['projects'] = $formatfilenewelements;
 
 
 
@@ -421,7 +421,7 @@ class CorpusController extends Controller
         }
 
         $formatUpload = false;
-        if(count($corpus->formatfiles) == 0) {
+        if(count($corpus->corpusfiles) == 0) {
             $formatUpload = true;
         }
 

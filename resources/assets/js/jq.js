@@ -1114,6 +1114,52 @@ $(function(){
     });
 
 
+    $(document).on('click','.datafinishbutton', function (){
+        var headerType = $(this).attr("id").substring(0,$(this).attr("id").indexOf("_"));
+        var currentCount = parseInt($('#'+headerType+'Count span').html());
+        var acceptedFiles = corpusUpload.getAcceptedFiles();
+        var uploadedFileCount = acceptedFiles.length;
+
+
+        var postData = {};
+        postData.dataArray = [];
+
+        for(var i = 0; i < uploadedFileCount; i++) {
+            var postFetchData = {}
+            postFetchData.corpusid = window.Laravel.corpusid;
+            postFetchData.type = headerType;
+            postFetchData.filename = acceptedFiles[i].upload.filename;
+            postData.dataArray.push(postFetchData);
+        }
+
+        getDocumentIdByFileNameAndCorpusId(postData).then(function(data){
+            for(var j=0; j < data.msg.length; j++) {
+                var addedFilesMarkup = '<tr><td><div class="custom-control custom-checkbox">';
+                var documentId = headerType+'EditItem§'+data.msg[j].file_name+'§'+data.msg[j].database_id;
+                var deleteDocumentId = headerType+'DeleteItem§'+data.msg[j].file_name+'§'+data.msg[j].database_id;
+                addedFilesMarkup += '<input type="checkbox" class="custom-control-input" id="'+documentId+'">' +
+                    '<label class="custom-control-label font-weight-bold" for="'+documentId+'">'+data.msg[j].file_name+'</label>';
+                addedFilesMarkup += '</div></td>' +
+                    '<td class="text-14 text-grey-light">'+window.laudatioApp.auth_user_name+'</td>' +
+                    '<td class="text-14 text-grey-light">'+window.laudatioApp.auth_user_affiliation+'</td>' +
+                    '<td class="text-14 text-grey-light">'+moment(data.msg[j].created_at.date).format('HH:mm,MMM DD')+'</td>' +
+                    '<td><a href="javascript:" id="'+deleteDocumentId+'"><i class="fa fa-trash-o fa-fw fa-lg text-dark headerDeleteTrashcan"></i></a></td></tr>';
+                $('#'+headerType+'_table tbody').append(addedFilesMarkup);
+            }
+        }).catch(function(err) {
+            console.log(err)
+        })
+
+        $('#'+headerType+'Count span').html(currentCount+uploadedFileCount);
+        $('#'+headerType+'Uploader').css('display','none');
+        var previews = $('#previews').detach();
+        previews.html("");
+        previews.appendTo($('#tabcontainer'));
+        $('#'+headerType+'FileList').css('display','block');
+
+    });
+
+
     $(document).on('click', '#deleteSelectedCorpusButton',function () {
         var postDeleteData = {}
         var toBeDeleted = []
@@ -1229,6 +1275,66 @@ $(function(){
 
         });
 
+    });
+
+
+    $(document).on('click', '#deleteSelectedFormatsButton',function () {
+        var postDeleteData = {}
+        var toBeDeleted = []
+        var checkedIds = []
+
+        if (typeof window.laudatioApp != 'undefined') {
+            postDeleteData.corpusid = window.laudatioApp.corpus_id;
+            postDeleteData.path = window.Laravel.directorypath;
+        }
+        else {
+            postDeleteData.corpusid = $(this).data('corpusid');
+        }
+
+        postDeleteData.auth_user_name = $('#auth_user_name').val();
+        postDeleteData.auth_user_id = $('#auth_user_id').val();
+        postDeleteData.auth_user_email = $('#auth_user_email').val();
+
+        var that = $(this);
+        $('#annotationFileList input:checked').each(function() {
+            var checkedId = $(this).attr("id");
+
+            if (checkedId != 'selectAll_annotationEdit') {
+                var checkedIdArray = checkedId.split('§');
+                checkedIds.push(checkedId);
+                var deletionObject = {}
+                deletionObject.fileName = checkedIdArray[1];
+                deletionObject.databaseId = checkedIdArray[2];
+                toBeDeleted.push(deletionObject);
+            }
+        });
+
+        postDeleteData.tobedeleted = toBeDeleted;
+
+        var currentFormatCount = parseInt($('#formatCount span').html());
+        deleteCorpusContent(postDeleteData,'deleteFormatContent').then(function(data){
+            var deletedFormatFiles = removeDeletedElements(checkedIds);
+            $('#formatCount span').html(currentFormatCount-deletedFormatFiles);
+            $('#selectAll_formatEdit').attr("checked",false);
+            $('#deleteSelectedFormatsButton').attr("disabled",true);
+
+            $('#alert-laudatio').addClass('alert-success');
+            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response)
+            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
+                $("#alert-laudatio").slideUp(500);
+            });
+
+        }).catch(function(err) {
+            // Run this when promise was rejected via reject()
+            $('#alert-laudatio').addClass('alert-danger');
+            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response)
+
+            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
+                $("#alert-laudatio").slideUp(500);
+            });
+
+            console.log(err)
+        });
     });
 
     $(document).on('click', '#deleteSelectedAnnotationsButton',function () {
