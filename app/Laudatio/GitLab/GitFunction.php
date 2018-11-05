@@ -78,7 +78,7 @@ class GitFunction
 
 
     public function doAddFile($file,$path){
-        $process = new Process("git add $file",$path);
+        $process = new Process("git add \"$file\"",$path);
         $process->run();
 
         // executes after the command finishes
@@ -278,8 +278,9 @@ class GitFunction
 
     public function commitFile($path,$file, $commitmessage, $user, $email){
         $isCommitted = false;
-        //Log::info("comittmessage: : ".$commitmessage." ".$file. " by ".$user." (".$email.") \"");
-        $process = new Process("git commit -m \"".$commitmessage." ".$file. " by ".$user." (".$email.") \" ".$file,$path);
+        Log::info("FILE: ".$file);
+        Log::info("git commit -m \"".$commitmessage." '".$file. "' by ".$user." (".$email.") \"");
+        $process = new Process("git commit -m \"".$commitmessage." '".$file. "' by ".$user." (".$email.") \"",$path);
         $process->setTimeout(3600);
         $process->run();
 

@@ -582,7 +582,9 @@ class GitRepoService implements GitRepoInterface
                     $isCommited = $gitFunction->commitFiles($this->basePath."/".$newpath,$commitmessage,$user,$email);
                 }
                 else {
-                    $isCommited = $gitFunction->commitFile($this->basePath."/".$newpath."/".$stagedfileArray[0],$stagedfileArray[1],$commitmessage,$user,$email);
+                    $folder = str_replace("\"","",$stagedfileArray[0]);
+                    $file = str_replace("\"","",$stagedfileArray[1]);
+                    $isCommited = $gitFunction->commitFile($this->basePath."/".$newpath."/".$folder,$file,$commitmessage,$user,$email);
                 }
 
 
@@ -706,7 +708,7 @@ class GitRepoService implements GitRepoInterface
         $projects = array();
         foreach ($array as $item){
             $pos = strpos($item['basename'],".md");
-            if($pos === false || ($pos > 0)){
+            if($pos === false){
                 array_push($projects,$item);
             }
         }

@@ -679,9 +679,10 @@ class UploadController extends Controller
             $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
 
             if(strpos($createdPaths[0],$dirPath) !== false){
-
-                $addPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder;
-                $commitPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder.'/'.$fileName;
+            
+                //$addPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder;
+                $addPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder.'/'.$fileName;
+                $commitPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder;
                 $pushPath = $corpusProjectPath.'/'.$corpus->directory_path.'/'.$uploadFolder;
 
                 //add files
@@ -698,7 +699,7 @@ class UploadController extends Controller
 
                     $corpus->corpusfiles()->save($corpusFile);
                     if($corpusIsVersioned){
-                        $returnPath = $this->GitRepoService->commitFiles($commitPath, "Adding files for " . $fileName, $corpusId, $user->name, $user->email);
+                        $returnPath = $this->GitRepoService->commitFiles($commitPath, "Adding files for " , $corpusId, $user->name, $user->email);
                         if (!empty($returnPath)) {
                             $isPushed = $this->GitRepoService->pushFiles($pushPath, $corpusId, $user);
                         }

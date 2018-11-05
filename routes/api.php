@@ -83,6 +83,7 @@ Route::group(array('prefix' => 'adminapi'), function() {
     Route::post('deleteCorpusContent','CorpusController@destroyCorpusContent');
     Route::post('deleteDocumentContent','DocumentController@destroyDocumentContent');
     Route::post('deleteAnnotationContent','AnnotationController@destroyAnnotationContent');
+    Route::post('deleteFormatContent','ApiController@destroyFormatFileContent');
     Route::post('publishCorpus','PublicationController@publishCorpus');
     Route::post('updateCorpusProject/{corpusProject}','CorpusProjectController@update');
     Route::post('postMessage','MessageBoardController@create');

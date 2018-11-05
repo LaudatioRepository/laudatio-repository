@@ -491,6 +491,7 @@ class CorpusController extends Controller
             'messagecount' => $messagecount
 
         );
+
         //dd($corpus_data);
         JavaScript::put([
             'corpusUpload' => $corpusUpload,

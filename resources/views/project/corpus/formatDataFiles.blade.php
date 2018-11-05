@@ -87,8 +87,8 @@
                         @endif
                         <td class="text-14 text-grey-light">{{  Carbon\Carbon::parse($fileData['lastupdated'])->format('H:i,M d') }}</td>
                         <td>
-                            <a href="#">
-                                <i class="fa fa-trash-o fa-fw fa-lg text-dark"></i>
+                            <a href="javascript:" id="formatDeleteItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
+                                <i class="fa fa-trash-o fa-fw fa-lg text-dark headerDeleteTrashcan"></i>
                             </a>
                         </td>
                     </tr>

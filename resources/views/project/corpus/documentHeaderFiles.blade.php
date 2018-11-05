@@ -122,13 +122,15 @@
             </table>
         </div>
     </div>
-    <div class="alert alert-info mt-5 bg-bluegrey-dark" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        <p> Info:</p>
-        <ul>
-            <li>A preview of the metadata is possible only after having uploaded a Corpus Header TEI xml file</li>
-        </ul>
-    </div>
+    @if($corpus_data['headerdata']['corpusheader'] == 0)
+        <div class="alert alert-info mt-5 bg-bluegrey-dark" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <p> Info:</p>
+            <ul>
+                <li>A preview of the metadata is possible only after having uploaded a Corpus Header TEI xml file</li>
+            </ul>
+        </div>
+    @endif
 </div>

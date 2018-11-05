@@ -1031,6 +1031,11 @@ $(function(){
             currentCount = parseInt($('#annotationCount span').html());
 
         }
+        else if(postDeleteData.path.indexOf('CORPUS-DATA') > -1) {
+            contentType = 'deleteFormatContent';
+            currentCount = parseInt($('#formatCount span').html());
+
+        }
 
         var trashcan = $(this);
 
@@ -1047,6 +1052,9 @@ $(function(){
             }
             else if(postDeleteData.path.indexOf('TEI-HEADERS/annotation') > -1) {
                 $('#annotationCount span').html(currentCount-deletedElements);
+            }
+            else if(postDeleteData.path.indexOf('CORPUS-DATA') > -1) {
+                $('#formatCount span').html(currentCount-deletedElements);
             }
 
             $('#alert-laudatio').addClass('alert-success');
@@ -1295,11 +1303,11 @@ $(function(){
         postDeleteData.auth_user_id = $('#auth_user_id').val();
         postDeleteData.auth_user_email = $('#auth_user_email').val();
 
-        var that = $(this);
-        $('#annotationFileList input:checked').each(function() {
+
+        $('#formatFileList input:checked').each(function() {
             var checkedId = $(this).attr("id");
 
-            if (checkedId != 'selectAll_annotationEdit') {
+            if (checkedId != 'selectAll_formatEdit') {
                 var checkedIdArray = checkedId.split('§');
                 checkedIds.push(checkedId);
                 var deletionObject = {}
