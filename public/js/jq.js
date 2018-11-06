@@ -407,7 +407,7 @@ $(function () {
                     $("#alert-laudatio").slideUp(500);
                 });
             } else if (data.status == "error") {
-                console.log(data);
+
                 var message = '<ul>';
                 if (typeof data.message.eloquent_response != 'undefined') {
                     message += '<li>' + data.message.eloquent_response + '</li>';
@@ -539,7 +539,7 @@ $(function () {
         postdata['corpus_id'] = $('#corpus_id').val();
         postdata['message'] = $('#created_boardmessage').val();
         postdata['user_id'] = $('#user_id').val();
-        console.log(postdata);
+
         $.ajax({
             method: 'POST',
             url: '/api/adminapi/postMessage',
@@ -547,7 +547,7 @@ $(function () {
             dataType: "json"
         }).done(function (data) {
             if (data.status == "success") {
-                console.log(data.message.messageboard_response);
+
                 $('#alert-laudatio').addClass('alert-success');
                 $('#alert-laudatio .alert-laudatio-message').html(data.message.messageboard_response);
                 $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
@@ -555,7 +555,7 @@ $(function () {
                     location.reload();
                 });
             } else if (data.status == "error") {
-                console.log(data.message.messageboard_response);
+
                 $('#alert-laudatio').addClass('alert-danger');
                 $('#alert-laudatio .alert-laudatio-message').html(data.message.messageboard_response);
 
@@ -582,7 +582,7 @@ $(function () {
         var postdata = {};
         postdata['message_id'] = $(this).data('message-id');
         postdata['user_id'] = $(this).data('message-assign');
-        console.log(postdata);
+
         $.ajax({
             method: 'POST',
             url: '/api/adminapi/assignMessage',
@@ -590,7 +590,7 @@ $(function () {
             dataType: "json"
         }).done(function (data) {
             if (data.status == "success") {
-                console.log(data.message.message_assign_response);
+
                 $('#alert-laudatio').addClass('alert-success');
                 $('#alert-laudatio .alert-laudatio-message').html(data.message.message_assign_response);
                 $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
@@ -598,7 +598,7 @@ $(function () {
                     location.reload();
                 });
             } else if (data.status == "error") {
-                console.log(data.message.message_assign_response);
+
                 $('#alert-laudatio').addClass('alert-danger');
                 $('#alert-laudatio .alert-laudatio-message').html(data.message.message_assign_response);
 
@@ -624,7 +624,7 @@ $(function () {
 
         var postdata = {};
         postdata['message_id'] = $(this).data('message-id');
-        console.log(postdata);
+
         $.ajax({
             method: 'POST',
             url: '/api/adminapi/completeMessage',
@@ -632,7 +632,7 @@ $(function () {
             dataType: "json"
         }).done(function (data) {
             if (data.status == "success") {
-                console.log(data.message.message_complete_response);
+
                 $('#alert-laudatio').addClass('alert-success');
                 $('#alert-laudatio .alert-laudatio-message').html(data.message.message_complete_response);
                 $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
@@ -640,7 +640,7 @@ $(function () {
                     location.reload();
                 });
             } else if (data.status == "error") {
-                console.log(data.message.message_complete_response);
+
                 $('#alert-laudatio').addClass('alert-danger');
                 $('#alert-laudatio .alert-laudatio-message').html(data.message.message_complete_response);
 
@@ -666,7 +666,7 @@ $(function () {
 
         var postdata = {};
         postdata['message_id'] = $(this).data('message-id');
-        console.log(postdata);
+
         $.ajax({
             method: 'POST',
             url: '/api/adminapi/deleteMessage',
@@ -674,7 +674,7 @@ $(function () {
             dataType: "json"
         }).done(function (data) {
             if (data.status == "success") {
-                console.log(data.message.message_delete_response);
+
                 $('#alert-laudatio').addClass('alert-success');
                 $('#alert-laudatio .alert-laudatio-message').html(data.message.message_delete_response);
                 $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function () {
@@ -682,7 +682,7 @@ $(function () {
                     location.reload();
                 });
             } else if (data.status == "error") {
-                console.log(data.message.message_delete_response);
+
                 $('#alert-laudatio').addClass('alert-danger');
                 $('#alert-laudatio .alert-laudatio-message').html(data.message.message_delete_response);
 
@@ -796,7 +796,7 @@ $(function () {
             dataType: "json"
         }).done(function (data) {
             if (data.status == "success") {
-                console.log(data.message.publish_corpus_response);
+
                 $('#publishCorpusModal').modal("hide");
                 $('#alert-laudatio').addClass('alert-success');
                 $('#alert-laudatio .alert-laudatio-message').html(data.message.publish_corpus_response);
@@ -804,12 +804,12 @@ $(function () {
                     $("#alert-laudatio").slideUp(500);
                 });
             } else if (data.status == "error") {
-                console.log(data.message.publish_corpus_response);
+
                 $('#publish-error-message').text(data.message.publish_corpus_response);
                 $('#publish-error-message').css('display', 'block');
             }
         }).fail(function (data) {
-            console.log("FAIL : " + data.message.publish_corpus_response);
+
             $('#publish-error-message').text(data.message.publish_corpus_response);
             $('#publish-error-message').css('display', 'block');
         });
@@ -825,7 +825,7 @@ $(function () {
 
         getValidationData(postData).then(function (data) {
             var json = JSON.parse(data.msg);
-            console.log("JSON: " + data.msg);
+
             var newModaltitle = "Validation results for corpus/" + json.corpusheader;
             $('#myModalLabelValidation').html(newModaltitle);
             $('#myValidatorModal').modal('show');
@@ -900,7 +900,7 @@ $(function () {
             if (data.status == "success") {
                 $('#license-deed').html(data.message.deedheader + data.message.deedbody + data.message.helppanels);
             } else if (data.status == "error") {
-                console.log(data.message.message_delete_response);
+
                 $('#alert-laudatio').addClass('alert-danger');
                 $('#alert-laudatio .alert-laudatio-message').html(data.message.message_delete_response);
 
@@ -1009,7 +1009,7 @@ $(function () {
         toBeDeleted.push(deletionObject);
 
         postDeleteData.tobedeleted = toBeDeleted;
-        postDeleteData.checkedids = checkedIds.join("_");
+        postDeleteData.checkedids = checkedIds.join("|");
 
         $('#confirmDelete .modal-dialog .modal-content .modal-footer #doDelete').data('idkey', postDeleteData.checkedids);
 
@@ -1034,9 +1034,7 @@ $(function () {
         //var postDeleteData = JSON.parse($("#postDeleteData").val());
         var postDeleteData = JSON.parse(window.localStorage.getItem(idkey));
         if (postDeleteData.checkedids == idkey) {
-            console.log("idkey: " + idkey);
-            console.log("DLETEDATA: " + postDeleteData);
-            console.log("PATH: " + postDeleteData.path);
+
             var contentType = '';
             var currentCount = 0;
             if (postDeleteData.path.indexOf('TEI-HEADERS/corpus') > -1) {
@@ -1053,22 +1051,27 @@ $(function () {
                 currentCount = parseInt($('#formatCount span').html());
             }
 
-            console.log(" CURRENTCOUNT: " + currentCount);
-
             deleteCorpusContent(postDeleteData, contentType).then(function (data) {
                 //var trashcan = $('.headerDeleteTrashcan');
                 //trashcan.closest("tr").remove();
-                console.log(" checkedids: " + postDeleteData.checkedids);
-                var deletedElements = removeDeletedElements(postDeleteData.checkedids.split("_"));
+                var deletedElements = removeDeletedElements(postDeleteData.checkedids.split("|"));
 
                 if (postDeleteData.path.indexOf('TEI-HEADERS/corpus') > -1) {
                     $('#corpusCount span').html(currentCount - deletedElements);
+                    $('#selectAll_corpusEdit').attr("checked", false);
+                    $('#deleteSelectedCorpusButton').attr("disabled", true);
                 } else if (postDeleteData.path.indexOf('TEI-HEADERS/document') > -1) {
                     $('#documentCount span').html(currentCount - deletedElements);
+                    $('#selectAll_documentEdit').attr("checked", false);
+                    $('#deleteSelectedDocumentsButton').attr("disabled", true);
                 } else if (postDeleteData.path.indexOf('TEI-HEADERS/annotation') > -1) {
                     $('#annotationCount span').html(currentCount - deletedElements);
+                    $('#selectAll_annotationEdit').attr("checked", false);
+                    $('#deleteSelectedAnnotationsButton').attr("disabled", true);
                 } else if (postDeleteData.path.indexOf('CORPUS-DATA') > -1) {
                     $('#formatCount span').html(currentCount - deletedElements);
+                    $('#selectAll_formatEdit').attr("checked", false);
+                    $('#deleteSelectedFormatsButton').attr("disabled", true);
                 }
 
                 $('#alert-laudatio').addClass('alert-success');
@@ -1242,7 +1245,7 @@ $(function () {
 
         postDeleteData.tobedeleted = toBeDeleted;
 
-        postDeleteData.checkedids = checkedIds.join("_");
+        postDeleteData.checkedids = checkedIds.join("|");
         $('#confirmDelete .modal-dialog .modal-content .modal-footer #doDelete').data('idkey', postDeleteData.checkedids);
 
         var trashcan = $(this);
@@ -1286,7 +1289,7 @@ $(function () {
         });
 
         postDeleteData.tobedeleted = toBeDeleted;
-        postDeleteData.checkedids = checkedIds.join("_");
+        postDeleteData.checkedids = checkedIds.join("|");
 
         $('#confirmDelete .modal-dialog .modal-content .modal-footer #doDelete').data('idkey', postDeleteData.checkedids);
 
@@ -1334,7 +1337,7 @@ $(function () {
 
         postDeleteData.tobedeleted = toBeDeleted;
 
-        postDeleteData.checkedids = checkedIds.join("_");
+        postDeleteData.checkedids = checkedIds.join("|");
         $('#confirmDelete .modal-dialog .modal-content .modal-footer #doDelete').data('idkey', postDeleteData.checkedids);
 
         var trashcan = $(this);
@@ -1359,7 +1362,6 @@ $(function () {
 function removeDeletedElements(checkedIds) {
 
     for (var i = 0; i < checkedIds.length; i++) {
-        console.log('ESCAPED: #' + $.escapeSelector(checkedIds[i]));
         $('#' + $.escapeSelector(checkedIds[i])).closest("tr").remove();
     } //end for
 
@@ -1506,7 +1508,7 @@ function deleteCorpusContent(postData, documentType) {
         });
 
         var postUri = '/api/adminapi/' + documentType;
-        console.log("POSTURI: " + postUri);
+
         $.ajax({
             url: postUri,
             type: "POST",
