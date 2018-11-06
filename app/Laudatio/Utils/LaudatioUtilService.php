@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use App\Exceptions\CorpusNameAlreadyExistsException;
 use Log;
 use Cache;
 use DB;
@@ -1478,5 +1479,26 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
     public function emptyAnnotationGroupCacheByAnnotationAndCorpusId($annotationId,$corpusId, $index){
         Cache::tags(['annotationgroup_'.$corpusId.'_'.$index])->flush();
+    }
+
+
+    /**
+     * checkForDuplicateCorpusName checks the path-normalized name of a corpus if it already exists with in a project
+     *
+     * @param $corpus_name_path
+     * @param $corpus_project_id
+     * @return mixed
+     */
+    public function checkForDuplicateCorpusName($corpus_name, $corpus_name_path, $corpus_project_id) {
+        $isDuplicate = false;
+        $corpusProject = CorpusProject::findOrFail($corpus_project_id);
+        foreach ($corpusProject->corpora()->get() as $projectCorpus) {
+            if($projectCorpus->directory_path == $corpus_name_path) {
+
+                throw new CorpusNameAlreadyExistsException("The Corpus name $corpus_name is already taken within this Corpus project. Please select another title for the Corpus.",0,null);
+            }
+        }
+        
+        return $isDuplicate;
     }
 }

@@ -19,6 +19,7 @@ use App\Laudatio\GitLaB\GitFunction;
 use App\Custom\ValidatorInterface;
 use App\Exceptions\XMLNotWellformedException;
 use App\Exceptions\XMLNotValidException;
+use App\Exceptions\CorpusNameAlreadyExistsException;
 use Log;
 use Flow\JSONPath\JSONPath;
 use Cache;
@@ -237,7 +238,7 @@ class UploadController extends Controller
             $commitData = null;
 
             if($isAdded) {
-                $commitData = $this->GitRepoService->commitFile($commitPath."/".$fileName,"Adding ".$fileName,$corpusId,$user->name,$user->email);
+                $commitData = $this->GitRepoService->commitFile($commitPath, $fileName,"Adding ",$corpusId,$user->name,$user->email);
 
                 if(!empty($commitData)){
                     //push
@@ -395,7 +396,23 @@ class UploadController extends Controller
 
 
                 if(!empty($corpusTitle[0])){
-                    $updatedCorpusPath = $this->GitRepoService->updateCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus->directory_path,$corpusTitle[0]);
+
+
+                    $responsearray = array();
+                    $updatedCorpusPath = "";
+                    try {
+                        $updatedCorpusPath = $this->GitRepoService->updateCorpusFileStructure($this->flysystem,$corpusProjectPath,$corpus->directory_path,$corpusTitle[0]);
+                        //$this->laudatioUtilsService->checkForDuplicateCorpusName($corpusTitle[0], $gitLabCorpusPath,$corpusProjectId);
+                    }
+                    catch (CorpusNameAlreadyExistsException $corpusNameAlreadyExistsException) {
+                        $notification = array(
+                            'error' => 'CorpusNameAlreadyExistsException',
+                            'payload' => explode(",",$corpusNameAlreadyExistsException->getMessage()),
+                            'alert_type' => 'error',
+                        );
+                        array_push($responsearray,$notification);
+                        return Response::json($responsearray, 400);
+                    }
 
                     if(!empty($updatedCorpusPath)){
                         $gitLabCorpusPath = substr($updatedCorpusPath,strrpos($updatedCorpusPath,"/")+1);
@@ -524,7 +541,7 @@ class UploadController extends Controller
                 $isReset = $this->GitRepoService->resetAdd($initialPushPath,array("TEI-HEADERS", "CORPUS-DATA", "CORPUS-IMAGES"));
 
                 if($isReset) {
-                    $hookCommitdata = $this->GitRepoService->commitFile($initialCommitPath.'/githooks', "Adding githooks",$corpusId, $user->name, $user->email);
+                    $hookCommitdata = $this->GitRepoService->commitFiles($initialCommitPath.'/githooks', "Adding githooks",$corpusId, $user->name, $user->email);
                     $isInitiallyPushed = $this->GitRepoService->initialPush($initialPushPath,$user);
 
                     if($isInitiallyPushed) {

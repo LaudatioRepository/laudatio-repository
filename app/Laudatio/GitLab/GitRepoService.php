@@ -21,6 +21,7 @@ use App\Annotation;
 use App\CorpusFile;
 use App\User;
 use App\CorpusProject;
+use App\Exceptions\CorpusNameAlreadyExistsException;
 
 class GitRepoService implements GitRepoInterface
 {
@@ -98,10 +99,16 @@ class GitRepoService implements GitRepoInterface
         $normalizedCorpusName = $this->normalizeString($corpusName);
         $oldDirPath = $corpusProjectPath.'/'.$oldCorpusPath;
 
-        if($flysystem->has($oldDirPath)){
-            $gitFunction = new GitFunction();
-            $corpusPath = $gitFunction->renameFile($corpusProjectPath,$oldCorpusPath,$normalizedCorpusName);
+        if(file_exists ( $this->basePath."/".$corpusProjectPath."/".$normalizedCorpusName)){
+            throw new CorpusNameAlreadyExistsException("The Corpus name ".$corpusName." is already taken within this Corpus project. Please select another title for the Corpus.",0,null);
         }
+        else {
+            if($flysystem->has($oldDirPath)){
+                $gitFunction = new GitFunction();
+                $corpusPath = $gitFunction->renameFile($corpusProjectPath,$oldCorpusPath,$normalizedCorpusName);
+            }
+        }
+
         return $corpusPath;
     }
 
@@ -584,10 +591,12 @@ class GitRepoService implements GitRepoInterface
                 else {
                     $folder = str_replace("\"","",$stagedfileArray[0]);
                     $file = str_replace("\"","",$stagedfileArray[1]);
-                    $isCommited = $gitFunction->commitFile($this->basePath."/".$newpath."/".$folder,$file,$commitmessage,$user,$email);
+
+                    //@todo We need a better solution here, this happens because some files in some directories are not added beforehand, like after the githook commit
+                    if(null != $file && $file != ""){
+                        $isCommited = $gitFunction->commitFile($this->basePath."/".$newpath."/".$folder,$file,$commitmessage,$user,$email);
+                    }
                 }
-
-
             }
             if($isCommited){
                 $commitData = $this->getCommitData($pathWithOutAddedFolder);
@@ -599,14 +608,14 @@ class GitRepoService implements GitRepoInterface
     }
 
 
-    public function commitFile($dirname = "", $commitmessage, $corpusid, $user, $email){
+    public function commitFile($dirname = "", $file, $commitmessage, $corpusid, $user, $email){
         $commitdata = null;
 
         $gitFunction = new  GitFunction();
 
         $pathWithOutAddedFolder = substr($dirname,0,strrpos($dirname,"/"));
 
-        $isCommited = $gitFunction->commitFiles($this->basePath."/".$pathWithOutAddedFolder,$commitmessage,$user,$email);
+        $isCommited = $gitFunction->commitFile($this->basePath."/".$dirname, $file,$commitmessage,$user,$email);
 
         if($isCommited){
             $commitdata = $this->getCommitData($pathWithOutAddedFolder);

@@ -90,11 +90,11 @@ if(previewNode) {
             errMsg += "</ul>";
         }
         $('#alert-laudatio').addClass('alert-danger');
-        $('#alert-laudatio').html(errMsg)
+        $('#alert-laudatio .alert-laudatio-message').html(errMsg)
 
-        $("#alert-laudatio").fadeTo(2000, 2000).slideUp(500, function(){
-
+        $("#alert-laudatio").fadeTo(2000, 500).slideUp(1000, function(){
         });
+
         $(file.previewElement).find('.uploadStatusText').html(errMsg);
         $(file.previewElement).find('.error.text-14.text-danger').html('');
         $(file.previewElement).find('.uploadStatusIcons').children().addClass('hidden');

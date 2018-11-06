@@ -27,7 +27,7 @@ interface GitRepoInterface {
     public function addFiles($flysystem, $path);
     public function resetAdd($path,$files);
     public function commitFiles($dirname, $commitmessage, $corpusid,$user,$email);
-    public function commitFile($dirname = "", $commitmessage, $corpusid, $user, $email);
+    public function commitFile($dirname = "", $file, $commitmessage, $corpusid, $user, $email);
     public function pushFiles($dirname,$corpusid,$user);
     public function addHooks($path,$user,$email);
     public function setGitConfig($path,$configs);

@@ -9,6 +9,7 @@
 namespace App\Laudatio\GitLaB;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use App\Exceptions\CorpusNameAlreadyExistsException;
 use DB;
 use Log;
 
@@ -278,8 +279,7 @@ class GitFunction
 
     public function commitFile($path,$file, $commitmessage, $user, $email){
         $isCommitted = false;
-        Log::info("FILE: ".$file);
-            Log::info("git commit -m '".$commitmessage." ".$file. " by ".$user." (".$email.") '".$file);
+
         $process = new Process("git commit -m '".$commitmessage." '".$file. "' by ".$user." (".$email.")' ".$file,$path);
         $process->setTimeout(3600);
         $process->run();

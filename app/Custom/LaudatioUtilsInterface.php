@@ -65,6 +65,8 @@ interface LaudatioUtilsInterface
 
     public function setCorpusLogoSymLink($flysystem,$path);
 
+    public function checkForDuplicateCorpusName($corpus_name, $corpus_name_path, $corpus_project);
+
 
     /* CACHE */
     public function emptyCorpusCache($corpusId,$index);
