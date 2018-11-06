@@ -679,7 +679,7 @@ class UploadController extends Controller
             $createdPaths = $gitFunction->writeFiles($dirPath,array($fileName), $this->flysystem,$request->formats->getRealPath(),$directoryPath);
 
             if(strpos($createdPaths[0],$dirPath) !== false){
-            
+
                 //$addPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder;
                 $addPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder.'/'.$fileName;
                 $commitPath = $corpusProjectPath.'/'.$corpusPath.'/'.$uploadFolder;

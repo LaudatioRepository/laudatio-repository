@@ -68,7 +68,7 @@ class ApiController extends Controller
             'status' => $status,
             'msg' => $result,
         );
-
+        Log::info("RESTURNING: ".print_r($response,1));
         return Response::json($response);
     }
 
