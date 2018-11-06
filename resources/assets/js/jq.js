@@ -1254,7 +1254,6 @@ $(function(){
 
 
 
-
     $(document).on('click', '#deleteSelectedDocumentsButton',function (){
         var postDeleteData = {}
         var toBeDeleted = []
@@ -1286,34 +1285,18 @@ $(function(){
 
         postDeleteData.tobedeleted = toBeDeleted;
 
+        postDeleteData.checkedids = checkedIds.join("_");
+        $('#confirmDelete .modal-dialog .modal-content .modal-footer #doDelete').data('idkey',postDeleteData.checkedids);
 
-        var currentDocumentCount = parseInt($('#documentCount span').html());
-        console.log("currentDocumentCount: "+currentDocumentCount);
-        deleteCorpusContent(postDeleteData,'deleteDocumentContent').then(function(data){
-            var deletedDocuments = removeDeletedElements(checkedIds);
-            console.log("deletedDocuments: "+deletedDocuments);
-            $('#documentCount span').html(currentDocumentCount-deletedDocuments);
-            $('#selectAll_documentEdit').attr("checked",false);
-            $('#deleteSelectedDocumentsButton').attr("disabled",true);
-
-
-            $('#alert-laudatio').addClass('alert-success');
-            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response)
-            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
-                $("#alert-laudatio").slideUp(500);
-            });
-
-
-        }).catch(function(err) {
-            // Run this when promise was rejected via reject()
-            $('#alert-laudatio').addClass('alert-danger');
-            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response)
-
-            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
-                $("#alert-laudatio").slideUp(500);
-            });
-
-        });
+        var trashcan = $(this);
+        var fileList = "<ul>";
+        for(var i = 0; i < postDeleteData.tobedeleted.length; i++) {
+            fileList += "<li>"+postDeleteData.tobedeleted[i].fileName+"</i>";
+        }
+        fileList += "</ul>";
+        window.localStorage.setItem(postDeleteData.checkedids, JSON.stringify(postDeleteData));
+        $('#confirmDelete .modal-dialog .modal-content .modal-body').html(fileList);
+        $('#confirmDelete').modal('show');
 
     });
 
@@ -1350,31 +1333,20 @@ $(function(){
         });
 
         postDeleteData.tobedeleted = toBeDeleted;
+        postDeleteData.checkedids = checkedIds.join("_");
 
-        var currentFormatCount = parseInt($('#formatCount span').html());
-        deleteCorpusContent(postDeleteData,'deleteFormatContent').then(function(data){
-            var deletedFormatFiles = removeDeletedElements(checkedIds);
-            $('#formatCount span').html(currentFormatCount-deletedFormatFiles);
-            $('#selectAll_formatEdit').attr("checked",false);
-            $('#deleteSelectedFormatsButton').attr("disabled",true);
+        $('#confirmDelete .modal-dialog .modal-content .modal-footer #doDelete').data('idkey',postDeleteData.checkedids);
 
-            $('#alert-laudatio').addClass('alert-success');
-            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response)
-            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
-                $("#alert-laudatio").slideUp(500);
-            });
-
-        }).catch(function(err) {
-            // Run this when promise was rejected via reject()
-            $('#alert-laudatio').addClass('alert-danger');
-            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response)
-
-            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
-                $("#alert-laudatio").slideUp(500);
-            });
-
-            console.log(err)
-        });
+        var trashcan = $(this);
+        var fileList = "<ul>";
+        for(var i = 0; i < postDeleteData.tobedeleted.length; i++) {
+            fileList += "<li>"+postDeleteData.tobedeleted[i].fileName+"</i>";
+        }
+        fileList += "</ul>";
+        //$('#postDeleteData').val(JSON.stringify(postDeleteData));
+        window.localStorage.setItem(postDeleteData.checkedids, JSON.stringify(postDeleteData));
+        $('#confirmDelete .modal-dialog .modal-content .modal-body').html(fileList);
+        $('#confirmDelete').modal('show');
     });
 
     $(document).on('click', '#deleteSelectedAnnotationsButton',function () {
@@ -1420,35 +1392,10 @@ $(function(){
             fileList += "<li>"+postDeleteData.tobedeleted[i].fileName+"</i>";
         }
         fileList += "</ul>";
+        window.localStorage.setItem(postDeleteData.checkedids, JSON.stringify(postDeleteData));
+        $('#confirmDelete .modal-dialog .modal-content .modal-body').html(fileList);
+        $('#confirmDelete').modal('show');
 
-
-        /*
-        var currentAnnotationCount = parseInt($('#annotationCount span').html());
-        deleteCorpusContent(postDeleteData,'deleteAnnotationContent').then(function(data){
-            var deletedAnnotations = removeDeletedElements(checkedIds);
-            $('#annotationCount span').html(currentAnnotationCount-deletedAnnotations);
-            $('#selectAll_annotationEdit').attr("checked",false);
-            $('#deleteSelectedAnnotationsButton').attr("disabled",true);
-
-            $('#alert-laudatio').addClass('alert-success');
-            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response)
-            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
-                $("#alert-laudatio").slideUp(500);
-                location.reload()
-            });
-
-        }).catch(function(err) {
-            // Run this when promise was rejected via reject()
-            $('#alert-laudatio').addClass('alert-danger');
-            $('#alert-laudatio .alert-laudatio-message').html(data.msg.delete_content_response)
-
-            $("#alert-laudatio").fadeTo(2000, 500).slideUp(500, function(){
-                $("#alert-laudatio").slideUp(500);
-            });
-
-            console.log(err)
-        });
-        */
     });
 
 
@@ -1466,6 +1413,7 @@ $(function(){
 function removeDeletedElements(checkedIds) {
 
     for( var i = 0; i < checkedIds.length; i++) {
+        console.log('ESCAPED: #'+$.escapeSelector(checkedIds[i]));
         $('#'+$.escapeSelector(checkedIds[i])).closest("tr").remove();
     }//end for
 
