@@ -59,7 +59,9 @@
                                             <div class="card-body p-6">
                                                 <div class="d-flex flex-column align-items-center">
                                                     @if (isset($corpus['corpus_logo']) && $corpus['corpus_logo'] != "")
-                                                        <img class="w-30" src="/images/corpuslogos/{{$corpus['corpus_project_directorypath']}}_{{$corpus['corpus_directorypath']}}_{{$corpus['corpus_logo']}}" alt="corpus-logo">
+                                                        <a  href="/browse/corpus/{{$corpus['elasticid']}}">
+                                                            <img class="rounded-circle bg-white w-100"  src="/images/corpuslogos/{{$corpus['corpus_project_directorypath']}}_{{$corpus['corpus_directorypath']}}_{{$corpus['corpus_logo']}}" alt="corpus-logo">
+                                                        </a>
                                                     @else
                                                         <img class="rounded-circle w-30 bg-white" src="{{ asset('images/placeholder_flower.svg') }}" alt="circle-image">
                                                     @endif

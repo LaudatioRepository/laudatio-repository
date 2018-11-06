@@ -5,7 +5,7 @@
             <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
         </div>
         <div class="col-2" v-else>
-            <img class="w-100" v-bind:src="('/images/corpuslogos/').concat(headerdata.project_directorypath).concat('_').concat(headerdata.corpus_directorypath).concat('_').concat(headerdata.corpus_logo)" alt="corpus-logo">
+            <img class="rounded-circle bg-white w-100"  v-bind:src="('/images/corpuslogos/').concat(headerdata.project_directorypath).concat('_').concat(headerdata.corpus_directorypath).concat('_').concat(headerdata.corpus_logo)" alt="corpus-logo">
         </div>
       <div class="col pr-5">
         <h3 class="h3 font-weight-bold">

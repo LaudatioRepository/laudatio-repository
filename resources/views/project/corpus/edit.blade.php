@@ -12,9 +12,9 @@
             <div class="row">
                 <div class="col-2 pl-7 pr-7">
                     @if (isset($corpus->corpus_logo))
-                        <img class="w-100" src="/images/corpuslogos/{{$corpus_data['project_directorypath']}}_{{$corpus->directory_path}}_{{$corpus->corpus_logo}}" alt="corpus-logo">
+                        <img class="rounded-circle bg-white w-100"  src="/images/corpuslogos/{{$corpus_data['project_directorypath']}}_{{$corpus->directory_path}}_{{$corpus->corpus_logo}}" alt="corpus-logo">
                     @else
-                        <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
+                        <img class="rounded-circle bg-white w-100"  src="/images/placeholder_circle.svg" alt="circle-image">
                     @endif
 
                 </div>

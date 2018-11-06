@@ -43601,7 +43601,7 @@ var render = function() {
               ])
             : _c("div", { staticClass: "col-2" }, [
                 _c("img", {
-                  staticClass: "w-100",
+                  staticClass: "rounded-circle bg-white w-100",
                   attrs: {
                     src: "/images/corpuslogos/"
                       .concat(_vm.headerdata.project_directorypath)
@@ -44848,7 +44848,7 @@ var render = function() {
               ])
             : _c("div", { staticClass: "col-2" }, [
                 _c("img", {
-                  staticClass: "w-100",
+                  staticClass: "rounded-circle bg-white w-100",
                   attrs: {
                     src: "/images/corpuslogos/"
                       .concat(_vm.headerdata.project_directorypath)
@@ -45920,7 +45920,7 @@ var render = function() {
               ])
             : _c("div", { staticClass: "col-2" }, [
                 _c("img", {
-                  staticClass: "w-100",
+                  staticClass: "rounded-circle bg-white w-100",
                   attrs: {
                     src: "/images/corpuslogos/"
                       .concat(_vm.headerdata.project_directorypath)

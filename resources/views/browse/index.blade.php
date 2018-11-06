@@ -48,7 +48,7 @@
                                                     <div class="row px-3">
                                                         <div class="col-4">
                                                             @if (isset($corpus['corpus_logo']) && $corpus['corpus_logo'] != "")
-                                                                <img class="w-100" src="/images/corpuslogos/{{$corpus['corpus_project_directorypath']}}_{{$corpus['corpus_directorypath']}}_{{$corpus['corpus_logo']}}" alt="corpus-logo">
+                                                                <img  class="rounded-circle bg-white w-100" src="/images/corpuslogos/{{$corpus['corpus_project_directorypath']}}_{{$corpus['corpus_directorypath']}}_{{$corpus['corpus_logo']}}" alt="corpus-logo">
                                                             @else
                                                                 <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
                                                             @endif
