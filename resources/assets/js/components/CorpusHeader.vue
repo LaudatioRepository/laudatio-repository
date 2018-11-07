@@ -212,12 +212,6 @@
                          </button>
 					</div>
 					<div class="modal-body">
-                        <div class="alert alert-dismissible fade show" role="alert" id="alert-laudatio">
-                            <span class="alert-laudatio-message"></span>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                      </div>
 						<nav class="navbar navbar-expand-sm navbar-light bg-transparent p-0 container" role="tablist" id="citationtabs">
                             <div class="navbar-nav nav row w-100 px-5" data-cite-format="apa">
                                 <div class="nav-item maintablink col-2 text-center text-14 font-weight-bold active">
@@ -273,7 +267,7 @@
                     authorString += this.headerdata.corpus_editor_forename[i]
                         .concat(' ')
                         .concat(this.headerdata.corpus_editor_surname[i])
-                        .concat(',');
+                        .concat(', ');
                 }
                 authorString = authorString.substring(0,authorString.lastIndexOf(","));
                 return authorString;

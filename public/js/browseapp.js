@@ -62625,12 +62625,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['headerdata', 'header', 'citedata', 'user', 'isloggedin', 'corpuselasticsearchid', 'corpusid', 'corpuspath', 'workflowstatus', 'corpusversion', 'ccbaseuri'],
@@ -62638,7 +62632,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         corpusAuthors: function corpusAuthors() {
             var authorString = "";
             for (var i = 0; i < this.headerdata.corpus_editor_forename.length; i++) {
-                authorString += this.headerdata.corpus_editor_forename[i].concat(' ').concat(this.headerdata.corpus_editor_surname[i]).concat(',');
+                authorString += this.headerdata.corpus_editor_forename[i].concat(' ').concat(this.headerdata.corpus_editor_surname[i]).concat(', ');
             }
             authorString = authorString.substring(0, authorString.lastIndexOf(","));
             return authorString;
@@ -63420,30 +63414,6 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "modal-body" }, [
-      _c(
-        "div",
-        {
-          staticClass: "alert alert-dismissible fade show",
-          attrs: { role: "alert", id: "alert-laudatio" }
-        },
-        [
-          _c("span", { staticClass: "alert-laudatio-message" }),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "close",
-              attrs: {
-                type: "button",
-                "data-dismiss": "alert",
-                "aria-label": "Close"
-              }
-            },
-            [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-          )
-        ]
-      ),
-      _vm._v(" "),
       _c(
         "nav",
         {

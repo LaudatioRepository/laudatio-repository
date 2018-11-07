@@ -1384,34 +1384,44 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
         foreach ($data['authors'] as $authorData) {
             $namearray = explode(" ", $authorData);
-            $citedauthors .= $namearray[1].",";
-            $authorstring .= $namearray[1].", ".$namearray[0].",";
+            $citedauthors .= $namearray[1].", ";
+            $authorstring .= $namearray[1]." ".$namearray[0].", ";
         }
+
+
+        $homepage = $data['corpus_encoding_project_homepage'];
+        $handle = $data['published_handle'];
 
         $citedauthors = substr($citedauthors,0,strrpos($citedauthors,","));
         $authorstring = substr($authorstring,0,strrpos($authorstring,","));
-        $citedauthors .= $data['publishing_year'];
+        $authorstring .= ' ('. $data['publishing_year'].')';
+        $citedauthors .= ' ('. $data['publishing_year'].')';
 
         $APAcite = $namearray[1].", ".
             substr($namearray[0],0,1).
             ". (".$data['publishing_year']."). ".
             $data['title']." (".$data['version']."). ".
             $data['publishing_institution'].".".
-            "handle: ".$data['published_handle'].".";
+            " Homepage: ".$homepage.".";
+            " Corpus-Link: ".$handle.".";
 
 
         $CHIAGOcite = $namearray[1].", ".
             $namearray[0].".".
             "´".$data['title']." (".$data['version'].")´ ".
             $data['publishing_institution'].", ".$data['publishing_year'].".".
-            "handle: ".$data['published_handle'].".";
+            " Homepage: ".$homepage.".".
+            " Corpus-Link: ".$handle.".";
+
 
         $HARVARDcite = $namearray[1].", ".
             substr($namearray[0],0,1).
             ". (".$data['publishing_year']."). ".
             "´".$data['title']." (".$data['version'].")´ ".
             $data['publishing_institution'].
-            "handle: ". $data['published_handle'].".";
+            " Homepage: ".$homepage.".".
+            " Corpus-Link: ".$handle.".";
+
 
 
         $BibTexcite = "";
@@ -1420,16 +1430,20 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $BibTexcite .= "\t title \t = {{".$data['title']." (Version ".$data['version'].")}}, \n";
         $BibTexcite .= "\t year \t = {".$data['publishing_year']."}, \n";
         $BibTexcite .= "\t note \t = {".$data['publishing_institution']."}, \n";
-        $BibTexcite .= "\t url \t = {".$data['published_handle']."}, \n";
+        $BibTexcite .= "\t url \t = {".$handle."}, \n";
         $BibTexcite .= "}";
 
         $TXTcite = "";
-        $TXTcite .= $citedauthors."\n";
-        $TXTcite .= $authorstring."\n";
-        $TXTcite .= $data['title']." (Version ".$data['version'].")\n";
-        $TXTcite .= $data['publishing_year']."\n";
-        $TXTcite .= $data['publishing_institution']."\n";
-        $TXTcite .= $data['published_handle']."\n";
+        //$TXTcite .= $citedauthors."\n";
+        //$TXTcite .= $authorstring."\n";
+        $TXTcite .= $authorstring."; ";
+        //$TXTcite .= $data['title']." (Version ".$data['version'].")\n";
+        $TXTcite .= $data['title']." (Version ".$data['version']."); ";
+        //$TXTcite .= $data['publishing_year']."\n";
+        //$TXTcite .= $data['publishing_institution']."\n";
+        $TXTcite .= $data['publishing_institution']."; ";
+        $TXTcite .= " Homepage: ".$homepage."; ";
+        $TXTcite .= " Corpus-Link: ".$handle."\n";
 
         $citations = array();
         $citations['apa'] = $APAcite;

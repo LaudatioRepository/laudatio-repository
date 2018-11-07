@@ -94,6 +94,7 @@ class BrowseController extends Controller
                     $citeData['publishing_year'] = $citeData['publishing_year'] = date('Y',strtotime($data['result']['corpus_publication_publication_date'][0]));//Carbon::createFromFormat ('Y-m-d' , $data['result']['corpus_publication_publication_date'][0])->format ('Y');
                     $citeData['publishing_institution'] = $data['result']['corpus_publication_publisher'][0];
                     $citeData['corpus_publication_license'] = $data['result']['corpus_publication_license'][0];
+                    $citeData['corpus_encoding_project_homepage'] = $data['result']['corpus_encoding_project_homepage'][0];
                     $citeData['published_handle'] = "";
 
 
