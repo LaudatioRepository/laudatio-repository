@@ -49,3 +49,15 @@ Vue.filter('formatSize', function (size) {
 Vue.filter('toLocale', function (to) {
     return '/' + i18n.locale + to
 })
+
+Vue.filter('truncate', function(string){
+    // Make sure an element and number of items to truncate is provided
+    if (!string) return;
+    var limit = 5;
+    var after = "...";
+    var content = string.trim();
+    content = content.split(' ').slice(0, limit);
+    content = content.join(' ') + (after ? after : '');
+
+    return content;
+})

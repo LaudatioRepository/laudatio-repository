@@ -155,7 +155,7 @@
                                  :columns="allAnnotationColumns"
                                  :rows=allAnnotations()
                                  :lineNumbers="false"
-                                 @on-row-click="goToAnnotation"
+                                 @on-cell-click="goToAnnotation"
                                  :search-options="{
                                     enabled: true,
                                   }"
@@ -167,6 +167,20 @@
                                 <template slot="table-row" slot-scope="props">
                                     <span v-if="props.column.field == 'title'">
                                      <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'annotators'">
+                                        <b-btn v-b-toggle="'collapse_' + props.index" variant="link">
+                                            <span class="text-truncate no-link">
+                                                <span class="when-opened"><i class="material-icons">unfold_less</i> </span>
+                                                <span class="when-closed"><i class="material-icons">unfold_more</i> </span>
+                                                {{props.formattedRow[props.column.field] | truncate}}
+                                            </span>
+                                        </b-btn>
+                                        <b-collapse v-bind:id="('collapse_').concat(props.index)" class="mt-2">
+                                        <b-card>
+                                          <p class="card-text">{{props.formattedRow[props.column.field]}}</p>
+                                        </b-card>
+                                      </b-collapse>
                                     </span>
                                     <span v-else-if="props.column.field == 'guidelines'">
                                       <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#guidelines')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
@@ -193,7 +207,7 @@
                             <vue-good-table
                               :columns="allAnnotationColumns"
                               :rows=annotationRows(annotationGroup)
-                              @on-row-click="goToAnnotation"
+                              @on-cell-click="goToAnnotation"
                               :search-options="{
                                 enabled: true,
                               }"
@@ -206,6 +220,20 @@
                                 <template slot="table-row" slot-scope="props">
                                     <span v-if="props.column.field == 'title'">
                                      <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'annotators'">
+                                        <b-btn v-b-toggle="'collapse_' + props.index" variant="link">
+                                            <span class="text-truncate no-link">
+                                                <span class="when-opened"><i class="material-icons">unfold_less</i> </span>
+                                                <span class="when-closed"><i class="material-icons">unfold_more</i> </span>
+                                                {{props.formattedRow[props.column.field] | truncate}}
+                                            </span>
+                                        </b-btn>
+                                        <b-collapse v-bind:id="('collapse_').concat(props.index)" class="mt-2">
+                                        <b-card>
+                                          <p class="card-text">{{props.formattedRow[props.column.field]}}</p>
+                                        </b-card>
+                                      </b-collapse>
                                     </span>
                                     <span v-else-if="props.column.field == 'guidelines'">
                                       <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#guidelines')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
@@ -230,7 +258,7 @@
                 </div>
               </div>
         </div>
-        <div v-if="workflowstatus = 0"  class="verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1" v-show="isloggedin" id="workflowBadge">
+        <div v-if="workflowstatus === 0"  class="verticalBadge text-uppercase font-weight-bold bg-blueadmin text-14 text-white rounded bsh-1" v-show="isloggedin" id="workflowBadge">
               <span>
                 WORKING VERSION
               </span>
@@ -274,6 +302,11 @@
                         label: 'Category',
                         field: 'group',
                         filterable: true,
+                    },
+                    {
+                        label: 'Annotators',
+                        field: 'annotators',
+                        filterable: false,
                     },
                     {
                         label: 'Guidelines',
@@ -359,6 +392,7 @@
                 return total;
             },
             allAnnotations: function(){
+                /*
                 var allAnnotations = [];
                 if(null != this.headerdata.annotationGroups && typeof this.headerdata.annotationGroups != 'undefined'){
                     Object.keys(this.headerdata.annotationGroups).forEach(function(key, index) {
@@ -370,13 +404,35 @@
                             }
                             allAnnotations.push(value);
                         })
-                    }, this.headerdata.annotationGroups);
+                    }, this.headerdata.anno
+                    tationGroups);
                 }
 
                 return allAnnotations;
+                */
+                var annotationArray = [];
+                var foundAnnotationArray = [];
+                var theHeaderData = this.headerdata;
+                if(null != theHeaderData.allAnnotationGroups && null != theHeaderData.annotationGroups && typeof theHeaderData.annotationGroups != 'undefined'){
+                    Object.keys(this.headerdata.annotationGroups).forEach(function(key, index) {
+                        this[key].forEach(function(value){
+                            value.group = key;
+                            if(typeof value.document_count == 'undefined'){
+                                value.document_count = 0.0;
+                            }
+                            if(foundAnnotationArray.indexOf(value.title) == -1){
+                                annotationArray.push(value);
+                                foundAnnotationArray.push(value.title);
+                            }
+
+                        })
+                    }, this.headerdata.annotationGroups);
+                }
+                return annotationArray;
             },
             annotationRows: function(currentkey){
                 //allAnnotationGroups
+                /*
                 var annotationArray = [];
                 var foundAnnotationArray = [];
                 var theHeaderData = this.headerdata;
@@ -399,6 +455,33 @@
                     }, this.headerdata.annotationGroups);
                 }
 
+                return annotationArray;
+                */
+                var annotationArray = [];
+                var foundAnnotationArray = [];
+                var theHeaderData = this.headerdata;
+                if(null != theHeaderData.allAnnotationGroups && null != theHeaderData.annotationGroups && typeof theHeaderData.annotationGroups != 'undefined'){
+                    Object.keys(this.headerdata.annotationGroups).forEach(function(key, index) {
+                        if(key == currentkey) {
+                            this[key].forEach(function(value){
+                                value.group = key;
+                                if(typeof value.document_count == 'undefined'){
+                                    value.document_count = 0.0;
+                                }
+                                if (typeof value['annotators'][value.preparation_annotation_id] != 'undefined') {
+                                    value.annotators = value['annotators'][value.preparation_annotation_id].join(", ");
+                                }
+
+                                if(foundAnnotationArray.indexOf(value.title) == -1){
+                                    annotationArray.push(value);
+                                    foundAnnotationArray.push(value.title);
+                                }
+
+                            })
+                        }
+
+                    }, this.headerdata.annotationGroups);
+                }
                 return annotationArray;
             },
             licenseRows: function() {
@@ -433,9 +516,10 @@
                 }
             },
             goToAnnotation: function(params) {
-                document.location = "/browse/annotation/"+params.row.preparation_annotation_id
-                return params.pageIndex;
-
+                if(params.column.field != "annotators") {
+                    document.location = "/browse/annotation/"+params.row.preparation_annotation_id
+                    return params.rowIndex;
+                }
             },
             hasSameLength: function(attributes) {
                 var hasSameLength = false;

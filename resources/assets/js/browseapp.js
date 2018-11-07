@@ -7,7 +7,9 @@ window.Vue = require("vue");
 const util = require("util");
 import VueGoodTable from "vue-good-table";
 import "vue-good-table/dist/vue-good-table.css"
+import BootstrapVue from 'bootstrap-vue'
 window.Vue.use(VueGoodTable);
+window.Vue.use(BootstrapVue);
 
 const VueNestedList = require('vue-nested-list');
 Vue.component("nested-list", VueNestedList);

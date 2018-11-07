@@ -241,7 +241,7 @@
                                  :columns="annotationColumns"
                                  :rows=allAnnotationRows()
                                  :lineNumbers="false"
-                                 @on-row-click="goToAnnotation"
+                                 @on-cell-click="goToAnnotation"
                                  :search-options="{
                                     enabled: true,
                                   }"
@@ -253,6 +253,20 @@
                                 <template slot="table-row" slot-scope="props">
                                     <span v-if="props.column.field == 'title'">
                                      <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'annotators'">
+                                        <b-btn v-b-toggle="'collapse_' + props.index" variant="link">
+                                            <span class="text-truncate no-link">
+                                                <span class="when-opened"><i class="material-icons">unfold_less</i> </span>
+                                                <span class="when-closed"><i class="material-icons">unfold_more</i> </span>
+                                                {{props.formattedRow[props.column.field] | truncate}}
+                                            </span>
+                                        </b-btn>
+                                        <b-collapse v-bind:id="('collapse_').concat(props.index)" class="mt-2">
+                                        <b-card>
+                                          <p class="card-text">{{props.formattedRow[props.column.field]}}</p>
+                                        </b-card>
+                                      </b-collapse>
                                     </span>
                                     <span v-else-if="props.column.field == 'guidelines'">
                                       <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#guidelines')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
@@ -280,7 +294,7 @@
                             <vue-good-table
                               :columns="annotationColumns"
                               :rows=annotationRows(annotationGroup)
-                              @on-row-click="goToAnnotation"
+                              @on-cell-click="goToAnnotation"
                               :search-options="{
                                 enabled: true,
                               }"
@@ -294,6 +308,20 @@
                                 <template slot="table-row" slot-scope="props">
                                     <span v-if="props.column.field == 'title'">
                                      <span class="hover-mouse-pointer">{{props.formattedRow[props.column.field]}}</span>
+                                    </span>
+                                    <span v-else-if="props.column.field == 'annotators'">
+                                        <b-btn v-b-toggle="'collapse_' + props.index" variant="link">
+                                            <span class="text-truncate no-link">
+                                                <span class="when-opened"><i class="material-icons">unfold_less</i> </span>
+                                                <span class="when-closed"><i class="material-icons">unfold_more</i> </span>
+                                                {{props.formattedRow[props.column.field] | truncate}}
+                                            </span>
+                                        </b-btn>
+                                        <b-collapse v-bind:id="('collapse_').concat(props.index)" class="mt-2">
+                                        <b-card>
+                                          <p class="card-text">{{props.formattedRow[props.column.field]}}</p>
+                                        </b-card>
+                                      </b-collapse>
                                     </span>
                                     <span v-else-if="props.column.field == 'guidelines'">
                                       <a v-bind:href="('/browse/annotation/').concat(props.row.preparation_annotation_id).concat('#guidelines')"><i class="fa fa-fw fa-lg fa-angle-right"></i></a>
@@ -668,9 +696,10 @@
 
             },
             goToAnnotation: function(params) {
-                document.location = "/browse/annotation/"+params.row.preparation_annotation_id
-                return params.pageIndex;
-
+                if(params.column.field != "annotators") {
+                    document.location = "/browse/annotation/"+params.row.preparation_annotation_id
+                    return params.rowIndex;
+                }
             },
             hasSameLength: function(attributes) {
                 var hasSameLength = false;

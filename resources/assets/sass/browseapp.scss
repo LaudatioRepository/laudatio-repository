@@ -306,6 +306,14 @@
   max-width: 60em !important;
 }
 
+a span.no-link {
+  color: #606266;
+}
+
+.vgt-table > .vgt-left-align > .collapsed > .no-link > .when-opened,
+.vgt-table > .vgt-left-align > :not(.collapsed) > .no-link > .when-closed {
+  display: none;
+}
 
 .HolyGrail-content .list-group .list-group-item:nth-child(odd) {
   background-color: hsla(31,15%,50%,.1);
