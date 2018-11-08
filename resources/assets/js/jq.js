@@ -1075,21 +1075,29 @@ $(function(){
                     $('#corpusCount span').html(currentCount-deletedElements);
                     $('#selectAll_corpusEdit').attr("checked",false);
                     $('#deleteSelectedCorpusButton').attr("disabled",true);
+                    //$('#deleteSelectedCorpusButton').attr("disabled",false);
+                    $('#deleteSelectedCorpusButton').addClass("disabled");
                 }
                 else if(postDeleteData.path.indexOf('TEI-HEADERS/document') > -1) {
                     $('#documentCount span').html(currentCount-deletedElements);
                     $('#selectAll_documentEdit').attr("checked",false);
                     $('#deleteSelectedDocumentsButton').attr("disabled",true);
+                    //$('#deleteSelectedDocumentsButton').attr("disabled",false);
+                    $('#deleteSelectedDocumentsButton').addClass("disabled");
                 }
                 else if(postDeleteData.path.indexOf('TEI-HEADERS/annotation') > -1) {
                     $('#annotationCount span').html(currentCount-deletedElements);
                     $('#selectAll_annotationEdit').attr("checked",false);
                     $('#deleteSelectedAnnotationsButton').attr("disabled",true);
+                    //$('#deleteSelectedAnnotationsButton').attr("disabled",false);
+                    $('#deleteSelectedAnnotationsButton').addClass("disabled");
                 }
                 else if(postDeleteData.path.indexOf('CORPUS-DATA') > -1) {
                     $('#formatCount span').html(currentCount-deletedElements);
                     $('#selectAll_formatEdit').attr("checked",false);
                     $('#deleteSelectedFormatsButton').attr("disabled",true);
+                    //$('#deleteSelectedFormatsButton').attr("disabled",false);
+                    $('#deleteSelectedFormatsButton').addClass("disabled");
                 }
 
                 $('#alert-laudatio').addClass('alert-success');

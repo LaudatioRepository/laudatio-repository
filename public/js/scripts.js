@@ -70,6 +70,7 @@ if(previewNode) {
     corpusUpload.on("complete", function() {
         // validate and activate the "finish upload"-button
         $('.uploadActions .btn').removeClass('disabled');
+        $('.uploadActions .btn').attr('disabled',false);
     });
 
     corpusUpload.on("error", function(file,response) {
@@ -335,7 +336,8 @@ $(document).ready(() => {
      */
     if( $(':input.toCheckValidation').length && $(':input.toBeValidated-checkbox').length && $(document).find('input.toBeValidated-checkbox:not(:checked)')){
         if(!$('.toCheckValidation').hasClass('disabled')) {
-            $('.toCheckValidation').addClass('disabled')
+            $('.uploadActions .btn').removeClass('disabled');
+            $('.uploadActions .btn').attr('disabled', false);
         }
 
         if($(':input[type="submit"]').prop('disabled', false)) {
@@ -356,9 +358,11 @@ $(document).ready(() => {
         if(emptyFields.length > 0) {
             if(!$(submitBtn).hasClass('disabled')) {
                 $(submitBtn).addClass('disabled')
+                $(submitBtn).attr('disabled',true)
             }
         } else {
             $(submitBtn).removeClass('disabled')
+            $(submitBtn).attr('disabled',false)
         }
     });
 
@@ -373,6 +377,7 @@ $(document).ready(() => {
         if(uncheckedBoxes.length > 0) {
             if(!$(submitBtn).hasClass('disabled')) {
                 $(submitBtn).addClass('disabled')
+                $(submitBtn).attr('disabled',true)
             }
         } else {
             $(submitBtn).removeClass('disabled')
@@ -385,8 +390,10 @@ $(document).ready(() => {
     $('.documents-table input:checkbox').change(function(){
         if($('.documents-table tbody input:checkbox:checked').length > 0) {
             $('.documents-table tfoot button').removeClass('disabled');
+            $('.documents-table tfoot button').attr("disabled",false);
         } else {
             $('.documents-table tfoot button').addClass('disabled');
+            $('.documents-table tfoot button').attr("disabled",true);
         }
     });
 
