@@ -336,7 +336,8 @@ class BrowseController extends Controller
                         }
                     }
                     */
-                    if(!$annotationData['error'] && count($annotationData['result'][0]) > 0){
+
+                    if(!$annotationData['error'] && count($annotationData['result']) > 0){
                         $annotators = array();
                         foreach ($annotationData['result'][0] as $annotationDatum) {
                             if(array_key_exists('preparation_encoding_annotation_group', $annotationDatum['_source'])){

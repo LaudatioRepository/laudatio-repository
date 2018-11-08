@@ -67813,7 +67813,7 @@ var render = function() {
             )
           : _vm._e(),
         _vm._v(" "),
-        _vm.workflowstatus === 0
+        _vm.workflowstatus == 0
           ? _c(
               "div",
               {
