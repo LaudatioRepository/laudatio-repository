@@ -1515,4 +1515,47 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         
         return $isDuplicate;
     }
+
+    /**
+     * determineAdminRole
+     *
+     * @param $admin_roles
+     * @return array
+     */
+    public function determineAdminRole($admin_roles){
+     $admin_role_filtered = array();
+
+     $lastRoleId = 1000;
+     foreach ($admin_roles as $id => $admin_role_array) {
+         foreach ($admin_role_array as  $admin_role) {
+             if ($admin_role['role_id'] < $lastRoleId) {
+                 $admin_role_filtered = $admin_role;
+             }
+             $lastRoleId = $admin_role['role_id'];
+         }
+
+     }
+
+     return $admin_role_filtered;
+    }
+
+    public function determineUserAdminRole($user_roles){
+        $user_role_filtered = array();
+
+        $lastRoleId = 1000;
+        foreach ($user_roles as $id => $user_role_array) {
+            if(!isset($user_role_filtered[$id])){
+                $user_role_filtered[$id] = array();
+            }
+            foreach ($user_role_array as  $user_role) {
+                if ($user_role['role_id'] < $lastRoleId) {
+                    array_push($user_role_filtered[$id],$user_role);
+                }
+                $lastRoleId = $user_role['role_id'];
+            }
+
+        }
+
+        return $user_role_filtered;
+    }
 }

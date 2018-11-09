@@ -67,7 +67,8 @@ interface LaudatioUtilsInterface
 
     public function checkForDuplicateCorpusName($corpus_name, $corpus_name_path, $corpus_project);
 
-
+    public function determineAdminRole($admin_roles);
+    public function determineUserAdminRole($user_roles);
     /* CACHE */
     public function emptyCorpusCache($corpusId,$index);
 

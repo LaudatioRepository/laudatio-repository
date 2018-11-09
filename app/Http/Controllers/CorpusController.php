@@ -93,7 +93,7 @@ class CorpusController extends Controller
 
 
             $corpusAdminRole = Role::findById(3);
-            $user->roles()->sync($corpusAdminRole);
+            //$user->roles()->sync($corpusAdminRole);
             if($user) {
                 if(!$user->roles->contains($corpusAdminRole)){
                     $user->roles()->attach($corpusAdminRole);
@@ -331,7 +331,32 @@ class CorpusController extends Controller
         $path = $corpusProject_directory_path.'/'.$corpus->directory_path;
 
         $corpusUsers = $corpus->users()->get();
-        $corpus_admin = array();
+        $corpusProjectUsers = $corpusproject->users()->get();
+
+        $admin_roles = array();
+        $user_roles = array();
+
+        foreach($corpusProjectUsers as $corpusProjectUser) {
+            if(!isset($admin_roles[$corpusProjectUser->id])){
+                $admin_roles[$corpusProjectUser->id] = array();
+            }
+
+            if(!isset($user_roles[$corpusProjectUser->id])){
+                $user_roles[$corpusProjectUser->id] = array();
+            }
+
+            $corpusProjectUserRole = array();
+            $corpusProjectRole = Role::find($corpusProjectUser->pivot->role_id);
+            $corpusProjectUserRole['user_name'] = $corpusProjectUser->name;
+            $corpusProjectUserRole['user_affiliation'] = $corpusProjectUser->affiliation;
+            $corpusProjectUserRole['user_id'] = $corpusProjectUser->id;
+            $corpusProjectUserRole['role_name'] = $corpusProjectRole->name;
+            $corpusProjectUserRole['role_id'] = $corpusProjectRole->id;
+
+            array_push($admin_roles[$corpusProjectUser->id],$corpusProjectUserRole);
+            array_push($user_roles[$corpusProjectUser->id],$corpusProjectUserRole);
+        }//end foreach
+
 
         // get all roles
         $roleCollection = Role::all();
@@ -344,34 +369,41 @@ class CorpusController extends Controller
 
         foreach ($corpusUsers as $corpusUser){
             $user_role = array();
-            if(!isset($user_roles[$corpusUser->id])){
-                $user_roles[$corpusUser->id] = array();
-            }
+            $admin_role = array();
 
-            $role = Role::find($corpusUser->pivot->role_id);
+            $corpusRole = Role::find($corpusUser->pivot->role_id);
 
-            if($role){
-                if($role->hasPermissionTo('Can create corpus')){
-                    $corpus_admin['user_name'] = $corpusUser->name;
-                    $corpus_admin['user_id'] = $corpusUser->id;
-                    $corpus_admin['role_name'] = $role->name;
-                    $corpus_admin['role_id'] = $role->id;
+            if($corpusRole){
+                if($corpusRole->hasPermissionTo('Can create corpus')){
+                    $admin_role['user_name'] = $corpusUser->name;
+                    $admin_role['user_id'] = $corpusUser->id;
+                    $admin_role['user_affiliation'] = $corpusUser->affiliation;
+                    $admin_role['role_name'] = $corpusRole->name;
+                    $admin_role['role_id'] = $corpusRole->id;
                 }
                 else {
-                    $corpus_admin['user_name'] = "";
-                    $corpus_admin['user_id'] = "";
-                    $corpus_admin['role_name'] = "";
-                    $corpus_admin['role_id'] = "";
+                    $admin_role['user_name'] = "";
+                    $admin_role['user_id'] = "";
+                    $admin_role['role_name'] = "";
+                    $admin_role['role_id'] = "";
                 }
+
+                array_push($admin_roles[$corpusUser->id],$admin_role);
+
                 $user_role['user_name'] = $corpusUser->name;
                 $user_role['user_affiliation'] = $corpusUser->affiliation;
                 $user_role['user_id'] = $corpusUser->id;
-                $user_role['role_name'] = $role->name;
-                $user_role['role_id'] = $role->id;
+                $user_role['role_name'] = $corpusRole->name;
+                $user_role['role_id'] = $corpusRole->id;
+
 
                 array_push($user_roles[$corpusUser->id],$user_role);
             }
         }
+
+        $admin_roles = $this->LaudatioUtilService->determineAdminRole($admin_roles);
+        $user_roles = $this->LaudatioUtilService->determineUserAdminRole($user_roles);
+
 
         $checkResult = json_decode($this->GitRepoService->checkForCorpusFiles($path."/TEI-HEADERS"), true);
         $checkResult['corpusheader'] = ($checkResult['corpusheader'] == "") ? 0 : 1;
@@ -472,7 +504,7 @@ class CorpusController extends Controller
             'filepath' => $path,
             'user_roles' => $user_roles,
             'roles' => $roles,
-            'corpus_admin' => $corpus_admin,
+            'corpus_admin' => $admin_roles,
             'headerdata' => $checkResult,
             'filedata' => array(
                 'folderData' => $folderData,
