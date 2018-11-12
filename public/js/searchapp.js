@@ -24196,9 +24196,9 @@ var index_esm = {
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(157);
-__webpack_require__(182);
-__webpack_require__(184);
-module.exports = __webpack_require__(185);
+__webpack_require__(185);
+__webpack_require__(187);
+module.exports = __webpack_require__(188);
 
 
 /***/ }),
@@ -24231,18 +24231,19 @@ var util = __webpack_require__(73);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('searchfilterwrapper', __webpack_require__(160));
-Vue.component('searchresultwrapper', __webpack_require__(162));
+Vue.component('generalsearchwrapper', __webpack_require__(160));
+Vue.component('searchfilterwrapper', __webpack_require__(163));
+Vue.component('searchresultwrapper', __webpack_require__(165));
 
-Vue.component('activefilter', __webpack_require__(164));
-Vue.component('corpusfilter', __webpack_require__(166));
-Vue.component('documentfilter', __webpack_require__(170));
-Vue.component('annotationfilter', __webpack_require__(172));
+Vue.component('activefilter', __webpack_require__(167));
+Vue.component('corpusfilter', __webpack_require__(169));
+Vue.component('documentfilter', __webpack_require__(173));
+Vue.component('annotationfilter', __webpack_require__(175));
 
-Vue.component('searchresultheader', __webpack_require__(174));
-Vue.component('corpussearchresult', __webpack_require__(176));
-Vue.component('documentsearchresult', __webpack_require__(178));
-Vue.component('annotationsearchresult', __webpack_require__(180));
+Vue.component('searchresultheader', __webpack_require__(177));
+Vue.component('corpussearchresult', __webpack_require__(179));
+Vue.component('documentsearchresult', __webpack_require__(181));
+Vue.component('annotationsearchresult', __webpack_require__(183));
 
 window.axios.defaults.headers.post['Content-Type'] = 'application/json';
 
@@ -24270,29 +24271,95 @@ var app = new Vue({
         documentCacheString: "",
         annotationCacheString: "",
         annotationloading: false,
-        postAnnotationData: {}
+        postAnnotationData: {},
+        publishedIndexes: window.laudatioApp.publishedIndexes
     },
     methods: {
         askElastic: function askElastic(search) {
             var _this = this;
 
+            this.corpusloading = true;
             this.corpusresults = [];
+            this.corpussearched = false;
+            this.corpusCacheString = "";
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+
             this.searches.push(search.generalSearchTerm);
             var postData = {
                 searchData: {
                     fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "annotation_name", "annotation_type", "corpus_annotator_forename", "corpus_annotator_surname", "annotation_tag_description", "corpus_encoding_project_description", "corpus_publication_license_description"],
-                    query: '' + search.generalSearchTerm + ''
+                    query: "" + search.generalSearchTerm + "",
+                    indices: this.publishedIndexes.allCorpusIndices
                 }
             };
             console.log("POSTDATA: " + JSON.stringify(postData));
+            var corpus_ids = [];
+
             window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
+                _this.corpussearched = true;
+                var corpusRefs = [];
+
                 if (res.data.results.length > 0) {
                     _this.corpusresults.push({
                         search: search.generalSearchTerm,
                         results: res.data.results,
                         total: res.data.total
                     });
-                }
+
+                    for (var ri = 0; ri < res.data.results.length; ri++) {
+                        corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
+                        corpus_ids.push({
+                            "in_corpora": "" + res.data.results[ri]._source.corpus_id[0] + ""
+                        });
+                    }
+
+                    if (corpus_ids.length > 0) {
+                        var documentPostData = {
+                            corpus_ids: corpus_ids,
+                            corpusRefs: corpusRefs,
+                            cacheString: _this.corpusCacheString,
+                            fields: ["document_title", "document_publication_publishing_date", "document_publication_place", "document_list_of_annotations_name", "in_corpora", "document_size_extent"]
+                        };
+
+                        var annotationPostData = {
+                            corpus_ids: corpus_ids,
+                            corpusRefs: corpusRefs,
+                            cacheString: _this.corpusCacheString,
+                            fields: ["preparation_encoding_annotation_group", "preparation_annotation_id", "_id", "preparation_title", "in_documents", "in_corpora", "preparation_author_annotator_forename", "preparation_author_annotator_surname", "generated_id"]
+
+                            /**
+                             * Get all documents contained in the corpora
+                             */
+                        };window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
+
+                            if (Object.keys(documentRes.data.results).length > 0) {
+                                var documentsByCorpus = {};
+                                Object.keys(documentRes.data.results).forEach(function (key) {
+                                    documentsByCorpus[key] = { results: documentRes.data.results[key] };
+                                });
+                            }
+
+                            _this.documentsByCorpus = documentsByCorpus;
+                        });
+
+                        /**
+                         * get all annotations contained pro corpus
+                         */
+                        window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(annotationPostData)).then(function (annotationRes) {
+
+                            if (Object.keys(annotationRes.data.results).length > 0) {
+                                var annotationsByCorpus = {};
+                                Object.keys(annotationRes.data.results).forEach(function (key) {
+                                    annotationsByCorpus[key] = { results: annotationRes.data.results[key] };
+                                });
+                            }
+                            _this.annotationsByCorpus = annotationsByCorpus;
+                        });
+                    }
+                    _this.corpusloading = false;
+                } //end if generaldata
             });
         },
         get_if_exist: function get_if_exist(collection, str) {
@@ -25228,9 +25295,216 @@ exports.createConnect = createConnect;
 var disposed = false
 var normalizeComponent = __webpack_require__(6)
 /* script */
+var __vue_script__ = __webpack_require__(161)
+/* template */
+var __vue_template__ = __webpack_require__(162)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/GeneralSearchWrapper.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1b5752fa", Component.options)
+  } else {
+    hotAPI.reload("data-v-1b5752fa", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 161 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            generalSearchTerm: ''
+        };
+    },
+
+    props: ['results'],
+    methods: {
+        searchGeneral: function searchGeneral() {
+            this.$emit('searchedgeneral', {
+                generalSearchTerm: this.generalSearchTerm,
+                scope: 'general'
+            });
+            this.generalSearchTerm = '';
+        }
+    },
+    mounted: function mounted() {
+        console.log('General SearchComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 162 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass:
+        "col-6 d-flex justify-content-center align-items-center ml-auto mr-auto"
+    },
+    [
+      _c("form", { staticClass: "form-group serviceBarSearch w-100" }, [
+        _c("div", { staticClass: "input-group" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.generalSearchTerm,
+                expression: "generalSearchTerm"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              placeholder: "Search metadata (German or English)",
+              "aria-label": "search metadata",
+              "aria-describedby": "basic-addon2"
+            },
+            domProps: { value: _vm.generalSearchTerm },
+            on: {
+              keyup: function($event) {
+                if (
+                  !("button" in $event) &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.searchGeneral($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.generalSearchTerm = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group-append" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-corpus-dark pl-4 pr-4",
+                attrs: { type: "button" },
+                on: { click: _vm.searchGeneral }
+              },
+              [
+                _c("i", {
+                  staticClass: "text-primary fa fa-fw fa-search fa-lg "
+                })
+              ]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("i", {
+        staticClass: "btn p-0 fa fa-info-circle fa-fw fa-lg ml-3",
+        attrs: {
+          "data-toggle": "tooltip",
+          role: "button",
+          "data-placement": "bottom",
+          title: "Get help how to search"
+        }
+      })
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "clear-search close",
+        attrs: { type: "button", "aria-label": "Close" }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1b5752fa", module.exports)
+  }
+}
+
+/***/ }),
+/* 163 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
 var __vue_script__ = null
 /* template */
-var __vue_template__ = __webpack_require__(161)
+var __vue_template__ = __webpack_require__(164)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -25269,7 +25543,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 161 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -25310,7 +25584,7 @@ if (false) {
 }
 
 /***/ }),
-/* 162 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -25318,7 +25592,7 @@ var normalizeComponent = __webpack_require__(6)
 /* script */
 var __vue_script__ = null
 /* template */
-var __vue_template__ = __webpack_require__(163)
+var __vue_template__ = __webpack_require__(166)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -25357,7 +25631,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 163 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -25401,7 +25675,7 @@ if (false) {
 }
 
 /***/ }),
-/* 164 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -25409,7 +25683,7 @@ var normalizeComponent = __webpack_require__(6)
 /* script */
 var __vue_script__ = null
 /* template */
-var __vue_template__ = __webpack_require__(165)
+var __vue_template__ = __webpack_require__(168)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -25448,7 +25722,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 165 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -25610,15 +25884,15 @@ if (false) {
 }
 
 /***/ }),
-/* 166 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 var normalizeComponent = __webpack_require__(6)
 /* script */
-var __vue_script__ = __webpack_require__(167)
+var __vue_script__ = __webpack_require__(170)
 /* template */
-var __vue_template__ = __webpack_require__(169)
+var __vue_template__ = __webpack_require__(172)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -25657,7 +25931,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 167 */
+/* 170 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -25856,10 +26130,10 @@ $(function () {
         _loop();
     }
 });
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(168)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(171)))
 
 /***/ }),
-/* 168 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! nouislider - 12.0.0 - 9/14/2018 */
@@ -28147,7 +28421,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 169 */
+/* 172 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -28666,7 +28940,7 @@ if (false) {
 }
 
 /***/ }),
-/* 170 */
+/* 173 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -28674,7 +28948,7 @@ var normalizeComponent = __webpack_require__(6)
 /* script */
 var __vue_script__ = null
 /* template */
-var __vue_template__ = __webpack_require__(171)
+var __vue_template__ = __webpack_require__(174)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -28713,7 +28987,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 171 */
+/* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -29030,7 +29304,7 @@ if (false) {
 }
 
 /***/ }),
-/* 172 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -29038,7 +29312,7 @@ var normalizeComponent = __webpack_require__(6)
 /* script */
 var __vue_script__ = null
 /* template */
-var __vue_template__ = __webpack_require__(173)
+var __vue_template__ = __webpack_require__(176)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -29077,7 +29351,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 173 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -29221,7 +29495,7 @@ if (false) {
 }
 
 /***/ }),
-/* 174 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -29229,7 +29503,7 @@ var normalizeComponent = __webpack_require__(6)
 /* script */
 var __vue_script__ = null
 /* template */
-var __vue_template__ = __webpack_require__(175)
+var __vue_template__ = __webpack_require__(178)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -29268,7 +29542,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 175 */
+/* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -29475,7 +29749,7 @@ if (false) {
 }
 
 /***/ }),
-/* 176 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -29483,7 +29757,7 @@ var normalizeComponent = __webpack_require__(6)
 /* script */
 var __vue_script__ = null
 /* template */
-var __vue_template__ = __webpack_require__(177)
+var __vue_template__ = __webpack_require__(180)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -29522,7 +29796,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 177 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -29879,1656 +30153,6 @@ var staticRenderFns = [
         _vm._v(" "),
         _c(
           "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-2 px-2" }, [
-                _c("img", {
-                  staticClass: "w-100",
-                  attrs: {
-                    src: "/images/placeholder_circle.svg",
-                    alt: "circle-image"
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "single_Corpus--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      RIDGES Herbology, Version 6.0\n                  "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Lüdeling, Anke; Mendel, Frank\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-1 " }, [
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  Herbology\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "text-dark text-uppercase search-description-expander",
-                          attrs: {
-                            "data-toggle": "collapse",
-                            href: "#corpusSearchItem0001",
-                            role: "button",
-                            "aria-expanded": "false",
-                            "aria-controls": "corpusSearchItem0001"
-                          }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-angle-down fa-fw text-primary font-weight-bold"
-                          }),
-                          _vm._v(
-                            "\n                              Description\n                          "
-                          )
-                        ]
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  Early New High German\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                          attrs: { href: "#" }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            {
-                              staticClass:
-                                "text-primary text-14 font-weight-bold"
-                            },
-                            [_vm._v("500")]
-                          )
-                        ]
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "d-flex justify-content-start align-items-center"
-                      },
-                      [
-                        _c("img", {
-                          staticClass: "py-1",
-                          attrs: {
-                            src: "/images/license-cc.svg",
-                            alt: "license cc"
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("img", {
-                          staticClass: "py-1",
-                          attrs: {
-                            src: "/images/license-by.svg",
-                            alt: "license by"
-                          }
-                        })
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", {
-                          staticClass:
-                            "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
-                        }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  2017\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                          attrs: { href: "# " }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            { staticClass: "text-14 font-weight-bold" },
-                            [_vm._v("500")]
-                          )
-                        ]
-                      )
-                    ])
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2 mr-3" }, [
-                _c("div", { staticClass: "dropdown" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass:
-                        "btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4",
-                      attrs: {
-                        type: "button",
-                        "data-toggle": "dropdown",
-                        "aria-haspopup": "true",
-                        "aria-expanded": "false"
-                      }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Download\n                  "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass: "dropdown-menu",
-                      attrs: { "aria-labelledby": "dropdownMenuButton" }
-                    },
-                    [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("TEI-Header")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("EXCEL")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("PAULA")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("ANNIS")]
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                  _c("input", {
-                    staticClass: "custom-control-input",
-                    attrs: {
-                      type: "checkbox",
-                      id: "filtercheck-corpusSearchItem0001"
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "label",
-                    {
-                      staticClass: "custom-control-label text-14",
-                      attrs: { for: "filtercheck-corpusSearchItem0001" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Set as Filter\n                  "
-                      )
-                    ]
-                  )
-                ])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-2" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "col" }, [
-                _c(
-                  "div",
-                  {
-                    staticClass: "collapse row pl-0 pr-3 pb-0",
-                    attrs: { id: "corpusSearchItem0001" }
-                  },
-                  [
-                    _c("hr"),
-                    _vm._v(" "),
-                    _c("p", [
-                      _vm._v(
-                        "\n                      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quisquam odit minima necessitatibus atque soluta\n                      voluptatem blanditiis libero ut velit dolorem delectus sed illo, modi debitis unde facilis\n                      nihil inventore architecto! Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti,\n                      obcaecati! Aspernatur vitae amet commodi rem recusandae nisi veniam temporibus. Recusandae,\n                      repudiandae reprehenderit. Distinctio velit consequuntur ea ut tempore. Dolorem, illo. Lorem\n                      ipsum dolor sit amet, consectetur adipisicing elit. Quaerat, molestias esse quo reiciendis\n                      sint quas illum optio nihil, quis nisi atque aliquid nam eius fugit modi quos ex ducimus maxime!\n                       \n                      "
-                      ),
-                      _c("a", { attrs: { href: "#" } }, [_vm._v("MORE")])
-                    ])
-                  ]
-                )
-              ])
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-2 px-2" }, [
-                _c("img", {
-                  staticClass: "w-100",
-                  attrs: {
-                    src: "/images/placeholder_circle.svg",
-                    alt: "circle-image"
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "single_Corpus--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      RIDGES Herbology, Version 6.0\n                  "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Lüdeling, Anke; Mendel, Frank\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-1 " }, [
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  Herbology\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "text-dark text-uppercase search-description-expander",
-                          attrs: {
-                            "data-toggle": "collapse",
-                            href: "#corpusSearchItem0001",
-                            role: "button",
-                            "aria-expanded": "false",
-                            "aria-controls": "corpusSearchItem0001"
-                          }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-angle-down fa-fw text-primary font-weight-bold"
-                          }),
-                          _vm._v(
-                            "\n                              Description\n                          "
-                          )
-                        ]
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  Early New High German\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                          attrs: { href: "#" }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            {
-                              staticClass:
-                                "text-primary text-14 font-weight-bold"
-                            },
-                            [_vm._v("500")]
-                          )
-                        ]
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "d-flex justify-content-start align-items-center"
-                      },
-                      [
-                        _c("img", {
-                          staticClass: "py-1",
-                          attrs: {
-                            src: "/images/license-cc.svg",
-                            alt: "license cc"
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("img", {
-                          staticClass: "py-1",
-                          attrs: {
-                            src: "/images/license-by.svg",
-                            alt: "license by"
-                          }
-                        })
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", {
-                          staticClass:
-                            "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
-                        }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  2017\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                          attrs: { href: "# " }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            { staticClass: "text-14 font-weight-bold" },
-                            [_vm._v("500")]
-                          )
-                        ]
-                      )
-                    ])
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2 mr-3" }, [
-                _c("div", { staticClass: "dropdown" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass:
-                        "btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4",
-                      attrs: {
-                        type: "button",
-                        "data-toggle": "dropdown",
-                        "aria-haspopup": "true",
-                        "aria-expanded": "false"
-                      }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Download\n                  "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass: "dropdown-menu",
-                      attrs: { "aria-labelledby": "dropdownMenuButton" }
-                    },
-                    [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("TEI-Header")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("EXCEL")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("PAULA")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("ANNIS")]
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                  _c("input", {
-                    staticClass: "custom-control-input",
-                    attrs: {
-                      type: "checkbox",
-                      id: "filtercheck-corpusSearchItem0001"
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "label",
-                    {
-                      staticClass: "custom-control-label text-14",
-                      attrs: { for: "filtercheck-corpusSearchItem0001" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Set as Filter\n                  "
-                      )
-                    ]
-                  )
-                ])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-2" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "col" }, [
-                _c(
-                  "div",
-                  {
-                    staticClass: "collapse row pl-0 pr-3 pb-0",
-                    attrs: { id: "corpusSearchItem0001" }
-                  },
-                  [
-                    _c("hr"),
-                    _vm._v(" "),
-                    _c("p", [
-                      _vm._v(
-                        "\n                      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quisquam odit minima necessitatibus atque soluta\n                      voluptatem blanditiis libero ut velit dolorem delectus sed illo, modi debitis unde facilis\n                      nihil inventore architecto! Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti,\n                      obcaecati! Aspernatur vitae amet commodi rem recusandae nisi veniam temporibus. Recusandae,\n                      repudiandae reprehenderit. Distinctio velit consequuntur ea ut tempore. Dolorem, illo. Lorem\n                      ipsum dolor sit amet, consectetur adipisicing elit. Quaerat, molestias esse quo reiciendis\n                      sint quas illum optio nihil, quis nisi atque aliquid nam eius fugit modi quos ex ducimus maxime!\n                       \n                      "
-                      ),
-                      _c("a", { attrs: { href: "#" } }, [_vm._v("MORE")])
-                    ])
-                  ]
-                )
-              ])
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-2 px-2" }, [
-                _c("img", {
-                  staticClass: "w-100",
-                  attrs: {
-                    src: "/images/placeholder_circle.svg",
-                    alt: "circle-image"
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "single_Corpus--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      RIDGES Herbology, Version 6.0\n                  "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Lüdeling, Anke; Mendel, Frank\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-1 " }, [
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  Herbology\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "text-dark text-uppercase search-description-expander",
-                          attrs: {
-                            "data-toggle": "collapse",
-                            href: "#corpusSearchItem0001",
-                            role: "button",
-                            "aria-expanded": "false",
-                            "aria-controls": "corpusSearchItem0001"
-                          }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-angle-down fa-fw text-primary font-weight-bold"
-                          }),
-                          _vm._v(
-                            "\n                              Description\n                          "
-                          )
-                        ]
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  Early New High German\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                          attrs: { href: "#" }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            {
-                              staticClass:
-                                "text-primary text-14 font-weight-bold"
-                            },
-                            [_vm._v("500")]
-                          )
-                        ]
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "d-flex justify-content-start align-items-center"
-                      },
-                      [
-                        _c("img", {
-                          staticClass: "py-1",
-                          attrs: {
-                            src: "/images/license-cc.svg",
-                            alt: "license cc"
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("img", {
-                          staticClass: "py-1",
-                          attrs: {
-                            src: "/images/license-by.svg",
-                            alt: "license by"
-                          }
-                        })
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", {
-                          staticClass:
-                            "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
-                        }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  2017\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                          attrs: { href: "# " }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            { staticClass: "text-14 font-weight-bold" },
-                            [_vm._v("500")]
-                          )
-                        ]
-                      )
-                    ])
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2 mr-3" }, [
-                _c("div", { staticClass: "dropdown" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass:
-                        "btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4",
-                      attrs: {
-                        type: "button",
-                        "data-toggle": "dropdown",
-                        "aria-haspopup": "true",
-                        "aria-expanded": "false"
-                      }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Download\n                  "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass: "dropdown-menu",
-                      attrs: { "aria-labelledby": "dropdownMenuButton" }
-                    },
-                    [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("TEI-Header")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("EXCEL")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("PAULA")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("ANNIS")]
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                  _c("input", {
-                    staticClass: "custom-control-input",
-                    attrs: {
-                      type: "checkbox",
-                      id: "filtercheck-corpusSearchItem0001"
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "label",
-                    {
-                      staticClass: "custom-control-label text-14",
-                      attrs: { for: "filtercheck-corpusSearchItem0001" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Set as Filter\n                  "
-                      )
-                    ]
-                  )
-                ])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-2" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "col" }, [
-                _c(
-                  "div",
-                  {
-                    staticClass: "collapse row pl-0 pr-3 pb-0",
-                    attrs: { id: "corpusSearchItem0001" }
-                  },
-                  [
-                    _c("hr"),
-                    _vm._v(" "),
-                    _c("p", [
-                      _vm._v(
-                        "\n                      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quisquam odit minima necessitatibus atque soluta\n                      voluptatem blanditiis libero ut velit dolorem delectus sed illo, modi debitis unde facilis\n                      nihil inventore architecto! Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti,\n                      obcaecati! Aspernatur vitae amet commodi rem recusandae nisi veniam temporibus. Recusandae,\n                      repudiandae reprehenderit. Distinctio velit consequuntur ea ut tempore. Dolorem, illo. Lorem\n                      ipsum dolor sit amet, consectetur adipisicing elit. Quaerat, molestias esse quo reiciendis\n                      sint quas illum optio nihil, quis nisi atque aliquid nam eius fugit modi quos ex ducimus maxime!\n                       \n                      "
-                      ),
-                      _c("a", { attrs: { href: "#" } }, [_vm._v("MORE")])
-                    ])
-                  ]
-                )
-              ])
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-2 px-2" }, [
-                _c("img", {
-                  staticClass: "w-100",
-                  attrs: {
-                    src: "/images/placeholder_circle.svg",
-                    alt: "circle-image"
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "single_Corpus--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      RIDGES Herbology, Version 6.0\n                  "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Lüdeling, Anke; Mendel, Frank\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-1 " }, [
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  Herbology\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "text-dark text-uppercase search-description-expander",
-                          attrs: {
-                            "data-toggle": "collapse",
-                            href: "#corpusSearchItem0001",
-                            role: "button",
-                            "aria-expanded": "false",
-                            "aria-controls": "corpusSearchItem0001"
-                          }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-angle-down fa-fw text-primary font-weight-bold"
-                          }),
-                          _vm._v(
-                            "\n                              Description\n                          "
-                          )
-                        ]
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  Early New High German\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                          attrs: { href: "#" }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            {
-                              staticClass:
-                                "text-primary text-14 font-weight-bold"
-                            },
-                            [_vm._v("500")]
-                          )
-                        ]
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "d-flex justify-content-start align-items-center"
-                      },
-                      [
-                        _c("img", {
-                          staticClass: "py-1",
-                          attrs: {
-                            src: "/images/license-cc.svg",
-                            alt: "license cc"
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("img", {
-                          staticClass: "py-1",
-                          attrs: {
-                            src: "/images/license-by.svg",
-                            alt: "license by"
-                          }
-                        })
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", {
-                          staticClass:
-                            "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
-                        }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  2017\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                          attrs: { href: "# " }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            { staticClass: "text-14 font-weight-bold" },
-                            [_vm._v("500")]
-                          )
-                        ]
-                      )
-                    ])
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2 mr-3" }, [
-                _c("div", { staticClass: "dropdown" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass:
-                        "btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4",
-                      attrs: {
-                        type: "button",
-                        "data-toggle": "dropdown",
-                        "aria-haspopup": "true",
-                        "aria-expanded": "false"
-                      }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Download\n                  "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass: "dropdown-menu",
-                      attrs: { "aria-labelledby": "dropdownMenuButton" }
-                    },
-                    [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("TEI-Header")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("EXCEL")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("PAULA")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("ANNIS")]
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                  _c("input", {
-                    staticClass: "custom-control-input",
-                    attrs: {
-                      type: "checkbox",
-                      id: "filtercheck-corpusSearchItem0001"
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "label",
-                    {
-                      staticClass: "custom-control-label text-14",
-                      attrs: { for: "filtercheck-corpusSearchItem0001" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Set as Filter\n                  "
-                      )
-                    ]
-                  )
-                ])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-2" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "col" }, [
-                _c(
-                  "div",
-                  {
-                    staticClass: "collapse row pl-0 pr-3 pb-0",
-                    attrs: { id: "corpusSearchItem0001" }
-                  },
-                  [
-                    _c("hr"),
-                    _vm._v(" "),
-                    _c("p", [
-                      _vm._v(
-                        "\n                      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quisquam odit minima necessitatibus atque soluta\n                      voluptatem blanditiis libero ut velit dolorem delectus sed illo, modi debitis unde facilis\n                      nihil inventore architecto! Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti,\n                      obcaecati! Aspernatur vitae amet commodi rem recusandae nisi veniam temporibus. Recusandae,\n                      repudiandae reprehenderit. Distinctio velit consequuntur ea ut tempore. Dolorem, illo. Lorem\n                      ipsum dolor sit amet, consectetur adipisicing elit. Quaerat, molestias esse quo reiciendis\n                      sint quas illum optio nihil, quis nisi atque aliquid nam eius fugit modi quos ex ducimus maxime!\n                       \n                      "
-                      ),
-                      _c("a", { attrs: { href: "#" } }, [_vm._v("MORE")])
-                    ])
-                  ]
-                )
-              ])
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-2 px-2" }, [
-                _c("img", {
-                  staticClass: "w-100",
-                  attrs: {
-                    src: "/images/placeholder_circle.svg",
-                    alt: "circle-image"
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "single_Corpus--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      RIDGES Herbology, Version 6.0\n                  "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Lüdeling, Anke; Mendel, Frank\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-1 " }, [
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  Herbology\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "text-dark text-uppercase search-description-expander",
-                          attrs: {
-                            "data-toggle": "collapse",
-                            href: "#corpusSearchItem0001",
-                            role: "button",
-                            "aria-expanded": "false",
-                            "aria-controls": "corpusSearchItem0001"
-                          }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-angle-down fa-fw text-primary font-weight-bold"
-                          }),
-                          _vm._v(
-                            "\n                              Description\n                          "
-                          )
-                        ]
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  Early New High German\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                          attrs: { href: "#" }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            {
-                              staticClass:
-                                "text-primary text-14 font-weight-bold"
-                            },
-                            [_vm._v("500")]
-                          )
-                        ]
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col col-auto mr-1" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "d-flex justify-content-start align-items-center"
-                      },
-                      [
-                        _c("img", {
-                          staticClass: "py-1",
-                          attrs: {
-                            src: "/images/license-cc.svg",
-                            alt: "license cc"
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("img", {
-                          staticClass: "py-1",
-                          attrs: {
-                            src: "/images/license-by.svg",
-                            alt: "license by"
-                          }
-                        })
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", {
-                          staticClass:
-                            "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
-                        }),
-                        _vm._v(" "),
-                        _c("span", [_vm._v("\n  2017\n")])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                          attrs: { href: "# " }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            { staticClass: "text-14 font-weight-bold" },
-                            [_vm._v("500")]
-                          )
-                        ]
-                      )
-                    ])
-                  ])
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2 mr-3" }, [
-                _c("div", { staticClass: "dropdown" }, [
-                  _c(
-                    "button",
-                    {
-                      staticClass:
-                        "btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4",
-                      attrs: {
-                        type: "button",
-                        "data-toggle": "dropdown",
-                        "aria-haspopup": "true",
-                        "aria-expanded": "false"
-                      }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Download\n                  "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass: "dropdown-menu",
-                      attrs: { "aria-labelledby": "dropdownMenuButton" }
-                    },
-                    [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("TEI-Header")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("EXCEL")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("PAULA")]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "a",
-                        {
-                          staticClass: "dropdown-item text-14",
-                          attrs: { href: "#" }
-                        },
-                        [_vm._v("ANNIS")]
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                  _c("input", {
-                    staticClass: "custom-control-input",
-                    attrs: {
-                      type: "checkbox",
-                      id: "filtercheck-corpusSearchItem0001"
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c(
-                    "label",
-                    {
-                      staticClass: "custom-control-label text-14",
-                      attrs: { for: "filtercheck-corpusSearchItem0001" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Set as Filter\n                  "
-                      )
-                    ]
-                  )
-                ])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-2" }),
-              _vm._v(" "),
-              _c("div", { staticClass: "col" }, [
-                _c(
-                  "div",
-                  {
-                    staticClass: "collapse row pl-0 pr-3 pb-0",
-                    attrs: { id: "corpusSearchItem0001" }
-                  },
-                  [
-                    _c("hr"),
-                    _vm._v(" "),
-                    _c("p", [
-                      _vm._v(
-                        "\n                      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quisquam odit minima necessitatibus atque soluta\n                      voluptatem blanditiis libero ut velit dolorem delectus sed illo, modi debitis unde facilis\n                      nihil inventore architecto! Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti,\n                      obcaecati! Aspernatur vitae amet commodi rem recusandae nisi veniam temporibus. Recusandae,\n                      repudiandae reprehenderit. Distinctio velit consequuntur ea ut tempore. Dolorem, illo. Lorem\n                      ipsum dolor sit amet, consectetur adipisicing elit. Quaerat, molestias esse quo reiciendis\n                      sint quas illum optio nihil, quis nisi atque aliquid nam eius fugit modi quos ex ducimus maxime!\n                       \n                      "
-                      ),
-                      _c("a", { attrs: { href: "#" } }, [_vm._v("MORE")])
-                    ])
-                  ]
-                )
-              ])
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
           {
             staticClass:
               "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
@@ -31630,7 +30254,7 @@ if (false) {
 }
 
 /***/ }),
-/* 178 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -31638,7 +30262,7 @@ var normalizeComponent = __webpack_require__(6)
 /* script */
 var __vue_script__ = null
 /* template */
-var __vue_template__ = __webpack_require__(179)
+var __vue_template__ = __webpack_require__(182)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -31677,7 +30301,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 179 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -31826,860 +30450,6 @@ var staticRenderFns = [
         _vm._v(" "),
         _c(
           "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "document_Metadata--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Alchimistische Praktik (Vorrede)\n                  "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Corpus: RIDGES-Herbology\n      "),
-                  _c("br"),
-                  _vm._v(" Lüdeling, Anke; Mendel, Frank\n\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-2" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass: "col d-flex flex-wrap justify-content-start"
-                    },
-                    [
-                      _c("div", { staticClass: "mr-7" }, [
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa fa-fw fa-clock-o mr-1"
-                            }),
-                            _vm._v(" "),
-                            _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                          ]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                        },
-                        [
-                          _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                          _vm._v(" "),
-                          _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                        ]
-                      )
-                    ]
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 mr-3 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "# " }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "text-14 font-weight-bold" }, [
-                        _vm._v("500")
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-documentSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-documentSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                      Set as Filter\n                  "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "document_Metadata--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Alchimistische Praktik (Vorrede)\n                  "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Corpus: RIDGES-Herbology\n      "),
-                  _c("br"),
-                  _vm._v(" Lüdeling, Anke; Mendel, Frank\n\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-2" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass: "col d-flex flex-wrap justify-content-start"
-                    },
-                    [
-                      _c("div", { staticClass: "mr-7" }, [
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa fa-fw fa-clock-o mr-1"
-                            }),
-                            _vm._v(" "),
-                            _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                          ]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                        },
-                        [
-                          _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                          _vm._v(" "),
-                          _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                        ]
-                      )
-                    ]
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 mr-3 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "# " }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "text-14 font-weight-bold" }, [
-                        _vm._v("500")
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-documentSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-documentSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                      Set as Filter\n                  "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "document_Metadata--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Alchimistische Praktik (Vorrede)\n                  "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Corpus: RIDGES-Herbology\n      "),
-                  _c("br"),
-                  _vm._v(" Lüdeling, Anke; Mendel, Frank\n\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-2" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass: "col d-flex flex-wrap justify-content-start"
-                    },
-                    [
-                      _c("div", { staticClass: "mr-7" }, [
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa fa-fw fa-clock-o mr-1"
-                            }),
-                            _vm._v(" "),
-                            _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                          ]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                        },
-                        [
-                          _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                          _vm._v(" "),
-                          _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                        ]
-                      )
-                    ]
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 mr-3 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "# " }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "text-14 font-weight-bold" }, [
-                        _vm._v("500")
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-documentSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-documentSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                      Set as Filter\n                  "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "document_Metadata--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Alchimistische Praktik (Vorrede)\n                  "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Corpus: RIDGES-Herbology\n      "),
-                  _c("br"),
-                  _vm._v(" Lüdeling, Anke; Mendel, Frank\n\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-2" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass: "col d-flex flex-wrap justify-content-start"
-                    },
-                    [
-                      _c("div", { staticClass: "mr-7" }, [
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa fa-fw fa-clock-o mr-1"
-                            }),
-                            _vm._v(" "),
-                            _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                          ]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                        },
-                        [
-                          _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                          _vm._v(" "),
-                          _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                        ]
-                      )
-                    ]
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 mr-3 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "# " }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "text-14 font-weight-bold" }, [
-                        _vm._v("500")
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-documentSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-documentSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                      Set as Filter\n                  "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "document_Metadata--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Alchimistische Praktik (Vorrede)\n                  "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Corpus: RIDGES-Herbology\n      "),
-                  _c("br"),
-                  _vm._v(" Lüdeling, Anke; Mendel, Frank\n\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-2" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass: "col d-flex flex-wrap justify-content-start"
-                    },
-                    [
-                      _c("div", { staticClass: "mr-7" }, [
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa fa-fw fa-clock-o mr-1"
-                            }),
-                            _vm._v(" "),
-                            _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                          ]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                        },
-                        [
-                          _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                          _vm._v(" "),
-                          _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                        ]
-                      )
-                    ]
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 mr-3 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "# " }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "text-14 font-weight-bold" }, [
-                        _vm._v("500")
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-documentSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-documentSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                      Set as Filter\n                  "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "document_Metadata--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Alchimistische Praktik (Vorrede)\n                  "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Corpus: RIDGES-Herbology\n      "),
-                  _c("br"),
-                  _vm._v(" Lüdeling, Anke; Mendel, Frank\n\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-2" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass: "col d-flex flex-wrap justify-content-start"
-                    },
-                    [
-                      _c("div", { staticClass: "mr-7" }, [
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa fa-fw fa-clock-o mr-1"
-                            }),
-                            _vm._v(" "),
-                            _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                          ]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                        },
-                        [
-                          _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                          _vm._v(" "),
-                          _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                        ]
-                      )
-                    ]
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 mr-3 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "# " }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "text-14 font-weight-bold" }, [
-                        _vm._v("500")
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-documentSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-documentSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                      Set as Filter\n                  "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "document_Metadata--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                      Alchimistische Praktik (Vorrede)\n                  "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Corpus: RIDGES-Herbology\n      "),
-                  _c("br"),
-                  _vm._v(" Lüdeling, Anke; Mendel, Frank\n\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-2" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass: "col d-flex flex-wrap justify-content-start"
-                    },
-                    [
-                      _c("div", { staticClass: "mr-7" }, [
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa fa-fw fa-clock-o mr-1"
-                            }),
-                            _vm._v(" "),
-                            _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                          ]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                        },
-                        [
-                          _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                          _vm._v(" "),
-                          _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                        ]
-                      )
-                    ]
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 mr-3 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "# " }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "text-14 font-weight-bold" }, [
-                        _vm._v("500")
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-documentSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-documentSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                      Set as Filter\n                  "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
           {
             staticClass:
               "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
@@ -32781,7 +30551,7 @@ if (false) {
 }
 
 /***/ }),
-/* 180 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
@@ -32789,7 +30559,7 @@ var normalizeComponent = __webpack_require__(6)
 /* script */
 var __vue_script__ = null
 /* template */
-var __vue_template__ = __webpack_require__(181)
+var __vue_template__ = __webpack_require__(184)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -32828,7 +30598,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 181 */
+/* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -32875,7 +30645,9 @@ var staticRenderFns = [
                 ]),
                 _vm._v(" "),
                 _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n    Corpus: RIDGES-Herbology\n  ")
+                  _vm._v(
+                    "\n                    Corpus: RIDGES-Herbology\n                  "
+                  )
                 ])
               ]),
               _vm._v(" "),
@@ -32933,522 +30705,6 @@ var staticRenderFns = [
                       [
                         _vm._v(
                           "\n                        Set as Filter\n                    "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "annotation_Guidelines--fromSearch.html" }
-                    },
-                    [_vm._v("\n                    pos\n                ")]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n    Corpus: RIDGES-Herbology\n  ")
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2" }, [
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("Lexical")
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "text-primary text-14 font-weight-bold"
-                        },
-                        [_vm._v("500")]
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-annotationSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-annotationSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                    Set as Filter\n                "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "annotation_Guidelines--fromSearch.html" }
-                    },
-                    [_vm._v("\n                    pos\n                ")]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n    Corpus: RIDGES-Herbology\n  ")
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2" }, [
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("Lexical")
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "text-primary text-14 font-weight-bold"
-                        },
-                        [_vm._v("500")]
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-annotationSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-annotationSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                    Set as Filter\n                "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "annotation_Guidelines--fromSearch.html" }
-                    },
-                    [_vm._v("\n                    pos\n                ")]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n    Corpus: RIDGES-Herbology\n  ")
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2" }, [
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("Lexical")
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "text-primary text-14 font-weight-bold"
-                        },
-                        [_vm._v("500")]
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-annotationSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-annotationSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                    Set as Filter\n                "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "annotation_Guidelines--fromSearch.html" }
-                    },
-                    [_vm._v("\n                    pos\n                ")]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n    Corpus: RIDGES-Herbology\n  ")
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2" }, [
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("Lexical")
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "text-primary text-14 font-weight-bold"
-                        },
-                        [_vm._v("500")]
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-annotationSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-annotationSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                    Set as Filter\n                "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "annotation_Guidelines--fromSearch.html" }
-                    },
-                    [_vm._v("\n                    pos\n                ")]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n    Corpus: RIDGES-Herbology\n  ")
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2" }, [
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("Lexical")
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "text-primary text-14 font-weight-bold"
-                        },
-                        [_vm._v("500")]
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-annotationSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-annotationSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                    Set as Filter\n                "
-                        )
-                      ]
-                    )
-                  ])
-                ]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "annotation_Guidelines--fromSearch.html" }
-                    },
-                    [_vm._v("\n                    pos\n                ")]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n    Corpus: RIDGES-Herbology\n  ")
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2" }, [
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("Lexical")
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass:
-                    "col-4 d-flex justify-content-between align-items-start"
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "text-primary text-14 font-weight-bold"
-                        },
-                        [_vm._v("500")]
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-annotationSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-annotationSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                    Set as Filter\n                "
                         )
                       ]
                     )
@@ -33562,20 +30818,20 @@ if (false) {
 }
 
 /***/ }),
-/* 182 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 183 */,
-/* 184 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
 /* 185 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 186 */,
+/* 187 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 188 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

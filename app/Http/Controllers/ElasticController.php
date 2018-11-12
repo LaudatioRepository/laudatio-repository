@@ -58,6 +58,51 @@ class ElasticController extends Controller
         //return view("search.searchresult",["took" => $milliseconds, "maxScore" => $maxScore, "results" => $results['hits']['hits']]);
     }
 
+    public function getPublishedIndexes() {
+        $publishedCorpora = $this->ElasticService->getPublishedCorpora();
+        $publishedIndexes = array(
+            "allCorpusIndices" => array(),
+            "allDocumentIndices" => array(),
+            "allAnnotationIndices" => array()
+        );
+
+        if(count($publishedCorpora['result']) > 0) {
+            $document_range = "";
+            foreach ($publishedCorpora['result'][0] as $publicationresponse) {
+                //dd($publicationresponse);
+
+                if (isset($publicationresponse['_source']['corpus_index'])) {
+
+                    $current_corpus_index = $publicationresponse['_source']['corpus_index'];
+                    array_push($publishedIndexes['allCorpusIndices'],$current_corpus_index);
+
+                    if(!array_key_exists($current_corpus_index,$publishedIndexes)) {
+                        $publishedIndexes[$current_corpus_index] = array(
+                            "document_index" => "",
+                            "annotation_index" => ""
+                        );
+                    }
+
+                    if (isset($publicationresponse['_source']['document_index'])) {
+                        $current_document_index = $publicationresponse['_source']['document_index'];
+                        array_push($publishedIndexes['allDocumentIndices'],$current_document_index);
+                        $publishedIndexes[$current_corpus_index]['document_index'] = $current_document_index;
+                    }
+
+                    if (isset($publicationresponse['_source']['annotation_index'])) {
+                        $current_annotation_index = $publicationresponse['_source']['annotation_index'];
+                        array_push($publishedIndexes['allAnnotationIndices'],$current_annotation_index);
+                        $publishedIndexes[$current_corpus_index]['annotation_index'] = $current_annotation_index;
+                    }
+                }//end if isset corpusIndex
+            }
+        }
+        return response(
+            $publishedIndexes,
+            200
+        );
+    }
+
     /** POST search endpoint for general searches
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
@@ -435,7 +480,7 @@ class ElasticController extends Controller
             $resultData = Cache::get($cacheString.'|getDocumentsByCorpus');
         }
         else{
-            $result = $this->ElasticService->getDocumentByCorpus($request->corpus_ids,$request->corpusRefs);
+            $result = $this->ElasticService->getDocumentByCorpus($request->corpus_ids,$request->corpusRefs, $request->fields,'document*');
             $resultData =  array(
                 'error' => false,
                 'results' => $result
@@ -458,7 +503,7 @@ class ElasticController extends Controller
             $resultData = Cache::get($cacheString.'|getAnnotationByCorpus');
         }
         else{
-            $result = $this->ElasticService->getAnnotationByCorpus($request->corpus_ids,$request->corpusRefs);
+            $result = $this->ElasticService->getAnnotationByCorpus($request->corpus_ids,$request->corpusRefs, $request->fields, 'annotation*');
             $resultData =  array(
                 'error' => false,
                 'results' => $result

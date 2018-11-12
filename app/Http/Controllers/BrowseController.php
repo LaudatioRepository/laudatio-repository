@@ -117,6 +117,7 @@ class BrowseController extends Controller
                     $documentResult = $this->ElasticService->getDocumentByCorpus(
                         array(array("in_corpora" => $corpusId)),
                         array($corpusId),
+                        array("document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"),
                         $current_document_index
                     );
 

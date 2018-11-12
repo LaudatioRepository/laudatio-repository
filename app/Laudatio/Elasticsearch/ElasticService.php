@@ -289,7 +289,6 @@ class ElasticService implements ElasticsearchInterface
     }
 
 
-
     /**
      * @param $id
      * @param bool $full
@@ -736,7 +735,7 @@ class ElasticService implements ElasticsearchInterface
         return $resultData;
     }
 
-    public function getDocumentByCorpus($searchData,$corpusData,$index){
+    public function getDocumentByCorpus($searchData,$corpusData,$fields,$index){
         $resultData = array();
 
         if (Cache::tags(['document_'.$corpusData[0].'_'.$index])->has("getDocumentByCorpus_".$corpusData[0]."_".$index)) {
@@ -754,7 +753,7 @@ class ElasticService implements ElasticsearchInterface
                     'type' => 'doc',
                     'body' => $queryBody,
                     //'_source_exclude' => ['message'],
-                    '_source' => ["document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"],
+                    '_source' => $fields,
                     'filter_path' => ['hits.hits']
                 ];
 

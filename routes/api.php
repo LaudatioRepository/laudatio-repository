@@ -24,6 +24,7 @@ Route::group(array('prefix' => 'searchapi'), function() {
     Route::get('getcorpus','ElasticController@getCorpus');
     Route::get('getdocument','ElasticController@getDocument');
     Route::get('getannotation','ElasticController@getAnnotation');
+    Route::get('getpublishedindexes','ElasticController@getPublishedIndexes');
     Route::post('searchGeneral','ElasticController@searchGeneral');
     Route::post('searchCorpus','ElasticController@searchCorpusIndex');
     Route::post('searchDateRange','ElasticController@searchCorpusIndex');

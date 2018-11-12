@@ -1170,6 +1170,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     }
 
 
+
     /**
      * getPublishedCorpora for listings
      * @param $corpusresponses
@@ -1220,6 +1221,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 $documentResult = $elasticService->getDocumentByCorpus(
                     array(array("in_corpora" => $publicationresponse['_source']['corpus'])),
                     array($publicationresponse['_source']['corpus']),
+                    array("document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"),
                     $current_document_index
                 );
 
