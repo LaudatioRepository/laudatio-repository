@@ -71,3 +71,22 @@
     </div>
     </div>
 </template>
+<script>
+    export default {
+        props: ['annotationresult','corpusbyannotation','documentsbyannotation'],
+        methods: {
+            browseUri: function(id,type) {
+                return '/browse/'+type+'/'.concat(id);
+            },
+            emitAnnotationRelations: function(annotationId) {
+                this.$store.dispatch('clearCorpus',[])
+                this.$store.dispatch('clearDocuments',[])
+                this.$store.dispatch('corpusByAnnotation',this.corpusbyannotation[annotationId])
+                this.$store.dispatch('documentByAnnotation',this.documentsbyannotation[annotationId])
+            }
+        },
+        mounted() {
+            console.log('AnnotationResultComponent mounted.')
+        }
+    }
+</script>

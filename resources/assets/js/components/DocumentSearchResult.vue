@@ -88,3 +88,23 @@
     </div>
     </div>
 </template>
+<script>
+
+    export default {
+        props: ['documentresult','corpusbydocument','annotationsbydocument','corpusbydocument'],
+        methods: {
+            browseUri: function(id) {
+                return '/browse/document/'.concat(id);
+            },
+            emitDocumentRelations: function(documentId){
+                this.$store.dispatch('clearCorpus',[])
+                this.$store.dispatch('clearAnnotations',[])
+                this.$store.dispatch('corpusByDocument',this.corpusbydocument[documentId])
+                this.$store.dispatch('annotationByDocument',this.annotationsbydocument[documentId])
+            }
+        },
+        mounted() {
+            console.log('DocumentResultComponent mounted.')
+        }
+    }
+</script>

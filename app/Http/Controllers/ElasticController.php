@@ -110,6 +110,7 @@ class ElasticController extends Controller
     public function searchGeneral(Request $request)
     {
         $result = $this->ElasticService->searchGeneral($request->searchData);
+
         $resultData = array(
             'error' => false,
             'milliseconds' => $result['took'],

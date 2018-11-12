@@ -16,7 +16,23 @@
             <div class="container">
                 <div class="row mt-5">
                     <searchfilterwrapper></searchfilterwrapper>
-                    <searchresultwrapper></searchresultwrapper>
+                    <searchresultwrapper
+                            :corpusresults="corpusresults"
+                            :corpussearched="corpussearched"
+                            :corpusloading="corpusloading"
+                            :documentsbycorpus="documentsByCorpus"
+                            :annotationsbycorpus="annotationsByCorpus"
+                            :documentresults="documentresults"
+                            :documentSearched="documentsearched"
+                            :documentloading="documentloading"
+                            :annotationsbydocument="annotationsByDocument"
+                            :corpusbydocument="corpusByDocument"
+                            :annotationresults="annotationresults"
+                            :annotationsearched="annotationsearched"
+                            :annotationloading="annotationloading"
+                            :corpusbyannotation="corpusByAnnotation"
+                            :documentsbyannotation="documentsByAnnotation"
+                            :searches="searches"></searchresultwrapper>
                 </div>
             </div>
         </div>
