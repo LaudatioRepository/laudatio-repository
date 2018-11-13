@@ -5,7 +5,7 @@
             <span>Annotations</span>
             <i class="collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"></i>
         </div>
-        <div class="collapse show" id="formPanelAnnotations">
+        <div v-bind:class="getClass()"  id="formPanelAnnotations">
             <div class="card-body px-2">
                 <form action="">
                     <div class="form-group mb-3">
@@ -38,3 +38,26 @@
         </div>
     </div>
 </template>
+<script>
+    import { mapState, mapActions, mapGetters } from 'vuex'
+    export default {
+        props: ['corpusresults'],
+        computed:
+            mapGetters({
+                stateDocumentCorpusresults: 'documentcorpus',
+                stateAnnotationCorpusresults: 'annotationcorpus'
+            }),
+        methods: {
+            getClass: function () {
+                var classes = "collapse";
+                if(this.corpusresults.length >= 1){
+                    classes += " show"
+                }
+                return classes;
+            }
+        },
+        mounted() {
+            console.log('CorpusActiveFilterComponent mounted.')
+        }
+    }
+</script>

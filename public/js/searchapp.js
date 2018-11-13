@@ -1447,7 +1447,7 @@ if (false) {
 var disposed = false
 var normalizeComponent = __webpack_require__(6)
 /* script */
-var __vue_script__ = null
+var __vue_script__ = __webpack_require__(463)
 /* template */
 var __vue_template__ = __webpack_require__(164)
 /* template functional */
@@ -1499,13 +1499,33 @@ var render = function() {
   return _c("div", { staticClass: "col-3 " }, [
     _vm._m(0),
     _vm._v(" "),
-    _c("div", { staticClass: "mb-4" }, [_c("activefilter")], 1),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [_c("activefilter", { attrs: { corpusresults: _vm.corpusresults } })],
+      1
+    ),
     _vm._v(" "),
-    _c("div", { staticClass: "mb-4" }, [_c("corpusfilter")], 1),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [_c("corpusfilter", { attrs: { corpusresults: _vm.corpusresults } })],
+      1
+    ),
     _vm._v(" "),
-    _c("div", { staticClass: "mb-4" }, [_c("documentfilter")], 1),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [_c("documentfilter", { attrs: { corpusresults: _vm.corpusresults } })],
+      1
+    ),
     _vm._v(" "),
-    _c("div", { staticClass: "mb-4" }, [_c("annotationfilter")], 1)
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [_c("annotationfilter", { attrs: { corpusresults: _vm.corpusresults } })],
+      1
+    )
   ])
 }
 var staticRenderFns = [
@@ -1624,10 +1644,9 @@ var render = function() {
       _vm.corpusresults.length >= 1
         ? _c("h3", { staticClass: "h3 font-weight-normal mb-4" }, [
             _vm._v(
-              "\n        Results for " +
+              '\n        Results for the search "' +
                 _vm._s(_vm.searches.join(" ")) +
-                " " +
-                _vm._s(_vm.corpusresults[0]._index)
+                '"'
             )
           ])
         : _vm.corpusresults != "undefined" &&
@@ -1652,7 +1671,7 @@ var render = function() {
             )
           : _vm._e(),
       _vm._v(" "),
-      _c("searchresultheader"),
+      _c("searchresultheader", { attrs: { corpusresults: _vm.corpusresults } }),
       _vm._v(" "),
       _c(
         "div",
@@ -1718,7 +1737,7 @@ if (false) {
 var disposed = false
 var normalizeComponent = __webpack_require__(6)
 /* script */
-var __vue_script__ = null
+var __vue_script__ = __webpack_require__(464)
 /* template */
 var __vue_template__ = __webpack_require__(168)
 /* template functional */
@@ -1767,148 +1786,150 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelActives" } }, [
+      _vm._m(1)
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card" }, [
-      _c(
-        "div",
-        {
+    return _c(
+      "div",
+      {
+        staticClass:
+          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
+        attrs: {
+          "data-toggle": "collapse",
+          "data-target": "#formPanelActives",
+          "aria-expanded": "true",
+          "aria-controls": "formPanelActives"
+        }
+      },
+      [
+        _c("span", [_vm._v("Active Filter (1)")]),
+        _vm._v(" "),
+        _c("i", {
           staticClass:
-            "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
-          attrs: {
-            "data-toggle": "collapse",
-            "data-target": "#formPanelActives",
-            "aria-expanded": "true",
-            "aria-controls": "formPanelActives"
-          }
-        },
-        [
-          _c("span", [_vm._v("Active Filter (1)")]),
-          _vm._v(" "),
-          _c("i", {
-            staticClass:
-              "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
-          })
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "collapse show", attrs: { id: "formPanelActives" } },
-        [
-          _c("div", { staticClass: "card-body p-1" }, [
-            _c("form", { attrs: { action: "" } }, [
-              _c("div", { staticClass: "d-flex flex-wrap py-2" }, [
-                _c("div", { staticClass: "m-1" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("i", { staticClass: "fa fa-close fa-fw" }),
-                      _vm._v(
-                        "\n                            FilterValue\n                        "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "m-1" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("i", { staticClass: "fa fa-close fa-fw" }),
-                      _vm._v(
-                        "\n                            FilValue\n                        "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "m-1" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("i", { staticClass: "fa fa-close fa-fw" }),
-                      _vm._v(
-                        "\n                            FilterValue 323\n                        "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "m-1" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("i", { staticClass: "fa fa-close fa-fw" }),
-                      _vm._v(
-                        "\n                            14511551\n                        "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "m-1" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("i", { staticClass: "fa fa-close fa-fw" }),
-                      _vm._v(
-                        "\n                            FilterValue\n                        "
-                      )
-                    ]
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "d-flex flex-column" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass:
-                      "align-self-end text-uppercase text-dark text-12 p-2",
-                    attrs: { href: "#", role: "button" }
-                  },
-                  [
-                    _vm._v(
-                      "\n                        Clear all Filter\n                    "
-                    )
-                  ]
+            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "card-body p-1" }, [
+      _c("form", { attrs: { action: "" } }, [
+        _c("div", { staticClass: "d-flex flex-wrap py-2" }, [
+          _c("div", { staticClass: "m-1" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                attrs: { href: "#" }
+              },
+              [
+                _c("i", { staticClass: "fa fa-close fa-fw" }),
+                _vm._v(
+                  "\n                            FilterValue\n                        "
                 )
-              ])
-            ])
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "m-1" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                attrs: { href: "#" }
+              },
+              [
+                _c("i", { staticClass: "fa fa-close fa-fw" }),
+                _vm._v(
+                  "\n                            FilValue\n                        "
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "m-1" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                attrs: { href: "#" }
+              },
+              [
+                _c("i", { staticClass: "fa fa-close fa-fw" }),
+                _vm._v(
+                  "\n                            FilterValue 323\n                        "
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "m-1" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                attrs: { href: "#" }
+              },
+              [
+                _c("i", { staticClass: "fa fa-close fa-fw" }),
+                _vm._v(
+                  "\n                            14511551\n                        "
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "m-1" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                attrs: { href: "#" }
+              },
+              [
+                _c("i", { staticClass: "fa fa-close fa-fw" }),
+                _vm._v(
+                  "\n                            FilterValue\n                        "
+                )
+              ]
+            )
           ])
-        ]
-      )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "d-flex flex-column" }, [
+          _c(
+            "a",
+            {
+              staticClass:
+                "align-self-end text-uppercase text-dark text-12 p-2",
+              attrs: { href: "#", role: "button" }
+            },
+            [
+              _vm._v(
+                "\n                        Clear all Filter\n                    "
+              )
+            ]
+          )
+        ])
+      ])
     ])
   }
 ]
@@ -12943,7 +12964,8 @@ module.exports = Vue;
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(noUiSlider) {//
+/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(76);
+//
 //
 //
 //
@@ -13050,7 +13072,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults'],
     data: function data() {
         return {
             corpusSearchData: {
@@ -13076,6 +13100,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         emitCorpusData: function emitCorpusData() {
 
             this.$emit('corpus-search', this.corpusSearchData);
+        },
+
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
         }
     },
     mounted: function mounted() {
@@ -15440,376 +15472,368 @@ var render = function() {
   return _c("div", { staticClass: "card" }, [
     _vm._m(0),
     _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "collapse show", attrs: { id: "formPanelCorpus" } },
-      [
-        _c("div", { staticClass: "card-body px-2" }, [
-          _c("form", { attrs: { action: "" } }, [
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "mb-0 text-14 ",
-                  attrs: { for: "formCorpusTitle" }
-                },
-                [_vm._v("Title")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.corpusSearchData.corpus_title,
-                    expression: "corpusSearchData.corpus_title"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  id: "formCorpusTitle",
-                  "aria-describedby": "inputTitle",
-                  placeholder: '"Ridges herbology"'
-                },
-                domProps: { value: _vm.corpusSearchData.corpus_title },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(
-                      _vm.corpusSearchData,
-                      "corpus_title",
-                      $event.target.value
-                    )
-                  }
-                }
-              })
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "mb-0 text-14 ",
-                  attrs: { for: "formCorpusLanguage" }
-                },
-                [_vm._v("Language")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.corpusSearchData.corpus_merged_languages,
-                    expression: "corpusSearchData.corpus_merged_languages"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  id: "formCorpusLanguage",
-                  "aria-describedby": "inputLanguage",
-                  placeholder: '"German"'
-                },
-                domProps: {
-                  value: _vm.corpusSearchData.corpus_merged_languages
-                },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(
-                      _vm.corpusSearchData,
-                      "corpus_merged_languages",
-                      $event.target.value
-                    )
-                  }
-                }
-              })
-            ]),
-            _vm._v(" "),
-            _vm._m(1),
-            _vm._v(" "),
+    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelCorpus" } }, [
+      _c("div", { staticClass: "card-body px-2" }, [
+        _c("form", { attrs: { action: "" } }, [
+          _c("div", { staticClass: "form-group mb-3" }, [
             _c(
-              "div",
+              "label",
               {
-                staticClass: "collapse formPanelCorpus-all",
-                attrs: { id: "formPanelCorpus-all1" }
+                staticClass: "mb-0 text-14 ",
+                attrs: { for: "formCorpusTitle" }
               },
-              [
-                _c("div", { staticClass: "form-group mb-3" }, [
-                  _c(
-                    "label",
-                    {
-                      staticClass: "mb-0 text-14 ",
-                      attrs: { for: "formCorpusPublisher" }
-                    },
-                    [_vm._v("Language")]
-                  ),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value:
-                          _vm.corpusSearchData.corpus_publication_publisher,
-                        expression:
-                          "corpusSearchData.corpus_publication_publisher"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: {
-                      type: "text",
-                      id: "formCorpusPublisher",
-                      "aria-describedby": "inputPublisher",
-                      placeholder: '"Humboldt Universität"'
-                    },
-                    domProps: {
-                      value: _vm.corpusSearchData.corpus_publication_publisher
-                    },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.corpusSearchData,
-                          "corpus_publication_publisher",
-                          $event.target.value
-                        )
-                      }
-                    }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "form-group mb-3" }, [
-                  _c(
-                    "label",
-                    {
-                      staticClass: "mb-0 text-14 ",
-                      attrs: { for: "formCorpusFormats" }
-                    },
-                    [_vm._v("Formats")]
-                  ),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.corpusSearchData.corpus_merged_formats,
-                        expression: "corpusSearchData.corpus_merged_formats"
-                      }
-                    ],
-                    staticClass: "flexdatalist form-control",
-                    attrs: {
-                      type: "text",
-                      name: "formatslist",
-                      multiple: "multiple",
-                      list: "formatsList-Corpus",
-                      "data-min-length": "0",
-                      id: "formCorpusFormats"
-                    },
-                    domProps: {
-                      value: _vm.corpusSearchData.corpus_merged_formats
-                    },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.corpusSearchData,
-                          "corpus_merged_formats",
-                          $event.target.value
-                        )
-                      }
-                    }
-                  }),
-                  _vm._v(" "),
-                  _vm._m(2)
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "form-group mb-3" }, [
-                  _c(
-                    "label",
-                    {
-                      staticClass: "mb-0 text-14 ",
-                      attrs: { for: "formCorpusLicenses" }
-                    },
-                    [_vm._v("License")]
-                  ),
-                  _vm._v(" "),
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.corpusSearchData.corpus_publication_license,
-                        expression:
-                          "corpusSearchData.corpus_publication_license"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: {
-                      type: "text",
-                      id: "formCorpusLicenses",
-                      "aria-describedby": "inputLicenses",
-                      placeholder: '"cc-by"'
-                    },
-                    domProps: {
-                      value: _vm.corpusSearchData.corpus_publication_license
-                    },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(
-                          _vm.corpusSearchData,
-                          "corpus_publication_license",
-                          $event.target.value
-                        )
-                      }
-                    }
-                  })
-                ])
-              ]
-            )
+              [_vm._v("Title")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.corpusSearchData.corpus_title,
+                  expression: "corpusSearchData.corpus_title"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                type: "text",
+                id: "formCorpusTitle",
+                "aria-describedby": "inputTitle",
+                placeholder: '"Ridges herbology"'
+              },
+              domProps: { value: _vm.corpusSearchData.corpus_title },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(
+                    _vm.corpusSearchData,
+                    "corpus_title",
+                    $event.target.value
+                  )
+                }
+              }
+            })
           ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-group mb-3" }, [
+            _c(
+              "label",
+              {
+                staticClass: "mb-0 text-14 ",
+                attrs: { for: "formCorpusLanguage" }
+              },
+              [_vm._v("Language")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.corpusSearchData.corpus_merged_languages,
+                  expression: "corpusSearchData.corpus_merged_languages"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                type: "text",
+                id: "formCorpusLanguage",
+                "aria-describedby": "inputLanguage",
+                placeholder: '"German"'
+              },
+              domProps: { value: _vm.corpusSearchData.corpus_merged_languages },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(
+                    _vm.corpusSearchData,
+                    "corpus_merged_languages",
+                    $event.target.value
+                  )
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _vm._m(1),
           _vm._v(" "),
           _c(
             "div",
             {
               staticClass: "collapse formPanelCorpus-all",
-              attrs: { id: "formPanelCorpus-all2" }
+              attrs: { id: "formPanelCorpus-all1" }
             },
             [
-              _vm._m(3),
-              _vm._v(" "),
-              _c("form", { attrs: { action: "" } }, [
-                _c("div", { staticClass: "form-group mb-3" }, [
-                  _c(
-                    "label",
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusPublisher" }
+                  },
+                  [_vm._v("Language")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
                     {
-                      staticClass: "mb-0 text-14 ",
-                      attrs: { for: "formCorpusYear" }
-                    },
-                    [_vm._v("Year of Publication")]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "d-flex justify-content-between" }, [
-                    _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                      _c(
-                        "small",
-                        {
-                          staticClass: "form-text text-muted",
-                          attrs: { id: "yearFromHelp" }
-                        },
-                        [_vm._v("from")]
-                      ),
-                      _vm._v(" "),
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value:
-                              _vm.corpusSearchData
-                                .corpus_publication_publication_date,
-                            expression:
-                              "corpusSearchData.corpus_publication_publication_date"
-                          }
-                        ],
-                        staticClass: "toBeValidated form-control",
-                        attrs: {
-                          placeholder: "J J J J",
-                          type: "number",
-                          min: "1",
-                          max: "9999",
-                          step: "1",
-                          name: "yearFrom",
-                          id: "formCorpusYearFrom"
-                        },
-                        domProps: {
-                          value:
-                            _vm.corpusSearchData
-                              .corpus_publication_publication_date
-                        },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(
-                              _vm.corpusSearchData,
-                              "corpus_publication_publication_date",
-                              $event.target.value
-                            )
-                          }
-                        }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                      _c(
-                        "small",
-                        {
-                          staticClass: "form-text text-muted",
-                          attrs: { id: "yearToHelp" }
-                        },
-                        [_vm._v("to")]
-                      ),
-                      _vm._v(" "),
-                      _c("input", {
-                        directives: [
-                          {
-                            name: "model",
-                            rawName: "v-model",
-                            value: _vm.corpusSearchData.corpusYearTo,
-                            expression: "corpusSearchData.corpusYearTo"
-                          }
-                        ],
-                        staticClass: "toBeValidated form-control",
-                        attrs: {
-                          placeholder: "J J J J",
-                          type: "number",
-                          min: "1",
-                          max: "9999",
-                          step: "1",
-                          name: "yearTo",
-                          id: "formCorpusYearTo"
-                        },
-                        domProps: { value: _vm.corpusSearchData.corpusYearTo },
-                        on: {
-                          input: function($event) {
-                            if ($event.target.composing) {
-                              return
-                            }
-                            _vm.$set(
-                              _vm.corpusSearchData,
-                              "corpusYearTo",
-                              $event.target.value
-                            )
-                          }
-                        }
-                      })
-                    ]),
-                    _vm._v(" "),
-                    _vm._m(4)
-                  ])
-                ])
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.corpusSearchData.corpus_publication_publisher,
+                      expression:
+                        "corpusSearchData.corpus_publication_publisher"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    id: "formCorpusPublisher",
+                    "aria-describedby": "inputPublisher",
+                    placeholder: '"Humboldt Universität"'
+                  },
+                  domProps: {
+                    value: _vm.corpusSearchData.corpus_publication_publisher
+                  },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.corpusSearchData,
+                        "corpus_publication_publisher",
+                        $event.target.value
+                      )
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusFormats" }
+                  },
+                  [_vm._v("Formats")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.corpusSearchData.corpus_merged_formats,
+                      expression: "corpusSearchData.corpus_merged_formats"
+                    }
+                  ],
+                  staticClass: "flexdatalist form-control",
+                  attrs: {
+                    type: "text",
+                    name: "formatslist",
+                    multiple: "multiple",
+                    list: "formatsList-Corpus",
+                    "data-min-length": "0",
+                    id: "formCorpusFormats"
+                  },
+                  domProps: {
+                    value: _vm.corpusSearchData.corpus_merged_formats
+                  },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.corpusSearchData,
+                        "corpus_merged_formats",
+                        $event.target.value
+                      )
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _vm._m(2)
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusLicenses" }
+                  },
+                  [_vm._v("License")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.corpusSearchData.corpus_publication_license,
+                      expression: "corpusSearchData.corpus_publication_license"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    id: "formCorpusLicenses",
+                    "aria-describedby": "inputLicenses",
+                    placeholder: '"cc-by"'
+                  },
+                  domProps: {
+                    value: _vm.corpusSearchData.corpus_publication_license
+                  },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.corpusSearchData,
+                        "corpus_publication_license",
+                        $event.target.value
+                      )
+                    }
+                  }
+                })
               ])
             ]
           )
-        ])
-      ]
-    )
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "collapse formPanelCorpus-all",
+            attrs: { id: "formPanelCorpus-all2" }
+          },
+          [
+            _vm._m(3),
+            _vm._v(" "),
+            _c("form", { attrs: { action: "" } }, [
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusYear" }
+                  },
+                  [_vm._v("Year of Publication")]
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "d-flex justify-content-between" }, [
+                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                    _c(
+                      "small",
+                      {
+                        staticClass: "form-text text-muted",
+                        attrs: { id: "yearFromHelp" }
+                      },
+                      [_vm._v("from")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value:
+                            _vm.corpusSearchData
+                              .corpus_publication_publication_date,
+                          expression:
+                            "corpusSearchData.corpus_publication_publication_date"
+                        }
+                      ],
+                      staticClass: "toBeValidated form-control",
+                      attrs: {
+                        placeholder: "J J J J",
+                        type: "number",
+                        min: "1",
+                        max: "9999",
+                        step: "1",
+                        name: "yearFrom",
+                        id: "formCorpusYearFrom"
+                      },
+                      domProps: {
+                        value:
+                          _vm.corpusSearchData
+                            .corpus_publication_publication_date
+                      },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.corpusSearchData,
+                            "corpus_publication_publication_date",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                    _c(
+                      "small",
+                      {
+                        staticClass: "form-text text-muted",
+                        attrs: { id: "yearToHelp" }
+                      },
+                      [_vm._v("to")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.corpusSearchData.corpusYearTo,
+                          expression: "corpusSearchData.corpusYearTo"
+                        }
+                      ],
+                      staticClass: "toBeValidated form-control",
+                      attrs: {
+                        placeholder: "J J J J",
+                        type: "number",
+                        min: "1",
+                        max: "9999",
+                        step: "1",
+                        name: "yearTo",
+                        id: "formCorpusYearTo"
+                      },
+                      domProps: { value: _vm.corpusSearchData.corpusYearTo },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.corpusSearchData,
+                            "corpusYearTo",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _vm._m(4)
+                ])
+              ])
+            ])
+          ]
+        )
+      ])
+    ])
   ])
 }
 var staticRenderFns = [
@@ -15956,7 +15980,7 @@ if (false) {
 var disposed = false
 var normalizeComponent = __webpack_require__(6)
 /* script */
-var __vue_script__ = null
+var __vue_script__ = __webpack_require__(465)
 /* template */
 var __vue_template__ = __webpack_require__(174)
 /* template functional */
@@ -16005,300 +16029,289 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelDocuments" } }, [
+      _vm._m(1)
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card" }, [
-      _c(
-        "div",
-        {
+    return _c(
+      "div",
+      {
+        staticClass:
+          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
+        attrs: {
+          "data-toggle": "collapse",
+          "data-target": "#formPanelDocuments",
+          "aria-expanded": "true",
+          "aria-controls": "formPanelDocuments"
+        }
+      },
+      [
+        _c("span", [_vm._v("Documents")]),
+        _vm._v(" "),
+        _c("i", {
           staticClass:
-            "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
-          attrs: {
-            "data-toggle": "collapse",
-            "data-target": "#formPanelDocuments",
-            "aria-expanded": "true",
-            "aria-controls": "formPanelDocuments"
-          }
-        },
-        [
-          _c("span", [_vm._v("Documents")]),
+            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "card-body px-2" }, [
+      _c("form", { attrs: { action: "" } }, [
+        _c("div", { staticClass: "form-group mb-3" }, [
+          _c(
+            "label",
+            {
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formDocumentsTitle" }
+            },
+            [_vm._v("Title")]
+          ),
           _vm._v(" "),
-          _c("i", {
-            staticClass:
-              "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "formDocumentsTitle",
+              "aria-describedby": "inputTitle",
+              placeholder: '"Ridges herbology"'
+            }
           })
-        ]
-      ),
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group mb-3" }, [
+          _c(
+            "label",
+            {
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formDocumentsAuthor" }
+            },
+            [_vm._v("Author")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "formDocumentsAuthor",
+              "aria-describedby": "inputAuthor",
+              placeholder: '"Frank Mann"'
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "d-flex flex-column" }, [
+          _c(
+            "a",
+            {
+              staticClass:
+                "align-self-end text-uppercase text-dark text-14 filter-expander",
+              attrs: {
+                "data-toggle": "collapse",
+                href: "#",
+                "data-target": ".formPanelDocuments-all",
+                role: "button",
+                "aria-expanded": "false",
+                "aria-controls":
+                  "#formPanelDocuments-all1 #formPanelDocuments-all2"
+              }
+            },
+            [
+              _vm._v(
+                "\n                        + Show all Documentsfilter\n                    "
+              )
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "collapse formPanelDocuments-all",
+            attrs: { id: "formPanelDocuments-all1" }
+          },
+          [
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formDocumentsLanguage" }
+                },
+                [_vm._v("Language")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                staticClass: "form-control",
+                attrs: {
+                  type: "text",
+                  id: "formDocumentsLanguage",
+                  "aria-describedby": "inputLanguage",
+                  placeholder: '"German"'
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formDocumentsPlace" }
+                },
+                [_vm._v("Place")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                staticClass: "form-control",
+                attrs: {
+                  type: "text",
+                  id: "formDocumentsPlace",
+                  "aria-describedby": "inputPlace",
+                  placeholder: '"Mannheim"'
+                }
+              })
+            ])
+          ]
+        )
+      ]),
       _vm._v(" "),
       _c(
         "div",
-        { staticClass: "collapse show", attrs: { id: "formPanelDocuments" } },
+        {
+          staticClass: "collapse formPanelDocuments-all",
+          attrs: { id: "formPanelDocuments-all2" }
+        },
         [
-          _c("div", { staticClass: "card-body px-2" }, [
-            _c("form", { attrs: { action: "" } }, [
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formDocumentsTitle" }
-                  },
-                  [_vm._v("Title")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formDocumentsTitle",
-                    "aria-describedby": "inputTitle",
-                    placeholder: '"Ridges herbology"'
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formDocumentsAuthor" }
-                  },
-                  [_vm._v("Author")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formDocumentsAuthor",
-                    "aria-describedby": "inputAuthor",
-                    placeholder: '"Frank Mann"'
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "d-flex flex-column" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass:
-                      "align-self-end text-uppercase text-dark text-14 filter-expander",
-                    attrs: {
-                      "data-toggle": "collapse",
-                      href: "#",
-                      "data-target": ".formPanelDocuments-all",
-                      role: "button",
-                      "aria-expanded": "false",
-                      "aria-controls":
-                        "#formPanelDocuments-all1 #formPanelDocuments-all2"
-                    }
-                  },
-                  [
-                    _vm._v(
-                      "\n                        + Show all Documentsfilter\n                    "
-                    )
-                  ]
-                )
-              ]),
-              _vm._v(" "),
+          _c("form", { attrs: { action: "" } }, [
+            _c("div", { staticClass: "form-group mb-3" }, [
               _c(
-                "div",
-                {
-                  staticClass: "collapse formPanelDocuments-all",
-                  attrs: { id: "formPanelDocuments-all1" }
-                },
-                [
-                  _c("div", { staticClass: "form-group mb-3" }, [
-                    _c(
-                      "label",
-                      {
-                        staticClass: "mb-0 text-14 ",
-                        attrs: { for: "formDocumentsLanguage" }
-                      },
-                      [_vm._v("Language")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      staticClass: "form-control",
-                      attrs: {
-                        type: "text",
-                        id: "formDocumentsLanguage",
-                        "aria-describedby": "inputLanguage",
-                        placeholder: '"German"'
-                      }
-                    })
-                  ]),
+                "label",
+                { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } },
+                [_vm._v("Documents size (Tokens, Words)")]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex justify-content-between" }, [
+                _c("div", { staticClass: "w-75" }, [
+                  _c("div", { attrs: { id: "documentSize" } }),
                   _vm._v(" "),
-                  _c("div", { staticClass: "form-group mb-3" }, [
-                    _c(
-                      "label",
-                      {
-                        staticClass: "mb-0 text-14 ",
-                        attrs: { for: "formDocumentsPlace" }
-                      },
-                      [_vm._v("Place")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      staticClass: "form-control",
-                      attrs: {
-                        type: "text",
-                        id: "formDocumentsPlace",
-                        "aria-describedby": "inputPlace",
-                        placeholder: '"Mannheim"'
-                      }
-                    })
-                  ])
-                ]
-              )
-            ]),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass: "collapse formPanelDocuments-all",
-                attrs: { id: "formPanelDocuments-all2" }
-              },
-              [
-                _c("form", { attrs: { action: "" } }, [
-                  _c("div", { staticClass: "form-group mb-3" }, [
-                    _c(
-                      "label",
-                      { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } },
-                      [_vm._v("Documents size (Tokens, Words)")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "d-flex justify-content-between" },
-                      [
-                        _c("div", { staticClass: "w-75" }, [
-                          _c("div", { attrs: { id: "documentSize" } }),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            {
-                              staticClass:
-                                "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
-                            },
-                            [
-                              _c("span", {
-                                attrs: { id: "documentSize-minVal" }
-                              }),
-                              _vm._v(" "),
-                              _c("span", {
-                                attrs: { id: "documentSize-maxVal" }
-                              })
-                            ]
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c(
-                          "button",
-                          {
-                            staticClass:
-                              "disabled btn btn-sm btn-corpus-dark p-0",
-                            attrs: { type: "submit" }
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa fa-angle-right fa-fw fa-2x py-1"
-                            })
-                          ]
-                        )
-                      ]
-                    )
-                  ])
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
+                    },
+                    [
+                      _c("span", { attrs: { id: "documentSize-minVal" } }),
+                      _vm._v(" "),
+                      _c("span", { attrs: { id: "documentSize-maxVal" } })
+                    ]
+                  )
                 ]),
                 _vm._v(" "),
-                _c("form", { attrs: { action: "" } }, [
-                  _c("div", { staticClass: "form-group mb-3" }, [
-                    _c(
-                      "label",
-                      {
-                        staticClass: "mb-0 text-14 ",
-                        attrs: { for: "formDocumentsYear" }
-                      },
-                      [_vm._v("Year of Publication")]
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "d-flex justify-content-between" },
-                      [
-                        _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                          _c(
-                            "small",
-                            {
-                              staticClass: "form-text text-muted",
-                              attrs: { id: "yearFromHelp" }
-                            },
-                            [_vm._v("from")]
-                          ),
-                          _vm._v(" "),
-                          _c("input", {
-                            staticClass: "toBeValidated form-control",
-                            attrs: {
-                              placeholder: "J J J J",
-                              type: "number",
-                              min: "1",
-                              max: "9999",
-                              step: "1",
-                              name: "yearFrom",
-                              id: "formDocumentsYearFrom"
-                            }
-                          })
-                        ]),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                          _c(
-                            "small",
-                            {
-                              staticClass: "form-text text-muted",
-                              attrs: { id: "yearToHelp" }
-                            },
-                            [_vm._v("to")]
-                          ),
-                          _vm._v(" "),
-                          _c("input", {
-                            staticClass: "toBeValidated form-control",
-                            attrs: {
-                              placeholder: "J J J J",
-                              type: "number",
-                              min: "1",
-                              max: "9999",
-                              step: "1",
-                              name: "yearTo",
-                              id: "formDocumentsYearTo"
-                            }
-                          })
-                        ]),
-                        _vm._v(" "),
-                        _c(
-                          "button",
-                          {
-                            staticClass:
-                              "toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end",
-                            attrs: { type: "submit" }
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa fa-angle-right fa-fw fa-2x py-1"
-                            })
-                          ]
-                        )
-                      ]
-                    )
-                  ])
-                ])
-              ]
-            )
+                _c(
+                  "button",
+                  {
+                    staticClass: "disabled btn btn-sm btn-corpus-dark p-0",
+                    attrs: { type: "submit" }
+                  },
+                  [
+                    _c("i", {
+                      staticClass: "fa fa-angle-right fa-fw fa-2x py-1"
+                    })
+                  ]
+                )
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("form", { attrs: { action: "" } }, [
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formDocumentsYear" }
+                },
+                [_vm._v("Year of Publication")]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex justify-content-between" }, [
+                _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                  _c(
+                    "small",
+                    {
+                      staticClass: "form-text text-muted",
+                      attrs: { id: "yearFromHelp" }
+                    },
+                    [_vm._v("from")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    staticClass: "toBeValidated form-control",
+                    attrs: {
+                      placeholder: "J J J J",
+                      type: "number",
+                      min: "1",
+                      max: "9999",
+                      step: "1",
+                      name: "yearFrom",
+                      id: "formDocumentsYearFrom"
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                  _c(
+                    "small",
+                    {
+                      staticClass: "form-text text-muted",
+                      attrs: { id: "yearToHelp" }
+                    },
+                    [_vm._v("to")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    staticClass: "toBeValidated form-control",
+                    attrs: {
+                      placeholder: "J J J J",
+                      type: "number",
+                      min: "1",
+                      max: "9999",
+                      step: "1",
+                      name: "yearTo",
+                      id: "formDocumentsYearTo"
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass:
+                      "toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end",
+                    attrs: { type: "submit" }
+                  },
+                  [
+                    _c("i", {
+                      staticClass: "fa fa-angle-right fa-fw fa-2x py-1"
+                    })
+                  ]
+                )
+              ])
+            ])
           ])
         ]
       )
@@ -16322,7 +16335,7 @@ if (false) {
 var disposed = false
 var normalizeComponent = __webpack_require__(6)
 /* script */
-var __vue_script__ = null
+var __vue_script__ = __webpack_require__(466)
 /* template */
 var __vue_template__ = __webpack_require__(176)
 /* template functional */
@@ -16371,130 +16384,128 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c(
+      "div",
+      { class: _vm.getClass(), attrs: { id: "formPanelAnnotations" } },
+      [_vm._m(1)]
+    )
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card" }, [
-      _c(
-        "div",
-        {
+    return _c(
+      "div",
+      {
+        staticClass:
+          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
+        attrs: {
+          "data-toggle": "collapse",
+          "data-target": "#formPanelAnnotations",
+          "aria-expanded": "true",
+          "aria-controls": "formPanelAnnotations"
+        }
+      },
+      [
+        _c("span", [_vm._v("Annotations")]),
+        _vm._v(" "),
+        _c("i", {
           staticClass:
-            "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
-          attrs: {
-            "data-toggle": "collapse",
-            "data-target": "#formPanelAnnotations",
-            "aria-expanded": "true",
-            "aria-controls": "formPanelAnnotations"
-          }
-        },
-        [
-          _c("span", [_vm._v("Annotations")]),
+            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "card-body px-2" }, [
+      _c("form", { attrs: { action: "" } }, [
+        _c("div", { staticClass: "form-group mb-3" }, [
+          _c(
+            "label",
+            {
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formAnnotationsTitle" }
+            },
+            [_vm._v("Name")]
+          ),
           _vm._v(" "),
-          _c("i", {
-            staticClass:
-              "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "formAnnotationsTitle",
+              "aria-describedby": "inputName",
+              placeholder: '"Ridges herbology"'
+            }
           })
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "collapse show", attrs: { id: "formPanelAnnotations" } },
-        [
-          _c("div", { staticClass: "card-body px-2" }, [
-            _c("form", { attrs: { action: "" } }, [
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formAnnotationsTitle" }
-                  },
-                  [_vm._v("Name")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formAnnotationsTitle",
-                    "aria-describedby": "inputName",
-                    placeholder: '"Ridges herbology"'
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formAnnotationsLanguage" }
-                  },
-                  [_vm._v("Category")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formAnnotationsLanguage",
-                    "aria-describedby": "inputCategory",
-                    placeholder: '"German"'
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formAnnotationsFormats" }
-                  },
-                  [_vm._v("Formats")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  staticClass: "flexdatalist form-control",
-                  attrs: {
-                    type: "text",
-                    name: "formatslist",
-                    multiple: "multiple",
-                    list: "formatsList-Annotations",
-                    "data-min-length": "0",
-                    id: "formAnnotationsFormats"
-                  }
-                }),
-                _vm._v(" "),
-                _c("datalist", { attrs: { id: "formatsList-Annotations" } }, [
-                  _c("option", { attrs: { value: "ANNIS" } }, [
-                    _vm._v("ANNIS")
-                  ]),
-                  _vm._v(" "),
-                  _c("option", { attrs: { value: "EXEL" } }, [_vm._v("EXEL")]),
-                  _vm._v(" "),
-                  _c("option", { attrs: { value: "PAULA" } }, [
-                    _vm._v("PAULA")
-                  ]),
-                  _vm._v(" "),
-                  _c("option", { attrs: { value: "Negra" } }, [
-                    _vm._v("Negra")
-                  ]),
-                  _vm._v(" "),
-                  _c("option", { attrs: { value: "TEI-Header" } }, [
-                    _vm._v("TEI-Header")
-                  ])
-                ])
-              ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group mb-3" }, [
+          _c(
+            "label",
+            {
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formAnnotationsLanguage" }
+            },
+            [_vm._v("Category")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "formAnnotationsLanguage",
+              "aria-describedby": "inputCategory",
+              placeholder: '"German"'
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group mb-3" }, [
+          _c(
+            "label",
+            {
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formAnnotationsFormats" }
+            },
+            [_vm._v("Formats")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "flexdatalist form-control",
+            attrs: {
+              type: "text",
+              name: "formatslist",
+              multiple: "multiple",
+              list: "formatsList-Annotations",
+              "data-min-length": "0",
+              id: "formAnnotationsFormats"
+            }
+          }),
+          _vm._v(" "),
+          _c("datalist", { attrs: { id: "formatsList-Annotations" } }, [
+            _c("option", { attrs: { value: "ANNIS" } }, [_vm._v("ANNIS")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "EXEL" } }, [_vm._v("EXEL")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "PAULA" } }, [_vm._v("PAULA")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "Negra" } }, [_vm._v("Negra")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "TEI-Header" } }, [
+              _vm._v("TEI-Header")
             ])
           ])
-        ]
-      )
+        ])
+      ])
     ])
   }
 ]
@@ -16515,7 +16526,7 @@ if (false) {
 var disposed = false
 var normalizeComponent = __webpack_require__(6)
 /* script */
-var __vue_script__ = null
+var __vue_script__ = __webpack_require__(462)
 /* template */
 var __vue_template__ = __webpack_require__(178)
 /* template functional */
@@ -16564,194 +16575,211 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { attrs: { id: "resultheader" } }, [
+    _c("div", { staticClass: "d-flex justify-content-between my-1" }, [
+      _c(
+        "ul",
+        {
+          staticClass: "nav nav-tabs",
+          attrs: { id: "searchtabs", role: "tablist" }
+        },
+        [
+          _c("li", { staticClass: "nav-item" }, [
+            _vm.corpusresults.length >= 1
+              ? _c(
+                  "a",
+                  {
+                    staticClass: "nav-link active",
+                    attrs: {
+                      id: "tab-corpora",
+                      "data-toggle": "tab",
+                      href: "#searchtab-corpora",
+                      role: "tab",
+                      "aria-controls": "searchtab-corpora",
+                      "aria-selected": "true"
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "Corpora (" + _vm._s(_vm.corpusresults[0].total) + ")"
+                    )
+                  ]
+                )
+              : _c(
+                  "a",
+                  {
+                    staticClass: "nav-link active",
+                    attrs: {
+                      id: "tab-corpora",
+                      "data-toggle": "tab",
+                      href: "#searchtab-corpora",
+                      role: "tab",
+                      "aria-controls": "searchtab-corpora",
+                      "aria-selected": "true"
+                    }
+                  },
+                  [_vm._v("Corpora (0)")]
+                )
+          ]),
+          _vm._v(" "),
+          _vm._m(0),
+          _vm._v(" "),
+          _vm._m(1)
+        ]
+      ),
+      _vm._v(" "),
+      _vm._m(2)
+    ]),
+    _vm._v(" "),
+    _vm._m(3)
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { attrs: { id: "resultheader" } }, [
-      _c("div", { staticClass: "d-flex justify-content-between my-1" }, [
-        _c(
-          "ul",
-          {
-            staticClass: "nav nav-tabs",
-            attrs: { id: "searchtabs", role: "tablist" }
-          },
-          [
-            _c("li", { staticClass: "nav-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "nav-link active",
-                  attrs: {
-                    id: "tab-corpora",
-                    "data-toggle": "tab",
-                    href: "#searchtab-corpora",
-                    role: "tab",
-                    "aria-controls": "searchtab-corpora",
-                    "aria-selected": "true"
-                  }
-                },
-                [_vm._v("Corpora (123)")]
-              )
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "nav-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "nav-link",
-                  attrs: {
-                    id: "tab-documents",
-                    "data-toggle": "tab",
-                    href: "#searchtab-documents",
-                    role: "tab",
-                    "aria-controls": "searchtab-documents",
-                    "aria-selected": "false"
-                  }
-                },
-                [_vm._v("Documents (3423)")]
-              )
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "nav-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "nav-link",
-                  attrs: {
-                    id: "tab-annotations",
-                    "data-toggle": "tab",
-                    href: "#searchtab-annotations",
-                    role: "tab",
-                    "aria-controls": "searchtab-annotations",
-                    "aria-selected": "false"
-                  }
-                },
-                [_vm._v("Annotations (3253)")]
-              )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-row " }, [
-          _c("div", { staticClass: "col-auto" }, [
-            _c("div", { staticClass: "dropdown" }, [
-              _c(
-                "button",
-                {
-                  staticClass:
-                    "btn btn-outline-corpus-dark rounded dropdown-toggle font-weight-bold text-uppercase ",
-                  attrs: {
-                    type: "button",
-                    id: "searchSorting",
-                    "data-toggle": "dropdown",
-                    "aria-haspopup": "true",
-                    "aria-expanded": "false"
-                  }
-                },
-                [
-                  _vm._v(
-                    "\n                        Title - Alphabetical\n                    "
-                  )
-                ]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
-                {
-                  staticClass: "dropdown-menu",
-                  attrs: { "aria-labelledby": "searchSort" }
-                },
-                [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "dropdown-item text-14",
-                      attrs: { href: "#" }
-                    },
-                    [_vm._v("Title - alphabetical")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "dropdown-item text-14",
-                      attrs: { href: "#" }
-                    },
-                    [_vm._v("Tokens - ascending")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "dropdown-item text-14",
-                      attrs: { href: "#" }
-                    },
-                    [_vm._v("Tokens - descending")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "dropdown-item text-14",
-                      attrs: { href: "#" }
-                    },
-                    [_vm._v("Corpus release - oldest")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "dropdown-item text-14",
-                      attrs: { href: "#" }
-                    },
-                    [_vm._v("Corpus release - newest")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "dropdown-item text-14",
-                      attrs: { href: "#" }
-                    },
-                    [_vm._v("Date Document - oldest")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "a",
-                    {
-                      staticClass: "dropdown-item text-14",
-                      attrs: { href: "#" }
-                    },
-                    [_vm._v("Date Document - newest")]
-                  )
-                ]
-              )
-            ])
-          ])
-        ])
-      ]),
-      _vm._v(" "),
+    return _c("li", { staticClass: "nav-item" }, [
       _c(
-        "div",
+        "a",
         {
-          staticClass: "w-100 py-3 px-6 mb-1 bg-corpus-light d-flex flex-column"
+          staticClass: "nav-link",
+          attrs: {
+            id: "tab-documents",
+            "data-toggle": "tab",
+            href: "#searchtab-documents",
+            role: "tab",
+            "aria-controls": "searchtab-documents",
+            "aria-selected": "false"
+          }
         },
-        [
+        [_vm._v("Documents (3423)")]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("li", { staticClass: "nav-item" }, [
+      _c(
+        "a",
+        {
+          staticClass: "nav-link",
+          attrs: {
+            id: "tab-annotations",
+            "data-toggle": "tab",
+            href: "#searchtab-annotations",
+            role: "tab",
+            "aria-controls": "searchtab-annotations",
+            "aria-selected": "false"
+          }
+        },
+        [_vm._v("Annotations (3253)")]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-row " }, [
+      _c("div", { staticClass: "col-auto" }, [
+        _c("div", { staticClass: "dropdown" }, [
+          _c(
+            "button",
+            {
+              staticClass:
+                "btn btn-outline-corpus-dark rounded dropdown-toggle font-weight-bold text-uppercase ",
+              attrs: {
+                type: "button",
+                id: "searchSorting",
+                "data-toggle": "dropdown",
+                "aria-haspopup": "true",
+                "aria-expanded": "false"
+              }
+            },
+            [
+              _vm._v(
+                "\n                        Title - Alphabetical\n                    "
+              )
+            ]
+          ),
+          _vm._v(" "),
           _c(
             "div",
             {
-              staticClass:
-                "btn btn-sm font-weight-bold text-uppercase btn-outline-corpus-dark align-self-end disabled"
+              staticClass: "dropdown-menu",
+              attrs: { "aria-labelledby": "searchSort" }
             },
-            [_vm._v("\n            Apply Filter\n        ")]
+            [
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Title - alphabetical")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Tokens - ascending")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Tokens - descending")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Corpus release - oldest")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Corpus release - newest")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Date Document - oldest")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Date Document - newest")]
+              )
+            ]
           )
-        ]
-      )
+        ])
+      ])
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "w-100 py-3 px-6 mb-1 bg-corpus-light d-flex flex-column"
+      },
+      [
+        _c(
+          "div",
+          {
+            staticClass:
+              "btn btn-sm font-weight-bold text-uppercase btn-outline-corpus-dark align-self-end disabled"
+          },
+          [_vm._v("\n            Apply Filter\n        ")]
+        )
+      ]
+    )
   }
 ]
 render._withStripped = true
@@ -25815,6 +25843,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -25825,6 +25855,382 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     }),
     mounted: function mounted() {
         console.log('CorpusResultComponent mounted.');
+    }
+});
+
+/***/ }),
+
+/***/ 462:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults'],
+    mounted: function mounted() {
+        console.log('CorpusResultHeaderComponent mounted.');
+    }
+});
+
+/***/ }),
+
+/***/ 463:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(76);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults'],
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    mounted: function mounted() {
+        console.log('CorpusResultComponent mounted.');
+    }
+});
+
+/***/ }),
+
+/***/ 464:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(76);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults'],
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    methods: {
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        }
+    },
+    mounted: function mounted() {
+        console.log('CorpusActiveFilterComponent mounted.');
+    }
+});
+
+/***/ }),
+
+/***/ 465:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(76);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults'],
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    methods: {
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        }
+    },
+    mounted: function mounted() {
+        console.log('CorpusActiveFilterComponent mounted.');
+    }
+});
+
+/***/ }),
+
+/***/ 466:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(76);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults'],
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    methods: {
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        }
+    },
+    mounted: function mounted() {
+        console.log('CorpusActiveFilterComponent mounted.');
     }
 });
 

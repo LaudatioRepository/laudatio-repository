@@ -5,7 +5,7 @@
             <span>Active Filter (1)</span>
             <i class="collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"></i>
         </div>
-        <div class="collapse show" id="formPanelActives">
+        <div v-bind:class="getClass()" id="formPanelActives">
             <div class="card-body p-1">
                 <form action="">
                     <div class="d-flex flex-wrap py-2">
@@ -50,3 +50,26 @@
         </div>
     </div>
 </template>
+<script>
+    import { mapState, mapActions, mapGetters } from 'vuex'
+    export default {
+        props: ['corpusresults'],
+        computed:
+            mapGetters({
+                stateDocumentCorpusresults: 'documentcorpus',
+                stateAnnotationCorpusresults: 'annotationcorpus'
+            }),
+        methods: {
+            getClass: function () {
+                var classes = "collapse";
+                if(this.corpusresults.length >= 1){
+                    classes += " show"
+                }
+                return classes;
+            }
+        },
+        mounted() {
+            console.log('CorpusActiveFilterComponent mounted.')
+        }
+    }
+</script>

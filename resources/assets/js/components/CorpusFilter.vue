@@ -5,7 +5,7 @@
             <span>Corpus</span>
             <i class="collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"></i>
         </div>
-        <div class="collapse show" id="formPanelCorpus">
+        <div v-bind:class="getClass()" id="formPanelCorpus">
             <div class="card-body px-2">
                 <form action="">
                     <div class="form-group mb-3">
@@ -105,7 +105,9 @@
     </div>
 </template>
 <script>
+    import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
+        props: ['corpusresults'],
         data: function(){
             return {
                 corpusSearchData : {
@@ -131,6 +133,13 @@
             emitCorpusData(){
 
                 this.$emit('corpus-search',this.corpusSearchData);
+            },
+            getClass: function () {
+                var classes = "collapse";
+                if(this.corpusresults.length >= 1){
+                    classes += " show"
+                }
+                return classes;
             }
         },
         mounted() {

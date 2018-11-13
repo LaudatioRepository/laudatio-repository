@@ -4,7 +4,9 @@
             <ul class="nav nav-tabs" id="searchtabs" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="tab-corpora" data-toggle="tab" href="#searchtab-corpora" role="tab" aria-controls="searchtab-corpora"
-                       aria-selected="true">Corpora (123)</a>
+                       aria-selected="true" v-if="corpusresults.length >= 1">Corpora ({{corpusresults[0].total}})</a>
+                    <a class="nav-link active" id="tab-corpora" data-toggle="tab" href="#searchtab-corpora" role="tab" aria-controls="searchtab-corpora"
+                       aria-selected="true" v-else>Corpora (0)</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="tab-documents" data-toggle="tab" href="#searchtab-documents" role="tab" aria-controls="searchtab-documents"
@@ -42,3 +44,11 @@
         </div>
     </div>
 </template>
+<script>
+    export default {
+        props: ['corpusresults'],
+        mounted() {
+            console.log('CorpusResultHeaderComponent mounted.')
+        }
+    }
+</script>

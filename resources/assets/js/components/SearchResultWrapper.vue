@@ -3,7 +3,7 @@
         <i v-show="corpusloading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
         <span v-show="corpusloading" class="sr-only">Loading...</span>
         <h3 class="h3 font-weight-normal mb-4" v-if="searches != 'undefined' && searches.length >= 1 && corpusresults != 'undefined' && corpusresults.length >= 1">
-            Results for {{searches.join(" ")}} {{corpusresults[0]._index}}</h3>
+            Results for the search &quot;{{searches.join(" ")}}&quot;</h3>
 
 
         <div  v-else-if="corpusresults != 'undefined' && corpusresults.length < 1 && corpussearched && !corpusloading" class="alert alert-info alert-dismissible fade show" role="alert">
@@ -15,7 +15,9 @@
 
 
 
-        <searchresultheader></searchresultheader>
+        <searchresultheader :corpusresults="corpusresults"></searchresultheader>
+
+
         <div class="tab-content">
             <corpussearchresult
                     v-if="corpusresults != 'undefined' && corpusresults.length >= 1"

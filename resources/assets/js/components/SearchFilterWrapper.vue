@@ -4,16 +4,30 @@
             <h3 class="h3 font-weight-normal">Filter</h3>
         </div>
         <div class="mb-4">
-            <activefilter></activefilter>
+            <activefilter :corpusresults="corpusresults"></activefilter>
         </div>
         <div class="mb-4">
-            <corpusfilter></corpusfilter>
+            <corpusfilter :corpusresults="corpusresults"></corpusfilter>
         </div>
         <div class="mb-4">
-            <documentfilter></documentfilter>
+            <documentfilter :corpusresults="corpusresults"></documentfilter>
         </div>
         <div class="mb-4">
-            <annotationfilter></annotationfilter>
+            <annotationfilter :corpusresults="corpusresults"></annotationfilter>
         </div>
     </div>
 </template>
+<script>
+    import { mapState, mapActions, mapGetters } from 'vuex'
+    export default {
+        props: ['corpusresults'],
+        computed:
+            mapGetters({
+                stateDocumentCorpusresults: 'documentcorpus',
+                stateAnnotationCorpusresults: 'annotationcorpus'
+            }),
+        mounted() {
+            console.log('CorpusResultComponent mounted.')
+        }
+    }
+</script>

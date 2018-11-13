@@ -15,7 +15,8 @@
         <div class="container-fluid">
             <div class="container">
                 <div class="row mt-5">
-                    <searchfilterwrapper></searchfilterwrapper>
+                    <searchfilterwrapper
+                            :corpusresults="corpusresults"></searchfilterwrapper>
                     <searchresultwrapper
                             :corpusresults="corpusresults"
                             :corpussearched="corpussearched"
