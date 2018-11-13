@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Elasticsearch;
 use App\Laudatio\Elasticsearch\QueryBuilder;
 use App\Custom\ElasticsearchInterface;
+use App\Custom\LaudatioUtilsInterface;
 use Cache;
 use Log;
 
@@ -14,10 +15,12 @@ class ElasticController extends Controller
 {
 
     protected $ElasticService;
+    protected $LaudatioUtils;
 
-    public function __construct(ElasticsearchInterface $Elasticservice)
+    public function __construct(ElasticsearchInterface $Elasticservice,LaudatioUtilsInterface $laudatioUtils)
     {
         $this->ElasticService = $Elasticservice;
+        $this->LaudatioUtils = $laudatioUtils;
     }
 
     /** GET search endpoint
@@ -110,6 +113,28 @@ class ElasticController extends Controller
     public function searchGeneral(Request $request)
     {
         $result = $this->ElasticService->searchGeneral($request->searchData);
+
+
+        for ($i = 0; $i < count($result['hits']['hits']); $i++) {
+            $index = $result['hits']['hits'][$i]['_index'];
+            $corpusPath = $this->LaudatioUtils->getCorpusAndProjectPathByCorpusId($index,$index);
+            $result['hits']['hits'][$i]['_source']['corpuspath'] = $corpusPath;
+            $documentgenre = $this->LaudatioUtils->getDocumentGenreByCorpusId($index,$index);
+            $result['hits']['hits'][$i]['_source']['documentgenre'] = $documentgenre;
+
+            $current_document_index = str_replace("corpus","document",$index);
+
+            $documentResult = $this->ElasticService->getDocumentByCorpus(
+                array(array("in_corpora" => $index)),
+                array($index),
+                array("document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"),
+                $current_document_index
+            );
+
+            $data = array("result" => $result['hits']['hits'][$i]['_source']);
+            $document_range = $this->LaudatioUtils->getDocumentRange($data,$documentResult);
+            $result['hits']['hits'][$i]['_source']['documentrange'] = $document_range;
+        }
 
         $resultData = array(
             'error' => false,

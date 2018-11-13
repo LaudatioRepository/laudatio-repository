@@ -16,10 +16,10 @@
                         <div class="col col-auto mr-1">
                             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                 <i class="fa fa-fw fa-clock-o mr-1"></i>
-                                <span>D. from 1945 - 1950</span>
+                                <span>D. from {{corpusresultdata._source.documentrange}}</span>
                             </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                             <i class="fa fa-fw fa-th-list  mr-1"></i>
-                            <span>Herbology</span>
+                            <span>{{corpusresultdata._source.documentgenre}}</span>
                         </div>
                             <div class="mt-2">
                                 <a class="text-dark text-uppercase search-description-expander" data-toggle="collapse" v-bind:href="('#corpusSearchItem_').concat(index)"
@@ -67,10 +67,10 @@
                             Download
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item text-14" href="#">TEI-Header</a>
-                            <a class="dropdown-item text-14" href="#">EXCEL</a>
+                            <a class="dropdown-item text-14" v-bind:href="('/download/tei/').concat(corpusresultdata._source.corpuspath)">TEI-Header</a>
+                            <!--a class="dropdown-item text-14" href="#">EXCEL</a>
                             <a class="dropdown-item text-14" href="#">PAULA</a>
-                            <a class="dropdown-item text-14" href="#">ANNIS</a>
+                            <a class="dropdown-item text-14" href="#">ANNIS</a-->
                         </div>
                     </div>
                     <div class="custom-control custom-checkbox">
@@ -138,7 +138,7 @@
 <script>
     import { mapState, mapActions } from 'vuex'
     export default {
-        props: ['corpusresult','documentsbycorpus','annotationsbycorpus'],
+        props: ['corpusresult','documentsbycorpus','annotationsbycorpus','corpuspaths'],
         methods: {
             browseUri: function(id) {
                 return '/browse/corpus/'.concat(id);

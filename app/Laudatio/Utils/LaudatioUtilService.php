@@ -1227,25 +1227,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
 
                 if(!empty($current_corpus_index)){
-                    $document_dates = array();
-
-                    if (count($documentResult) > 0 && isset($documentResult[$publicationresponse['_source']['corpus']])){
-                        for($d = 0; $d < count($documentResult[$publicationresponse['_source']['corpus']]); $d++) {
-                            $doc = $documentResult[$publicationresponse['_source']['corpus']][$d];
-                            array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
-                        }
-
-                        sort($document_dates);
-                    }
-
-                    if(count($document_dates) > 0){
-                        if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
-                            $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
-                        }
-                        else{
-                            $document_range = $document_dates[0];
-                        }
-                    }
 
                     if(!array_key_exists($publicationresponse['_source']['corpus'],$corpusdata)){
 
@@ -1255,6 +1236,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                         if(!empty($publishedCorpusid)){
                             $apiData = $elasticService->getCorpus($publishedCorpusid,true,$current_corpus_index);
                             $corpusresponse = json_decode($apiData->getContent(), true);
+                            $document_range = $this->getDocumentRange($corpusresponse,$documentResult);
 
                             $authors = "";
                             for($i = 0; $i < count($corpusresponse['result']['corpus_editor_forename']); $i++){
@@ -1455,6 +1437,36 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $citations['txt'] = $TXTcite;
 
         return $citations;
+    }
+
+
+    /**
+     * getDocumentRange
+     * @param $data
+     * @param $documentResult
+     * @return mixed|string
+     */
+    public function getDocumentRange($data,$documentResult) {
+        $document_dates = array();
+        $document_range = "";
+
+        if (array_key_exists($data['result']['corpus_id'][0],$documentResult)){
+            for($d = 0; $d < count($documentResult[$data['result']['corpus_id'][0]]); $d++) {
+                $doc = $documentResult[$data['result']['corpus_id'][0]][$d];
+                array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+            }
+
+            sort($document_dates);
+
+            if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
+                $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
+            }
+            else{
+                $document_range = $document_dates[0];
+            }
+        }
+
+        return $document_range;
     }
 
     public function emptyCorpusCache($corpusId, $index){

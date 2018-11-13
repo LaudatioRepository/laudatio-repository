@@ -121,25 +121,8 @@ class BrowseController extends Controller
                         $current_document_index
                     );
 
-                    $document_dates = array();
-                    $document_range = "";
 
-                    if (array_key_exists($data['result']['corpus_id'][0],$documentResult)){
-                        for($d = 0; $d < count($documentResult[$data['result']['corpus_id'][0]]); $d++) {
-                            $doc = $documentResult[$data['result']['corpus_id'][0]][$d];
-                            array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
-                        }
-
-                        sort($document_dates);
-
-                        if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
-                            $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
-                        }
-                        else{
-                            $document_range = $document_dates[0];
-                        }
-                    }
-
+                    $document_range = $this->LaudatioUtilService->getDocumentRange($data,$documentResult);
 
                     $allDocumentsResult = $this->ElasticService->getDocumentsByDocumentId($data['result']['corpus_documents'],$current_document_index);
 

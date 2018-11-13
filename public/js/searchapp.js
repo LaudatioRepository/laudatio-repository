@@ -183,8 +183,6 @@ module.exports = __webpack_require__(191);
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__store__ = __webpack_require__(158);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex_connect__ = __webpack_require__(159);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex_connect___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vuex_connect__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
@@ -277,6 +275,7 @@ var app = new Vue({
                 window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
                     _this.corpussearched = true;
                     var corpusRefs = [];
+                    //console.log("RES: "+JSON.stringify(res));
 
                     if (res.data.results.length > 0) {
                         _this.corpusresults.push({
@@ -906,14 +905,14 @@ var app = new Vue({
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(76);
 
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["default"]);
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
 
 var initialState = {
     "token": null,
     "user": {}
 };
 
-/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["default"].Store({
+/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
     state: {
         documentsByCorpus: [],
         annotationsByCorpus: [],
@@ -1038,239 +1037,6 @@ var initialState = {
         }
     }
 }));
-
-/***/ }),
-
-/***/ 159:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/*!
- * vuex-connect v1.3.1
- * https://github.com/ktsn/vuex-connect
- *
- * Copyright (c) 2016 katashin
- * Released under the MIT license
- * https://github.com/ktsn/vuex-connect/blob/master/LICENSE
- */
-
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
-var Vue = _interopDefault(__webpack_require__(17));
-var vuex = __webpack_require__(76);
-
-function camelToKebab(str) {
-  return str.replace(/([a-z\d])([A-Z])/g, '$1-$2').toLowerCase();
-}
-
-function merge() {
-  var target = {};
-
-  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-    args[_key] = arguments[_key];
-  }
-
-  args.forEach(function (obj) {
-    Object.keys(obj).forEach(function (key) {
-      target[key] = obj[key];
-    });
-  });
-  return target;
-}
-
-function pick(obj, keys) {
-  var res = {};
-  keys.forEach(function (key) {
-    if (obj[key] !== void 0) {
-      res[key] = obj[key];
-    }
-  });
-  return res;
-}
-
-function omit(obj, keys) {
-  var res = {};
-  Object.keys(obj).forEach(function (key) {
-    if (!includes(keys, key)) {
-      res[key] = obj[key];
-    }
-  });
-  return res;
-}
-
-function flattenObject(obj) {
-  var res = [];
-  Object.keys(obj).forEach(function (key) {
-    res.push(obj[key]);
-  });
-  return res;
-}
-
-function mapValues(obj, f) {
-  var res = {};
-  Object.keys(obj).forEach(function (key) {
-    res[key] = f(obj[key], key);
-  });
-  return res;
-}
-
-function keys() {
-  return Object.keys(merge.apply(undefined, arguments));
-}
-
-function includes(array, item) {
-  return array.indexOf(item) > -1;
-}
-
-var defineProperty = function (obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-};
-
-var VERSION = Number(Vue.version.split('.')[0]);
-
-var LIFECYCLE_KEYS = ['init', 'created', 'beforeCompile', 'compiled', 'ready', 'attached', 'detached', 'beforeDestroy', 'destroyed',
-
-// 2.0
-'beforeCreate', 'beforeMount', 'mounted', 'beforeUpdate', 'updated', 'activated', 'deactivated'];
-
-var createConnect = function createConnect(transform) {
-  return function () {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    var _mapValues = mapValues(options, normalizeOptions);
-
-    var _mapValues$stateToPro = _mapValues.stateToProps;
-    var stateToProps = _mapValues$stateToPro === undefined ? {} : _mapValues$stateToPro;
-    var _mapValues$gettersToP = _mapValues.gettersToProps;
-    var gettersToProps = _mapValues$gettersToP === undefined ? {} : _mapValues$gettersToP;
-    var _mapValues$actionsToP = _mapValues.actionsToProps;
-    var actionsToProps = _mapValues$actionsToP === undefined ? {} : _mapValues$actionsToP;
-    var _mapValues$actionsToE = _mapValues.actionsToEvents;
-    var actionsToEvents = _mapValues$actionsToE === undefined ? {} : _mapValues$actionsToE;
-    var _mapValues$mutationsT = _mapValues.mutationsToProps;
-    var mutationsToProps = _mapValues$mutationsT === undefined ? {} : _mapValues$mutationsT;
-    var _mapValues$mutationsT2 = _mapValues.mutationsToEvents;
-    var mutationsToEvents = _mapValues$mutationsT2 === undefined ? {} : _mapValues$mutationsT2;
-    var _mapValues$methodsToP = _mapValues.methodsToProps;
-    var methodsToProps = _mapValues$methodsToP === undefined ? {} : _mapValues$methodsToP;
-    var _mapValues$methodsToE = _mapValues.methodsToEvents;
-    var methodsToEvents = _mapValues$methodsToE === undefined ? {} : _mapValues$methodsToE;
-    var _mapValues$lifecycle = _mapValues.lifecycle;
-    var lifecycle = _mapValues$lifecycle === undefined ? {} : _mapValues$lifecycle;
-
-
-    return function (name, Component) {
-      if (typeof name !== 'string') {
-        Component = name;
-        name = getOptions(Component).name || 'wrapped-anonymous-component';
-      }
-
-      var propKeys = keys(stateToProps, gettersToProps, actionsToProps, mutationsToProps, methodsToProps);
-
-      var eventKeys = keys(actionsToEvents, mutationsToEvents, methodsToEvents);
-
-      var containerProps = omit(getOptions(Component).props || {}, propKeys);
-
-      var options = {
-        name: 'connect-' + name,
-        props: containerProps,
-        components: defineProperty({}, name, Component),
-        computed: merge(vuex.mapState(stateToProps), vuex.mapGetters(gettersToProps)),
-        methods: merge(vuex.mapActions(merge(actionsToProps, actionsToEvents)), vuex.mapMutations(merge(mutationsToProps, mutationsToEvents)), mapValues(merge(methodsToProps, methodsToEvents), bindStore))
-      };
-
-      insertLifecycleMixin(options, lifecycle);
-      insertRenderer(options, name, propKeys.concat(Object.keys(containerProps)), eventKeys);
-
-      if (transform) {
-        transform(options, lifecycle);
-      }
-
-      return Vue.extend(options);
-    };
-  };
-};
-
-function insertRenderer(options, name, propKeys, eventKeys) {
-  if (VERSION >= 2) {
-    options.render = function (h) {
-      return h(name, {
-        props: pick(this, propKeys),
-        on: pick(this, eventKeys),
-        scopedSlots: this.$scopedSlots
-      }, flattenObject(this.$slots));
-    };
-  } else {
-    var props = propKeys.map(bindProp);
-    options.template = '<' + name + ' v-ref:component ' + props.join(' ') + '><slot></slot></' + name + '>';
-
-    // register event listeners on the compiled hook
-    // because vue cannot recognize camelCase name on the template
-    options.compiled = function () {
-      var _this = this;
-
-      eventKeys.forEach(function (key) {
-        _this.$refs.component.$on(key, _this[key]);
-      });
-    };
-  }
-}
-
-function insertLifecycleMixin(options, lifecycle) {
-  options.mixins = [mapValues(pick(lifecycle, LIFECYCLE_KEYS), function (f) {
-    return function boundLifecycle() {
-      f.call(this, this.$store);
-    };
-  })];
-}
-
-function getOptions(Component) {
-  if (typeof Component === 'function') {
-    return Component.options;
-  }
-  return Component;
-}
-
-function bindProp(key) {
-  return ':' + camelToKebab(key) + '="' + key + '"';
-}
-
-function bindStore(fn) {
-  return function boundFunctionWithStore() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    return fn.call.apply(fn, [this, this.$store].concat(args));
-  };
-}
-
-function normalizeOptions(options) {
-  return Array.isArray(options) ? options.reduce(function (obj, value) {
-    obj[value] = value;
-    return obj;
-  }, {}) : options;
-}
-
-var connect = createConnect();
-
-exports.connect = connect;
-exports.createConnect = createConnect;
-
 
 /***/ }),
 
@@ -17193,7 +16959,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresult', 'documentsbycorpus', 'annotationsbycorpus'],
+    props: ['corpusresult', 'documentsbycorpus', 'annotationsbycorpus', 'corpuspaths'],
     methods: {
         browseUri: function browseUri(id) {
             return '/browse/corpus/'.concat(id);
@@ -17304,9 +17070,44 @@ var render = function() {
                     _vm._v(" "),
                     _c("div", { staticClass: "row mt-1 " }, [
                       _c("div", { staticClass: "col col-auto mr-1" }, [
-                        _vm._m(1, true),
+                        _c(
+                          "div",
+                          {
+                            staticClass:
+                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                          },
+                          [
+                            _c("i", {
+                              staticClass: "fa fa-fw fa-clock-o mr-1"
+                            }),
+                            _vm._v(" "),
+                            _c("span", [
+                              _vm._v(
+                                "D. from " +
+                                  _vm._s(corpusresultdata._source.documentrange)
+                              )
+                            ])
+                          ]
+                        ),
                         _vm._v(" "),
-                        _vm._m(2, true),
+                        _c(
+                          "div",
+                          {
+                            staticClass:
+                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                          },
+                          [
+                            _c("i", {
+                              staticClass: "fa fa-fw fa-th-list  mr-1"
+                            }),
+                            _vm._v(" "),
+                            _c("span", [
+                              _vm._v(
+                                _vm._s(corpusresultdata._source.documentgenre)
+                              )
+                            ])
+                          ]
+                        ),
                         _vm._v(" "),
                         _c("div", { staticClass: "mt-2" }, [
                           _c(
@@ -17532,7 +17333,48 @@ var render = function() {
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-2 mr-3" }, [
-                    _vm._m(3, true),
+                    _c("div", { staticClass: "dropdown" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass:
+                            "btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4",
+                          attrs: {
+                            type: "button",
+                            "data-toggle": "dropdown",
+                            "aria-haspopup": "true",
+                            "aria-expanded": "false"
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                        Download\n                    "
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          staticClass: "dropdown-menu",
+                          attrs: { "aria-labelledby": "dropdownMenuButton" }
+                        },
+                        [
+                          _c(
+                            "a",
+                            {
+                              staticClass: "dropdown-item text-14",
+                              attrs: {
+                                href: "/download/tei/".concat(
+                                  corpusresultdata._source.corpuspath
+                                )
+                              }
+                            },
+                            [_vm._v("TEI-Header")]
+                          )
+                        ]
+                      )
+                    ]),
                     _vm._v(" "),
                     _c(
                       "div",
@@ -17600,7 +17442,7 @@ var render = function() {
           : _vm._e()
       }),
       _vm._v(" "),
-      _vm._m(4)
+      _vm._m(1)
     ],
     2
   )
@@ -17615,94 +17457,6 @@ var staticRenderFns = [
         staticClass: "w-100",
         attrs: { src: "/images/placeholder_circle.svg", alt: "circle-image" }
       })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-      },
-      [
-        _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
-        _vm._v(" "),
-        _c("span", [_vm._v("D. from 1945 - 1950")])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-      },
-      [
-        _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
-        _vm._v(" "),
-        _c("span", [_vm._v("Herbology")])
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "dropdown" }, [
-      _c(
-        "button",
-        {
-          staticClass:
-            "btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4",
-          attrs: {
-            type: "button",
-            "data-toggle": "dropdown",
-            "aria-haspopup": "true",
-            "aria-expanded": "false"
-          }
-        },
-        [_vm._v("\n                        Download\n                    ")]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "dropdown-menu",
-          attrs: { "aria-labelledby": "dropdownMenuButton" }
-        },
-        [
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("TEI-Header")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("EXCEL")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("PAULA")]
-          ),
-          _vm._v(" "),
-          _c(
-            "a",
-            { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-            [_vm._v("ANNIS")]
-          )
-        ]
-      )
     ])
   },
   function() {
@@ -26064,8 +25818,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'corpussearched', 'corpusloading', 'documentsbycorpus', 'annotationsbycorpus', 'searches'],
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["mapGetters"])({
+    props: ['corpusresults', 'corpussearched', 'corpusloading', 'documentsbycorpus', 'annotationsbycorpus', 'searches', 'corpuspaths'],
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
         stateDocumentCorpusresults: 'documentcorpus',
         stateAnnotationCorpusresults: 'annotationcorpus'
     }),
@@ -30531,14 +30285,13 @@ if (typeof Object.create === 'function') {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Store", function() { return Store; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "install", function() { return install; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapState", function() { return mapState; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapMutations", function() { return mapMutations; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapGetters", function() { return mapGetters; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "mapActions", function() { return mapActions; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createNamespacedHelpers", function() { return createNamespacedHelpers; });
+/* unused harmony export Store */
+/* unused harmony export install */
+/* unused harmony export mapState */
+/* unused harmony export mapMutations */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return mapGetters; });
+/* unused harmony export mapActions */
+/* unused harmony export createNamespacedHelpers */
 /**
  * vuex v2.5.0
  * (c) 2017 Evan You
@@ -31469,7 +31222,7 @@ var index_esm = {
 };
 
 
-/* harmony default export */ __webpack_exports__["default"] = (index_esm);
+/* harmony default export */ __webpack_exports__["a"] = (index_esm);
 
 
 /***/ })

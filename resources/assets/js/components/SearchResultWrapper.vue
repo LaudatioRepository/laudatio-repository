@@ -34,7 +34,7 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults','corpussearched','corpusloading','documentsbycorpus','annotationsbycorpus', 'searches'],
+        props: ['corpusresults','corpussearched','corpusloading','documentsbycorpus','annotationsbycorpus', 'searches', 'corpuspaths'],
         computed:
             mapGetters({
                 stateDocumentCorpusresults: 'documentcorpus',

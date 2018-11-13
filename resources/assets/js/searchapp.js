@@ -11,7 +11,7 @@ require('lodash');
 window.Vue = require('vue');
 const util = require('util')
 import store from './store'
-import { connect } from 'vuex-connect'
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -89,12 +89,13 @@ const app = new Vue({
                 window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(res => {
                     this.corpussearched = true;
                     var corpusRefs = [];
+                    //console.log("RES: "+JSON.stringify(res));
 
                     if (res.data.results.length > 0) {
                         this.corpusresults.push({
                             search: search.generalSearchTerm,
                             results: res.data.results,
-                            total: res.data.total
+                            total: res.data.total,
                         })
 
                         for (var ri = 0; ri < res.data.results.length; ri++) {
