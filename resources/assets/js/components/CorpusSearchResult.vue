@@ -32,7 +32,7 @@
                         <div class="col col-auto mr-1">
                             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap" v-if="corpusresultdata._source.corpus_languages_language != 'undefined'">
                                 <i class="fa fa-fw fa-globe mr-1"></i>
-                                <span>{{corpusresultdata._source.corpus_languages_language | arrayToString}}</span>
+                                <span>{{corpusresultdata._source.corpus_languages_language[0] | truncatelist}}</span>
                             </div>
                             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                             <i class="fa fa-fw fa-cubes mr-1"></i>

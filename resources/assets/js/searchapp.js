@@ -73,87 +73,94 @@ const app = new Vue({
             this.$store.dispatch('clearDocuments', [])
             this.$store.dispatch('clearAnnotations', [])
 
-            this.searches.push(search.generalSearchTerm);
-            let postData = {
-                searchData: {
-                    fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "annotation_name", "annotation_type", "corpus_annotator_forename", "corpus_annotator_surname", "annotation_tag_description", "corpus_encoding_project_description", "corpus_publication_license_description"],
-                    query: "" + search.generalSearchTerm + "",
-                    indices: this.publishedIndexes.allCorpusIndices.join(", ")
-                }
-            };
-
-            let corpus_ids = [];
-
-            window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(res => {
-                this.corpussearched = true;
-                var corpusRefs = [];
-
-                if (res.data.results.length > 0) {
-                    this.corpusresults.push({
-                        search: search.generalSearchTerm,
-                        results: res.data.results,
-                        total: res.data.total
-                    })
-
-                    for (var ri = 0; ri < res.data.results.length; ri++) {
-                        corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
-                        corpus_ids.push({
-                            "in_corpora": "" + res.data.results[ri]._source.corpus_id[0] + ""
-                        });
+            if(search.generalSearchTerm != ""){
+                this.searches = [];
+                this.searches.push(search.generalSearchTerm);
+                let postData = {
+                    searchData: {
+                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "annotation_name", "annotation_type", "corpus_annotator_forename", "corpus_annotator_surname", "annotation_tag_description", "corpus_encoding_project_description", "corpus_publication_license_description"],
+                        query: "" + search.generalSearchTerm + "",
+                        indices: this.publishedIndexes.allCorpusIndices.join(", ")
                     }
+                };
 
-                    if (corpus_ids.length > 0) {
-                        let documentPostData = {
-                            corpus_ids: corpus_ids,
-                            corpusRefs: corpusRefs,
-                            cacheString: this.corpusCacheString,
-                            fields: ["document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"]
+                let corpus_ids = [];
+
+                window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(res => {
+                    this.corpussearched = true;
+                    var corpusRefs = [];
+
+                    if (res.data.results.length > 0) {
+                        this.corpusresults.push({
+                            search: search.generalSearchTerm,
+                            results: res.data.results,
+                            total: res.data.total
+                        })
+
+                        for (var ri = 0; ri < res.data.results.length; ri++) {
+                            corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
+                            corpus_ids.push({
+                                "in_corpora": "" + res.data.results[ri]._source.corpus_id[0] + ""
+                            });
                         }
 
-                        let annotationPostData = {
-                            corpus_ids: corpus_ids,
-                            corpusRefs: corpusRefs,
-                            cacheString: this.corpusCacheString,
-                            fields: ["preparation_encoding_annotation_group", "preparation_annotation_id", "_id", "preparation_title", "in_documents", "in_corpora", "preparation_author_annotator_forename", "preparation_author_annotator_surname", "generated_id"]
+                        if (corpus_ids.length > 0) {
+                            let documentPostData = {
+                                corpus_ids: corpus_ids,
+                                corpusRefs: corpusRefs,
+                                cacheString: this.corpusCacheString,
+                                fields: ["document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"]
+                            }
+
+                            let annotationPostData = {
+                                corpus_ids: corpus_ids,
+                                corpusRefs: corpusRefs,
+                                cacheString: this.corpusCacheString,
+                                fields: ["preparation_encoding_annotation_group", "preparation_annotation_id", "_id", "preparation_title", "in_documents", "in_corpora", "preparation_author_annotator_forename", "preparation_author_annotator_surname", "generated_id"]
+                            }
+
+
+
+                            /**
+                             * Get all documents contained in the corpora
+                             */
+                            window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(documentRes => {
+
+                                if (Object.keys(documentRes.data.results).length > 0) {
+                                    var documentsByCorpus = {}
+                                    Object.keys(documentRes.data.results).forEach(function (key) {
+                                        documentsByCorpus[key] = {results: documentRes.data.results[key]}
+                                    });
+                                }
+
+                                this.documentsByCorpus = documentsByCorpus;
+                            });
+
+                            /**
+                             * get all annotations contained pro corpus
+                             */
+                            window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(annotationPostData)).then(annotationRes => {
+
+                                if (Object.keys(annotationRes.data.results).length > 0) {
+                                    var annotationsByCorpus = {}
+                                    Object.keys(annotationRes.data.results).forEach(function (key) {
+                                        annotationsByCorpus[key] = {results: annotationRes.data.results[key]}
+                                    });
+                                }
+                                this.annotationsByCorpus = annotationsByCorpus;
+                            });
                         }
-
-
-
-                        /**
-                         * Get all documents contained in the corpora
-                         */
-                        window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(documentRes => {
-
-                            if (Object.keys(documentRes.data.results).length > 0) {
-                                var documentsByCorpus = {}
-                                Object.keys(documentRes.data.results).forEach(function (key) {
-                                    documentsByCorpus[key] = {results: documentRes.data.results[key]}
-                                });
-                            }
-
-                            this.documentsByCorpus = documentsByCorpus;
-                        });
-
-                        /**
-                         * get all annotations contained pro corpus
-                         */
-                        window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(annotationPostData)).then(annotationRes => {
-
-                            if (Object.keys(annotationRes.data.results).length > 0) {
-                                var annotationsByCorpus = {}
-                                Object.keys(annotationRes.data.results).forEach(function (key) {
-                                    annotationsByCorpus[key] = {results: annotationRes.data.results[key]}
-                                });
-                            }
-                            this.annotationsByCorpus = annotationsByCorpus;
-                        });
+                        this.corpusloading = false;
                     }
-                    this.corpusloading = false;
-                }
-                else {
-                    this.corpusloading = false;
-                }//end if generaldata
-            });
+                    else {
+                        this.corpusloading = false;
+                    }//end if generaldata
+                });
+            }
+            else{
+                this.corpusloading = false;
+            }
+
         },
         get_if_exist(collection, str) {
             var value = ""

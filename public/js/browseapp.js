@@ -27423,6 +27423,17 @@ Vue.filter('truncate', function (string) {
     return content;
 });
 
+Vue.filter('truncatelist', function (string) {
+    // Make sure an element and number of items to truncate is provided
+    if (!string) return;
+    var limit = 5;
+    var after = "...";
+    var contentArray = string.split(",");
+    content = contentArray[0] + (after ? after : '');
+
+    return content;
+});
+
 /***/ }),
 /* 71 */
 /***/ (function(module, exports, __webpack_require__) {
