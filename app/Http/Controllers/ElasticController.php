@@ -501,18 +501,19 @@ class ElasticController extends Controller
 
         $resultData = null;
         $cacheString = $request->cacheString;
+        $index = $request->index;
 
-        if (Cache::has($cacheString.'|getDocumentsByCorpus')) {
-            $resultData = Cache::get($cacheString.'|getDocumentsByCorpus');
+        $result = $this->ElasticService->getDocumentByCorpus($request->corpus_ids,$request->corpusRefs, $request->fields,$index);
+        $corpusName = $this->LaudatioUtils->getCorpusNameByCorpusId($cacheString,$cacheString);
+
+        for($i = 0; $i < count($result[$cacheString]); $i++) {
+            $result[$cacheString][$i]['_source']['corpus_name'] = $corpusName;
         }
-        else{
-            $result = $this->ElasticService->getDocumentByCorpus($request->corpus_ids,$request->corpusRefs, $request->fields,'document*');
-            $resultData =  array(
-                'error' => false,
-                'results' => $result
-            );
-            Cache::forever($cacheString.'|getDocumentsByCorpus', $resultData);
-        }
+
+        $resultData =  array(
+            'error' => false,
+            'results' => $result
+        );
 
         return response(
             $resultData,
@@ -524,18 +525,22 @@ class ElasticController extends Controller
 
         $resultData = null;
         $cacheString = $request->cacheString;
+        $index = $request->index;
 
-        if (Cache::has($cacheString.'|getAnnotationByCorpus')) {
-            $resultData = Cache::get($cacheString.'|getAnnotationByCorpus');
+        //Log::info("getAnnotationByCorpus:FIELDS: ".print_r($request->fields,1));
+
+        $corpusName = $this->LaudatioUtils->getCorpusNameByCorpusId($cacheString,$cacheString);
+        
+
+        $result = $this->ElasticService->getAnnotationByCorpus($request->corpus_ids,$request->corpusRefs, $request->fields, $index);
+        for($i = 0; $i < count($result[$cacheString]); $i++) {
+            $result[$cacheString][$i]['_source']['corpus_name'] = $corpusName;
         }
-        else{
-            $result = $this->ElasticService->getAnnotationByCorpus($request->corpus_ids,$request->corpusRefs, $request->fields, 'annotation*');
-            $resultData =  array(
-                'error' => false,
-                'results' => $result
-            );
-            Cache::forever($cacheString.'|getAnnotationByCorpus', $resultData);
-        }
+
+        $resultData =  array(
+            'error' => false,
+            'results' => $result
+        );
 
         return response(
             $resultData,

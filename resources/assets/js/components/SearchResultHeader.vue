@@ -4,17 +4,15 @@
             <ul class="nav nav-tabs" id="searchtabs" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="tab-corpora" data-toggle="tab" href="#searchtab-corpora" role="tab" aria-controls="searchtab-corpora"
-                       aria-selected="true" v-if="corpusresults.length >= 1">Corpora ({{corpusresults[0].total}})</a>
-                    <a class="nav-link active" id="tab-corpora" data-toggle="tab" href="#searchtab-corpora" role="tab" aria-controls="searchtab-corpora"
-                       aria-selected="true" v-else>Corpora (0)</a>
+                       aria-selected="true">Corpora ({{corpusresultcounter}})</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="tab-documents" data-toggle="tab" href="#searchtab-documents" role="tab" aria-controls="searchtab-documents"
-                       aria-selected="false">Documents (3423)</a>
+                       aria-selected="false">Documents ({{documentresultcounter}})</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="tab-annotations" data-toggle="tab" href="#searchtab-annotations" role="tab" aria-controls="searchtab-annotations"
-                       aria-selected="false">Annotations (3253)</a>
+                       aria-selected="false">Annotations ({{annotationresultcounter}})</a>
                 </li>
             </ul>
             <div class="form-row ">
@@ -46,7 +44,7 @@
 </template>
 <script>
     export default {
-        props: ['corpusresults'],
+        props: ['corpusresults','documentresults','annotationresults','documentsbycorpus','annotationsbycorpus','corpusresultcounter','documentresultcounter','annotationresultcounter'],
         mounted() {
             console.log('CorpusResultHeaderComponent mounted.')
         }

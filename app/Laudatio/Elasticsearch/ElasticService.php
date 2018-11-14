@@ -702,8 +702,10 @@ class ElasticService implements ElasticsearchInterface
 
     public function getAnnotationByCorpus($searchData,$corpusData,$fields,$index){
         $resultData = array();
-        if (Cache::tags(['annotation_'.$corpusData[0].'_'.$index])->has("getAnnotationByCorpus_".$corpusData[0]."_".$index)) {
-            $resultData = Cache::tags(['annotation_'.$corpusData[0].'_'.$index])->get("getAnnotationByCorpus_".$corpusData[0]."_".$index);
+        $fieldString = join("_",$fields);
+
+        if (Cache::tags(['annotation_'.$corpusData[0].'_'.$fieldString.'_'.$index])->has("getAnnotationByCorpus_".$corpusData[0].'_'.$fieldString.'_'.$index)) {
+            $resultData = Cache::tags(['annotation_'.$corpusData[0].'_'.$fieldString.'_'.$index])->get("getAnnotationByCorpus_".$corpusData[0].'_'.$fieldString.'_'.$index);
         }
         else {
             $queryBuilder = new QueryBuilder();
@@ -729,7 +731,7 @@ class ElasticService implements ElasticsearchInterface
                     $resultData[$counter++] = array();
                 }
             }//end foreach queries
-            Cache::tags(['annotation_'.$corpusData[0].'_'.$index])->forever("getAnnotationByCorpus_".$corpusData[0]."_".$index, $resultData);
+            Cache::tags(['annotation_'.$corpusData[0].'_'.$fieldString.'_'.$index])->forever("getAnnotationByCorpus_".$corpusData[0].'_'.$fieldString.'_'.$index, $resultData);
         }
 
         return $resultData;
@@ -738,8 +740,10 @@ class ElasticService implements ElasticsearchInterface
     public function getDocumentByCorpus($searchData,$corpusData,$fields,$index){
         $resultData = array();
 
-        if (Cache::tags(['document_'.$corpusData[0].'_'.$index])->has("getDocumentByCorpus_".$corpusData[0]."_".$index)) {
-            $resultData = Cache::tags(['document_'.$corpusData[0].'_'.$index])->get("getDocumentByCorpus_".$corpusData[0]."_".$index);
+        $fieldString = join("_",$fields);
+
+        if (Cache::tags(['document_'.$corpusData[0].'_'.$fieldString."_".$index])->has("getDocumentByCorpus_".$corpusData[0].'_'.$fieldString."_".$index)) {
+            $resultData = Cache::tags(['document_'.$corpusData[0].'_'.$fieldString."_".$index])->get("getDocumentByCorpus_".$corpusData[0].'_'.$fieldString."_".$index);
         }
         else {
             $queryBuilder = new QueryBuilder();
@@ -756,7 +760,6 @@ class ElasticService implements ElasticsearchInterface
                     '_source' => $fields,
                     'filter_path' => ['hits.hits']
                 ];
-
                 $results = Elasticsearch::search($params);
                 $termData = array_values($corpusData);
 
@@ -766,7 +769,7 @@ class ElasticService implements ElasticsearchInterface
                 else{
                     $resultData[$counter++] = array();
                 }
-                Cache::tags(['document_'.$corpusData[0].'_'.$index])->forever("getDocumentByCorpus_".$corpusData[0]."_".$index, $resultData);
+                Cache::tags(['document_'.$corpusData[0].'_'.$fieldString."_".$index])->forever("getDocumentByCorpus_".$corpusData[0].'_'.$fieldString."_".$index, $resultData);
             }//end foreach queries
         }
 

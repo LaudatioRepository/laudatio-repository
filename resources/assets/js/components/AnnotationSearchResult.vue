@@ -1,24 +1,24 @@
 <template>
     <div class="tab-pane" id="searchtab-annotations" role="tabpanel" aria-labelledby="searchtab-annotations">
-        <div class="container bg-corpus-superlight mt-1 mb-1 p-5">
+        <div class="container bg-corpus-superlight mt-1 mb-1 p-5" v-if="annotationresult.results.length > 0" v-for="(annotationresultdata, index) in annotationresult.results" v-bind:key="annotationresultdata._id">
             <div class="row">
                 <div class="col">
                     <h4 class="h4 font-weight-bold">
                         <a class="text-dark" href="annotation_Guidelines--fromSearch.html">
-                            pos
+                            {{annotationresultdata._source.preparation_title | arrayToString}}
                         </a>
                     </h4>
                     <span class="text-grey text-14">
-                        Corpus: RIDGES-Herbology
+                        Corpus: {{annotationresultdata._source.corpus_name}}
                       </span>
                 </div>
                 <div class="col-2">
-                    <span class="text-grey text-14">Lexical</span>
+                    <span class="text-grey text-14">{{annotationresultdata._source.preparation_encoding_annotation_group | lastElement}}</span>
                 </div>
                 <div class="col-4 d-flex justify-content-between align-items-start">
                     <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
                         <i class="fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"></i>
-                        <span class="text-primary text-14 font-weight-bold">500</span>
+                        <span class="text-primary text-14 font-weight-bold">{{annotationresultdata._source.in_documents.length}}</span>
                     </a>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="filtercheck-annotationSearchItem0001">

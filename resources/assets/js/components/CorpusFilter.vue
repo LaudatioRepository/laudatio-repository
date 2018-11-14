@@ -143,7 +143,7 @@
             }
         },
         mounted() {
-            console.log('CorpusSearchBlock mounted.')
+            console.log('CorpusFilterBlock mounted.')
         }
     }
 
@@ -180,7 +180,7 @@
                     paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
 
                 el.noUiSlider.on('update', function ( values, handle ) {
-                    console.log($(el).attr("id")+handle+" => "+values)
+                    //console.log($(el).attr("id")+handle+" => "+values)
                     if ( handle ) {
                         //this.corpusSearchData
                         paddingMax.innerHTML = Math.round(values[handle]);

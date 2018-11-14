@@ -61,6 +61,9 @@ const app = new Vue({
         annotationCacheString: "",
         annotationloading: false,
         postAnnotationData: {},
+        corpusresultcounter: 0,
+        documentresultcounter: 0,
+        annotationresultcounter: 0,
         publishedIndexes: window.laudatioApp.publishedIndexes
     },
     methods: {
@@ -98,25 +101,45 @@ const app = new Vue({
                             total: res.data.total,
                         })
 
+                        var localCorpusCacheString = "";
+                        var documentIndex = "";
+                        var annotationIndex = "";
+                        this.corpusresultcounter = 0;
                         for (var ri = 0; ri < res.data.results.length; ri++) {
                             corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
                             corpus_ids.push({
                                 "in_corpora": "" + res.data.results[ri]._source.corpus_id[0] + ""
                             });
+                            localCorpusCacheString = res.data.results[ri]._source.corpus_id[0];
+                            documentIndex = res.data.results[ri]._index.replace("corpus","document");
+                            annotationIndex = res.data.results[ri]._index.replace("corpus","annotation");
+                            this.corpusresultcounter++;
                         }
 
                         if (corpus_ids.length > 0) {
                             let documentPostData = {
                                 corpus_ids: corpus_ids,
                                 corpusRefs: corpusRefs,
-                                cacheString: this.corpusCacheString,
-                                fields: ["document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"]
+                                cacheString: localCorpusCacheString,
+                                index: documentIndex,
+                                fields: [
+                                    "document_title",
+                                    "document_publication_publishing_date",
+                                    "document_publication_place",
+                                    "document_list_of_annotations_id",
+                                    "in_corpora",
+                                    "document_size_extent",
+                                    "document_size_type",
+                                    "document_author_forename",
+                                    "document_author_surname",
+                                    ]
                             }
 
                             let annotationPostData = {
                                 corpus_ids: corpus_ids,
                                 corpusRefs: corpusRefs,
-                                cacheString: this.corpusCacheString,
+                                cacheString: localCorpusCacheString,
+                                index: annotationIndex,
                                 fields: ["preparation_encoding_annotation_group", "preparation_annotation_id", "_id", "preparation_title", "in_documents", "in_corpora", "preparation_author_annotator_forename", "preparation_author_annotator_surname", "generated_id"]
                             }
 
@@ -126,12 +149,15 @@ const app = new Vue({
                              * Get all documents contained in the corpora
                              */
                             window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(documentRes => {
-
                                 if (Object.keys(documentRes.data.results).length > 0) {
+                                    var documentsByCorpusCounter = 0;
+                                    this.documentsByCorpus = 0;
                                     var documentsByCorpus = {}
                                     Object.keys(documentRes.data.results).forEach(function (key) {
                                         documentsByCorpus[key] = {results: documentRes.data.results[key]}
+                                        documentsByCorpusCounter += documentRes.data.results[key].length;
                                     });
+                                    this.documentresultcounter = documentsByCorpusCounter;
                                 }
 
                                 this.documentsByCorpus = documentsByCorpus;
@@ -144,9 +170,13 @@ const app = new Vue({
 
                                 if (Object.keys(annotationRes.data.results).length > 0) {
                                     var annotationsByCorpus = {}
+                                    this.annotationsByCorpus = 0;
+                                    var annotationsByCorpusCounter = 0;
                                     Object.keys(annotationRes.data.results).forEach(function (key) {
                                         annotationsByCorpus[key] = {results: annotationRes.data.results[key]}
+                                        annotationsByCorpusCounter += annotationRes.data.results[key].length;
                                     });
+                                    this.annotationresultcounter = annotationsByCorpusCounter;
                                 }
                                 this.annotationsByCorpus = annotationsByCorpus;
                             });

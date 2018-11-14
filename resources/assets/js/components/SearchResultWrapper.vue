@@ -15,7 +15,16 @@
 
 
 
-        <searchresultheader :corpusresults="corpusresults"></searchresultheader>
+        <searchresultheader
+                :corpusresults="corpusresults"
+                :documentresults="documentresults"
+                :annotationresults="annotationresults"
+                :documentsbycorpus="documentsbycorpus"
+                :annotationsbycorpus="annotationsbycorpus"
+                :corpusresultcounter="corpusresultcounter"
+                :documentresultcounter="documentresultcounter"
+                :annotationresultcounter="annotationresultcounter"
+                ></searchresultheader>
 
 
         <div class="tab-content">
@@ -27,8 +36,18 @@
                     :documentsbycorpus="documentsbycorpus"
                     :annotationsbycorpus="annotationsbycorpus"></corpussearchresult>
 
-            <documentsearchresult></documentsearchresult>
-            <annotationsearchresult></annotationsearchresult>
+            <documentsearchresult
+                    v-for="(documentresult, documentindex) in documentsbycorpus"
+                    v-bind:documentresult="documentresult"
+                    :key="guid(documentindex)"
+                    :corpusresults="corpusresults"></documentsearchresult>
+
+            <annotationsearchresult
+                    v-for="(annotationresult, annotationindex) in annotationsbycorpus"
+                    v-bind:annotationresult="annotationresult"
+                    :key="guid(annotationindex)"
+                    :corpusresults="corpusresults"
+            ></annotationsearchresult>
         </div>
 
     </div>
@@ -36,7 +55,13 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults','corpussearched','corpusloading','documentsbycorpus','annotationsbycorpus', 'searches', 'corpuspaths'],
+        props: ['corpusresults', 'documentresults', 'annotationresults', 'corpussearched','corpusloading','documentsbycorpus','annotationsbycorpus', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter'],
+        methods: {
+            guid: function(key) {
+                return key + ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16))
+            }
+        },
         computed:
             mapGetters({
                 stateDocumentCorpusresults: 'documentcorpus',

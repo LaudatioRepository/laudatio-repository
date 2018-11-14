@@ -54,6 +54,7 @@ interface LaudatioUtilsInterface
     public function buildCiteFormat($data);
     //public function getLicenseByCorpus($data);
     public function getDocumentRange($data,$documentResult);
+    public function getCorpusNameByCorpusId($corpusid,$index);
 
     public function getCurrentCorpusIndexByElasticsearchId($elasticSearchId);
     public function getCurrentDocumentIndexByElasticsearchId($elasticSearchId);

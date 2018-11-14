@@ -1,32 +1,26 @@
 <template>
     <div class="tab-pane" id="searchtab-documents" role="tabpanel" aria-labelledby="searchtab-documents">
-        <div class="container bg-corpus-superlight mt-1 mb-1 p-5">
+        <div class="container bg-corpus-superlight mt-1 mb-1 p-5" v-if="documentresult.results.length > 0" v-for="(documentresultdata, index) in documentresult.results" v-bind:key="documentresultdata._id">
             <div class="row">
                 <div class="col">
                     <h4 class="h4 font-weight-bold">
                         <a class="text-dark" href="document_Metadata--fromSearch.html">
-                            Alchimistische Praktik (Vorrede)
+                            {{documentresultdata._source.document_title | arrayToString}}
                         </a>
                     </h4>
                     <span class="text-grey text-14">
-        Corpus: RIDGES-Herbology
-        <br> Lüdeling, Anke; Mendel, Frank
-
-      </span>
+                        Corpus: {{documentresultdata._source.corpus_name}}
+                        <br> {{documentresultdata._source.document_author_surname | arrayToString}}, {{documentresultdata._source.document_author_forename | arrayToString}}</span>
                     <div class="row mt-2">
                         <div class="col d-flex flex-wrap justify-content-start">
                             <div class="mr-7">
                                 <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                     <i class="fa fa-fw fa-clock-o mr-1"></i>
-                                    <span>
-    D. from 1945 - 1950
-  </span>
+                                    <span>{{documentresultdata._source.document_publication_publishing_date | arrayToString}}</span>
                                 </div>
                             </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                             <i class="fa fa-fw fa-cubes mr-1"></i>
-                            <span>
-    225.000 Tokens
-  </span>
+                            <span> {{documentresultdata._source.document_size_extent | arrayToString}} {{documentresultdata._source.document_size_type | arrayToString}}</span>
                         </div>
 
                         </div>
@@ -35,7 +29,7 @@
                 <div class="col-4 mr-3 d-flex justify-content-between align-items-start">
                     <a href="# " class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
                         <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
-                        <span class="text-14 font-weight-bold">500</span>
+                        <span class="text-14 font-weight-bold">{{documentresultdata._source.document_list_of_annotations_id.length}}</span>
                     </a>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="filtercheck-documentSearchItem0001">

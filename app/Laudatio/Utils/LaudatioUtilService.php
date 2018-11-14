@@ -1018,6 +1018,17 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpus_logo;
     }
 
+    public function getCorpusNameByCorpusId($corpusid,$index){
+        $corpus_name = "";
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$index]])->get();
+
+        if(isset($corpus[0])){
+            $corpus_name = $corpus[0]->name;
+        }
+
+        return $corpus_name;
+    }
+
     public function  getCurrentCorpusIndexByElasticsearchId($elasticSearchId) {
         $corpus = Corpus::where([
             ["elasticsearch_id","=",$elasticSearchId]
@@ -1449,7 +1460,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     public function getDocumentRange($data,$documentResult) {
         $document_dates = array();
         $document_range = "";
-
         if (array_key_exists($data['result']['corpus_id'][0],$documentResult)){
             for($d = 0; $d < count($documentResult[$data['result']['corpus_id'][0]]); $d++) {
                 $doc = $documentResult[$data['result']['corpus_id'][0]][$d];

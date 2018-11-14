@@ -245,6 +245,9 @@ var app = new Vue({
         annotationCacheString: "",
         annotationloading: false,
         postAnnotationData: {},
+        corpusresultcounter: 0,
+        documentresultcounter: 0,
+        annotationresultcounter: 0,
         publishedIndexes: window.laudatioApp.publishedIndexes
     },
     methods: {
@@ -284,37 +287,50 @@ var app = new Vue({
                             total: res.data.total
                         });
 
+                        var localCorpusCacheString = "";
+                        var documentIndex = "";
+                        var annotationIndex = "";
+                        _this.corpusresultcounter = 0;
                         for (var ri = 0; ri < res.data.results.length; ri++) {
                             corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
                             corpus_ids.push({
                                 "in_corpora": "" + res.data.results[ri]._source.corpus_id[0] + ""
                             });
+                            localCorpusCacheString = res.data.results[ri]._source.corpus_id[0];
+                            documentIndex = res.data.results[ri]._index.replace("corpus", "document");
+                            annotationIndex = res.data.results[ri]._index.replace("corpus", "annotation");
+                            _this.corpusresultcounter++;
                         }
 
                         if (corpus_ids.length > 0) {
                             var documentPostData = {
                                 corpus_ids: corpus_ids,
                                 corpusRefs: corpusRefs,
-                                cacheString: _this.corpusCacheString,
-                                fields: ["document_title", "document_publication_publishing_date", "document_publication_place", "document_list_of_annotations_name", "in_corpora", "document_size_extent"]
+                                cacheString: localCorpusCacheString,
+                                index: documentIndex,
+                                fields: ["document_title", "document_publication_publishing_date", "document_publication_place", "document_list_of_annotations_id", "in_corpora", "document_size_extent", "document_size_type", "document_author_forename", "document_author_surname"]
                             };
 
                             var annotationPostData = {
                                 corpus_ids: corpus_ids,
                                 corpusRefs: corpusRefs,
-                                cacheString: _this.corpusCacheString,
+                                cacheString: localCorpusCacheString,
+                                index: annotationIndex,
                                 fields: ["preparation_encoding_annotation_group", "preparation_annotation_id", "_id", "preparation_title", "in_documents", "in_corpora", "preparation_author_annotator_forename", "preparation_author_annotator_surname", "generated_id"]
 
                                 /**
                                  * Get all documents contained in the corpora
                                  */
                             };window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
-
                                 if (Object.keys(documentRes.data.results).length > 0) {
+                                    var documentsByCorpusCounter = 0;
+                                    _this.documentsByCorpus = 0;
                                     var documentsByCorpus = {};
                                     Object.keys(documentRes.data.results).forEach(function (key) {
                                         documentsByCorpus[key] = { results: documentRes.data.results[key] };
+                                        documentsByCorpusCounter += documentRes.data.results[key].length;
                                     });
+                                    _this.documentresultcounter = documentsByCorpusCounter;
                                 }
 
                                 _this.documentsByCorpus = documentsByCorpus;
@@ -327,9 +343,13 @@ var app = new Vue({
 
                                 if (Object.keys(annotationRes.data.results).length > 0) {
                                     var annotationsByCorpus = {};
+                                    _this.annotationsByCorpus = 0;
+                                    var annotationsByCorpusCounter = 0;
                                     Object.keys(annotationRes.data.results).forEach(function (key) {
                                         annotationsByCorpus[key] = { results: annotationRes.data.results[key] };
+                                        annotationsByCorpusCounter += annotationRes.data.results[key].length;
                                     });
+                                    _this.annotationresultcounter = annotationsByCorpusCounter;
                                 }
                                 _this.annotationsByCorpus = annotationsByCorpus;
                             });
@@ -1671,7 +1691,18 @@ var render = function() {
             )
           : _vm._e(),
       _vm._v(" "),
-      _c("searchresultheader", { attrs: { corpusresults: _vm.corpusresults } }),
+      _c("searchresultheader", {
+        attrs: {
+          corpusresults: _vm.corpusresults,
+          documentresults: _vm.documentresults,
+          annotationresults: _vm.annotationresults,
+          documentsbycorpus: _vm.documentsbycorpus,
+          annotationsbycorpus: _vm.annotationsbycorpus,
+          corpusresultcounter: _vm.corpusresultcounter,
+          documentresultcounter: _vm.documentresultcounter,
+          annotationresultcounter: _vm.annotationresultcounter
+        }
+      }),
       _vm._v(" "),
       _c(
         "div",
@@ -1691,9 +1722,31 @@ var render = function() {
               : _vm._e()
           }),
           _vm._v(" "),
-          _c("documentsearchresult"),
+          _vm._l(_vm.documentsbycorpus, function(
+            documentresult,
+            documentindex
+          ) {
+            return _c("documentsearchresult", {
+              key: _vm.guid(documentindex),
+              attrs: {
+                documentresult: documentresult,
+                corpusresults: _vm.corpusresults
+              }
+            })
+          }),
           _vm._v(" "),
-          _c("annotationsearchresult")
+          _vm._l(_vm.annotationsbycorpus, function(
+            annotationresult,
+            annotationindex
+          ) {
+            return _c("annotationsearchresult", {
+              key: _vm.guid(annotationindex),
+              attrs: {
+                annotationresult: annotationresult,
+                corpusresults: _vm.corpusresults
+              }
+            })
+          })
         ],
         2
       )
@@ -13111,7 +13164,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
-        console.log('CorpusSearchBlock mounted.');
+        console.log('CorpusFilterBlock mounted.');
     }
 });
 
@@ -13148,7 +13201,7 @@ $(function () {
                 paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
 
             el.noUiSlider.on('update', function (values, handle) {
-                console.log($(el).attr("id") + handle + " => " + values);
+                //console.log($(el).attr("id")+handle+" => "+values)
                 if (handle) {
                     //this.corpusSearchData
                     paddingMax.innerHTML = Math.round(values[handle]);
@@ -16585,100 +16638,72 @@ var render = function() {
         },
         [
           _c("li", { staticClass: "nav-item" }, [
-            _vm.corpusresults.length >= 1
-              ? _c(
-                  "a",
-                  {
-                    staticClass: "nav-link active",
-                    attrs: {
-                      id: "tab-corpora",
-                      "data-toggle": "tab",
-                      href: "#searchtab-corpora",
-                      role: "tab",
-                      "aria-controls": "searchtab-corpora",
-                      "aria-selected": "true"
-                    }
-                  },
-                  [
-                    _vm._v(
-                      "Corpora (" + _vm._s(_vm.corpusresults[0].total) + ")"
-                    )
-                  ]
-                )
-              : _c(
-                  "a",
-                  {
-                    staticClass: "nav-link active",
-                    attrs: {
-                      id: "tab-corpora",
-                      "data-toggle": "tab",
-                      href: "#searchtab-corpora",
-                      role: "tab",
-                      "aria-controls": "searchtab-corpora",
-                      "aria-selected": "true"
-                    }
-                  },
-                  [_vm._v("Corpora (0)")]
-                )
+            _c(
+              "a",
+              {
+                staticClass: "nav-link active",
+                attrs: {
+                  id: "tab-corpora",
+                  "data-toggle": "tab",
+                  href: "#searchtab-corpora",
+                  role: "tab",
+                  "aria-controls": "searchtab-corpora",
+                  "aria-selected": "true"
+                }
+              },
+              [_vm._v("Corpora (" + _vm._s(_vm.corpusresultcounter) + ")")]
+            )
           ]),
           _vm._v(" "),
-          _vm._m(0),
+          _c("li", { staticClass: "nav-item" }, [
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "tab-documents",
+                  "data-toggle": "tab",
+                  href: "#searchtab-documents",
+                  role: "tab",
+                  "aria-controls": "searchtab-documents",
+                  "aria-selected": "false"
+                }
+              },
+              [_vm._v("Documents (" + _vm._s(_vm.documentresultcounter) + ")")]
+            )
+          ]),
           _vm._v(" "),
-          _vm._m(1)
+          _c("li", { staticClass: "nav-item" }, [
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "tab-annotations",
+                  "data-toggle": "tab",
+                  href: "#searchtab-annotations",
+                  role: "tab",
+                  "aria-controls": "searchtab-annotations",
+                  "aria-selected": "false"
+                }
+              },
+              [
+                _vm._v(
+                  "Annotations (" + _vm._s(_vm.annotationresultcounter) + ")"
+                )
+              ]
+            )
+          ])
         ]
       ),
       _vm._v(" "),
-      _vm._m(2)
+      _vm._m(0)
     ]),
     _vm._v(" "),
-    _vm._m(3)
+    _vm._m(1)
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "nav-item" }, [
-      _c(
-        "a",
-        {
-          staticClass: "nav-link",
-          attrs: {
-            id: "tab-documents",
-            "data-toggle": "tab",
-            href: "#searchtab-documents",
-            role: "tab",
-            "aria-controls": "searchtab-documents",
-            "aria-selected": "false"
-          }
-        },
-        [_vm._v("Documents (3423)")]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("li", { staticClass: "nav-item" }, [
-      _c(
-        "a",
-        {
-          staticClass: "nav-link",
-          attrs: {
-            id: "tab-annotations",
-            "data-toggle": "tab",
-            href: "#searchtab-annotations",
-            role: "tab",
-            "aria-controls": "searchtab-annotations",
-            "aria-selected": "false"
-          }
-        },
-        [_vm._v("Annotations (3253)")]
-      )
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -17728,12 +17753,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -17763,9 +17782,217 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c(
+    "div",
+    {
+      staticClass: "tab-pane",
+      attrs: {
+        id: "searchtab-documents",
+        role: "tabpanel",
+        "aria-labelledby": "searchtab-documents"
+      }
+    },
+    [
+      _vm._l(_vm.documentresult.results, function(documentresultdata, index) {
+        return _vm.documentresult.results.length > 0
+          ? _c(
+              "div",
+              {
+                key: documentresultdata._id,
+                staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5"
+              },
+              [
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col" }, [
+                    _c("h4", { staticClass: "h4 font-weight-bold" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "text-dark",
+                          attrs: { href: "document_Metadata--fromSearch.html" }
+                        },
+                        [
+                          _vm._v(
+                            "\n                        " +
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  documentresultdata._source.document_title
+                                )
+                              ) +
+                              "\n                    "
+                          )
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "text-grey text-14" }, [
+                      _vm._v(
+                        "\n                    Corpus: " +
+                          _vm._s(documentresultdata._source.corpus_name) +
+                          "\n                    "
+                      ),
+                      _c("br"),
+                      _vm._v(
+                        " " +
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              documentresultdata._source.document_author_surname
+                            )
+                          ) +
+                          ", " +
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              documentresultdata._source
+                                .document_author_forename
+                            )
+                          )
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "row mt-2" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass:
+                            "col d-flex flex-wrap justify-content-start"
+                        },
+                        [
+                          _c("div", { staticClass: "mr-7" }, [
+                            _c(
+                              "div",
+                              {
+                                staticClass:
+                                  "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                              },
+                              [
+                                _c("i", {
+                                  staticClass: "fa fa-fw fa-clock-o mr-1"
+                                }),
+                                _vm._v(" "),
+                                _c("span", [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm._f("arrayToString")(
+                                        documentresultdata._source
+                                          .document_publication_publishing_date
+                                      )
+                                    )
+                                  )
+                                ])
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            {
+                              staticClass:
+                                "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                            },
+                            [
+                              _c("i", {
+                                staticClass: "fa fa-fw fa-cubes mr-1"
+                              }),
+                              _vm._v(" "),
+                              _c("span", [
+                                _vm._v(
+                                  " " +
+                                    _vm._s(
+                                      _vm._f("arrayToString")(
+                                        documentresultdata._source
+                                          .document_size_extent
+                                      )
+                                    ) +
+                                    " " +
+                                    _vm._s(
+                                      _vm._f("arrayToString")(
+                                        documentresultdata._source
+                                          .document_size_type
+                                      )
+                                    )
+                                )
+                              ])
+                            ]
+                          )
+                        ]
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "col-4 mr-3 d-flex justify-content-between align-items-start"
+                    },
+                    [
+                      _c(
+                        "a",
+                        {
+                          staticClass:
+                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                          attrs: { href: "# " }
+                        },
+                        [
+                          _c("i", {
+                            staticClass:
+                              "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "span",
+                            { staticClass: "text-14 font-weight-bold" },
+                            [
+                              _vm._v(
+                                _vm._s(
+                                  documentresultdata._source
+                                    .document_list_of_annotations_id.length
+                                )
+                              )
+                            ]
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _vm._m(0, true)
+                    ]
+                  )
+                ])
+              ]
+            )
+          : _vm._e()
+      }),
+      _vm._v(" "),
+      _vm._m(1)
+    ],
+    2
+  )
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "custom-control custom-checkbox" }, [
+      _c("input", {
+        staticClass: "custom-control-input",
+        attrs: { type: "checkbox", id: "filtercheck-documentSearchItem0001" }
+      }),
+      _vm._v(" "),
+      _c(
+        "label",
+        {
+          staticClass: "custom-control-label text-14",
+          attrs: { for: "filtercheck-documentSearchItem0001" }
+        },
+        [
+          _vm._v(
+            "\n                        Set as Filter\n                    "
+          )
+        ]
+      )
+    ])
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -17773,225 +18000,88 @@ var staticRenderFns = [
     return _c(
       "div",
       {
-        staticClass: "tab-pane",
-        attrs: {
-          id: "searchtab-documents",
-          role: "tabpanel",
-          "aria-labelledby": "searchtab-documents"
-        }
+        staticClass:
+          "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
       },
       [
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "document_Metadata--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                          Alchimistische Praktik (Vorrede)\n                      "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("\n      Corpus: RIDGES-Herbology\n      "),
-                  _c("br"),
-                  _vm._v(" Lüdeling, Anke; Mendel, Frank\n\n    ")
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row mt-2" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass: "col d-flex flex-wrap justify-content-start"
-                    },
-                    [
-                      _c("div", { staticClass: "mr-7" }, [
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa fa-fw fa-clock-o mr-1"
-                            }),
-                            _vm._v(" "),
-                            _c("span", [_vm._v("\n  D. from 1945 - 1950\n")])
-                          ]
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                        },
-                        [
-                          _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                          _vm._v(" "),
-                          _c("span", [_vm._v("\n  225.000 Tokens\n")])
-                        ]
-                      )
-                    ]
-                  )
-                ])
-              ]),
-              _vm._v(" "),
+        _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
+          _c("ul", { staticClass: "pagination" }, [
+            _c("li", { staticClass: "page-item" }, [
               _c(
-                "div",
+                "a",
                 {
-                  staticClass:
-                    "col-4 mr-3 d-flex justify-content-between align-items-start"
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Previous" }
                 },
                 [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "# " }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "text-14 font-weight-bold" }, [
-                        _vm._v("500")
-                      ])
-                    ]
-                  ),
+                  _c("span", { attrs: { "aria-hidden": "true" } }, [
+                    _vm._v("«")
+                  ]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-documentSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-documentSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                          Set as Filter\n                      "
-                        )
-                      ]
-                    )
-                  ])
+                  _c("span", { staticClass: "sr-only" }, [_vm._v("Previous")])
                 ]
               )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass:
-              "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
-          },
-          [
-            _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
-              _c("ul", { staticClass: "pagination" }, [
-                _c("li", { staticClass: "page-item" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "page-link",
-                      attrs: { href: "#", "aria-label": "Previous" }
-                    },
-                    [
-                      _c("span", { attrs: { "aria-hidden": "true" } }, [
-                        _vm._v("«")
-                      ]),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "sr-only" }, [
-                        _vm._v("Previous")
-                      ])
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("li", { staticClass: "page-item font-weight-bold active" }, [
-                  _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                    _vm._v("1")
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("li", { staticClass: "page-item font-weight-bold" }, [
-                  _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                    _vm._v("2")
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("li", { staticClass: "page-item font-weight-bold" }, [
-                  _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                    _vm._v("3")
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("li", { staticClass: "page-item" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "page-link",
-                      attrs: { href: "#", "aria-label": "Next" }
-                    },
-                    [
-                      _c("span", { attrs: { "aria-hidden": "true" } }, [
-                        _vm._v("»")
-                      ]),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
-                    ]
-                  )
-                ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold active" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("1")
               ])
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "form-row" }, [
-              _c("div", { staticClass: "col-auto" }, [
-                _c(
-                  "select",
-                  {
-                    staticClass:
-                      "custom-select custom-select-sm font-weight-bold text-uppercase"
-                  },
-                  [
-                    _c("option", { attrs: { selected: "" } }, [
-                      _vm._v("6 results / page")
-                    ]),
-                    _vm._v(" "),
-                    _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
-                    _vm._v(" "),
-                    _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
-                    _vm._v(" "),
-                    _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
-                  ]
-                )
+            _c("li", { staticClass: "page-item font-weight-bold" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("2")
               ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("3")
+              ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Next" }
+                },
+                [
+                  _c("span", { attrs: { "aria-hidden": "true" } }, [
+                    _vm._v("»")
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
+                ]
+              )
             ])
-          ]
-        )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-row" }, [
+          _c("div", { staticClass: "col-auto" }, [
+            _c(
+              "select",
+              {
+                staticClass:
+                  "custom-select custom-select-sm font-weight-bold text-uppercase"
+              },
+              [
+                _c("option", { attrs: { selected: "" } }, [
+                  _vm._v("6 results / page")
+                ]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
+              ]
+            )
+          ])
+        ])
       ]
     )
   }
@@ -18161,9 +18251,153 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c(
+    "div",
+    {
+      staticClass: "tab-pane",
+      attrs: {
+        id: "searchtab-annotations",
+        role: "tabpanel",
+        "aria-labelledby": "searchtab-annotations"
+      }
+    },
+    [
+      _vm._l(_vm.annotationresult.results, function(
+        annotationresultdata,
+        index
+      ) {
+        return _vm.annotationresult.results.length > 0
+          ? _c(
+              "div",
+              {
+                key: annotationresultdata._id,
+                staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5"
+              },
+              [
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col" }, [
+                    _c("h4", { staticClass: "h4 font-weight-bold" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "text-dark",
+                          attrs: {
+                            href: "annotation_Guidelines--fromSearch.html"
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                        " +
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  annotationresultdata._source.preparation_title
+                                )
+                              ) +
+                              "\n                    "
+                          )
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "text-grey text-14" }, [
+                      _vm._v(
+                        "\n                    Corpus: " +
+                          _vm._s(annotationresultdata._source.corpus_name) +
+                          "\n                  "
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-2" }, [
+                    _c("span", { staticClass: "text-grey text-14" }, [
+                      _vm._v(
+                        _vm._s(
+                          _vm._f("lastElement")(
+                            annotationresultdata._source
+                              .preparation_encoding_annotation_group
+                          )
+                        )
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "col-4 d-flex justify-content-between align-items-start"
+                    },
+                    [
+                      _c(
+                        "a",
+                        {
+                          staticClass:
+                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                          attrs: { href: "#" }
+                        },
+                        [
+                          _c("i", {
+                            staticClass:
+                              "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "span",
+                            {
+                              staticClass:
+                                "text-primary text-14 font-weight-bold"
+                            },
+                            [
+                              _vm._v(
+                                _vm._s(
+                                  annotationresultdata._source.in_documents
+                                    .length
+                                )
+                              )
+                            ]
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _vm._m(0, true)
+                    ]
+                  )
+                ])
+              ]
+            )
+          : _vm._e()
+      }),
+      _vm._v(" "),
+      _vm._m(1)
+    ],
+    2
+  )
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "custom-control custom-checkbox" }, [
+      _c("input", {
+        staticClass: "custom-control-input",
+        attrs: { type: "checkbox", id: "filtercheck-annotationSearchItem0001" }
+      }),
+      _vm._v(" "),
+      _c(
+        "label",
+        {
+          staticClass: "custom-control-label text-14",
+          attrs: { for: "filtercheck-annotationSearchItem0001" }
+        },
+        [
+          _vm._v(
+            "\n                        Set as Filter\n                    "
+          )
+        ]
+      )
+    ])
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -18171,195 +18405,88 @@ var staticRenderFns = [
     return _c(
       "div",
       {
-        staticClass: "tab-pane",
-        attrs: {
-          id: "searchtab-annotations",
-          role: "tabpanel",
-          "aria-labelledby": "searchtab-annotations"
-        }
+        staticClass:
+          "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
       },
       [
-        _c(
-          "div",
-          { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-          [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col" }, [
-                _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "text-dark",
-                      attrs: { href: "annotation_Guidelines--fromSearch.html" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                        pos\n                    "
-                      )
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v(
-                    "\n                    Corpus: RIDGES-Herbology\n                  "
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "col-2" }, [
-                _c("span", { staticClass: "text-grey text-14" }, [
-                  _vm._v("Lexical")
-                ])
-              ]),
-              _vm._v(" "),
+        _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
+          _c("ul", { staticClass: "pagination" }, [
+            _c("li", { staticClass: "page-item" }, [
               _c(
-                "div",
+                "a",
                 {
-                  staticClass:
-                    "col-4 d-flex justify-content-between align-items-start"
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Previous" }
                 },
                 [
-                  _c(
-                    "a",
-                    {
-                      staticClass:
-                        "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                      attrs: { href: "#" }
-                    },
-                    [
-                      _c("i", {
-                        staticClass:
-                          "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                      }),
-                      _vm._v(" "),
-                      _c(
-                        "span",
-                        {
-                          staticClass: "text-primary text-14 font-weight-bold"
-                        },
-                        [_vm._v("500")]
-                      )
-                    ]
-                  ),
+                  _c("span", { attrs: { "aria-hidden": "true" } }, [
+                    _vm._v("«")
+                  ]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                    _c("input", {
-                      staticClass: "custom-control-input",
-                      attrs: {
-                        type: "checkbox",
-                        id: "filtercheck-annotationSearchItem0001"
-                      }
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "label",
-                      {
-                        staticClass: "custom-control-label text-14",
-                        attrs: { for: "filtercheck-annotationSearchItem0001" }
-                      },
-                      [
-                        _vm._v(
-                          "\n                        Set as Filter\n                    "
-                        )
-                      ]
-                    )
-                  ])
+                  _c("span", { staticClass: "sr-only" }, [_vm._v("Previous")])
                 ]
               )
-            ])
-          ]
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass:
-              "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
-          },
-          [
-            _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
-              _c("ul", { staticClass: "pagination" }, [
-                _c("li", { staticClass: "page-item" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "page-link",
-                      attrs: { href: "#", "aria-label": "Previous" }
-                    },
-                    [
-                      _c("span", { attrs: { "aria-hidden": "true" } }, [
-                        _vm._v("«")
-                      ]),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "sr-only" }, [
-                        _vm._v("Previous")
-                      ])
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("li", { staticClass: "page-item font-weight-bold active" }, [
-                  _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                    _vm._v("1")
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("li", { staticClass: "page-item font-weight-bold" }, [
-                  _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                    _vm._v("2")
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("li", { staticClass: "page-item font-weight-bold" }, [
-                  _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                    _vm._v("3")
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("li", { staticClass: "page-item" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "page-link",
-                      attrs: { href: "#", "aria-label": "Next" }
-                    },
-                    [
-                      _c("span", { attrs: { "aria-hidden": "true" } }, [
-                        _vm._v("»")
-                      ]),
-                      _vm._v(" "),
-                      _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
-                    ]
-                  )
-                ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold active" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("1")
               ])
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "form-row" }, [
-              _c("div", { staticClass: "col-auto" }, [
-                _c(
-                  "select",
-                  {
-                    staticClass:
-                      "custom-select custom-select-sm font-weight-bold text-uppercase"
-                  },
-                  [
-                    _c("option", { attrs: { selected: "" } }, [
-                      _vm._v("6 results / page")
-                    ]),
-                    _vm._v(" "),
-                    _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
-                    _vm._v(" "),
-                    _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
-                    _vm._v(" "),
-                    _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
-                  ]
-                )
+            _c("li", { staticClass: "page-item font-weight-bold" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("2")
               ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("3")
+              ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Next" }
+                },
+                [
+                  _c("span", { attrs: { "aria-hidden": "true" } }, [
+                    _vm._v("»")
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
+                ]
+              )
             ])
-          ]
-        )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-row" }, [
+          _c("div", { staticClass: "col-auto" }, [
+            _c(
+              "select",
+              {
+                staticClass:
+                  "custom-select custom-select-sm font-weight-bold text-uppercase"
+              },
+              [
+                _c("option", { attrs: { selected: "" } }, [
+                  _vm._v("6 results / page")
+                ]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
+              ]
+            )
+          ])
+        ])
       ]
     )
   }
@@ -25845,10 +25972,36 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'corpussearched', 'corpusloading', 'documentsbycorpus', 'annotationsbycorpus', 'searches', 'corpuspaths'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'corpussearched', 'corpusloading', 'documentsbycorpus', 'annotationsbycorpus', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    methods: {
+        guid: function guid(key) {
+            return key + ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
+                return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
+            });
+        }
+    },
     computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
         stateDocumentCorpusresults: 'documentcorpus',
         stateAnnotationCorpusresults: 'annotationcorpus'
@@ -25909,11 +26062,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'documentsbycorpus', 'annotationsbycorpus', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
     mounted: function mounted() {
         console.log('CorpusResultHeaderComponent mounted.');
     }

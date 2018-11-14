@@ -33,7 +33,11 @@
                             :annotationloading="annotationloading"
                             :corpusbyannotation="corpusByAnnotation"
                             :documentsbyannotation="documentsByAnnotation"
-                            :searches="searches"></searchresultwrapper>
+                            :searches="searches"
+                            :corpusresultcounter="corpusresultcounter"
+                            :documentresultcounter="documentresultcounter"
+                            :annotationresultcounter="annotationresultcounter"
+                            ></searchresultwrapper>
                 </div>
             </div>
         </div>
