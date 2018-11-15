@@ -1029,6 +1029,35 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpus_name;
     }
 
+    public function getCorpusNameByObjectElasticsearchId($type,$objectId){
+        $corpus_name = "";
+        $object = null;
+        switch($type) {
+            case "corpus":
+                $object = Corpus::where("elasticsearch_id",$objectId)->get();
+                if(isset($object[0])){
+                    $corpus_name = $object[0]->name;
+                }
+                break;
+            case "document":
+                $object = Document::where("elasticsearch_id",$objectId)->get();
+                if(isset($object[0])){
+                    $corpus = Corpus::findOrFail($object[0]->corpus_id);
+                    $corpus_name = $corpus->name;
+                }
+                break;
+            case "annotation":
+                $object = Annotation::where("elasticsearch_id",$objectId)->get();
+                if(isset($object[0])){
+                    $corpus = Corpus::findOrFail($object[0]->corpus_id);
+                    $corpus_name = $corpus->name;
+                }
+                break;
+        }//end switch
+
+        return $corpus_name;
+    }
+
     public function  getCurrentCorpusIndexByElasticsearchId($elasticSearchId) {
         $corpus = Corpus::where([
             ["elasticsearch_id","=",$elasticSearchId]
@@ -1113,6 +1142,16 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $corpusprojects = $corpus[0]->corpusprojects()->get();
             $project = $corpusprojects[0];
             $corpusPath = $project->directory_path."/".$corpus[0]->directory_path;
+        }
+
+        return $corpusPath;
+    }
+
+    public function getCorpusPathByCorpusId($corpusid,$corpus_index){
+        $corpusPath = "";
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$corpus_index]])->get();
+        if(isset($corpus[0])){
+            $corpusPath = $corpus[0]->directory_path;
         }
 
         return $corpusPath;

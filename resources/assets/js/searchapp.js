@@ -75,15 +75,138 @@ const app = new Vue({
             this.$store.dispatch('clearCorpus', [])
             this.$store.dispatch('clearDocuments', [])
             this.$store.dispatch('clearAnnotations', [])
-
+            this.corpusresults = [];
+            this.documentresults = [];
+            this.annotationresults = [];
+            this.corpusresultcounter = 0;
+            this.documentresultcounter = 0;
+            this.annotationresultcounter = 0;
             if(search.generalSearchTerm != ""){
                 this.searches = [];
                 this.searches.push(search.generalSearchTerm);
                 let postData = {
                     searchData: {
-                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "annotation_name", "annotation_type", "corpus_annotator_forename", "corpus_annotator_surname", "annotation_tag_description", "corpus_encoding_project_description", "corpus_publication_license_description"],
+                        fields: [
+                            "corpus_title",
+                            "corpus_editor_forename",
+                            "corpus_editor_surname",
+                            "corpus_publication_publisher",
+                            "corpus_documents",
+                            "corpus_encoding_format",
+                            "corpus_encoding_tool",
+                            "corpus_encoding_project_description",
+                            "corpus_annotator_forename",
+                            "corpus_annotator_surname",
+                            "corpus_publication_license",
+                            "corpus_languages_language",
+                            "corpus_languages_iso_code",
+                            //"corpus_publication_publication_date",
+                            "document_title",
+                            "document_author_forename",
+                            "document_author_surname",
+                            "document_editor_forename",
+                            "document_editor_surname",
+                            "document_languages_language",
+                            "document_languages_iso_code",
+                            "document_publication_place",
+                            //"document_publication_publishing_date",
+                            "preparation_title",
+                            "preparation_annotation_id",
+                            "preparation_encoding_annotation_group",
+                            "preparation_encoding_annotation_sub_group",
+                            "preparation_encoding_tool_version"
+                        ],
                         query: "" + search.generalSearchTerm + "",
-                        indices: this.publishedIndexes.allCorpusIndices.join(", ")
+                        indices: this.publishedIndexes.allPublishedIndices.join(",")
+                    }
+                };
+
+                let corpus_ids = [];
+
+                window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(res => {
+                    if (res.data.results.length > 0) {
+                        /*
+                        /* @todo: This is far too brittle: corpus/document/annotation could part of someones corpusname
+                        /* Also: when we publish, the new working version shuffles the corpus/doc/anno keyword foirther than place 0
+                         */
+                        for (var ri = 0; ri < res.data.results.length; ri++) {
+                            console.log(JSON.stringify(res.data.results[ri]._index));
+                            if(res.data.results[ri]._index.indexOf("corpus_") == 0){
+                                console.log("WE HAVE A CORPUS")
+                                this.corpusresults.push(res.data.results[ri]);
+                                this.corpusresultcounter++;
+                            }
+                            else if(res.data.results[ri]._index.indexOf("document_") == 0){
+                                console.log("WE HAVE A DOCUMENT")
+                                this.documentresults.push(res.data.results[ri]);
+                                this.documentresultcounter ++;
+                            }
+                            else if(res.data.results[ri]._index.indexOf("annotation_") == 0){
+                                console.log("WE HAVE A ANOTATION")
+                                this.annotationresults.push(res.data.results[ri]);
+                                this.annotationresultcounter ++;
+                            }///end which index
+                        }//end for results
+                    }//end if results
+                });
+
+                console.log("SCORPUS_ "+JSON.stringify(this.corpusresults))
+                console.log("SANNI_ "+JSON.stringify(this.annotationresults))
+                this.corpusloading = false;
+            }
+            else{
+                this.corpusloading = false;
+            }
+
+        },
+        askElastic_old: function (search) {
+            this.corpusloading = true;
+            this.corpusresults = [];
+            this.corpussearched = false;
+            this.corpusCacheString = "";
+            this.$store.dispatch('clearCorpus', [])
+            this.$store.dispatch('clearDocuments', [])
+            this.$store.dispatch('clearAnnotations', [])
+            this.corpusresultcounter = 0;
+            this.documentresultcounter = 0;
+            this.annotationresultcounter = 0;
+            if(search.generalSearchTerm != ""){
+                this.searches = [];
+                this.searches.push(search.generalSearchTerm);
+                let postData = {
+                    searchData: {
+                        fields: [
+                            "corpus_title",
+                            "corpus_editor_forename",
+                            "corpus_editor_surname",
+                            "corpus_publication_publisher",
+                            "corpus_documents",
+                            "corpus_encoding_format",
+                            "corpus_encoding_tool",
+                            "corpus_encoding_project_description",
+                            "corpus_annotator_forename",
+                            "corpus_annotator_surname",
+                            "corpus_publication_license",
+                            "corpus_languages_language",
+                            "corpus_languages_iso_code",
+                            //"corpus_publication_publication_date",
+                            "document_title",
+                            "document_author_forename",
+                            "document_author_surname",
+                            "document_editor_forename",
+                            "document_editor_surname",
+                            "document_languages_language",
+                            "document_languages_iso_code",
+                            "document_publication_place",
+                            //"document_publication_publishing_date",
+                            "preparation_title",
+                            "preparation_annotation_id",
+                            "preparation_encoding_annotation_group",
+                            "preparation_encoding_annotation_sub_group",
+                            "preparation_encoding_tool_version"
+                        ],
+                        query: "" + search.generalSearchTerm + "",
+                        indices: this.publishedIndexes.allPublishedIndices.join(",")
                     }
                 };
 
@@ -104,7 +227,7 @@ const app = new Vue({
                         var localCorpusCacheString = "";
                         var documentIndex = "";
                         var annotationIndex = "";
-                        this.corpusresultcounter = 0;
+
                         for (var ri = 0; ri < res.data.results.length; ri++) {
                             corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
                             corpus_ids.push({
@@ -162,6 +285,7 @@ const app = new Vue({
 
                                 this.documentsByCorpus = documentsByCorpus;
                             });
+
 
                             /**
                              * get all annotations contained pro corpus

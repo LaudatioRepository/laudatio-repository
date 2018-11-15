@@ -903,12 +903,11 @@ class ElasticService implements ElasticsearchInterface
         $queryBody = $queryBuilder->buildMultiMatchQuery($searchData);
         $params = [
             'size' => 1000,
-            'index' => $searchData['indices'],
+            'index' => trim($searchData['indices']),
             'type' => 'doc',
             'body' => $queryBody,
             '_source_exclude' => ['message']
         ];
-
         $results = Elasticsearch::search($params);
         return $results;
     }

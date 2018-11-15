@@ -31,7 +31,8 @@ class SearchController extends Controller
             "allCorpusIndices" => array(),
             "allDocumentIndices" => array(),
             "allAnnotationIndices" => array(),
-            "indicesByCorpus" => array()
+            "indicesByCorpus" => array(),
+            "allPublishedIndices" => array()
         );
 
         if(count($publishedCorpora['result']) > 0) {
@@ -43,6 +44,7 @@ class SearchController extends Controller
 
                     $current_corpus_index = $publicationresponse['_source']['corpus_index'];
                     array_push($publishedIndexes['allCorpusIndices'],$current_corpus_index);
+                    array_push($publishedIndexes['allPublishedIndices'],$current_corpus_index);
 
                     if(!array_key_exists($current_corpus_index,$publishedIndexes['indicesByCorpus'])) {
                         $publishedIndexes['indicesByCorpus'][$current_corpus_index] = array(
@@ -55,12 +57,14 @@ class SearchController extends Controller
                         $current_document_index = $publicationresponse['_source']['document_index'];
                         array_push($publishedIndexes['allDocumentIndices'],$current_document_index);
                         $publishedIndexes['indicesByCorpus'][$current_corpus_index]['document_index'] = $current_document_index;
+                        array_push($publishedIndexes['allPublishedIndices'],$current_document_index);
                     }
 
                     if (isset($publicationresponse['_source']['annotation_index'])) {
                         $current_annotation_index = $publicationresponse['_source']['annotation_index'];
                         array_push($publishedIndexes['allAnnotationIndices'],$current_annotation_index);
                         $publishedIndexes['indicesByCorpus'][$current_corpus_index]['annotation_index'] = $current_annotation_index;
+                        array_push($publishedIndexes['allPublishedIndices'],$current_annotation_index);
                     }
                 }//end if isset corpusIndex
             }

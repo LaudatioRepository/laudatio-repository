@@ -117,23 +117,38 @@ class ElasticController extends Controller
 
         for ($i = 0; $i < count($result['hits']['hits']); $i++) {
             $index = $result['hits']['hits'][$i]['_index'];
-            $corpusPath = $this->LaudatioUtils->getCorpusAndProjectPathByCorpusId($index,$index);
-            $result['hits']['hits'][$i]['_source']['corpuspath'] = $corpusPath;
-            $documentgenre = $this->LaudatioUtils->getDocumentGenreByCorpusId($index,$index);
-            $result['hits']['hits'][$i]['_source']['documentgenre'] = $documentgenre;
+            if(strpos($index,"corpus") !== false) {
+                $projectPath = $this->LaudatioUtils->getCorpusProjectPathByCorpusId($result['hits']['hits'][$i]['_id'],$index);
+                $corpusPath = $this->LaudatioUtils->getCorpusPathByCorpusId($index,$index);
+                $corpusLogo = $this->LaudatioUtils->getCorpusLogoByCorpusId($index,$index);
+                $result['hits']['hits'][$i]['_source']['projectpath'] = $projectPath;
+                $result['hits']['hits'][$i]['_source']['corpuspath'] = $corpusPath;
+                $result['hits']['hits'][$i]['_source']['corpuslogo'] = $corpusLogo;
+                $documentgenre = $this->LaudatioUtils->getDocumentGenreByCorpusId($index,$index);
+                $result['hits']['hits'][$i]['_source']['documentgenre'] = $documentgenre;
 
-            $current_document_index = str_replace("corpus","document",$index);
+                $current_document_index = str_replace("corpus","document",$index);
 
-            $documentResult = $this->ElasticService->getDocumentByCorpus(
-                array(array("in_corpora" => $index)),
-                array($index),
-                array("document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"),
-                $current_document_index
-            );
+                $documentResult = $this->ElasticService->getDocumentByCorpus(
+                    array(array("in_corpora" => $index)),
+                    array($index),
+                    array("document_publication_publishing_date"),
+                    $current_document_index
+                );
 
-            $data = array("result" => $result['hits']['hits'][$i]['_source']);
-            $document_range = $this->LaudatioUtils->getDocumentRange($data,$documentResult);
-            $result['hits']['hits'][$i]['_source']['documentrange'] = $document_range;
+                $data = array("result" => $result['hits']['hits'][$i]['_source']);
+                $document_range = $this->LaudatioUtils->getDocumentRange($data,$documentResult);
+                $result['hits']['hits'][$i]['_source']['documentrange'] = $document_range;
+            }
+            else if(strpos($index,"document") !== false) {
+                $corpusName = $this->LaudatioUtils->getCorpusNameByObjectElasticsearchId('document',$result['hits']['hits'][$i]['_id']);
+                $result['hits']['hits'][$i]['_source']['corpus_name'] = $corpusName;
+            }
+            else if(strpos($index,"annotation") !== false) {
+                $corpusName = $this->LaudatioUtils->getCorpusNameByObjectElasticsearchId('annotation',$result['hits']['hits'][$i]['_id']);
+                $result['hits']['hits'][$i]['_source']['corpus_name'] = $corpusName;
+            }
+
         }
 
         $resultData = array(
@@ -530,7 +545,7 @@ class ElasticController extends Controller
         //Log::info("getAnnotationByCorpus:FIELDS: ".print_r($request->fields,1));
 
         $corpusName = $this->LaudatioUtils->getCorpusNameByCorpusId($cacheString,$cacheString);
-        
+
 
         $result = $this->ElasticService->getAnnotationByCorpus($request->corpus_ids,$request->corpusRefs, $request->fields, $index);
         for($i = 0; $i < count($result[$cacheString]); $i++) {

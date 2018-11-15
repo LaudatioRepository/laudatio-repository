@@ -32,22 +32,18 @@
                     v-if="corpusresults != 'undefined' && corpusresults.length >= 1"
                     v-for="(corpusresult, index) in corpusresults"
                     v-bind:corpusresult="corpusresult"
-                    :key="index"
+                    :key="guid(index)"
                     :documentsbycorpus="documentsbycorpus"
                     :annotationsbycorpus="annotationsbycorpus"></corpussearchresult>
 
             <documentsearchresult
-                    v-for="(documentresult, documentindex) in documentsbycorpus"
+                    v-if="documentresults != 'undefined' && documentresults.length >= 1"
+                    v-for="(documentresult, documentindex) in documentresults"
                     v-bind:documentresult="documentresult"
-                    :key="guid(documentindex)"
-                    :corpusresults="corpusresults"></documentsearchresult>
+                    :key="guid(documentindex)"></documentsearchresult>
 
             <annotationsearchresult
-                    v-for="(annotationresult, annotationindex) in annotationsbycorpus"
-                    v-bind:annotationresult="annotationresult"
-                    :key="guid(annotationindex)"
-                    :corpusresults="corpusresults"
-            ></annotationsearchresult>
+                   :annotationresults="annotationresults"></annotationsearchresult>
         </div>
 
     </div>

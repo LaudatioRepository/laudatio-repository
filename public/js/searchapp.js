@@ -63,16 +63,1418 @@
 /******/ 	return __webpack_require__(__webpack_require__.s = 156);
 /******/ })
 /************************************************************************/
-/******/ ({
+/******/ ([
+/* 0 */,
+/* 1 */,
+/* 2 */,
+/* 3 */,
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
 
-/***/ 15:
+"use strict";
+
+
+var bind = __webpack_require__(26);
+var isBuffer = __webpack_require__(54);
+
+/*global toString:true*/
+
+// utils is a library of generic helper functions non-specific to axios
+
+var toString = Object.prototype.toString;
+
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+function isArray(val) {
+  return toString.call(val) === '[object Array]';
+}
+
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+function isArrayBuffer(val) {
+  return toString.call(val) === '[object ArrayBuffer]';
+}
+
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+function isFormData(val) {
+  return (typeof FormData !== 'undefined') && (val instanceof FormData);
+}
+
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+function isArrayBufferView(val) {
+  var result;
+  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
+  }
+  return result;
+}
+
+/**
+ * Determine if a value is a String
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+function isString(val) {
+  return typeof val === 'string';
+}
+
+/**
+ * Determine if a value is a Number
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+function isNumber(val) {
+  return typeof val === 'number';
+}
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+function isUndefined(val) {
+  return typeof val === 'undefined';
+}
+
+/**
+ * Determine if a value is an Object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+function isObject(val) {
+  return val !== null && typeof val === 'object';
+}
+
+/**
+ * Determine if a value is a Date
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+function isDate(val) {
+  return toString.call(val) === '[object Date]';
+}
+
+/**
+ * Determine if a value is a File
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+function isFile(val) {
+  return toString.call(val) === '[object File]';
+}
+
+/**
+ * Determine if a value is a Blob
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+function isBlob(val) {
+  return toString.call(val) === '[object Blob]';
+}
+
+/**
+ * Determine if a value is a Function
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+function isFunction(val) {
+  return toString.call(val) === '[object Function]';
+}
+
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+function isStream(val) {
+  return isObject(val) && isFunction(val.pipe);
+}
+
+/**
+ * Determine if a value is a URLSearchParams object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+function isURLSearchParams(val) {
+  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
+}
+
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ * @returns {String} The String freed of excess whitespace
+ */
+function trim(str) {
+  return str.replace(/^\s*/, '').replace(/\s*$/, '');
+}
+
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  navigator.product -> 'ReactNative'
+ */
+function isStandardBrowserEnv() {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+    return false;
+  }
+  return (
+    typeof window !== 'undefined' &&
+    typeof document !== 'undefined'
+  );
+}
+
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ */
+function forEach(obj, fn) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  // Force an array if not already something iterable
+  if (typeof obj !== 'object' && !isArray(obj)) {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (var i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+}
+
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ * @returns {Object} Result of all merge properties
+ */
+function merge(/* obj1, obj2, obj3, ... */) {
+  var result = {};
+  function assignValue(val, key) {
+    if (typeof result[key] === 'object' && typeof val === 'object') {
+      result[key] = merge(result[key], val);
+    } else {
+      result[key] = val;
+    }
+  }
+
+  for (var i = 0, l = arguments.length; i < l; i++) {
+    forEach(arguments[i], assignValue);
+  }
+  return result;
+}
+
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ * @return {Object} The resulting value of object a
+ */
+function extend(a, b, thisArg) {
+  forEach(b, function assignValue(val, key) {
+    if (thisArg && typeof val === 'function') {
+      a[key] = bind(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  });
+  return a;
+}
+
+module.exports = {
+  isArray: isArray,
+  isArrayBuffer: isArrayBuffer,
+  isBuffer: isBuffer,
+  isFormData: isFormData,
+  isArrayBufferView: isArrayBufferView,
+  isString: isString,
+  isNumber: isNumber,
+  isObject: isObject,
+  isUndefined: isUndefined,
+  isDate: isDate,
+  isFile: isFile,
+  isBlob: isBlob,
+  isFunction: isFunction,
+  isStream: isStream,
+  isURLSearchParams: isURLSearchParams,
+  isStandardBrowserEnv: isStandardBrowserEnv,
+  forEach: forEach,
+  merge: merge,
+  extend: extend,
+  trim: trim
+};
+
+
+/***/ }),
+/* 5 */,
+/* 6 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 8 */,
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */,
+/* 13 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export Store */
+/* unused harmony export install */
+/* unused harmony export mapState */
+/* unused harmony export mapMutations */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return mapGetters; });
+/* unused harmony export mapActions */
+/* unused harmony export createNamespacedHelpers */
+/**
+ * vuex v2.5.0
+ * (c) 2017 Evan You
+ * @license MIT
+ */
+var applyMixin = function (Vue) {
+  var version = Number(Vue.version.split('.')[0]);
+
+  if (version >= 2) {
+    Vue.mixin({ beforeCreate: vuexInit });
+  } else {
+    // override init and inject vuex init procedure
+    // for 1.x backwards compatibility.
+    var _init = Vue.prototype._init;
+    Vue.prototype._init = function (options) {
+      if ( options === void 0 ) options = {};
+
+      options.init = options.init
+        ? [vuexInit].concat(options.init)
+        : vuexInit;
+      _init.call(this, options);
+    };
+  }
+
+  /**
+   * Vuex init hook, injected into each instances init hooks list.
+   */
+
+  function vuexInit () {
+    var options = this.$options;
+    // store injection
+    if (options.store) {
+      this.$store = typeof options.store === 'function'
+        ? options.store()
+        : options.store;
+    } else if (options.parent && options.parent.$store) {
+      this.$store = options.parent.$store;
+    }
+  }
+};
+
+var devtoolHook =
+  typeof window !== 'undefined' &&
+  window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
+
+function devtoolPlugin (store) {
+  if (!devtoolHook) { return }
+
+  store._devtoolHook = devtoolHook;
+
+  devtoolHook.emit('vuex:init', store);
+
+  devtoolHook.on('vuex:travel-to-state', function (targetState) {
+    store.replaceState(targetState);
+  });
+
+  store.subscribe(function (mutation, state) {
+    devtoolHook.emit('vuex:mutation', mutation, state);
+  });
+}
+
+/**
+ * Get the first item that pass the test
+ * by second argument function
+ *
+ * @param {Array} list
+ * @param {Function} f
+ * @return {*}
+ */
+/**
+ * Deep copy the given object considering circular structure.
+ * This function caches all nested objects and its copies.
+ * If it detects circular structure, use cached copy to avoid infinite loop.
+ *
+ * @param {*} obj
+ * @param {Array<Object>} cache
+ * @return {*}
+ */
+
+
+/**
+ * forEach for object
+ */
+function forEachValue (obj, fn) {
+  Object.keys(obj).forEach(function (key) { return fn(obj[key], key); });
+}
+
+function isObject (obj) {
+  return obj !== null && typeof obj === 'object'
+}
+
+function isPromise (val) {
+  return val && typeof val.then === 'function'
+}
+
+function assert (condition, msg) {
+  if (!condition) { throw new Error(("[vuex] " + msg)) }
+}
+
+var Module = function Module (rawModule, runtime) {
+  this.runtime = runtime;
+  this._children = Object.create(null);
+  this._rawModule = rawModule;
+  var rawState = rawModule.state;
+  this.state = (typeof rawState === 'function' ? rawState() : rawState) || {};
+};
+
+var prototypeAccessors$1 = { namespaced: { configurable: true } };
+
+prototypeAccessors$1.namespaced.get = function () {
+  return !!this._rawModule.namespaced
+};
+
+Module.prototype.addChild = function addChild (key, module) {
+  this._children[key] = module;
+};
+
+Module.prototype.removeChild = function removeChild (key) {
+  delete this._children[key];
+};
+
+Module.prototype.getChild = function getChild (key) {
+  return this._children[key]
+};
+
+Module.prototype.update = function update (rawModule) {
+  this._rawModule.namespaced = rawModule.namespaced;
+  if (rawModule.actions) {
+    this._rawModule.actions = rawModule.actions;
+  }
+  if (rawModule.mutations) {
+    this._rawModule.mutations = rawModule.mutations;
+  }
+  if (rawModule.getters) {
+    this._rawModule.getters = rawModule.getters;
+  }
+};
+
+Module.prototype.forEachChild = function forEachChild (fn) {
+  forEachValue(this._children, fn);
+};
+
+Module.prototype.forEachGetter = function forEachGetter (fn) {
+  if (this._rawModule.getters) {
+    forEachValue(this._rawModule.getters, fn);
+  }
+};
+
+Module.prototype.forEachAction = function forEachAction (fn) {
+  if (this._rawModule.actions) {
+    forEachValue(this._rawModule.actions, fn);
+  }
+};
+
+Module.prototype.forEachMutation = function forEachMutation (fn) {
+  if (this._rawModule.mutations) {
+    forEachValue(this._rawModule.mutations, fn);
+  }
+};
+
+Object.defineProperties( Module.prototype, prototypeAccessors$1 );
+
+var ModuleCollection = function ModuleCollection (rawRootModule) {
+  // register root module (Vuex.Store options)
+  this.register([], rawRootModule, false);
+};
+
+ModuleCollection.prototype.get = function get (path) {
+  return path.reduce(function (module, key) {
+    return module.getChild(key)
+  }, this.root)
+};
+
+ModuleCollection.prototype.getNamespace = function getNamespace (path) {
+  var module = this.root;
+  return path.reduce(function (namespace, key) {
+    module = module.getChild(key);
+    return namespace + (module.namespaced ? key + '/' : '')
+  }, '')
+};
+
+ModuleCollection.prototype.update = function update$1 (rawRootModule) {
+  update([], this.root, rawRootModule);
+};
+
+ModuleCollection.prototype.register = function register (path, rawModule, runtime) {
+    var this$1 = this;
+    if ( runtime === void 0 ) runtime = true;
+
+  if (true) {
+    assertRawModule(path, rawModule);
+  }
+
+  var newModule = new Module(rawModule, runtime);
+  if (path.length === 0) {
+    this.root = newModule;
+  } else {
+    var parent = this.get(path.slice(0, -1));
+    parent.addChild(path[path.length - 1], newModule);
+  }
+
+  // register nested modules
+  if (rawModule.modules) {
+    forEachValue(rawModule.modules, function (rawChildModule, key) {
+      this$1.register(path.concat(key), rawChildModule, runtime);
+    });
+  }
+};
+
+ModuleCollection.prototype.unregister = function unregister (path) {
+  var parent = this.get(path.slice(0, -1));
+  var key = path[path.length - 1];
+  if (!parent.getChild(key).runtime) { return }
+
+  parent.removeChild(key);
+};
+
+function update (path, targetModule, newModule) {
+  if (true) {
+    assertRawModule(path, newModule);
+  }
+
+  // update target module
+  targetModule.update(newModule);
+
+  // update nested modules
+  if (newModule.modules) {
+    for (var key in newModule.modules) {
+      if (!targetModule.getChild(key)) {
+        if (true) {
+          console.warn(
+            "[vuex] trying to add a new module '" + key + "' on hot reloading, " +
+            'manual reload is needed'
+          );
+        }
+        return
+      }
+      update(
+        path.concat(key),
+        targetModule.getChild(key),
+        newModule.modules[key]
+      );
+    }
+  }
+}
+
+var functionAssert = {
+  assert: function (value) { return typeof value === 'function'; },
+  expected: 'function'
+};
+
+var objectAssert = {
+  assert: function (value) { return typeof value === 'function' ||
+    (typeof value === 'object' && typeof value.handler === 'function'); },
+  expected: 'function or object with "handler" function'
+};
+
+var assertTypes = {
+  getters: functionAssert,
+  mutations: functionAssert,
+  actions: objectAssert
+};
+
+function assertRawModule (path, rawModule) {
+  Object.keys(assertTypes).forEach(function (key) {
+    if (!rawModule[key]) { return }
+
+    var assertOptions = assertTypes[key];
+
+    forEachValue(rawModule[key], function (value, type) {
+      assert(
+        assertOptions.assert(value),
+        makeAssertionMessage(path, key, type, value, assertOptions.expected)
+      );
+    });
+  });
+}
+
+function makeAssertionMessage (path, key, type, value, expected) {
+  var buf = key + " should be " + expected + " but \"" + key + "." + type + "\"";
+  if (path.length > 0) {
+    buf += " in module \"" + (path.join('.')) + "\"";
+  }
+  buf += " is " + (JSON.stringify(value)) + ".";
+  return buf
+}
+
+var Vue; // bind on install
+
+var Store = function Store (options) {
+  var this$1 = this;
+  if ( options === void 0 ) options = {};
+
+  // Auto install if it is not done yet and `window` has `Vue`.
+  // To allow users to avoid auto-installation in some cases,
+  // this code should be placed here. See #731
+  if (!Vue && typeof window !== 'undefined' && window.Vue) {
+    install(window.Vue);
+  }
+
+  if (true) {
+    assert(Vue, "must call Vue.use(Vuex) before creating a store instance.");
+    assert(typeof Promise !== 'undefined', "vuex requires a Promise polyfill in this browser.");
+    assert(this instanceof Store, "Store must be called with the new operator.");
+  }
+
+  var plugins = options.plugins; if ( plugins === void 0 ) plugins = [];
+  var strict = options.strict; if ( strict === void 0 ) strict = false;
+
+  var state = options.state; if ( state === void 0 ) state = {};
+  if (typeof state === 'function') {
+    state = state() || {};
+  }
+
+  // store internal state
+  this._committing = false;
+  this._actions = Object.create(null);
+  this._actionSubscribers = [];
+  this._mutations = Object.create(null);
+  this._wrappedGetters = Object.create(null);
+  this._modules = new ModuleCollection(options);
+  this._modulesNamespaceMap = Object.create(null);
+  this._subscribers = [];
+  this._watcherVM = new Vue();
+
+  // bind commit and dispatch to self
+  var store = this;
+  var ref = this;
+  var dispatch = ref.dispatch;
+  var commit = ref.commit;
+  this.dispatch = function boundDispatch (type, payload) {
+    return dispatch.call(store, type, payload)
+  };
+  this.commit = function boundCommit (type, payload, options) {
+    return commit.call(store, type, payload, options)
+  };
+
+  // strict mode
+  this.strict = strict;
+
+  // init root module.
+  // this also recursively registers all sub-modules
+  // and collects all module getters inside this._wrappedGetters
+  installModule(this, state, [], this._modules.root);
+
+  // initialize the store vm, which is responsible for the reactivity
+  // (also registers _wrappedGetters as computed properties)
+  resetStoreVM(this, state);
+
+  // apply plugins
+  plugins.forEach(function (plugin) { return plugin(this$1); });
+
+  if (Vue.config.devtools) {
+    devtoolPlugin(this);
+  }
+};
+
+var prototypeAccessors = { state: { configurable: true } };
+
+prototypeAccessors.state.get = function () {
+  return this._vm._data.$$state
+};
+
+prototypeAccessors.state.set = function (v) {
+  if (true) {
+    assert(false, "Use store.replaceState() to explicit replace store state.");
+  }
+};
+
+Store.prototype.commit = function commit (_type, _payload, _options) {
+    var this$1 = this;
+
+  // check object-style commit
+  var ref = unifyObjectStyle(_type, _payload, _options);
+    var type = ref.type;
+    var payload = ref.payload;
+    var options = ref.options;
+
+  var mutation = { type: type, payload: payload };
+  var entry = this._mutations[type];
+  if (!entry) {
+    if (true) {
+      console.error(("[vuex] unknown mutation type: " + type));
+    }
+    return
+  }
+  this._withCommit(function () {
+    entry.forEach(function commitIterator (handler) {
+      handler(payload);
+    });
+  });
+  this._subscribers.forEach(function (sub) { return sub(mutation, this$1.state); });
+
+  if (
+    "development" !== 'production' &&
+    options && options.silent
+  ) {
+    console.warn(
+      "[vuex] mutation type: " + type + ". Silent option has been removed. " +
+      'Use the filter functionality in the vue-devtools'
+    );
+  }
+};
+
+Store.prototype.dispatch = function dispatch (_type, _payload) {
+    var this$1 = this;
+
+  // check object-style dispatch
+  var ref = unifyObjectStyle(_type, _payload);
+    var type = ref.type;
+    var payload = ref.payload;
+
+  var action = { type: type, payload: payload };
+  var entry = this._actions[type];
+  if (!entry) {
+    if (true) {
+      console.error(("[vuex] unknown action type: " + type));
+    }
+    return
+  }
+
+  this._actionSubscribers.forEach(function (sub) { return sub(action, this$1.state); });
+
+  return entry.length > 1
+    ? Promise.all(entry.map(function (handler) { return handler(payload); }))
+    : entry[0](payload)
+};
+
+Store.prototype.subscribe = function subscribe (fn) {
+  return genericSubscribe(fn, this._subscribers)
+};
+
+Store.prototype.subscribeAction = function subscribeAction (fn) {
+  return genericSubscribe(fn, this._actionSubscribers)
+};
+
+Store.prototype.watch = function watch (getter, cb, options) {
+    var this$1 = this;
+
+  if (true) {
+    assert(typeof getter === 'function', "store.watch only accepts a function.");
+  }
+  return this._watcherVM.$watch(function () { return getter(this$1.state, this$1.getters); }, cb, options)
+};
+
+Store.prototype.replaceState = function replaceState (state) {
+    var this$1 = this;
+
+  this._withCommit(function () {
+    this$1._vm._data.$$state = state;
+  });
+};
+
+Store.prototype.registerModule = function registerModule (path, rawModule, options) {
+    if ( options === void 0 ) options = {};
+
+  if (typeof path === 'string') { path = [path]; }
+
+  if (true) {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+    assert(path.length > 0, 'cannot register the root module by using registerModule.');
+  }
+
+  this._modules.register(path, rawModule);
+  installModule(this, this.state, path, this._modules.get(path), options.preserveState);
+  // reset store to update getters...
+  resetStoreVM(this, this.state);
+};
+
+Store.prototype.unregisterModule = function unregisterModule (path) {
+    var this$1 = this;
+
+  if (typeof path === 'string') { path = [path]; }
+
+  if (true) {
+    assert(Array.isArray(path), "module path must be a string or an Array.");
+  }
+
+  this._modules.unregister(path);
+  this._withCommit(function () {
+    var parentState = getNestedState(this$1.state, path.slice(0, -1));
+    Vue.delete(parentState, path[path.length - 1]);
+  });
+  resetStore(this);
+};
+
+Store.prototype.hotUpdate = function hotUpdate (newOptions) {
+  this._modules.update(newOptions);
+  resetStore(this, true);
+};
+
+Store.prototype._withCommit = function _withCommit (fn) {
+  var committing = this._committing;
+  this._committing = true;
+  fn();
+  this._committing = committing;
+};
+
+Object.defineProperties( Store.prototype, prototypeAccessors );
+
+function genericSubscribe (fn, subs) {
+  if (subs.indexOf(fn) < 0) {
+    subs.push(fn);
+  }
+  return function () {
+    var i = subs.indexOf(fn);
+    if (i > -1) {
+      subs.splice(i, 1);
+    }
+  }
+}
+
+function resetStore (store, hot) {
+  store._actions = Object.create(null);
+  store._mutations = Object.create(null);
+  store._wrappedGetters = Object.create(null);
+  store._modulesNamespaceMap = Object.create(null);
+  var state = store.state;
+  // init all modules
+  installModule(store, state, [], store._modules.root, true);
+  // reset vm
+  resetStoreVM(store, state, hot);
+}
+
+function resetStoreVM (store, state, hot) {
+  var oldVm = store._vm;
+
+  // bind store public getters
+  store.getters = {};
+  var wrappedGetters = store._wrappedGetters;
+  var computed = {};
+  forEachValue(wrappedGetters, function (fn, key) {
+    // use computed to leverage its lazy-caching mechanism
+    computed[key] = function () { return fn(store); };
+    Object.defineProperty(store.getters, key, {
+      get: function () { return store._vm[key]; },
+      enumerable: true // for local getters
+    });
+  });
+
+  // use a Vue instance to store the state tree
+  // suppress warnings just in case the user has added
+  // some funky global mixins
+  var silent = Vue.config.silent;
+  Vue.config.silent = true;
+  store._vm = new Vue({
+    data: {
+      $$state: state
+    },
+    computed: computed
+  });
+  Vue.config.silent = silent;
+
+  // enable strict mode for new vm
+  if (store.strict) {
+    enableStrictMode(store);
+  }
+
+  if (oldVm) {
+    if (hot) {
+      // dispatch changes in all subscribed watchers
+      // to force getter re-evaluation for hot reloading.
+      store._withCommit(function () {
+        oldVm._data.$$state = null;
+      });
+    }
+    Vue.nextTick(function () { return oldVm.$destroy(); });
+  }
+}
+
+function installModule (store, rootState, path, module, hot) {
+  var isRoot = !path.length;
+  var namespace = store._modules.getNamespace(path);
+
+  // register in namespace map
+  if (module.namespaced) {
+    store._modulesNamespaceMap[namespace] = module;
+  }
+
+  // set state
+  if (!isRoot && !hot) {
+    var parentState = getNestedState(rootState, path.slice(0, -1));
+    var moduleName = path[path.length - 1];
+    store._withCommit(function () {
+      Vue.set(parentState, moduleName, module.state);
+    });
+  }
+
+  var local = module.context = makeLocalContext(store, namespace, path);
+
+  module.forEachMutation(function (mutation, key) {
+    var namespacedType = namespace + key;
+    registerMutation(store, namespacedType, mutation, local);
+  });
+
+  module.forEachAction(function (action, key) {
+    var type = action.root ? key : namespace + key;
+    var handler = action.handler || action;
+    registerAction(store, type, handler, local);
+  });
+
+  module.forEachGetter(function (getter, key) {
+    var namespacedType = namespace + key;
+    registerGetter(store, namespacedType, getter, local);
+  });
+
+  module.forEachChild(function (child, key) {
+    installModule(store, rootState, path.concat(key), child, hot);
+  });
+}
+
+/**
+ * make localized dispatch, commit, getters and state
+ * if there is no namespace, just use root ones
+ */
+function makeLocalContext (store, namespace, path) {
+  var noNamespace = namespace === '';
+
+  var local = {
+    dispatch: noNamespace ? store.dispatch : function (_type, _payload, _options) {
+      var args = unifyObjectStyle(_type, _payload, _options);
+      var payload = args.payload;
+      var options = args.options;
+      var type = args.type;
+
+      if (!options || !options.root) {
+        type = namespace + type;
+        if ("development" !== 'production' && !store._actions[type]) {
+          console.error(("[vuex] unknown local action type: " + (args.type) + ", global type: " + type));
+          return
+        }
+      }
+
+      return store.dispatch(type, payload)
+    },
+
+    commit: noNamespace ? store.commit : function (_type, _payload, _options) {
+      var args = unifyObjectStyle(_type, _payload, _options);
+      var payload = args.payload;
+      var options = args.options;
+      var type = args.type;
+
+      if (!options || !options.root) {
+        type = namespace + type;
+        if ("development" !== 'production' && !store._mutations[type]) {
+          console.error(("[vuex] unknown local mutation type: " + (args.type) + ", global type: " + type));
+          return
+        }
+      }
+
+      store.commit(type, payload, options);
+    }
+  };
+
+  // getters and state object must be gotten lazily
+  // because they will be changed by vm update
+  Object.defineProperties(local, {
+    getters: {
+      get: noNamespace
+        ? function () { return store.getters; }
+        : function () { return makeLocalGetters(store, namespace); }
+    },
+    state: {
+      get: function () { return getNestedState(store.state, path); }
+    }
+  });
+
+  return local
+}
+
+function makeLocalGetters (store, namespace) {
+  var gettersProxy = {};
+
+  var splitPos = namespace.length;
+  Object.keys(store.getters).forEach(function (type) {
+    // skip if the target getter is not match this namespace
+    if (type.slice(0, splitPos) !== namespace) { return }
+
+    // extract local getter type
+    var localType = type.slice(splitPos);
+
+    // Add a port to the getters proxy.
+    // Define as getter property because
+    // we do not want to evaluate the getters in this time.
+    Object.defineProperty(gettersProxy, localType, {
+      get: function () { return store.getters[type]; },
+      enumerable: true
+    });
+  });
+
+  return gettersProxy
+}
+
+function registerMutation (store, type, handler, local) {
+  var entry = store._mutations[type] || (store._mutations[type] = []);
+  entry.push(function wrappedMutationHandler (payload) {
+    handler.call(store, local.state, payload);
+  });
+}
+
+function registerAction (store, type, handler, local) {
+  var entry = store._actions[type] || (store._actions[type] = []);
+  entry.push(function wrappedActionHandler (payload, cb) {
+    var res = handler.call(store, {
+      dispatch: local.dispatch,
+      commit: local.commit,
+      getters: local.getters,
+      state: local.state,
+      rootGetters: store.getters,
+      rootState: store.state
+    }, payload, cb);
+    if (!isPromise(res)) {
+      res = Promise.resolve(res);
+    }
+    if (store._devtoolHook) {
+      return res.catch(function (err) {
+        store._devtoolHook.emit('vuex:error', err);
+        throw err
+      })
+    } else {
+      return res
+    }
+  });
+}
+
+function registerGetter (store, type, rawGetter, local) {
+  if (store._wrappedGetters[type]) {
+    if (true) {
+      console.error(("[vuex] duplicate getter key: " + type));
+    }
+    return
+  }
+  store._wrappedGetters[type] = function wrappedGetter (store) {
+    return rawGetter(
+      local.state, // local state
+      local.getters, // local getters
+      store.state, // root state
+      store.getters // root getters
+    )
+  };
+}
+
+function enableStrictMode (store) {
+  store._vm.$watch(function () { return this._data.$$state }, function () {
+    if (true) {
+      assert(store._committing, "Do not mutate vuex store state outside mutation handlers.");
+    }
+  }, { deep: true, sync: true });
+}
+
+function getNestedState (state, path) {
+  return path.length
+    ? path.reduce(function (state, key) { return state[key]; }, state)
+    : state
+}
+
+function unifyObjectStyle (type, payload, options) {
+  if (isObject(type) && type.type) {
+    options = payload;
+    payload = type;
+    type = type.type;
+  }
+
+  if (true) {
+    assert(typeof type === 'string', ("Expects string as the type, but found " + (typeof type) + "."));
+  }
+
+  return { type: type, payload: payload, options: options }
+}
+
+function install (_Vue) {
+  if (Vue && _Vue === Vue) {
+    if (true) {
+      console.error(
+        '[vuex] already installed. Vue.use(Vuex) should be called only once.'
+      );
+    }
+    return
+  }
+  Vue = _Vue;
+  applyMixin(Vue);
+}
+
+var mapState = normalizeNamespace(function (namespace, states) {
+  var res = {};
+  normalizeMap(states).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedState () {
+      var state = this.$store.state;
+      var getters = this.$store.getters;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
+        if (!module) {
+          return
+        }
+        state = module.context.state;
+        getters = module.context.getters;
+      }
+      return typeof val === 'function'
+        ? val.call(this, state, getters)
+        : state[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+var mapMutations = normalizeNamespace(function (namespace, mutations) {
+  var res = {};
+  normalizeMap(mutations).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedMutation () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      var commit = this.$store.commit;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapMutations', namespace);
+        if (!module) {
+          return
+        }
+        commit = module.context.commit;
+      }
+      return typeof val === 'function'
+        ? val.apply(this, [commit].concat(args))
+        : commit.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+var mapGetters = normalizeNamespace(function (namespace, getters) {
+  var res = {};
+  normalizeMap(getters).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    val = namespace + val;
+    res[key] = function mappedGetter () {
+      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
+        return
+      }
+      if ("development" !== 'production' && !(val in this.$store.getters)) {
+        console.error(("[vuex] unknown getter: " + val));
+        return
+      }
+      return this.$store.getters[val]
+    };
+    // mark vuex getter for devtools
+    res[key].vuex = true;
+  });
+  return res
+});
+
+var mapActions = normalizeNamespace(function (namespace, actions) {
+  var res = {};
+  normalizeMap(actions).forEach(function (ref) {
+    var key = ref.key;
+    var val = ref.val;
+
+    res[key] = function mappedAction () {
+      var args = [], len = arguments.length;
+      while ( len-- ) args[ len ] = arguments[ len ];
+
+      var dispatch = this.$store.dispatch;
+      if (namespace) {
+        var module = getModuleByNamespace(this.$store, 'mapActions', namespace);
+        if (!module) {
+          return
+        }
+        dispatch = module.context.dispatch;
+      }
+      return typeof val === 'function'
+        ? val.apply(this, [dispatch].concat(args))
+        : dispatch.apply(this.$store, [val].concat(args))
+    };
+  });
+  return res
+});
+
+var createNamespacedHelpers = function (namespace) { return ({
+  mapState: mapState.bind(null, namespace),
+  mapGetters: mapGetters.bind(null, namespace),
+  mapMutations: mapMutations.bind(null, namespace),
+  mapActions: mapActions.bind(null, namespace)
+}); };
+
+function normalizeMap (map) {
+  return Array.isArray(map)
+    ? map.map(function (key) { return ({ key: key, val: key }); })
+    : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
+}
+
+function normalizeNamespace (fn) {
+  return function (namespace, map) {
+    if (typeof namespace !== 'string') {
+      map = namespace;
+      namespace = '';
+    } else if (namespace.charAt(namespace.length - 1) !== '/') {
+      namespace += '/';
+    }
+    return fn(namespace, map)
+  }
+}
+
+function getModuleByNamespace (store, helper, namespace) {
+  var module = store._modulesNamespaceMap[namespace];
+  if ("development" !== 'production' && !module) {
+    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
+  }
+  return module
+}
+
+var index_esm = {
+  Store: Store,
+  install: install,
+  version: '2.5.0',
+  mapState: mapState,
+  mapMutations: mapMutations,
+  mapGetters: mapGetters,
+  mapActions: mapActions,
+  createNamespacedHelpers: createNamespacedHelpers
+};
+
+
+/* harmony default export */ __webpack_exports__["a"] = (index_esm);
+
+
+/***/ }),
+/* 14 */,
+/* 15 */,
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(4);
-var normalizeHeaderName = __webpack_require__(55);
+var normalizeHeaderName = __webpack_require__(56);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -88,10 +1490,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(26);
+    adapter = __webpack_require__(27);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(26);
+    adapter = __webpack_require__(27);
   }
   return adapter;
 }
@@ -162,905 +1564,10 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
-
-/***/ 156:
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(157);
-__webpack_require__(188);
-__webpack_require__(190);
-module.exports = __webpack_require__(191);
-
-
-/***/ }),
-
-/***/ 157:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__store__ = __webpack_require__(158);
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
-__webpack_require__(49);
-__webpack_require__(70);
-__webpack_require__(40);
-window.Vue = __webpack_require__(17);
-var util = __webpack_require__(73);
-
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-
-Vue.component('generalsearchwrapper', __webpack_require__(160));
-Vue.component('searchfilterwrapper', __webpack_require__(163));
-Vue.component('searchresultwrapper', __webpack_require__(165));
-
-Vue.component('activefilter', __webpack_require__(167));
-Vue.component('corpusfilter', __webpack_require__(169));
-Vue.component('documentfilter', __webpack_require__(173));
-Vue.component('annotationfilter', __webpack_require__(175));
-
-Vue.component('searchresultheader', __webpack_require__(177));
-Vue.component('corpussearchresult', __webpack_require__(179));
-Vue.component('documentsearchresult', __webpack_require__(182));
-Vue.component('annotationsearchresult', __webpack_require__(185));
-
-window.axios.defaults.headers.post['Content-Type'] = 'application/json';
-
-var app = new Vue({
-    el: '#searchApp',
-    store: __WEBPACK_IMPORTED_MODULE_0__store__["a" /* default */],
-    data: {
-        results: [],
-        corpusresults: [],
-        documentresults: [],
-        annotationresults: [],
-        searches: [],
-        documentsByCorpus: [],
-        annotationsByCorpus: [],
-        corpusByDocument: [],
-        annotationsByDocument: [],
-        documentsByAnnotation: [],
-        corpusByAnnotation: [],
-        corpussearched: false,
-        corpusloading: false,
-        documentsearched: false,
-        documentloading: false,
-        annotationsearched: false,
-        corpusCacheString: "",
-        documentCacheString: "",
-        annotationCacheString: "",
-        annotationloading: false,
-        postAnnotationData: {},
-        corpusresultcounter: 0,
-        documentresultcounter: 0,
-        annotationresultcounter: 0,
-        publishedIndexes: window.laudatioApp.publishedIndexes
-    },
-    methods: {
-        askElastic: function askElastic(search) {
-            var _this = this;
-
-            this.corpusloading = true;
-            this.corpusresults = [];
-            this.corpussearched = false;
-            this.corpusCacheString = "";
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('clearAnnotations', []);
-
-            if (search.generalSearchTerm != "") {
-                this.searches = [];
-                this.searches.push(search.generalSearchTerm);
-                var postData = {
-                    searchData: {
-                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "annotation_name", "annotation_type", "corpus_annotator_forename", "corpus_annotator_surname", "annotation_tag_description", "corpus_encoding_project_description", "corpus_publication_license_description"],
-                        query: "" + search.generalSearchTerm + "",
-                        indices: this.publishedIndexes.allCorpusIndices.join(", ")
-                    }
-                };
-
-                var corpus_ids = [];
-
-                window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
-                    _this.corpussearched = true;
-                    var corpusRefs = [];
-                    //console.log("RES: "+JSON.stringify(res));
-
-                    if (res.data.results.length > 0) {
-                        _this.corpusresults.push({
-                            search: search.generalSearchTerm,
-                            results: res.data.results,
-                            total: res.data.total
-                        });
-
-                        var localCorpusCacheString = "";
-                        var documentIndex = "";
-                        var annotationIndex = "";
-                        _this.corpusresultcounter = 0;
-                        for (var ri = 0; ri < res.data.results.length; ri++) {
-                            corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
-                            corpus_ids.push({
-                                "in_corpora": "" + res.data.results[ri]._source.corpus_id[0] + ""
-                            });
-                            localCorpusCacheString = res.data.results[ri]._source.corpus_id[0];
-                            documentIndex = res.data.results[ri]._index.replace("corpus", "document");
-                            annotationIndex = res.data.results[ri]._index.replace("corpus", "annotation");
-                            _this.corpusresultcounter++;
-                        }
-
-                        if (corpus_ids.length > 0) {
-                            var documentPostData = {
-                                corpus_ids: corpus_ids,
-                                corpusRefs: corpusRefs,
-                                cacheString: localCorpusCacheString,
-                                index: documentIndex,
-                                fields: ["document_title", "document_publication_publishing_date", "document_publication_place", "document_list_of_annotations_id", "in_corpora", "document_size_extent", "document_size_type", "document_author_forename", "document_author_surname"]
-                            };
-
-                            var annotationPostData = {
-                                corpus_ids: corpus_ids,
-                                corpusRefs: corpusRefs,
-                                cacheString: localCorpusCacheString,
-                                index: annotationIndex,
-                                fields: ["preparation_encoding_annotation_group", "preparation_annotation_id", "_id", "preparation_title", "in_documents", "in_corpora", "preparation_author_annotator_forename", "preparation_author_annotator_surname", "generated_id"]
-
-                                /**
-                                 * Get all documents contained in the corpora
-                                 */
-                            };window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
-                                if (Object.keys(documentRes.data.results).length > 0) {
-                                    var documentsByCorpusCounter = 0;
-                                    _this.documentsByCorpus = 0;
-                                    var documentsByCorpus = {};
-                                    Object.keys(documentRes.data.results).forEach(function (key) {
-                                        documentsByCorpus[key] = { results: documentRes.data.results[key] };
-                                        documentsByCorpusCounter += documentRes.data.results[key].length;
-                                    });
-                                    _this.documentresultcounter = documentsByCorpusCounter;
-                                }
-
-                                _this.documentsByCorpus = documentsByCorpus;
-                            });
-
-                            /**
-                             * get all annotations contained pro corpus
-                             */
-                            window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(annotationPostData)).then(function (annotationRes) {
-
-                                if (Object.keys(annotationRes.data.results).length > 0) {
-                                    var annotationsByCorpus = {};
-                                    _this.annotationsByCorpus = 0;
-                                    var annotationsByCorpusCounter = 0;
-                                    Object.keys(annotationRes.data.results).forEach(function (key) {
-                                        annotationsByCorpus[key] = { results: annotationRes.data.results[key] };
-                                        annotationsByCorpusCounter += annotationRes.data.results[key].length;
-                                    });
-                                    _this.annotationresultcounter = annotationsByCorpusCounter;
-                                }
-                                _this.annotationsByCorpus = annotationsByCorpus;
-                            });
-                        }
-                        _this.corpusloading = false;
-                    } else {
-                        _this.corpusloading = false;
-                    } //end if generaldata
-                });
-            } else {
-                this.corpusloading = false;
-            }
-        },
-        get_if_exist: function get_if_exist(collection, str) {
-            var value = "";
-            for (var i = 0; i < collection.length; i++) {
-                var obj = collection[i];
-                if (obj.hasOwnProperty(str)) {
-                    value = obj[str];
-                }
-            }
-            return value;
-        },
-        remove_if_exist: function remove_if_exist(collection, str) {
-            for (var i = 0; i < collection.length; i++) {
-                var obj = collection[i];
-                if (obj.hasOwnProperty(str)) {
-                    collection.splice(i, 1);
-                }
-            }
-            return collection;
-        },
-
-        submitCorpusSearch: function submitCorpusSearch(corpusSearchObject) {
-            var _this2 = this;
-
-            this.corpusloading = true;
-            this.corpusresults = [];
-            this.corpussearched = false;
-            this.corpusCacheString = "";
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('clearAnnotations', []);
-
-            var postDataCollection = [];
-            var thereAreMore = false;
-            var hasDateAndSize = false;
-            var dateAndSize = ["corpus_publication_publication_date", "corpusYearTo", "corpus_size_value", "corpusSizeTo", "corpusyeartype", "corpussizetype"];
-            for (var p in corpusSearchObject) {
-                if (corpusSearchObject[p].length > 0) {
-                    if (dateAndSize.indexOf(p) > -1 && corpusSearchObject[p] != "" && (corpusSearchObject['corpusyeartype'] == "range" || corpusSearchObject['corpussizetype'] == "range")) {
-                        if (!hasDateAndSize) {
-                            hasDateAndSize = true;
-                        }
-                    } else {
-                        if (!thereAreMore && corpusSearchObject[p] != "") {
-                            thereAreMore = true;
-                        }
-                    }
-
-                    postDataCollection.push(_defineProperty({}, p, corpusSearchObject[p]));
-                    this.corpusCacheString += '|' + p + '|' + corpusSearchObject[p];
-                }
-            }
-
-            if (postDataCollection.length > 0) {
-                console.log(JSON.stringify(postDataCollection));
-
-                var corpusyeartype = this.get_if_exist(postDataCollection, 'corpusyeartype');
-                var corpussizetype = this.get_if_exist(postDataCollection, 'corpussizetype');
-                var corpus_publication_publication_date = this.get_if_exist(postDataCollection, 'corpus_publication_publication_date');
-                var corpusYearTo = this.get_if_exist(postDataCollection, 'corpusYearTo');
-
-                var corpus_size_value = this.get_if_exist(postDataCollection, 'corpus_size_value');
-                var corpusSizeTo = this.get_if_exist(postDataCollection, 'corpusSizeTo');
-
-                if (corpusyeartype && !corpus_publication_publication_date && corpusyeartype && !corpusYearTo) {
-                    postDataCollection = this.remove_if_exist(postDataCollection, "corpusyeartype");
-                }
-
-                if (corpussizetype && !corpus_size_value && corpussizetype && !corpusSizeTo) {
-                    postDataCollection = this.remove_if_exist(postDataCollection, "corpussizetype");
-                }
-
-                if (hasDateAndSize && thereAreMore) {
-                    postDataCollection.push({ "mixedSearch": "true" });
-                } else {
-                    postDataCollection.push({ "mixedSearch": "false" });
-                }
-
-                var postData = {
-                    searchData: postDataCollection,
-                    scope: 'corpus',
-                    cacheString: this.corpusCacheString
-                };
-
-                var corpus_ids = [];
-
-                window.axios.post('api/searchapi/searchCorpus', JSON.stringify(postData)).then(function (res) {
-                    _this2.corpussearched = true;
-                    var corpusRefs = [];
-
-                    if (res.data.results.length > 0) {
-                        _this2.corpusresults.push({
-                            search: postDataCollection,
-                            results: res.data.results,
-                            total: res.data.total
-                        });
-
-                        for (var ri = 0; ri < res.data.results.length; ri++) {
-                            corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
-                            corpus_ids.push({
-                                'in_corpora': '' + res.data.results[ri]._source.corpus_id[0] + ''
-                            });
-                        }
-
-                        if (corpus_ids.length > 0) {
-                            var documentPostData = {
-                                corpus_ids: corpus_ids,
-                                corpusRefs: corpusRefs,
-                                cacheString: _this2.corpusCacheString
-
-                                /**
-                                 * Get all documents contained in the corpora
-                                 */
-                            };window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
-
-                                if (Object.keys(documentRes.data.results).length > 0) {
-                                    var documentsByCorpus = {};
-                                    Object.keys(documentRes.data.results).forEach(function (key) {
-                                        documentsByCorpus[key] = { results: documentRes.data.results[key] };
-                                    });
-                                }
-
-                                _this2.documentsByCorpus = documentsByCorpus;
-                            });
-
-                            /**
-                             * get all annotations contained pro corpus
-                             */
-                            window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(documentPostData)).then(function (annotationRes) {
-
-                                if (Object.keys(annotationRes.data.results).length > 0) {
-                                    var annotationsByCorpus = {};
-                                    Object.keys(annotationRes.data.results).forEach(function (key) {
-                                        annotationsByCorpus[key] = { results: annotationRes.data.results[key] };
-                                    });
-                                }
-                                _this2.annotationsByCorpus = annotationsByCorpus;
-                            });
-                        }
-                    } //end if data
-
-                    _this2.corpussearched = true;
-                    _this2.corpusloading = false;
-                });
-            }
-        },
-
-        submitDocumentSearch: function submitDocumentSearch(documentSearchObject) {
-            var _this3 = this;
-
-            this.documentloading = true;
-            this.documentresults = [];
-            this.documentsearched = false;
-            this.documentCacheString = "";
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('clearAnnotations', []);
-            var postDataCollection = [];
-            var thereAreMore = false;
-            var hasDateAndSize = false;
-            var dateAndSize = ["document_publication_publishing_date", "document_publication_publishing_date_to", "document_size_extent", "document_size_extent_to", "documentyeartype", "documentsizetype"];
-            for (var p in documentSearchObject) {
-                if (documentSearchObject[p].length > 0) {
-                    if (dateAndSize.indexOf(p) > -1 && documentSearchObject[p] != "" && (documentSearchObject['documentyeartype'] == "range" || documentSearchObject['documentsizetype'] == "range")) {
-                        if (!hasDateAndSize) {
-                            hasDateAndSize = true;
-                        }
-                    } else {
-                        if (!thereAreMore && documentSearchObject[p] != "") {
-                            thereAreMore = true;
-                        }
-                    }
-                    postDataCollection.push(_defineProperty({}, p, documentSearchObject[p]));
-                    this.documentCacheString += '|' + p + '|' + documentSearchObject[p];
-                }
-            }
-
-            if (postDataCollection.length > 0) {
-                var postData = {
-                    searchData: postDataCollection,
-                    cacheString: this.documentCacheString,
-                    scope: 'document'
-                };
-
-                var documentyeartype = this.get_if_exist(postDataCollection, 'documentyeartype');
-                var documentsizetype = this.get_if_exist(postDataCollection, 'documentsizetype');
-
-                var document_publication_publishing_date = this.get_if_exist(postDataCollection, 'document_publication_publishing_date');
-                var document_publication_publishing_date_to = this.get_if_exist(postDataCollection, 'document_publication_publishing_date_to');
-                var document_size_extent = this.get_if_exist(postDataCollection, 'document_size_extent');
-                var document_size_extent_to = this.get_if_exist(postDataCollection, 'document_size_extent_to');
-                if (documentyeartype && !document_publication_publishing_date && documentyeartype && !document_publication_publishing_date_to) {
-                    postDataCollection = this.remove_if_exist(postDataCollection, "documentyeartype");
-                }
-
-                if (documentsizetype && !document_size_extent && documentsizetype && !document_size_extent_to) {
-                    postDataCollection = this.remove_if_exist(postDataCollection, "documentsizetype");
-                }
-
-                if (hasDateAndSize && thereAreMore) {
-                    postDataCollection.push({ "mixedSearch": "true" });
-                } else {
-                    postDataCollection.push({ "mixedSearch": "false" });
-                }
-                console.log("POSTDATACOLLECTION: " + JSON.stringify(postData));
-                var that = this;
-                window.axios.post('api/searchapi/searchDocument', JSON.stringify(postData)).then(function (res) {
-                    _this3.documentsearched = true;
-
-                    if (res.data.results.length > 0) {
-
-                        var documentRefs = [];
-                        var corpusRefs = [];
-
-                        var corpus_ids = [];
-                        var document_ids = [];
-
-                        for (var j = 0; j < res.data.results.length; j++) {
-                            var in_corpora = res.data.results[j]._source.in_corpora;
-                            documentRefs.push(res.data.results[j]._id);
-                            document_ids.push({
-                                'in_documents': '' + res.data.results[j]._id + ''
-                            });
-                            if (typeof in_corpora != 'undefined' && in_corpora.length > 0) {
-                                for (var jid = 0; jid < in_corpora.length; jid++) {
-                                    corpusRefs.push({
-                                        '_id': '' + in_corpora[jid] + ''
-                                    });
-                                }
-                            } else if (typeof in_corpora != 'undefined' && in_corpora.length == 0 || typeof in_corpora == 'undefined') {
-                                corpusRefs.push({
-                                    '_id': '0'
-                                });
-                            }
-                        }
-
-                        var annotationPostData = {
-                            documentRefs: documentRefs,
-                            document_ids: document_ids,
-                            cacheString: _this3.documentCacheString
-                        };
-
-                        var corpusPostData = {
-                            documentRefs: documentRefs,
-                            corpusRefs: corpusRefs,
-                            cacheString: _this3.documentCacheString
-                        };
-                        console.log("annotationPostData: " + _this3.documentCacheString);
-                        window.axios.post('api/searchapi/getAnnotationsByDocument', JSON.stringify(annotationPostData)).then(function (annotationRes) {
-                            if (Object.keys(annotationRes.data.results).length > 0) {
-                                var annotationsByDocument = {};
-                                Object.keys(annotationRes.data.results).forEach(function (key) {
-                                    annotationsByDocument[key] = annotationRes.data.results[key];
-                                });
-                            }
-
-                            _this3.annotationsByDocument = annotationsByDocument;
-                        });
-
-                        //console.log("corpusPostData: "+JSON.stringify(corpusPostData));
-                        window.axios.post('api/searchapi/getCorpusByDocument', JSON.stringify(corpusPostData)).then(function (corpusRes) {
-
-                            if (Object.keys(corpusRes.data.results).length > 0) {
-                                var corpusByDocument = {};
-                                Object.keys(corpusRes.data.results).forEach(function (key) {
-                                    corpusByDocument[key] = { results: corpusRes.data.results[key] };
-                                });
-                            }
-
-                            _this3.corpusByDocument = corpusByDocument;
-                        });
-
-                        var postDocumentData = {
-                            documentRefs: documentRefs,
-                            corpusRefs: corpusRefs,
-                            cacheString: _this3.documentCacheString
-                        };
-
-                        window.axios.post('api/searchapi/getCorpusTitlesByDocument', postDocumentData).then(function (corpusByDocumentRes) {
-                            if (Object.keys(corpusByDocumentRes.data.results).length > 0) {
-                                var corpusTitleByDocument = [];
-
-                                Object.keys(corpusByDocumentRes.data.results).forEach(function (key) {
-                                    corpusTitleByDocument[key] = corpusByDocumentRes.data.results[key];
-                                });
-
-                                _this3.documentresults.push({
-                                    search: documentSearchObject.document_title,
-                                    results: res.data.results,
-                                    total: res.data.total,
-                                    corpusByDocument: corpusTitleByDocument
-                                });
-                            } else {
-                                _this3.documentresults.push({
-                                    search: documentSearchObject.document_title,
-                                    results: res.data.results,
-                                    total: res.data.total,
-                                    corpusByDocument: []
-                                });
-                            }
-                        });
-                        _this3.documentloading = false;
-                    }
-                });
-            }
-        },
-        searchAnnotation: function searchAnnotation(postData, postAnnotationData) {
-            var _this4 = this;
-
-            var annotationterms = [];
-
-            window.axios.post('api/searchapi/searchAnnotation', postData).then(function (res) {
-                _this4.annotationsearched = true;
-                console.log("RESSS: " + JSON.stringify(res));
-                var documentRefs = {};
-                var corpusRefs = {};
-                var annotationRefs = [];
-                if (res.data.results.length > 0) {
-
-                    for (var j = 0; j < res.data.results.length; j++) {
-
-                        annotationRefs.push(res.data.results[j]._id);
-                        var id = res.data.results[j]._id;
-
-                        if (typeof documentRefs[id] == 'undefined') {
-                            documentRefs[id] = [];
-                        }
-
-                        if (typeof corpusRefs[id] == 'undefined') {
-                            corpusRefs[id] = [];
-                        }
-
-                        if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length > 0) {
-                            for (var jid = 0; jid < res.data.results[j]._source.in_documents.length; jid++) {
-                                documentRefs[id].push({
-                                    '_id': '' + res.data.results[j]._source.in_documents[jid] + ''
-                                });
-                            }
-                        } else if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length == 0 || typeof res.data.results[j]._source.in_documents == 'undefined') {
-                            documentRefs[id].push({
-                                '_id': '0'
-                            });
-                        }
-
-                        if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length > 0) {
-                            for (var cid = 0; cid < res.data.results[j]._source.in_corpora.length; cid++) {
-                                corpusRefs[id].push({
-                                    '_id': '' + res.data.results[j]._source.in_corpora[cid] + ''
-                                });
-                            }
-                        } else if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length == 0 || typeof res.data.results[j]._source.in_corpora == 'undefined') {
-                            corpusRefs[id].push({
-                                '_id': '0'
-                            });
-                        }
-                    } //end for annotationResults
-
-                    _this4.annotationresults.push({
-                        results: res.data.results,
-                        total: res.data.total
-                    });
-                }
-                _this4.postAnnotationData.corpusRefs = corpusRefs;
-                _this4.postAnnotationData.documentRefs = documentRefs;
-                _this4.postAnnotationData.annotationRefs = annotationRefs;
-            });
-
-            this.postAnnotationData.cacheString = this.annotationCacheString;
-        },
-        getDocumentsByAnnotation: function getDocumentsByAnnotation(postAnnotationData) {
-            var _this5 = this;
-
-            console.log("getDocumentsByAnnotation: " + JSON.stringify(this.postAnnotationData));
-            window.axios.post('api/searchapi/getDocumentsByAnnotation', this.postAnnotationData).then(function (documentsByAnnotationRes) {
-                _this5.annotationsearched = true;
-                console.log("documentsByAnnotationRes: " + documentsByAnnotationRes);
-                if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
-                    var documentsByAnnotation = {};
-                    Object.keys(documentsByAnnotationRes.data.results).forEach(function (key) {
-                        documentsByAnnotation[key] = { results: documentsByAnnotationRes.data.results[key] };
-                    });
-
-                    _this5.documentsByAnnotation = documentsByAnnotation;
-
-                    /*
-                     this.annotationresults.push({
-                     search: annotationSearchObject.preparation_title,
-                     results: res.data.results,
-                     total: res.data.total,
-                     });
-                     */
-                } else {
-                        /*
-                         this.annotationresults.push({
-                         search: annotationSearchObject.preparation_title,
-                         results: res.data.results,
-                         total: res.data.total,
-                         });
-                         */
-                    }
-            });
-        },
-        getCorporaByAnnotation: function getCorporaByAnnotation(postAnnotationData) {
-            var _this6 = this;
-
-            console.log("getCorporaByAnnotation: " + JSON.stringify(this.postAnnotationData));
-            window.axios.post('api/searchapi/getCorporaByAnnotation', this.postAnnotationData).then(function (corpussByAnnotationRes) {
-
-                if (Object.keys(corpussByAnnotationRes.data.results).length > 0) {
-                    var corpusByAnnotation = {};
-                    Object.keys(corpussByAnnotationRes.data.results).forEach(function (key) {
-                        corpusByAnnotation[key] = { results: corpussByAnnotationRes.data.results[key] };
-                    });
-
-                    _this6.corpusByAnnotation = corpusByAnnotation;
-                }
-            });
-        },
-        removeAnnotationSpinner: function removeAnnotationSpinner() {
-            this.annotationsearched = true;
-            this.annotationloading = true;
-        },
-        submitAnnotationSearch: function submitAnnotationSearch(annotationSearchObject) {
-            var _this7 = this;
-
-            this.annotationloading = true;
-            this.annotationresults = [];
-            this.annotationsearched = false;
-            var postAnnotationData = {};
-            var postDataCollection = [];
-
-            this.annotationCacheString = "";
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('clearAnnotations', []);
-            var documentsByAnnotationTime = 0;
-
-            for (var p in annotationSearchObject) {
-                if (annotationSearchObject[p].length > 0) {
-                    postDataCollection.push(_defineProperty({}, p, annotationSearchObject[p]));
-                    this.annotationCacheString += '|' + p + '|' + annotationSearchObject[p];
-                }
-            }
-
-            if (postDataCollection.length > 0) {
-                var postData = {
-                    searchData: postDataCollection,
-                    cacheString: this.annotationCacheString,
-                    scope: 'annotation'
-                };
-                var searchAnnotation0 = performance.now();
-                window.axios.post('api/searchapi/searchAnnotation', postData).then(function (res) {
-                    _this7.annotationsearched = true;
-                    if (res.data.results.length > 0) {
-                        var annotationterms = [];
-
-                        var documentRefs = {};
-                        var corpusRefs = {};
-                        var annotationRefs = [];
-
-                        for (var j = 0; j < res.data.results.length; j++) {
-
-                            annotationRefs.push(res.data.results[j]._id);
-                            var id = res.data.results[j]._id;
-
-                            if (typeof documentRefs[id] == 'undefined') {
-                                documentRefs[id] = [];
-                            }
-
-                            if (typeof corpusRefs[id] == 'undefined') {
-                                corpusRefs[id] = [];
-                            }
-
-                            if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length >= 1) {
-                                for (var jid = 0; jid < res.data.results[j]._source.in_documents.length; jid++) {
-                                    documentRefs[id].push({
-                                        '_id': '' + res.data.results[j]._source.in_documents[jid] + ''
-                                    });
-                                }
-                            }
-
-                            if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length >= 1) {
-                                for (var cid = 0; cid < res.data.results[j]._source.in_corpora.length; cid++) {
-                                    corpusRefs[id].push({
-                                        '_id': '' + res.data.results[j]._source.in_corpora[cid] + ''
-                                    });
-                                }
-                            }
-                        } //end for annotationResults
-                        var searchAnnotation1 = performance.now();
-                        console.log("searchAnnotation took " + (searchAnnotation1 - searchAnnotation0) + " milliseconds.");
-
-                        postAnnotationData.corpusRefs = corpusRefs;
-                        postAnnotationData.documentRefs = documentRefs;
-                        postAnnotationData.annotationRefs = annotationRefs;
-                        postAnnotationData.cacheString = _this7.annotationCacheString;
-                        console.log("getDocumentsByAnnotation  " + JSON.stringify(postAnnotationData));
-                        var getDocumentsByAnnotation1 = performance.now();
-
-                        window.axios.post('api/searchapi/getDocumentsByAnnotation', postAnnotationData).then(function (documentsByAnnotationRes) {
-                            _this7.annotationsearched = true;
-                            if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
-                                var documentsByAnnotation = {};
-                                Object.keys(documentsByAnnotationRes.data.results).forEach(function (key) {
-                                    documentsByAnnotation[key] = { results: documentsByAnnotationRes.data.results[key] };
-                                });
-
-                                _this7.documentsByAnnotation = documentsByAnnotation;
-                            }
-                        });
-
-                        var getDocumentsByAnnotation2 = performance.now();
-                        console.log("getDocumentsByAnnotation took " + (getDocumentsByAnnotation2 - getDocumentsByAnnotation1) + " milliseconds.");
-                        documentsByAnnotationTime += getDocumentsByAnnotation2 - getDocumentsByAnnotation1;
-
-                        var getCorporaByAnnotation1 = performance.now();
-                        window.axios.post('api/searchapi/getCorporaByAnnotation', postAnnotationData).then(function (corpussByAnnotationRes) {
-
-                            if (Object.keys(corpussByAnnotationRes.data.results).length > 0) {
-                                var corpusByAnnotation = {};
-                                Object.keys(corpussByAnnotationRes.data.results).forEach(function (key) {
-                                    corpusByAnnotation[key] = { results: corpussByAnnotationRes.data.results[key] };
-                                });
-
-                                _this7.corpusByAnnotation = corpusByAnnotation;
-
-                                _this7.annotationresults.push({
-                                    search: annotationSearchObject.preparation_title,
-                                    results: res.data.results,
-                                    total: res.data.total,
-                                    took: res.data.milliseconds
-                                });
-                            } else {
-                                _this7.annotationresults.push({
-                                    search: annotationSearchObject.preparation_title,
-                                    results: res.data.results,
-                                    total: res.data.total,
-                                    took: res.data.milliseconds
-                                });
-                            }
-                        });
-                        _this7.annotationloading = false;
-                        var getCorporaByAnnotation2 = performance.now();
-                        console.log("getCorporaByAnnotation took " + (getCorporaByAnnotation2 - getCorporaByAnnotation1) + " milliseconds.");
-                    }
-                });
-            }
-            console.log("DocumentsByAnnotation total took " + documentsByAnnotationTime + " milliseconds.");
-        }
-    }
-});
-
-/***/ }),
-
-/***/ 158:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(76);
-
-
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
-
-var initialState = {
-    "token": null,
-    "user": {}
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
-    state: {
-        documentsByCorpus: [],
-        annotationsByCorpus: [],
-        corpusByDocument: [],
-        annotationsByDocument: [],
-        corpusByAnnotation: [],
-        documentsByAnnotation: []
-    },
-
-    actions: {
-        documentByCorpus: function documentByCorpus(_ref, documents) {
-            var commit = _ref.commit;
-
-            commit('PUSH_DOCUMENT_BY_CORPUS', documents);
-        },
-        annotationByCorpus: function annotationByCorpus(_ref2, annotations) {
-            var commit = _ref2.commit;
-
-            commit('PUSH_ANNOTATION_BY_CORPUS', annotations);
-        },
-        annotationByDocument: function annotationByDocument(_ref3, annotations) {
-            var commit = _ref3.commit;
-
-            commit('PUSH_ANNOTATION_BY_DOCUMENT', annotations);
-        },
-        corpusByDocument: function corpusByDocument(_ref4, corpora) {
-            var commit = _ref4.commit;
-
-            commit('PUSH_CORPUS_BY_DOCUMENT', corpora);
-        },
-        documentByAnnotation: function documentByAnnotation(_ref5, documents) {
-            var commit = _ref5.commit;
-
-            commit('PUSH_DOCUMENT_BY_ANNOTATION', documents);
-        },
-        corpusByAnnotation: function corpusByAnnotation(_ref6, corpora) {
-            var commit = _ref6.commit;
-
-            commit('PUSH_CORPUS_BY_ANNOTATION', corpora);
-        },
-        clearCorpus: function clearCorpus(_ref7, corpora) {
-            var commit = _ref7.commit;
-
-            commit('CLEAR_CORPUS_STATE', corpora);
-        },
-        clearDocuments: function clearDocuments(_ref8, documents) {
-            var commit = _ref8.commit;
-
-            commit('CLEAR_DOCUMENT_STATE', documents);
-        },
-        clearAnnotations: function clearAnnotations(_ref9, documents) {
-            var commit = _ref9.commit;
-
-            commit('CLEAR_ANNOTATION_STATE', documents);
-        }
-    },
-    getters: {
-        corpusdocuments: function corpusdocuments(state) {
-            return state.documentsByCorpus;
-        },
-        corpusannotations: function corpusannotations(state) {
-            return state.annotationsByCorpus;
-        },
-        documentannotations: function documentannotations(state) {
-            return state.annotationsByDocument;
-        },
-        documentcorpus: function documentcorpus(state) {
-            return state.corpusByDocument;
-        },
-        annotationcorpus: function annotationcorpus(state) {
-            return state.corpusByAnnotation;
-        },
-        annotationdocuments: function annotationdocuments(state) {
-            return state.documentsByAnnotation;
-        }
-
-    },
-    mutations: {
-        PUSH_DOCUMENT_BY_CORPUS: function PUSH_DOCUMENT_BY_CORPUS(state, documents) {
-            state.documentsByCorpus.push(documents);
-        },
-        PUSH_ANNOTATION_BY_CORPUS: function PUSH_ANNOTATION_BY_CORPUS(state, annotations) {
-            state.annotationsByCorpus.push(annotations);
-        },
-        PUSH_ANNOTATION_BY_DOCUMENT: function PUSH_ANNOTATION_BY_DOCUMENT(state, annotations) {
-            state.annotationsByDocument.push(annotations);
-        },
-        PUSH_CORPUS_BY_DOCUMENT: function PUSH_CORPUS_BY_DOCUMENT(state, corpora) {
-            state.corpusByDocument.push(corpora);
-        },
-        PUSH_DOCUMENT_BY_ANNOTATION: function PUSH_DOCUMENT_BY_ANNOTATION(state, documents) {
-            state.documentsByAnnotation.push(documents);
-        },
-        PUSH_CORPUS_BY_ANNOTATION: function PUSH_CORPUS_BY_ANNOTATION(state, corpora) {
-            state.corpusByAnnotation.push(corpora);
-        },
-        CLEAR_CORPUS_STATE: function CLEAR_CORPUS_STATE(state, corpora) {
-            while (state.corpusByDocument.length > 0) {
-                state.corpusByDocument.pop();
-            }
-
-            while (state.corpusByAnnotation.length > 0) {
-                state.corpusByAnnotation.pop();
-            }
-        },
-        CLEAR_DOCUMENT_STATE: function CLEAR_DOCUMENT_STATE(state, documents) {
-            while (state.documentsByCorpus.length > 0) {
-                state.documentsByCorpus.pop();
-            }
-
-            while (state.documentsByAnnotation.length > 0) {
-                state.documentsByAnnotation.pop();
-            }
-        },
-        CLEAR_ANNOTATION_STATE: function CLEAR_ANNOTATION_STATE(state, annotations) {
-            while (state.annotationsByCorpus.length > 0) {
-                state.annotationsByCorpus.pop();
-            }
-            while (state.annotationsByDocument.length > 0) {
-                state.annotationsByDocument.pop();
-            }
-        }
-    }
-}));
-
-/***/ }),
-
-/***/ 16:
+/* 17 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -1250,802 +1757,38 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */
+/***/ (function(module, exports) {
 
-/***/ 160:
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(161)
-/* template */
-var __vue_template__ = __webpack_require__(162)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/GeneralSearchWrapper.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1b5752fa", Component.options)
-  } else {
-    hotAPI.reload("data-v-1b5752fa", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
+module.exports = function(module) {
+	if(!module.webpackPolyfill) {
+		module.deprecate = function() {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if(!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function() {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
 
 
 /***/ }),
-
-/***/ 161:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    data: function data() {
-        return {
-            generalSearchTerm: ''
-        };
-    },
-
-    props: ['results'],
-    methods: {
-        searchGeneral: function searchGeneral() {
-            this.$emit('searchedgeneral', {
-                generalSearchTerm: this.generalSearchTerm,
-                scope: 'general'
-            });
-            this.generalSearchTerm = '';
-        }
-    },
-    mounted: function mounted() {
-        console.log('General SearchComponent mounted.');
-    }
-});
-
-/***/ }),
-
-/***/ 162:
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass:
-        "col-6 d-flex justify-content-center align-items-center ml-auto mr-auto"
-    },
-    [
-      _c("form", { staticClass: "form-group serviceBarSearch w-100" }, [
-        _c("div", { staticClass: "input-group" }, [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.generalSearchTerm,
-                expression: "generalSearchTerm"
-              }
-            ],
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              placeholder: "Search metadata (German or English)",
-              "aria-label": "search metadata",
-              "aria-describedby": "basic-addon2"
-            },
-            domProps: { value: _vm.generalSearchTerm },
-            on: {
-              keyup: function($event) {
-                if (
-                  !("button" in $event) &&
-                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                ) {
-                  return null
-                }
-                return _vm.searchGeneral($event)
-              },
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.generalSearchTerm = $event.target.value
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "input-group-append" }, [
-            _vm._m(0),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "btn btn-outline-corpus-dark pl-4 pr-4",
-                attrs: { type: "button" },
-                on: { click: _vm.searchGeneral }
-              },
-              [
-                _c("i", {
-                  staticClass: "text-primary fa fa-fw fa-search fa-lg "
-                })
-              ]
-            )
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("i", {
-        staticClass: "btn p-0 fa fa-info-circle fa-fw fa-lg ml-3",
-        attrs: {
-          "data-toggle": "tooltip",
-          role: "button",
-          "data-placement": "bottom",
-          title: "Get help how to search"
-        }
-      })
-    ]
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "clear-search close",
-        attrs: { type: "button", "aria-label": "Close" }
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-1b5752fa", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ 163:
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(463)
-/* template */
-var __vue_template__ = __webpack_require__(164)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/SearchFilterWrapper.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5d977368", Component.options)
-  } else {
-    hotAPI.reload("data-v-5d977368", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ 164:
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "col-3 " }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "mb-4" },
-      [_c("activefilter", { attrs: { corpusresults: _vm.corpusresults } })],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "mb-4" },
-      [_c("corpusfilter", { attrs: { corpusresults: _vm.corpusresults } })],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "mb-4" },
-      [_c("documentfilter", { attrs: { corpusresults: _vm.corpusresults } })],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "mb-4" },
-      [_c("annotationfilter", { attrs: { corpusresults: _vm.corpusresults } })],
-      1
-    )
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      { staticClass: "d-flex justify-content-between mt-7 mb-3" },
-      [_c("h3", { staticClass: "h3 font-weight-normal" }, [_vm._v("Filter")])]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-5d977368", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ 165:
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(461)
-/* template */
-var __vue_template__ = __webpack_require__(166)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/SearchResultWrapper.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-028d3ef2", Component.options)
-  } else {
-    hotAPI.reload("data-v-028d3ef2", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ 166:
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "col" },
-    [
-      _c("i", {
-        directives: [
-          {
-            name: "show",
-            rawName: "v-show",
-            value: _vm.corpusloading,
-            expression: "corpusloading"
-          }
-        ],
-        staticClass: "fa fa-circle-o-notch fa-spin fa-3x fa-fw"
-      }),
-      _vm._v(" "),
-      _c(
-        "span",
-        {
-          directives: [
-            {
-              name: "show",
-              rawName: "v-show",
-              value: _vm.corpusloading,
-              expression: "corpusloading"
-            }
-          ],
-          staticClass: "sr-only"
-        },
-        [_vm._v("Loading...")]
-      ),
-      _vm._v(" "),
-      _vm.searches != "undefined" &&
-      _vm.searches.length >= 1 &&
-      _vm.corpusresults != "undefined" &&
-      _vm.corpusresults.length >= 1
-        ? _c("h3", { staticClass: "h3 font-weight-normal mb-4" }, [
-            _vm._v(
-              '\n        Results for the search "' +
-                _vm._s(_vm.searches.join(" ")) +
-                '"'
-            )
-          ])
-        : _vm.corpusresults != "undefined" &&
-          _vm.corpusresults.length < 1 &&
-          _vm.corpussearched &&
-          !_vm.corpusloading
-          ? _c(
-              "div",
-              {
-                staticClass: "alert alert-info alert-dismissible fade show",
-                attrs: { role: "alert" }
-              },
-              [
-                _c("strong", [
-                  _vm._v("The search "),
-                  _c("i", [_vm._v('"' + _vm._s(_vm.searches.join(" ")) + '"')]),
-                  _vm._v(" returned no results!")
-                ]),
-                _vm._v(" "),
-                _vm._m(0)
-              ]
-            )
-          : _vm._e(),
-      _vm._v(" "),
-      _c("searchresultheader", {
-        attrs: {
-          corpusresults: _vm.corpusresults,
-          documentresults: _vm.documentresults,
-          annotationresults: _vm.annotationresults,
-          documentsbycorpus: _vm.documentsbycorpus,
-          annotationsbycorpus: _vm.annotationsbycorpus,
-          corpusresultcounter: _vm.corpusresultcounter,
-          documentresultcounter: _vm.documentresultcounter,
-          annotationresultcounter: _vm.annotationresultcounter
-        }
-      }),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "tab-content" },
-        [
-          _vm._l(_vm.corpusresults, function(corpusresult, index) {
-            return _vm.corpusresults != "undefined" &&
-              _vm.corpusresults.length >= 1
-              ? _c("corpussearchresult", {
-                  key: index,
-                  attrs: {
-                    corpusresult: corpusresult,
-                    documentsbycorpus: _vm.documentsbycorpus,
-                    annotationsbycorpus: _vm.annotationsbycorpus
-                  }
-                })
-              : _vm._e()
-          }),
-          _vm._v(" "),
-          _vm._l(_vm.documentsbycorpus, function(
-            documentresult,
-            documentindex
-          ) {
-            return _c("documentsearchresult", {
-              key: _vm.guid(documentindex),
-              attrs: {
-                documentresult: documentresult,
-                corpusresults: _vm.corpusresults
-              }
-            })
-          }),
-          _vm._v(" "),
-          _vm._l(_vm.annotationsbycorpus, function(
-            annotationresult,
-            annotationindex
-          ) {
-            return _c("annotationsearchresult", {
-              key: _vm.guid(annotationindex),
-              attrs: {
-                annotationresult: annotationresult,
-                corpusresults: _vm.corpusresults
-              }
-            })
-          })
-        ],
-        2
-      )
-    ],
-    1
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "close",
-        attrs: {
-          type: "button",
-          "data-dismiss": "alert",
-          "aria-label": "Close"
-        }
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-028d3ef2", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ 167:
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(464)
-/* template */
-var __vue_template__ = __webpack_require__(168)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/ActiveFilter.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-62a9a656", Component.options)
-  } else {
-    hotAPI.reload("data-v-62a9a656", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ 168:
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "card" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelActives" } }, [
-      _vm._m(1)
-    ])
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
-        attrs: {
-          "data-toggle": "collapse",
-          "data-target": "#formPanelActives",
-          "aria-expanded": "true",
-          "aria-controls": "formPanelActives"
-        }
-      },
-      [
-        _c("span", [_vm._v("Active Filter (1)")]),
-        _vm._v(" "),
-        _c("i", {
-          staticClass:
-            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
-        })
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-body p-1" }, [
-      _c("form", { attrs: { action: "" } }, [
-        _c("div", { staticClass: "d-flex flex-wrap py-2" }, [
-          _c("div", { staticClass: "m-1" }, [
-            _c(
-              "a",
-              {
-                staticClass:
-                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                attrs: { href: "#" }
-              },
-              [
-                _c("i", { staticClass: "fa fa-close fa-fw" }),
-                _vm._v(
-                  "\n                            FilterValue\n                        "
-                )
-              ]
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "m-1" }, [
-            _c(
-              "a",
-              {
-                staticClass:
-                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                attrs: { href: "#" }
-              },
-              [
-                _c("i", { staticClass: "fa fa-close fa-fw" }),
-                _vm._v(
-                  "\n                            FilValue\n                        "
-                )
-              ]
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "m-1" }, [
-            _c(
-              "a",
-              {
-                staticClass:
-                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                attrs: { href: "#" }
-              },
-              [
-                _c("i", { staticClass: "fa fa-close fa-fw" }),
-                _vm._v(
-                  "\n                            FilterValue 323\n                        "
-                )
-              ]
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "m-1" }, [
-            _c(
-              "a",
-              {
-                staticClass:
-                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                attrs: { href: "#" }
-              },
-              [
-                _c("i", { staticClass: "fa fa-close fa-fw" }),
-                _vm._v(
-                  "\n                            14511551\n                        "
-                )
-              ]
-            )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "m-1" }, [
-            _c(
-              "a",
-              {
-                staticClass:
-                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                attrs: { href: "#" }
-              },
-              [
-                _c("i", { staticClass: "fa fa-close fa-fw" }),
-                _vm._v(
-                  "\n                            FilterValue\n                        "
-                )
-              ]
-            )
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "d-flex flex-column" }, [
-          _c(
-            "a",
-            {
-              staticClass:
-                "align-self-end text-uppercase text-dark text-12 p-2",
-              attrs: { href: "#", role: "button" }
-            },
-            [
-              _vm._v(
-                "\n                        Clear all Filter\n                    "
-              )
-            ]
-          )
-        ])
-      ])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-62a9a656", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ 169:
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(170)
-/* template */
-var __vue_template__ = __webpack_require__(172)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/CorpusFilter.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-b27cc1d2", Component.options)
-  } else {
-    hotAPI.reload("data-v-b27cc1d2", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ 17:
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13008,5551 +12751,13 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(71).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(72).setImmediate))
 
 /***/ }),
-
-/***/ 170:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(76);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults'],
-    data: function data() {
-        return {
-            corpusSearchData: {
-                corpus_title: '',
-                corpus_publication_publisher: '',
-                corpus_editor_forename: '',
-                corpus_editor_surname: '',
-                corpus_merged_editors: '',
-                corpus_publication_publication_date: '',
-                corpusYearTo: '',
-                corpusyeartype: 'exact',
-                corpussizetype: 'exact',
-                corpus_size_value: '',
-                corpusSizeTo: '',
-                corpus_merged_languages: '',
-                corpus_merged_formats: '',
-                corpus_publication_license: ''
-            },
-            scope: 'corpus'
-        };
-    },
-    methods: {
-        emitCorpusData: function emitCorpusData() {
-
-            this.$emit('corpus-search', this.corpusSearchData);
-        },
-
-        getClass: function getClass() {
-            var classes = "collapse";
-            if (this.corpusresults.length >= 1) {
-                classes += " show";
-            }
-            return classes;
-        }
-    },
-    mounted: function mounted() {
-        console.log('CorpusFilterBlock mounted.');
-    }
-});
-
-$(function () {
-    var rangeSliderList = ['corpusSize'];
-
-    var _loop = function _loop() {
-        var i = h;
-
-        var el = document.getElementById(rangeSliderList[i]);
-
-        if (el) {
-            //console.log("el: "+el)
-            el.style.height = '8px';
-            el.style.margin = '0 auto 8px';
-
-            noUiSlider.create(el, {
-                animate: true,
-                start: [1, 999999], // 4 handles, starting at...
-                margin: 1, // Handles must be at least 300 apart
-                limit: 999998, // ... but no more than 600
-                connect: true, // Display a colored bar between the handles
-                orientation: 'horizontal', // Orient the slider vertically
-                behaviour: 'tap-drag', // Move handle on tap, bar is draggable
-                step: 1,
-
-                range: {
-                    'min': 1,
-                    'max': 999999
-                }
-            });
-
-            var paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
-                paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
-
-            el.noUiSlider.on('update', function (values, handle) {
-                //console.log($(el).attr("id")+handle+" => "+values)
-                if (handle) {
-                    //this.corpusSearchData
-                    paddingMax.innerHTML = Math.round(values[handle]);
-                } else {
-                    paddingMin.innerHTML = Math.round(values[handle]);
-                }
-            });
-
-            el.noUiSlider.on('change', function () {
-                // Validate corresponding form
-                var parentForm = $(el).closest('form');
-                $(parentForm).find('*[type=submit]').removeClass('disabled');
-            });
-        }
-    };
-
-    for (var h = 0; h < rangeSliderList.length; h++) {
-        _loop();
-    }
-});
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(171)))
-
-/***/ }),
-
-/***/ 171:
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! nouislider - 12.0.0 - 9/14/2018 */
-(function(factory) {
-    if (true) {
-        // AMD. Register as an anonymous module.
-        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-    } else if (typeof exports === "object") {
-        // Node/CommonJS
-        module.exports = factory();
-    } else {
-        // Browser globals
-        window.noUiSlider = factory();
-    }
-})(function() {
-    "use strict";
-
-    var VERSION = "12.0.0";
-
-    function isValidFormatter(entry) {
-        return typeof entry === "object" && typeof entry.to === "function" && typeof entry.from === "function";
-    }
-
-    function removeElement(el) {
-        el.parentElement.removeChild(el);
-    }
-
-    function isSet(value) {
-        return value !== null && value !== undefined;
-    }
-
-    // Bindable version
-    function preventDefault(e) {
-        e.preventDefault();
-    }
-
-    // Removes duplicates from an array.
-    function unique(array) {
-        return array.filter(function(a) {
-            return !this[a] ? (this[a] = true) : false;
-        }, {});
-    }
-
-    // Round a value to the closest 'to'.
-    function closest(value, to) {
-        return Math.round(value / to) * to;
-    }
-
-    // Current position of an element relative to the document.
-    function offset(elem, orientation) {
-        var rect = elem.getBoundingClientRect();
-        var doc = elem.ownerDocument;
-        var docElem = doc.documentElement;
-        var pageOffset = getPageOffset(doc);
-
-        // getBoundingClientRect contains left scroll in Chrome on Android.
-        // I haven't found a feature detection that proves this. Worst case
-        // scenario on mis-match: the 'tap' feature on horizontal sliders breaks.
-        if (/webkit.*Chrome.*Mobile/i.test(navigator.userAgent)) {
-            pageOffset.x = 0;
-        }
-
-        return orientation
-            ? rect.top + pageOffset.y - docElem.clientTop
-            : rect.left + pageOffset.x - docElem.clientLeft;
-    }
-
-    // Checks whether a value is numerical.
-    function isNumeric(a) {
-        return typeof a === "number" && !isNaN(a) && isFinite(a);
-    }
-
-    // Sets a class and removes it after [duration] ms.
-    function addClassFor(element, className, duration) {
-        if (duration > 0) {
-            addClass(element, className);
-            setTimeout(function() {
-                removeClass(element, className);
-            }, duration);
-        }
-    }
-
-    // Limits a value to 0 - 100
-    function limit(a) {
-        return Math.max(Math.min(a, 100), 0);
-    }
-
-    // Wraps a variable as an array, if it isn't one yet.
-    // Note that an input array is returned by reference!
-    function asArray(a) {
-        return Array.isArray(a) ? a : [a];
-    }
-
-    // Counts decimals
-    function countDecimals(numStr) {
-        numStr = String(numStr);
-        var pieces = numStr.split(".");
-        return pieces.length > 1 ? pieces[1].length : 0;
-    }
-
-    // http://youmightnotneedjquery.com/#add_class
-    function addClass(el, className) {
-        if (el.classList) {
-            el.classList.add(className);
-        } else {
-            el.className += " " + className;
-        }
-    }
-
-    // http://youmightnotneedjquery.com/#remove_class
-    function removeClass(el, className) {
-        if (el.classList) {
-            el.classList.remove(className);
-        } else {
-            el.className = el.className.replace(
-                new RegExp("(^|\\b)" + className.split(" ").join("|") + "(\\b|$)", "gi"),
-                " "
-            );
-        }
-    }
-
-    // https://plainjs.com/javascript/attributes/adding-removing-and-testing-for-classes-9/
-    function hasClass(el, className) {
-        return el.classList
-            ? el.classList.contains(className)
-            : new RegExp("\\b" + className + "\\b").test(el.className);
-    }
-
-    // https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
-    function getPageOffset(doc) {
-        var supportPageOffset = window.pageXOffset !== undefined;
-        var isCSS1Compat = (doc.compatMode || "") === "CSS1Compat";
-        var x = supportPageOffset
-            ? window.pageXOffset
-            : isCSS1Compat
-                ? doc.documentElement.scrollLeft
-                : doc.body.scrollLeft;
-        var y = supportPageOffset
-            ? window.pageYOffset
-            : isCSS1Compat
-                ? doc.documentElement.scrollTop
-                : doc.body.scrollTop;
-
-        return {
-            x: x,
-            y: y
-        };
-    }
-
-    // we provide a function to compute constants instead
-    // of accessing window.* as soon as the module needs it
-    // so that we do not compute anything if not needed
-    function getActions() {
-        // Determine the events to bind. IE11 implements pointerEvents without
-        // a prefix, which breaks compatibility with the IE10 implementation.
-        return window.navigator.pointerEnabled
-            ? {
-                  start: "pointerdown",
-                  move: "pointermove",
-                  end: "pointerup"
-              }
-            : window.navigator.msPointerEnabled
-                ? {
-                      start: "MSPointerDown",
-                      move: "MSPointerMove",
-                      end: "MSPointerUp"
-                  }
-                : {
-                      start: "mousedown touchstart",
-                      move: "mousemove touchmove",
-                      end: "mouseup touchend"
-                  };
-    }
-
-    // https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
-    // Issue #785
-    function getSupportsPassive() {
-        var supportsPassive = false;
-
-        /* eslint-disable */
-        try {
-            var opts = Object.defineProperty({}, "passive", {
-                get: function() {
-                    supportsPassive = true;
-                }
-            });
-
-            window.addEventListener("test", null, opts);
-        } catch (e) {}
-        /* eslint-enable */
-
-        return supportsPassive;
-    }
-
-    function getSupportsTouchActionNone() {
-        return window.CSS && CSS.supports && CSS.supports("touch-action", "none");
-    }
-
-    // Value calculation
-
-    // Determine the size of a sub-range in relation to a full range.
-    function subRangeRatio(pa, pb) {
-        return 100 / (pb - pa);
-    }
-
-    // (percentage) How many percent is this value of this range?
-    function fromPercentage(range, value) {
-        return (value * 100) / (range[1] - range[0]);
-    }
-
-    // (percentage) Where is this value on this range?
-    function toPercentage(range, value) {
-        return fromPercentage(range, range[0] < 0 ? value + Math.abs(range[0]) : value - range[0]);
-    }
-
-    // (value) How much is this percentage on this range?
-    function isPercentage(range, value) {
-        return (value * (range[1] - range[0])) / 100 + range[0];
-    }
-
-    // Range conversion
-
-    function getJ(value, arr) {
-        var j = 1;
-
-        while (value >= arr[j]) {
-            j += 1;
-        }
-
-        return j;
-    }
-
-    // (percentage) Input a value, find where, on a scale of 0-100, it applies.
-    function toStepping(xVal, xPct, value) {
-        if (value >= xVal.slice(-1)[0]) {
-            return 100;
-        }
-
-        var j = getJ(value, xVal);
-        var va = xVal[j - 1];
-        var vb = xVal[j];
-        var pa = xPct[j - 1];
-        var pb = xPct[j];
-
-        return pa + toPercentage([va, vb], value) / subRangeRatio(pa, pb);
-    }
-
-    // (value) Input a percentage, find where it is on the specified range.
-    function fromStepping(xVal, xPct, value) {
-        // There is no range group that fits 100
-        if (value >= 100) {
-            return xVal.slice(-1)[0];
-        }
-
-        var j = getJ(value, xPct);
-        var va = xVal[j - 1];
-        var vb = xVal[j];
-        var pa = xPct[j - 1];
-        var pb = xPct[j];
-
-        return isPercentage([va, vb], (value - pa) * subRangeRatio(pa, pb));
-    }
-
-    // (percentage) Get the step that applies at a certain value.
-    function getStep(xPct, xSteps, snap, value) {
-        if (value === 100) {
-            return value;
-        }
-
-        var j = getJ(value, xPct);
-        var a = xPct[j - 1];
-        var b = xPct[j];
-
-        // If 'snap' is set, steps are used as fixed points on the slider.
-        if (snap) {
-            // Find the closest position, a or b.
-            if (value - a > (b - a) / 2) {
-                return b;
-            }
-
-            return a;
-        }
-
-        if (!xSteps[j - 1]) {
-            return value;
-        }
-
-        return xPct[j - 1] + closest(value - xPct[j - 1], xSteps[j - 1]);
-    }
-
-    // Entry parsing
-
-    function handleEntryPoint(index, value, that) {
-        var percentage;
-
-        // Wrap numerical input in an array.
-        if (typeof value === "number") {
-            value = [value];
-        }
-
-        // Reject any invalid input, by testing whether value is an array.
-        if (!Array.isArray(value)) {
-            throw new Error("noUiSlider (" + VERSION + "): 'range' contains invalid value.");
-        }
-
-        // Covert min/max syntax to 0 and 100.
-        if (index === "min") {
-            percentage = 0;
-        } else if (index === "max") {
-            percentage = 100;
-        } else {
-            percentage = parseFloat(index);
-        }
-
-        // Check for correct input.
-        if (!isNumeric(percentage) || !isNumeric(value[0])) {
-            throw new Error("noUiSlider (" + VERSION + "): 'range' value isn't numeric.");
-        }
-
-        // Store values.
-        that.xPct.push(percentage);
-        that.xVal.push(value[0]);
-
-        // NaN will evaluate to false too, but to keep
-        // logging clear, set step explicitly. Make sure
-        // not to override the 'step' setting with false.
-        if (!percentage) {
-            if (!isNaN(value[1])) {
-                that.xSteps[0] = value[1];
-            }
-        } else {
-            that.xSteps.push(isNaN(value[1]) ? false : value[1]);
-        }
-
-        that.xHighestCompleteStep.push(0);
-    }
-
-    function handleStepPoint(i, n, that) {
-        // Ignore 'false' stepping.
-        if (!n) {
-            return true;
-        }
-
-        // Factor to range ratio
-        that.xSteps[i] =
-            fromPercentage([that.xVal[i], that.xVal[i + 1]], n) / subRangeRatio(that.xPct[i], that.xPct[i + 1]);
-
-        var totalSteps = (that.xVal[i + 1] - that.xVal[i]) / that.xNumSteps[i];
-        var highestStep = Math.ceil(Number(totalSteps.toFixed(3)) - 1);
-        var step = that.xVal[i] + that.xNumSteps[i] * highestStep;
-
-        that.xHighestCompleteStep[i] = step;
-    }
-
-    // Interface
-
-    function Spectrum(entry, snap, singleStep) {
-        this.xPct = [];
-        this.xVal = [];
-        this.xSteps = [singleStep || false];
-        this.xNumSteps = [false];
-        this.xHighestCompleteStep = [];
-
-        this.snap = snap;
-
-        var index;
-        var ordered = []; // [0, 'min'], [1, '50%'], [2, 'max']
-
-        // Map the object keys to an array.
-        for (index in entry) {
-            if (entry.hasOwnProperty(index)) {
-                ordered.push([entry[index], index]);
-            }
-        }
-
-        // Sort all entries by value (numeric sort).
-        if (ordered.length && typeof ordered[0][0] === "object") {
-            ordered.sort(function(a, b) {
-                return a[0][0] - b[0][0];
-            });
-        } else {
-            ordered.sort(function(a, b) {
-                return a[0] - b[0];
-            });
-        }
-
-        // Convert all entries to subranges.
-        for (index = 0; index < ordered.length; index++) {
-            handleEntryPoint(ordered[index][1], ordered[index][0], this);
-        }
-
-        // Store the actual step values.
-        // xSteps is sorted in the same order as xPct and xVal.
-        this.xNumSteps = this.xSteps.slice(0);
-
-        // Convert all numeric steps to the percentage of the subrange they represent.
-        for (index = 0; index < this.xNumSteps.length; index++) {
-            handleStepPoint(index, this.xNumSteps[index], this);
-        }
-    }
-
-    Spectrum.prototype.getMargin = function(value) {
-        var step = this.xNumSteps[0];
-
-        if (step && (value / step) % 1 !== 0) {
-            throw new Error("noUiSlider (" + VERSION + "): 'limit', 'margin' and 'padding' must be divisible by step.");
-        }
-
-        return this.xPct.length === 2 ? fromPercentage(this.xVal, value) : false;
-    };
-
-    Spectrum.prototype.toStepping = function(value) {
-        value = toStepping(this.xVal, this.xPct, value);
-
-        return value;
-    };
-
-    Spectrum.prototype.fromStepping = function(value) {
-        return fromStepping(this.xVal, this.xPct, value);
-    };
-
-    Spectrum.prototype.getStep = function(value) {
-        value = getStep(this.xPct, this.xSteps, this.snap, value);
-
-        return value;
-    };
-
-    Spectrum.prototype.getNearbySteps = function(value) {
-        var j = getJ(value, this.xPct);
-
-        return {
-            stepBefore: {
-                startValue: this.xVal[j - 2],
-                step: this.xNumSteps[j - 2],
-                highestStep: this.xHighestCompleteStep[j - 2]
-            },
-            thisStep: {
-                startValue: this.xVal[j - 1],
-                step: this.xNumSteps[j - 1],
-                highestStep: this.xHighestCompleteStep[j - 1]
-            },
-            stepAfter: {
-                startValue: this.xVal[j],
-                step: this.xNumSteps[j],
-                highestStep: this.xHighestCompleteStep[j]
-            }
-        };
-    };
-
-    Spectrum.prototype.countStepDecimals = function() {
-        var stepDecimals = this.xNumSteps.map(countDecimals);
-        return Math.max.apply(null, stepDecimals);
-    };
-
-    // Outside testing
-    Spectrum.prototype.convert = function(value) {
-        return this.getStep(this.toStepping(value));
-    };
-
-    /*	Every input option is tested and parsed. This'll prevent
-        endless validation in internal methods. These tests are
-        structured with an item for every option available. An
-        option can be marked as required by setting the 'r' flag.
-        The testing function is provided with three arguments:
-            - The provided value for the option;
-            - A reference to the options object;
-            - The name for the option;
-
-        The testing function returns false when an error is detected,
-        or true when everything is OK. It can also modify the option
-        object, to make sure all values can be correctly looped elsewhere. */
-
-    var defaultFormatter = {
-        to: function(value) {
-            return value !== undefined && value.toFixed(2);
-        },
-        from: Number
-    };
-
-    function validateFormat(entry) {
-        // Any object with a to and from method is supported.
-        if (isValidFormatter(entry)) {
-            return true;
-        }
-
-        throw new Error("noUiSlider (" + VERSION + "): 'format' requires 'to' and 'from' methods.");
-    }
-
-    function testStep(parsed, entry) {
-        if (!isNumeric(entry)) {
-            throw new Error("noUiSlider (" + VERSION + "): 'step' is not numeric.");
-        }
-
-        // The step option can still be used to set stepping
-        // for linear sliders. Overwritten if set in 'range'.
-        parsed.singleStep = entry;
-    }
-
-    function testRange(parsed, entry) {
-        // Filter incorrect input.
-        if (typeof entry !== "object" || Array.isArray(entry)) {
-            throw new Error("noUiSlider (" + VERSION + "): 'range' is not an object.");
-        }
-
-        // Catch missing start or end.
-        if (entry.min === undefined || entry.max === undefined) {
-            throw new Error("noUiSlider (" + VERSION + "): Missing 'min' or 'max' in 'range'.");
-        }
-
-        // Catch equal start or end.
-        if (entry.min === entry.max) {
-            throw new Error("noUiSlider (" + VERSION + "): 'range' 'min' and 'max' cannot be equal.");
-        }
-
-        parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.singleStep);
-    }
-
-    function testStart(parsed, entry) {
-        entry = asArray(entry);
-
-        // Validate input. Values aren't tested, as the public .val method
-        // will always provide a valid location.
-        if (!Array.isArray(entry) || !entry.length) {
-            throw new Error("noUiSlider (" + VERSION + "): 'start' option is incorrect.");
-        }
-
-        // Store the number of handles.
-        parsed.handles = entry.length;
-
-        // When the slider is initialized, the .val method will
-        // be called with the start options.
-        parsed.start = entry;
-    }
-
-    function testSnap(parsed, entry) {
-        // Enforce 100% stepping within subranges.
-        parsed.snap = entry;
-
-        if (typeof entry !== "boolean") {
-            throw new Error("noUiSlider (" + VERSION + "): 'snap' option must be a boolean.");
-        }
-    }
-
-    function testAnimate(parsed, entry) {
-        // Enforce 100% stepping within subranges.
-        parsed.animate = entry;
-
-        if (typeof entry !== "boolean") {
-            throw new Error("noUiSlider (" + VERSION + "): 'animate' option must be a boolean.");
-        }
-    }
-
-    function testAnimationDuration(parsed, entry) {
-        parsed.animationDuration = entry;
-
-        if (typeof entry !== "number") {
-            throw new Error("noUiSlider (" + VERSION + "): 'animationDuration' option must be a number.");
-        }
-    }
-
-    function testConnect(parsed, entry) {
-        var connect = [false];
-        var i;
-
-        // Map legacy options
-        if (entry === "lower") {
-            entry = [true, false];
-        } else if (entry === "upper") {
-            entry = [false, true];
-        }
-
-        // Handle boolean options
-        if (entry === true || entry === false) {
-            for (i = 1; i < parsed.handles; i++) {
-                connect.push(entry);
-            }
-
-            connect.push(false);
-        }
-
-        // Reject invalid input
-        else if (!Array.isArray(entry) || !entry.length || entry.length !== parsed.handles + 1) {
-            throw new Error("noUiSlider (" + VERSION + "): 'connect' option doesn't match handle count.");
-        } else {
-            connect = entry;
-        }
-
-        parsed.connect = connect;
-    }
-
-    function testOrientation(parsed, entry) {
-        // Set orientation to an a numerical value for easy
-        // array selection.
-        switch (entry) {
-            case "horizontal":
-                parsed.ort = 0;
-                break;
-            case "vertical":
-                parsed.ort = 1;
-                break;
-            default:
-                throw new Error("noUiSlider (" + VERSION + "): 'orientation' option is invalid.");
-        }
-    }
-
-    function testMargin(parsed, entry) {
-        if (!isNumeric(entry)) {
-            throw new Error("noUiSlider (" + VERSION + "): 'margin' option must be numeric.");
-        }
-
-        // Issue #582
-        if (entry === 0) {
-            return;
-        }
-
-        parsed.margin = parsed.spectrum.getMargin(entry);
-
-        if (!parsed.margin) {
-            throw new Error("noUiSlider (" + VERSION + "): 'margin' option is only supported on linear sliders.");
-        }
-    }
-
-    function testLimit(parsed, entry) {
-        if (!isNumeric(entry)) {
-            throw new Error("noUiSlider (" + VERSION + "): 'limit' option must be numeric.");
-        }
-
-        parsed.limit = parsed.spectrum.getMargin(entry);
-
-        if (!parsed.limit || parsed.handles < 2) {
-            throw new Error(
-                "noUiSlider (" +
-                    VERSION +
-                    "): 'limit' option is only supported on linear sliders with 2 or more handles."
-            );
-        }
-    }
-
-    function testPadding(parsed, entry) {
-        if (!isNumeric(entry) && !Array.isArray(entry)) {
-            throw new Error(
-                "noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers."
-            );
-        }
-
-        if (Array.isArray(entry) && !(entry.length === 2 || isNumeric(entry[0]) || isNumeric(entry[1]))) {
-            throw new Error(
-                "noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers."
-            );
-        }
-
-        if (entry === 0) {
-            return;
-        }
-
-        if (!Array.isArray(entry)) {
-            entry = [entry, entry];
-        }
-
-        // 'getMargin' returns false for invalid values.
-        parsed.padding = [parsed.spectrum.getMargin(entry[0]), parsed.spectrum.getMargin(entry[1])];
-
-        if (parsed.padding[0] === false || parsed.padding[1] === false) {
-            throw new Error("noUiSlider (" + VERSION + "): 'padding' option is only supported on linear sliders.");
-        }
-
-        if (parsed.padding[0] < 0 || parsed.padding[1] < 0) {
-            throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number(s).");
-        }
-
-        if (parsed.padding[0] + parsed.padding[1] >= 100) {
-            throw new Error("noUiSlider (" + VERSION + "): 'padding' option must not exceed 100% of the range.");
-        }
-    }
-
-    function testDirection(parsed, entry) {
-        // Set direction as a numerical value for easy parsing.
-        // Invert connection for RTL sliders, so that the proper
-        // handles get the connect/background classes.
-        switch (entry) {
-            case "ltr":
-                parsed.dir = 0;
-                break;
-            case "rtl":
-                parsed.dir = 1;
-                break;
-            default:
-                throw new Error("noUiSlider (" + VERSION + "): 'direction' option was not recognized.");
-        }
-    }
-
-    function testBehaviour(parsed, entry) {
-        // Make sure the input is a string.
-        if (typeof entry !== "string") {
-            throw new Error("noUiSlider (" + VERSION + "): 'behaviour' must be a string containing options.");
-        }
-
-        // Check if the string contains any keywords.
-        // None are required.
-        var tap = entry.indexOf("tap") >= 0;
-        var drag = entry.indexOf("drag") >= 0;
-        var fixed = entry.indexOf("fixed") >= 0;
-        var snap = entry.indexOf("snap") >= 0;
-        var hover = entry.indexOf("hover") >= 0;
-
-        if (fixed) {
-            if (parsed.handles !== 2) {
-                throw new Error("noUiSlider (" + VERSION + "): 'fixed' behaviour must be used with 2 handles");
-            }
-
-            // Use margin to enforce fixed state
-            testMargin(parsed, parsed.start[1] - parsed.start[0]);
-        }
-
-        parsed.events = {
-            tap: tap || snap,
-            drag: drag,
-            fixed: fixed,
-            snap: snap,
-            hover: hover
-        };
-    }
-
-    function testTooltips(parsed, entry) {
-        if (entry === false) {
-            return;
-        }
-
-        if (entry === true) {
-            parsed.tooltips = [];
-
-            for (var i = 0; i < parsed.handles; i++) {
-                parsed.tooltips.push(true);
-            }
-        } else {
-            parsed.tooltips = asArray(entry);
-
-            if (parsed.tooltips.length !== parsed.handles) {
-                throw new Error("noUiSlider (" + VERSION + "): must pass a formatter for all handles.");
-            }
-
-            parsed.tooltips.forEach(function(formatter) {
-                if (
-                    typeof formatter !== "boolean" &&
-                    (typeof formatter !== "object" || typeof formatter.to !== "function")
-                ) {
-                    throw new Error("noUiSlider (" + VERSION + "): 'tooltips' must be passed a formatter or 'false'.");
-                }
-            });
-        }
-    }
-
-    function testAriaFormat(parsed, entry) {
-        parsed.ariaFormat = entry;
-        validateFormat(entry);
-    }
-
-    function testFormat(parsed, entry) {
-        parsed.format = entry;
-        validateFormat(entry);
-    }
-
-    function testKeyboardSupport(parsed, entry) {
-        parsed.keyboardSupport = entry;
-
-        if (typeof entry !== "boolean") {
-            throw new Error("noUiSlider (" + VERSION + "): 'keyboardSupport' option must be a boolean.");
-        }
-    }
-
-    function testDocumentElement(parsed, entry) {
-        // This is an advanced option. Passed values are used without validation.
-        parsed.documentElement = entry;
-    }
-
-    function testCssPrefix(parsed, entry) {
-        if (typeof entry !== "string" && entry !== false) {
-            throw new Error("noUiSlider (" + VERSION + "): 'cssPrefix' must be a string or `false`.");
-        }
-
-        parsed.cssPrefix = entry;
-    }
-
-    function testCssClasses(parsed, entry) {
-        if (typeof entry !== "object") {
-            throw new Error("noUiSlider (" + VERSION + "): 'cssClasses' must be an object.");
-        }
-
-        if (typeof parsed.cssPrefix === "string") {
-            parsed.cssClasses = {};
-
-            for (var key in entry) {
-                if (!entry.hasOwnProperty(key)) {
-                    continue;
-                }
-
-                parsed.cssClasses[key] = parsed.cssPrefix + entry[key];
-            }
-        } else {
-            parsed.cssClasses = entry;
-        }
-    }
-
-    // Test all developer settings and parse to assumption-safe values.
-    function testOptions(options) {
-        // To prove a fix for #537, freeze options here.
-        // If the object is modified, an error will be thrown.
-        // Object.freeze(options);
-
-        var parsed = {
-            margin: 0,
-            limit: 0,
-            padding: 0,
-            animate: true,
-            animationDuration: 300,
-            ariaFormat: defaultFormatter,
-            format: defaultFormatter
-        };
-
-        // Tests are executed in the order they are presented here.
-        var tests = {
-            step: { r: false, t: testStep },
-            start: { r: true, t: testStart },
-            connect: { r: true, t: testConnect },
-            direction: { r: true, t: testDirection },
-            snap: { r: false, t: testSnap },
-            animate: { r: false, t: testAnimate },
-            animationDuration: { r: false, t: testAnimationDuration },
-            range: { r: true, t: testRange },
-            orientation: { r: false, t: testOrientation },
-            margin: { r: false, t: testMargin },
-            limit: { r: false, t: testLimit },
-            padding: { r: false, t: testPadding },
-            behaviour: { r: true, t: testBehaviour },
-            ariaFormat: { r: false, t: testAriaFormat },
-            format: { r: false, t: testFormat },
-            tooltips: { r: false, t: testTooltips },
-            keyboardSupport: { r: true, t: testKeyboardSupport },
-            documentElement: { r: false, t: testDocumentElement },
-            cssPrefix: { r: true, t: testCssPrefix },
-            cssClasses: { r: true, t: testCssClasses }
-        };
-
-        var defaults = {
-            connect: false,
-            direction: "ltr",
-            behaviour: "tap",
-            orientation: "horizontal",
-            keyboardSupport: true,
-            cssPrefix: "noUi-",
-            cssClasses: {
-                target: "target",
-                base: "base",
-                origin: "origin",
-                handle: "handle",
-                handleLower: "handle-lower",
-                handleUpper: "handle-upper",
-                horizontal: "horizontal",
-                vertical: "vertical",
-                background: "background",
-                connect: "connect",
-                connects: "connects",
-                ltr: "ltr",
-                rtl: "rtl",
-                draggable: "draggable",
-                drag: "state-drag",
-                tap: "state-tap",
-                active: "active",
-                tooltip: "tooltip",
-                pips: "pips",
-                pipsHorizontal: "pips-horizontal",
-                pipsVertical: "pips-vertical",
-                marker: "marker",
-                markerHorizontal: "marker-horizontal",
-                markerVertical: "marker-vertical",
-                markerNormal: "marker-normal",
-                markerLarge: "marker-large",
-                markerSub: "marker-sub",
-                value: "value",
-                valueHorizontal: "value-horizontal",
-                valueVertical: "value-vertical",
-                valueNormal: "value-normal",
-                valueLarge: "value-large",
-                valueSub: "value-sub"
-            }
-        };
-
-        // AriaFormat defaults to regular format, if any.
-        if (options.format && !options.ariaFormat) {
-            options.ariaFormat = options.format;
-        }
-
-        // Run all options through a testing mechanism to ensure correct
-        // input. It should be noted that options might get modified to
-        // be handled properly. E.g. wrapping integers in arrays.
-        Object.keys(tests).forEach(function(name) {
-            // If the option isn't set, but it is required, throw an error.
-            if (!isSet(options[name]) && defaults[name] === undefined) {
-                if (tests[name].r) {
-                    throw new Error("noUiSlider (" + VERSION + "): '" + name + "' is required.");
-                }
-
-                return true;
-            }
-
-            tests[name].t(parsed, !isSet(options[name]) ? defaults[name] : options[name]);
-        });
-
-        // Forward pips options
-        parsed.pips = options.pips;
-
-        // All recent browsers accept unprefixed transform.
-        // We need -ms- for IE9 and -webkit- for older Android;
-        // Assume use of -webkit- if unprefixed and -ms- are not supported.
-        // https://caniuse.com/#feat=transforms2d
-        var d = document.createElement("div");
-        var msPrefix = d.style.msTransform !== undefined;
-        var noPrefix = d.style.transform !== undefined;
-
-        parsed.transformRule = noPrefix ? "transform" : msPrefix ? "msTransform" : "webkitTransform";
-
-        // Pips don't move, so we can place them using left/top.
-        var styles = [["left", "top"], ["right", "bottom"]];
-
-        parsed.style = styles[parsed.dir][parsed.ort];
-
-        return parsed;
-    }
-
-    function scope(target, options, originalOptions) {
-        var actions = getActions();
-        var supportsTouchActionNone = getSupportsTouchActionNone();
-        var supportsPassive = supportsTouchActionNone && getSupportsPassive();
-
-        // All variables local to 'scope' are prefixed with 'scope_'
-        var scope_Target = target;
-        var scope_Locations = [];
-        var scope_Base;
-        var scope_Handles;
-        var scope_HandleNumbers = [];
-        var scope_ActiveHandlesCount = 0;
-        var scope_Connects;
-        var scope_Spectrum = options.spectrum;
-        var scope_Values = [];
-        var scope_Events = {};
-        var scope_Self;
-        var scope_Pips;
-        var scope_Document = target.ownerDocument;
-        var scope_DocumentElement = options.documentElement || scope_Document.documentElement;
-        var scope_Body = scope_Document.body;
-
-        // Pips constants
-        var PIPS_NONE = -1;
-        var PIPS_NO_VALUE = 0;
-        var PIPS_LARGE_VALUE = 1;
-        var PIPS_SMALL_VALUE = 2;
-
-        // For horizontal sliders in standard ltr documents,
-        // make .noUi-origin overflow to the left so the document doesn't scroll.
-        var scope_DirOffset = scope_Document.dir === "rtl" || options.ort === 1 ? 0 : 100;
-
-        // Creates a node, adds it to target, returns the new node.
-        function addNodeTo(addTarget, className) {
-            var div = scope_Document.createElement("div");
-
-            if (className) {
-                addClass(div, className);
-            }
-
-            addTarget.appendChild(div);
-
-            return div;
-        }
-
-        // Append a origin to the base
-        function addOrigin(base, handleNumber) {
-            var origin = addNodeTo(base, options.cssClasses.origin);
-            var handle = addNodeTo(origin, options.cssClasses.handle);
-
-            handle.setAttribute("data-handle", handleNumber);
-
-            if (options.keyboardSupport) {
-                // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
-                // 0 = focusable and reachable
-                handle.setAttribute("tabindex", "0");
-            }
-
-            handle.setAttribute("role", "slider");
-            handle.setAttribute("aria-orientation", options.ort ? "vertical" : "horizontal");
-
-            if (handleNumber === 0) {
-                addClass(handle, options.cssClasses.handleLower);
-            } else if (handleNumber === options.handles - 1) {
-                addClass(handle, options.cssClasses.handleUpper);
-            }
-
-            return origin;
-        }
-
-        // Insert nodes for connect elements
-        function addConnect(base, add) {
-            if (!add) {
-                return false;
-            }
-
-            return addNodeTo(base, options.cssClasses.connect);
-        }
-
-        // Add handles to the slider base.
-        function addElements(connectOptions, base) {
-            var connectBase = addNodeTo(base, options.cssClasses.connects);
-
-            scope_Handles = [];
-            scope_Connects = [];
-
-            scope_Connects.push(addConnect(connectBase, connectOptions[0]));
-
-            // [::::O====O====O====]
-            // connectOptions = [0, 1, 1, 1]
-
-            for (var i = 0; i < options.handles; i++) {
-                // Keep a list of all added handles.
-                scope_Handles.push(addOrigin(base, i));
-                scope_HandleNumbers[i] = i;
-                scope_Connects.push(addConnect(connectBase, connectOptions[i + 1]));
-            }
-        }
-
-        // Initialize a single slider.
-        function addSlider(addTarget) {
-            // Apply classes and data to the target.
-            addClass(addTarget, options.cssClasses.target);
-
-            if (options.dir === 0) {
-                addClass(addTarget, options.cssClasses.ltr);
-            } else {
-                addClass(addTarget, options.cssClasses.rtl);
-            }
-
-            if (options.ort === 0) {
-                addClass(addTarget, options.cssClasses.horizontal);
-            } else {
-                addClass(addTarget, options.cssClasses.vertical);
-            }
-
-            return addNodeTo(addTarget, options.cssClasses.base);
-        }
-
-        function addTooltip(handle, handleNumber) {
-            if (!options.tooltips[handleNumber]) {
-                return false;
-            }
-
-            return addNodeTo(handle.firstChild, options.cssClasses.tooltip);
-        }
-
-        // The tooltips option is a shorthand for using the 'update' event.
-        function tooltips() {
-            // Tooltips are added with options.tooltips in original order.
-            var tips = scope_Handles.map(addTooltip);
-
-            bindEvent("update", function(values, handleNumber, unencoded) {
-                if (!tips[handleNumber]) {
-                    return;
-                }
-
-                var formattedValue = values[handleNumber];
-
-                if (options.tooltips[handleNumber] !== true) {
-                    formattedValue = options.tooltips[handleNumber].to(unencoded[handleNumber]);
-                }
-
-                tips[handleNumber].innerHTML = formattedValue;
-            });
-        }
-
-        function aria() {
-            bindEvent("update", function(values, handleNumber, unencoded, tap, positions) {
-                // Update Aria Values for all handles, as a change in one changes min and max values for the next.
-                scope_HandleNumbers.forEach(function(index) {
-                    var handle = scope_Handles[index];
-
-                    var min = checkHandlePosition(scope_Locations, index, 0, true, true, true);
-                    var max = checkHandlePosition(scope_Locations, index, 100, true, true, true);
-
-                    var now = positions[index];
-
-                    // Formatted value for display
-                    var text = options.ariaFormat.to(unencoded[index]);
-
-                    // Map to slider range values
-                    min = scope_Spectrum.fromStepping(min).toFixed(1);
-                    max = scope_Spectrum.fromStepping(max).toFixed(1);
-                    now = scope_Spectrum.fromStepping(now).toFixed(1);
-
-                    handle.children[0].setAttribute("aria-valuemin", min);
-                    handle.children[0].setAttribute("aria-valuemax", max);
-                    handle.children[0].setAttribute("aria-valuenow", now);
-                    handle.children[0].setAttribute("aria-valuetext", text);
-                });
-            });
-        }
-
-        function getGroup(mode, values, stepped) {
-            // Use the range.
-            if (mode === "range" || mode === "steps") {
-                return scope_Spectrum.xVal;
-            }
-
-            if (mode === "count") {
-                if (values < 2) {
-                    throw new Error("noUiSlider (" + VERSION + "): 'values' (>= 2) required for mode 'count'.");
-                }
-
-                // Divide 0 - 100 in 'count' parts.
-                var interval = values - 1;
-                var spread = 100 / interval;
-
-                values = [];
-
-                // List these parts and have them handled as 'positions'.
-                while (interval--) {
-                    values[interval] = interval * spread;
-                }
-
-                values.push(100);
-
-                mode = "positions";
-            }
-
-            if (mode === "positions") {
-                // Map all percentages to on-range values.
-                return values.map(function(value) {
-                    return scope_Spectrum.fromStepping(stepped ? scope_Spectrum.getStep(value) : value);
-                });
-            }
-
-            if (mode === "values") {
-                // If the value must be stepped, it needs to be converted to a percentage first.
-                if (stepped) {
-                    return values.map(function(value) {
-                        // Convert to percentage, apply step, return to value.
-                        return scope_Spectrum.fromStepping(scope_Spectrum.getStep(scope_Spectrum.toStepping(value)));
-                    });
-                }
-
-                // Otherwise, we can simply use the values.
-                return values;
-            }
-        }
-
-        function generateSpread(density, mode, group) {
-            function safeIncrement(value, increment) {
-                // Avoid floating point variance by dropping the smallest decimal places.
-                return (value + increment).toFixed(7) / 1;
-            }
-
-            var indexes = {};
-            var firstInRange = scope_Spectrum.xVal[0];
-            var lastInRange = scope_Spectrum.xVal[scope_Spectrum.xVal.length - 1];
-            var ignoreFirst = false;
-            var ignoreLast = false;
-            var prevPct = 0;
-
-            // Create a copy of the group, sort it and filter away all duplicates.
-            group = unique(
-                group.slice().sort(function(a, b) {
-                    return a - b;
-                })
-            );
-
-            // Make sure the range starts with the first element.
-            if (group[0] !== firstInRange) {
-                group.unshift(firstInRange);
-                ignoreFirst = true;
-            }
-
-            // Likewise for the last one.
-            if (group[group.length - 1] !== lastInRange) {
-                group.push(lastInRange);
-                ignoreLast = true;
-            }
-
-            group.forEach(function(current, index) {
-                // Get the current step and the lower + upper positions.
-                var step;
-                var i;
-                var q;
-                var low = current;
-                var high = group[index + 1];
-                var newPct;
-                var pctDifference;
-                var pctPos;
-                var type;
-                var steps;
-                var realSteps;
-                var stepSize;
-                var isSteps = mode === "steps";
-
-                // When using 'steps' mode, use the provided steps.
-                // Otherwise, we'll step on to the next subrange.
-                if (isSteps) {
-                    step = scope_Spectrum.xNumSteps[index];
-                }
-
-                // Default to a 'full' step.
-                if (!step) {
-                    step = high - low;
-                }
-
-                // Low can be 0, so test for false. If high is undefined,
-                // we are at the last subrange. Index 0 is already handled.
-                if (low === false || high === undefined) {
-                    return;
-                }
-
-                // Make sure step isn't 0, which would cause an infinite loop (#654)
-                step = Math.max(step, 0.0000001);
-
-                // Find all steps in the subrange.
-                for (i = low; i <= high; i = safeIncrement(i, step)) {
-                    // Get the percentage value for the current step,
-                    // calculate the size for the subrange.
-                    newPct = scope_Spectrum.toStepping(i);
-                    pctDifference = newPct - prevPct;
-
-                    steps = pctDifference / density;
-                    realSteps = Math.round(steps);
-
-                    // This ratio represents the amount of percentage-space a point indicates.
-                    // For a density 1 the points/percentage = 1. For density 2, that percentage needs to be re-divided.
-                    // Round the percentage offset to an even number, then divide by two
-                    // to spread the offset on both sides of the range.
-                    stepSize = pctDifference / realSteps;
-
-                    // Divide all points evenly, adding the correct number to this subrange.
-                    // Run up to <= so that 100% gets a point, event if ignoreLast is set.
-                    for (q = 1; q <= realSteps; q += 1) {
-                        // The ratio between the rounded value and the actual size might be ~1% off.
-                        // Correct the percentage offset by the number of points
-                        // per subrange. density = 1 will result in 100 points on the
-                        // full range, 2 for 50, 4 for 25, etc.
-                        pctPos = prevPct + q * stepSize;
-                        indexes[pctPos.toFixed(5)] = [scope_Spectrum.fromStepping(pctPos), 0];
-                    }
-
-                    // Determine the point type.
-                    type = group.indexOf(i) > -1 ? PIPS_LARGE_VALUE : isSteps ? PIPS_SMALL_VALUE : PIPS_NO_VALUE;
-
-                    // Enforce the 'ignoreFirst' option by overwriting the type for 0.
-                    if (!index && ignoreFirst) {
-                        type = 0;
-                    }
-
-                    if (!(i === high && ignoreLast)) {
-                        // Mark the 'type' of this point. 0 = plain, 1 = real value, 2 = step value.
-                        indexes[newPct.toFixed(5)] = [i, type];
-                    }
-
-                    // Update the percentage count.
-                    prevPct = newPct;
-                }
-            });
-
-            return indexes;
-        }
-
-        function addMarking(spread, filterFunc, formatter) {
-            var element = scope_Document.createElement("div");
-
-            var valueSizeClasses = [];
-            valueSizeClasses[PIPS_NO_VALUE] = options.cssClasses.valueNormal;
-            valueSizeClasses[PIPS_LARGE_VALUE] = options.cssClasses.valueLarge;
-            valueSizeClasses[PIPS_SMALL_VALUE] = options.cssClasses.valueSub;
-
-            var markerSizeClasses = [];
-            markerSizeClasses[PIPS_NO_VALUE] = options.cssClasses.markerNormal;
-            markerSizeClasses[PIPS_LARGE_VALUE] = options.cssClasses.markerLarge;
-            markerSizeClasses[PIPS_SMALL_VALUE] = options.cssClasses.markerSub;
-
-            var valueOrientationClasses = [options.cssClasses.valueHorizontal, options.cssClasses.valueVertical];
-            var markerOrientationClasses = [options.cssClasses.markerHorizontal, options.cssClasses.markerVertical];
-
-            addClass(element, options.cssClasses.pips);
-            addClass(element, options.ort === 0 ? options.cssClasses.pipsHorizontal : options.cssClasses.pipsVertical);
-
-            function getClasses(type, source) {
-                var a = source === options.cssClasses.value;
-                var orientationClasses = a ? valueOrientationClasses : markerOrientationClasses;
-                var sizeClasses = a ? valueSizeClasses : markerSizeClasses;
-
-                return source + " " + orientationClasses[options.ort] + " " + sizeClasses[type];
-            }
-
-            function addSpread(offset, value, type) {
-                // Apply the filter function, if it is set.
-                type = filterFunc ? filterFunc(value, type) : type;
-
-                if (type === PIPS_NONE) {
-                    return;
-                }
-
-                // Add a marker for every point
-                var node = addNodeTo(element, false);
-                node.className = getClasses(type, options.cssClasses.marker);
-                node.style[options.style] = offset + "%";
-
-                // Values are only appended for points marked '1' or '2'.
-                if (type > PIPS_NO_VALUE) {
-                    node = addNodeTo(element, false);
-                    node.className = getClasses(type, options.cssClasses.value);
-                    node.setAttribute("data-value", value);
-                    node.style[options.style] = offset + "%";
-                    node.innerHTML = formatter.to(value);
-                }
-            }
-
-            // Append all points.
-            Object.keys(spread).forEach(function(offset) {
-                addSpread(offset, spread[offset][0], spread[offset][1]);
-            });
-
-            return element;
-        }
-
-        function removePips() {
-            if (scope_Pips) {
-                removeElement(scope_Pips);
-                scope_Pips = null;
-            }
-        }
-
-        function pips(grid) {
-            // Fix #669
-            removePips();
-
-            var mode = grid.mode;
-            var density = grid.density || 1;
-            var filter = grid.filter || false;
-            var values = grid.values || false;
-            var stepped = grid.stepped || false;
-            var group = getGroup(mode, values, stepped);
-            var spread = generateSpread(density, mode, group);
-            var format = grid.format || {
-                to: Math.round
-            };
-
-            scope_Pips = scope_Target.appendChild(addMarking(spread, filter, format));
-
-            return scope_Pips;
-        }
-
-        // Shorthand for base dimensions.
-        function baseSize() {
-            var rect = scope_Base.getBoundingClientRect();
-            var alt = "offset" + ["Width", "Height"][options.ort];
-            return options.ort === 0 ? rect.width || scope_Base[alt] : rect.height || scope_Base[alt];
-        }
-
-        // Handler for attaching events trough a proxy.
-        function attachEvent(events, element, callback, data) {
-            // This function can be used to 'filter' events to the slider.
-            // element is a node, not a nodeList
-
-            var method = function(e) {
-                e = fixEvent(e, data.pageOffset, data.target || element);
-
-                // fixEvent returns false if this event has a different target
-                // when handling (multi-) touch events;
-                if (!e) {
-                    return false;
-                }
-
-                // doNotReject is passed by all end events to make sure released touches
-                // are not rejected, leaving the slider "stuck" to the cursor;
-                if (scope_Target.hasAttribute("disabled") && !data.doNotReject) {
-                    return false;
-                }
-
-                // Stop if an active 'tap' transition is taking place.
-                if (hasClass(scope_Target, options.cssClasses.tap) && !data.doNotReject) {
-                    return false;
-                }
-
-                // Ignore right or middle clicks on start #454
-                if (events === actions.start && e.buttons !== undefined && e.buttons > 1) {
-                    return false;
-                }
-
-                // Ignore right or middle clicks on start #454
-                if (data.hover && e.buttons) {
-                    return false;
-                }
-
-                // 'supportsPassive' is only true if a browser also supports touch-action: none in CSS.
-                // iOS safari does not, so it doesn't get to benefit from passive scrolling. iOS does support
-                // touch-action: manipulation, but that allows panning, which breaks
-                // sliders after zooming/on non-responsive pages.
-                // See: https://bugs.webkit.org/show_bug.cgi?id=133112
-                if (!supportsPassive) {
-                    e.preventDefault();
-                }
-
-                e.calcPoint = e.points[options.ort];
-
-                // Call the event handler with the event [ and additional data ].
-                callback(e, data);
-            };
-
-            var methods = [];
-
-            // Bind a closure on the target for every event type.
-            events.split(" ").forEach(function(eventName) {
-                element.addEventListener(eventName, method, supportsPassive ? { passive: true } : false);
-                methods.push([eventName, method]);
-            });
-
-            return methods;
-        }
-
-        // Provide a clean event with standardized offset values.
-        function fixEvent(e, pageOffset, eventTarget) {
-            // Filter the event to register the type, which can be
-            // touch, mouse or pointer. Offset changes need to be
-            // made on an event specific basis.
-            var touch = e.type.indexOf("touch") === 0;
-            var mouse = e.type.indexOf("mouse") === 0;
-            var pointer = e.type.indexOf("pointer") === 0;
-
-            var x;
-            var y;
-
-            // IE10 implemented pointer events with a prefix;
-            if (e.type.indexOf("MSPointer") === 0) {
-                pointer = true;
-            }
-
-            // In the event that multitouch is activated, the only thing one handle should be concerned
-            // about is the touches that originated on top of it.
-            if (touch) {
-                // Returns true if a touch originated on the target.
-                var isTouchOnTarget = function(checkTouch) {
-                    return checkTouch.target === eventTarget || eventTarget.contains(checkTouch.target);
-                };
-
-                // In the case of touchstart events, we need to make sure there is still no more than one
-                // touch on the target so we look amongst all touches.
-                if (e.type === "touchstart") {
-                    var targetTouches = Array.prototype.filter.call(e.touches, isTouchOnTarget);
-
-                    // Do not support more than one touch per handle.
-                    if (targetTouches.length > 1) {
-                        return false;
-                    }
-
-                    x = targetTouches[0].pageX;
-                    y = targetTouches[0].pageY;
-                } else {
-                    // In the other cases, find on changedTouches is enough.
-                    var targetTouch = Array.prototype.find.call(e.changedTouches, isTouchOnTarget);
-
-                    // Cancel if the target touch has not moved.
-                    if (!targetTouch) {
-                        return false;
-                    }
-
-                    x = targetTouch.pageX;
-                    y = targetTouch.pageY;
-                }
-            }
-
-            pageOffset = pageOffset || getPageOffset(scope_Document);
-
-            if (mouse || pointer) {
-                x = e.clientX + pageOffset.x;
-                y = e.clientY + pageOffset.y;
-            }
-
-            e.pageOffset = pageOffset;
-            e.points = [x, y];
-            e.cursor = mouse || pointer; // Fix #435
-
-            return e;
-        }
-
-        // Translate a coordinate in the document to a percentage on the slider
-        function calcPointToPercentage(calcPoint) {
-            var location = calcPoint - offset(scope_Base, options.ort);
-            var proposal = (location * 100) / baseSize();
-
-            // Clamp proposal between 0% and 100%
-            // Out-of-bound coordinates may occur when .noUi-base pseudo-elements
-            // are used (e.g. contained handles feature)
-            proposal = limit(proposal);
-
-            return options.dir ? 100 - proposal : proposal;
-        }
-
-        // Find handle closest to a certain percentage on the slider
-        function getClosestHandle(proposal) {
-            var closest = 100;
-            var handleNumber = false;
-
-            scope_Handles.forEach(function(handle, index) {
-                // Disabled handles are ignored
-                if (handle.hasAttribute("disabled")) {
-                    return;
-                }
-
-                var pos = Math.abs(scope_Locations[index] - proposal);
-
-                if (pos < closest || (pos === 100 && closest === 100)) {
-                    handleNumber = index;
-                    closest = pos;
-                }
-            });
-
-            return handleNumber;
-        }
-
-        // Fire 'end' when a mouse or pen leaves the document.
-        function documentLeave(event, data) {
-            if (event.type === "mouseout" && event.target.nodeName === "HTML" && event.relatedTarget === null) {
-                eventEnd(event, data);
-            }
-        }
-
-        // Handle movement on document for handle and range drag.
-        function eventMove(event, data) {
-            // Fix #498
-            // Check value of .buttons in 'start' to work around a bug in IE10 mobile (data.buttonsProperty).
-            // https://connect.microsoft.com/IE/feedback/details/927005/mobile-ie10-windows-phone-buttons-property-of-pointermove-event-always-zero
-            // IE9 has .buttons and .which zero on mousemove.
-            // Firefox breaks the spec MDN defines.
-            if (navigator.appVersion.indexOf("MSIE 9") === -1 && event.buttons === 0 && data.buttonsProperty !== 0) {
-                return eventEnd(event, data);
-            }
-
-            // Check if we are moving up or down
-            var movement = (options.dir ? -1 : 1) * (event.calcPoint - data.startCalcPoint);
-
-            // Convert the movement into a percentage of the slider width/height
-            var proposal = (movement * 100) / data.baseSize;
-
-            moveHandles(movement > 0, proposal, data.locations, data.handleNumbers);
-        }
-
-        // Unbind move events on document, call callbacks.
-        function eventEnd(event, data) {
-            // The handle is no longer active, so remove the class.
-            if (data.handle) {
-                removeClass(data.handle, options.cssClasses.active);
-                scope_ActiveHandlesCount -= 1;
-            }
-
-            // Unbind the move and end events, which are added on 'start'.
-            data.listeners.forEach(function(c) {
-                scope_DocumentElement.removeEventListener(c[0], c[1]);
-            });
-
-            if (scope_ActiveHandlesCount === 0) {
-                // Remove dragging class.
-                removeClass(scope_Target, options.cssClasses.drag);
-                setZindex();
-
-                // Remove cursor styles and text-selection events bound to the body.
-                if (event.cursor) {
-                    scope_Body.style.cursor = "";
-                    scope_Body.removeEventListener("selectstart", preventDefault);
-                }
-            }
-
-            data.handleNumbers.forEach(function(handleNumber) {
-                fireEvent("change", handleNumber);
-                fireEvent("set", handleNumber);
-                fireEvent("end", handleNumber);
-            });
-        }
-
-        // Bind move events on document.
-        function eventStart(event, data) {
-            var handle;
-            if (data.handleNumbers.length === 1) {
-                var handleOrigin = scope_Handles[data.handleNumbers[0]];
-
-                // Ignore 'disabled' handles
-                if (handleOrigin.hasAttribute("disabled")) {
-                    return false;
-                }
-
-                handle = handleOrigin.children[0];
-                scope_ActiveHandlesCount += 1;
-
-                // Mark the handle as 'active' so it can be styled.
-                addClass(handle, options.cssClasses.active);
-            }
-
-            // A drag should never propagate up to the 'tap' event.
-            event.stopPropagation();
-
-            // Record the event listeners.
-            var listeners = [];
-
-            // Attach the move and end events.
-            var moveEvent = attachEvent(actions.move, scope_DocumentElement, eventMove, {
-                // The event target has changed so we need to propagate the original one so that we keep
-                // relying on it to extract target touches.
-                target: event.target,
-                handle: handle,
-                listeners: listeners,
-                startCalcPoint: event.calcPoint,
-                baseSize: baseSize(),
-                pageOffset: event.pageOffset,
-                handleNumbers: data.handleNumbers,
-                buttonsProperty: event.buttons,
-                locations: scope_Locations.slice()
-            });
-
-            var endEvent = attachEvent(actions.end, scope_DocumentElement, eventEnd, {
-                target: event.target,
-                handle: handle,
-                listeners: listeners,
-                doNotReject: true,
-                handleNumbers: data.handleNumbers
-            });
-
-            var outEvent = attachEvent("mouseout", scope_DocumentElement, documentLeave, {
-                target: event.target,
-                handle: handle,
-                listeners: listeners,
-                doNotReject: true,
-                handleNumbers: data.handleNumbers
-            });
-
-            // We want to make sure we pushed the listeners in the listener list rather than creating
-            // a new one as it has already been passed to the event handlers.
-            listeners.push.apply(listeners, moveEvent.concat(endEvent, outEvent));
-
-            // Text selection isn't an issue on touch devices,
-            // so adding cursor styles can be skipped.
-            if (event.cursor) {
-                // Prevent the 'I' cursor and extend the range-drag cursor.
-                scope_Body.style.cursor = getComputedStyle(event.target).cursor;
-
-                // Mark the target with a dragging state.
-                if (scope_Handles.length > 1) {
-                    addClass(scope_Target, options.cssClasses.drag);
-                }
-
-                // Prevent text selection when dragging the handles.
-                // In noUiSlider <= 9.2.0, this was handled by calling preventDefault on mouse/touch start/move,
-                // which is scroll blocking. The selectstart event is supported by FireFox starting from version 52,
-                // meaning the only holdout is iOS Safari. This doesn't matter: text selection isn't triggered there.
-                // The 'cursor' flag is false.
-                // See: http://caniuse.com/#search=selectstart
-                scope_Body.addEventListener("selectstart", preventDefault, false);
-            }
-
-            data.handleNumbers.forEach(function(handleNumber) {
-                fireEvent("start", handleNumber);
-            });
-        }
-
-        // Move closest handle to tapped location.
-        function eventTap(event) {
-            // The tap event shouldn't propagate up
-            event.stopPropagation();
-
-            var proposal = calcPointToPercentage(event.calcPoint);
-            var handleNumber = getClosestHandle(proposal);
-
-            // Tackle the case that all handles are 'disabled'.
-            if (handleNumber === false) {
-                return false;
-            }
-
-            // Flag the slider as it is now in a transitional state.
-            // Transition takes a configurable amount of ms (default 300). Re-enable the slider after that.
-            if (!options.events.snap) {
-                addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
-            }
-
-            setHandle(handleNumber, proposal, true, true);
-
-            setZindex();
-
-            fireEvent("slide", handleNumber, true);
-            fireEvent("update", handleNumber, true);
-            fireEvent("change", handleNumber, true);
-            fireEvent("set", handleNumber, true);
-
-            if (options.events.snap) {
-                eventStart(event, { handleNumbers: [handleNumber] });
-            }
-        }
-
-        // Fires a 'hover' event for a hovered mouse/pen position.
-        function eventHover(event) {
-            var proposal = calcPointToPercentage(event.calcPoint);
-
-            var to = scope_Spectrum.getStep(proposal);
-            var value = scope_Spectrum.fromStepping(to);
-
-            Object.keys(scope_Events).forEach(function(targetEvent) {
-                if ("hover" === targetEvent.split(".")[0]) {
-                    scope_Events[targetEvent].forEach(function(callback) {
-                        callback.call(scope_Self, value);
-                    });
-                }
-            });
-        }
-
-        // Attach events to several slider parts.
-        function bindSliderEvents(behaviour) {
-            // Attach the standard drag event to the handles.
-            if (!behaviour.fixed) {
-                scope_Handles.forEach(function(handle, index) {
-                    // These events are only bound to the visual handle
-                    // element, not the 'real' origin element.
-                    attachEvent(actions.start, handle.children[0], eventStart, {
-                        handleNumbers: [index]
-                    });
-                });
-            }
-
-            // Attach the tap event to the slider base.
-            if (behaviour.tap) {
-                attachEvent(actions.start, scope_Base, eventTap, {});
-            }
-
-            // Fire hover events
-            if (behaviour.hover) {
-                attachEvent(actions.move, scope_Base, eventHover, {
-                    hover: true
-                });
-            }
-
-            // Make the range draggable.
-            if (behaviour.drag) {
-                scope_Connects.forEach(function(connect, index) {
-                    if (connect === false || index === 0 || index === scope_Connects.length - 1) {
-                        return;
-                    }
-
-                    var handleBefore = scope_Handles[index - 1];
-                    var handleAfter = scope_Handles[index];
-                    var eventHolders = [connect];
-
-                    addClass(connect, options.cssClasses.draggable);
-
-                    // When the range is fixed, the entire range can
-                    // be dragged by the handles. The handle in the first
-                    // origin will propagate the start event upward,
-                    // but it needs to be bound manually on the other.
-                    if (behaviour.fixed) {
-                        eventHolders.push(handleBefore.children[0]);
-                        eventHolders.push(handleAfter.children[0]);
-                    }
-
-                    eventHolders.forEach(function(eventHolder) {
-                        attachEvent(actions.start, eventHolder, eventStart, {
-                            handles: [handleBefore, handleAfter],
-                            handleNumbers: [index - 1, index]
-                        });
-                    });
-                });
-            }
-        }
-
-        // Attach an event to this slider, possibly including a namespace
-        function bindEvent(namespacedEvent, callback) {
-            scope_Events[namespacedEvent] = scope_Events[namespacedEvent] || [];
-            scope_Events[namespacedEvent].push(callback);
-
-            // If the event bound is 'update,' fire it immediately for all handles.
-            if (namespacedEvent.split(".")[0] === "update") {
-                scope_Handles.forEach(function(a, index) {
-                    fireEvent("update", index);
-                });
-            }
-        }
-
-        // Undo attachment of event
-        function removeEvent(namespacedEvent) {
-            var event = namespacedEvent && namespacedEvent.split(".")[0];
-            var namespace = event && namespacedEvent.substring(event.length);
-
-            Object.keys(scope_Events).forEach(function(bind) {
-                var tEvent = bind.split(".")[0];
-                var tNamespace = bind.substring(tEvent.length);
-
-                if ((!event || event === tEvent) && (!namespace || namespace === tNamespace)) {
-                    delete scope_Events[bind];
-                }
-            });
-        }
-
-        // External event handling
-        function fireEvent(eventName, handleNumber, tap) {
-            Object.keys(scope_Events).forEach(function(targetEvent) {
-                var eventType = targetEvent.split(".")[0];
-
-                if (eventName === eventType) {
-                    scope_Events[targetEvent].forEach(function(callback) {
-                        callback.call(
-                            // Use the slider public API as the scope ('this')
-                            scope_Self,
-                            // Return values as array, so arg_1[arg_2] is always valid.
-                            scope_Values.map(options.format.to),
-                            // Handle index, 0 or 1
-                            handleNumber,
-                            // Un-formatted slider values
-                            scope_Values.slice(),
-                            // Event is fired by tap, true or false
-                            tap || false,
-                            // Left offset of the handle, in relation to the slider
-                            scope_Locations.slice()
-                        );
-                    });
-                }
-            });
-        }
-
-        function toPct(pct) {
-            return pct + "%";
-        }
-
-        // Split out the handle positioning logic so the Move event can use it, too
-        function checkHandlePosition(reference, handleNumber, to, lookBackward, lookForward, getValue) {
-            // For sliders with multiple handles, limit movement to the other handle.
-            // Apply the margin option by adding it to the handle positions.
-            if (scope_Handles.length > 1) {
-                if (lookBackward && handleNumber > 0) {
-                    to = Math.max(to, reference[handleNumber - 1] + options.margin);
-                }
-
-                if (lookForward && handleNumber < scope_Handles.length - 1) {
-                    to = Math.min(to, reference[handleNumber + 1] - options.margin);
-                }
-            }
-
-            // The limit option has the opposite effect, limiting handles to a
-            // maximum distance from another. Limit must be > 0, as otherwise
-            // handles would be unmovable.
-            if (scope_Handles.length > 1 && options.limit) {
-                if (lookBackward && handleNumber > 0) {
-                    to = Math.min(to, reference[handleNumber - 1] + options.limit);
-                }
-
-                if (lookForward && handleNumber < scope_Handles.length - 1) {
-                    to = Math.max(to, reference[handleNumber + 1] - options.limit);
-                }
-            }
-
-            // The padding option keeps the handles a certain distance from the
-            // edges of the slider. Padding must be > 0.
-            if (options.padding) {
-                if (handleNumber === 0) {
-                    to = Math.max(to, options.padding[0]);
-                }
-
-                if (handleNumber === scope_Handles.length - 1) {
-                    to = Math.min(to, 100 - options.padding[1]);
-                }
-            }
-
-            to = scope_Spectrum.getStep(to);
-
-            // Limit percentage to the 0 - 100 range
-            to = limit(to);
-
-            // Return false if handle can't move
-            if (to === reference[handleNumber] && !getValue) {
-                return false;
-            }
-
-            return to;
-        }
-
-        // Uses slider orientation to create CSS rules. a = base value;
-        function inRuleOrder(v, a) {
-            var o = options.ort;
-            return (o ? a : v) + ", " + (o ? v : a);
-        }
-
-        // Moves handle(s) by a percentage
-        // (bool, % to move, [% where handle started, ...], [index in scope_Handles, ...])
-        function moveHandles(upward, proposal, locations, handleNumbers) {
-            var proposals = locations.slice();
-
-            var b = [!upward, upward];
-            var f = [upward, !upward];
-
-            // Copy handleNumbers so we don't change the dataset
-            handleNumbers = handleNumbers.slice();
-
-            // Check to see which handle is 'leading'.
-            // If that one can't move the second can't either.
-            if (upward) {
-                handleNumbers.reverse();
-            }
-
-            // Step 1: get the maximum percentage that any of the handles can move
-            if (handleNumbers.length > 1) {
-                handleNumbers.forEach(function(handleNumber, o) {
-                    var to = checkHandlePosition(
-                        proposals,
-                        handleNumber,
-                        proposals[handleNumber] + proposal,
-                        b[o],
-                        f[o],
-                        false
-                    );
-
-                    // Stop if one of the handles can't move.
-                    if (to === false) {
-                        proposal = 0;
-                    } else {
-                        proposal = to - proposals[handleNumber];
-                        proposals[handleNumber] = to;
-                    }
-                });
-            }
-
-            // If using one handle, check backward AND forward
-            else {
-                b = f = [true];
-            }
-
-            var state = false;
-
-            // Step 2: Try to set the handles with the found percentage
-            handleNumbers.forEach(function(handleNumber, o) {
-                state = setHandle(handleNumber, locations[handleNumber] + proposal, b[o], f[o]) || state;
-            });
-
-            // Step 3: If a handle moved, fire events
-            if (state) {
-                handleNumbers.forEach(function(handleNumber) {
-                    fireEvent("update", handleNumber);
-                    fireEvent("slide", handleNumber);
-                });
-            }
-        }
-
-        // Takes a base value and an offset. This offset is used for the connect bar size.
-        // In the initial design for this feature, the origin element was 1% wide.
-        // Unfortunately, a rounding bug in Chrome makes it impossible to implement this feature
-        // in this manner: https://bugs.chromium.org/p/chromium/issues/detail?id=798223
-        function transformDirection(a, b) {
-            return options.dir ? 100 - a - b : a;
-        }
-
-        // Updates scope_Locations and scope_Values, updates visual state
-        function updateHandlePosition(handleNumber, to) {
-            // Update locations.
-            scope_Locations[handleNumber] = to;
-
-            // Convert the value to the slider stepping/range.
-            scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
-
-            var rule = "translate(" + inRuleOrder(toPct(transformDirection(to, 0) - scope_DirOffset), "0") + ")";
-            scope_Handles[handleNumber].style[options.transformRule] = rule;
-
-            updateConnect(handleNumber);
-            updateConnect(handleNumber + 1);
-        }
-
-        // Handles before the slider middle are stacked later = higher,
-        // Handles after the middle later is lower
-        // [[7] [8] .......... | .......... [5] [4]
-        function setZindex() {
-            scope_HandleNumbers.forEach(function(handleNumber) {
-                var dir = scope_Locations[handleNumber] > 50 ? -1 : 1;
-                var zIndex = 3 + (scope_Handles.length + dir * handleNumber);
-                scope_Handles[handleNumber].style.zIndex = zIndex;
-            });
-        }
-
-        // Test suggested values and apply margin, step.
-        function setHandle(handleNumber, to, lookBackward, lookForward) {
-            to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
-
-            if (to === false) {
-                return false;
-            }
-
-            updateHandlePosition(handleNumber, to);
-
-            return true;
-        }
-
-        // Updates style attribute for connect nodes
-        function updateConnect(index) {
-            // Skip connects set to false
-            if (!scope_Connects[index]) {
-                return;
-            }
-
-            var l = 0;
-            var h = 100;
-
-            if (index !== 0) {
-                l = scope_Locations[index - 1];
-            }
-
-            if (index !== scope_Connects.length - 1) {
-                h = scope_Locations[index];
-            }
-
-            // We use two rules:
-            // 'translate' to change the left/top offset;
-            // 'scale' to change the width of the element;
-            // As the element has a width of 100%, a translation of 100% is equal to 100% of the parent (.noUi-base)
-            var connectWidth = h - l;
-            var translateRule = "translate(" + inRuleOrder(toPct(transformDirection(l, connectWidth)), "0") + ")";
-            var scaleRule = "scale(" + inRuleOrder(connectWidth / 100, "1") + ")";
-
-            scope_Connects[index].style[options.transformRule] = translateRule + " " + scaleRule;
-        }
-
-        // Parses value passed to .set method. Returns current value if not parse-able.
-        function resolveToValue(to, handleNumber) {
-            // Setting with null indicates an 'ignore'.
-            // Inputting 'false' is invalid.
-            if (to === null || to === false || to === undefined) {
-                return scope_Locations[handleNumber];
-            }
-
-            // If a formatted number was passed, attempt to decode it.
-            if (typeof to === "number") {
-                to = String(to);
-            }
-
-            to = options.format.from(to);
-            to = scope_Spectrum.toStepping(to);
-
-            // If parsing the number failed, use the current value.
-            if (to === false || isNaN(to)) {
-                return scope_Locations[handleNumber];
-            }
-
-            return to;
-        }
-
-        // Set the slider value.
-        function valueSet(input, fireSetEvent) {
-            var values = asArray(input);
-            var isInit = scope_Locations[0] === undefined;
-
-            // Event fires by default
-            fireSetEvent = fireSetEvent === undefined ? true : !!fireSetEvent;
-
-            // Animation is optional.
-            // Make sure the initial values were set before using animated placement.
-            if (options.animate && !isInit) {
-                addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
-            }
-
-            // First pass, without lookAhead but with lookBackward. Values are set from left to right.
-            scope_HandleNumbers.forEach(function(handleNumber) {
-                setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false);
-            });
-
-            // Second pass. Now that all base values are set, apply constraints
-            scope_HandleNumbers.forEach(function(handleNumber) {
-                setHandle(handleNumber, scope_Locations[handleNumber], true, true);
-            });
-
-            setZindex();
-
-            scope_HandleNumbers.forEach(function(handleNumber) {
-                fireEvent("update", handleNumber);
-
-                // Fire the event only for handles that received a new value, as per #579
-                if (values[handleNumber] !== null && fireSetEvent) {
-                    fireEvent("set", handleNumber);
-                }
-            });
-        }
-
-        // Reset slider to initial values
-        function valueReset(fireSetEvent) {
-            valueSet(options.start, fireSetEvent);
-        }
-
-        // Get the slider value.
-        function valueGet() {
-            var values = scope_Values.map(options.format.to);
-
-            // If only one handle is used, return a single value.
-            if (values.length === 1) {
-                return values[0];
-            }
-
-            return values;
-        }
-
-        // Removes classes from the root and empties it.
-        function destroy() {
-            for (var key in options.cssClasses) {
-                if (!options.cssClasses.hasOwnProperty(key)) {
-                    continue;
-                }
-                removeClass(scope_Target, options.cssClasses[key]);
-            }
-
-            while (scope_Target.firstChild) {
-                scope_Target.removeChild(scope_Target.firstChild);
-            }
-
-            delete scope_Target.noUiSlider;
-        }
-
-        // Get the current step size for the slider.
-        function getCurrentStep() {
-            // Check all locations, map them to their stepping point.
-            // Get the step point, then find it in the input list.
-            return scope_Locations.map(function(location, index) {
-                var nearbySteps = scope_Spectrum.getNearbySteps(location);
-                var value = scope_Values[index];
-                var increment = nearbySteps.thisStep.step;
-                var decrement = null;
-
-                // If the next value in this step moves into the next step,
-                // the increment is the start of the next step - the current value
-                if (increment !== false) {
-                    if (value + increment > nearbySteps.stepAfter.startValue) {
-                        increment = nearbySteps.stepAfter.startValue - value;
-                    }
-                }
-
-                // If the value is beyond the starting point
-                if (value > nearbySteps.thisStep.startValue) {
-                    decrement = nearbySteps.thisStep.step;
-                } else if (nearbySteps.stepBefore.step === false) {
-                    decrement = false;
-                }
-
-                // If a handle is at the start of a step, it always steps back into the previous step first
-                else {
-                    decrement = value - nearbySteps.stepBefore.highestStep;
-                }
-
-                // Now, if at the slider edges, there is not in/decrement
-                if (location === 100) {
-                    increment = null;
-                } else if (location === 0) {
-                    decrement = null;
-                }
-
-                // As per #391, the comparison for the decrement step can have some rounding issues.
-                var stepDecimals = scope_Spectrum.countStepDecimals();
-
-                // Round per #391
-                if (increment !== null && increment !== false) {
-                    increment = Number(increment.toFixed(stepDecimals));
-                }
-
-                if (decrement !== null && decrement !== false) {
-                    decrement = Number(decrement.toFixed(stepDecimals));
-                }
-
-                return [decrement, increment];
-            });
-        }
-
-        // Updateable: margin, limit, padding, step, range, animate, snap
-        function updateOptions(optionsToUpdate, fireSetEvent) {
-            // Spectrum is created using the range, snap, direction and step options.
-            // 'snap' and 'step' can be updated.
-            // If 'snap' and 'step' are not passed, they should remain unchanged.
-            var v = valueGet();
-
-            var updateAble = ["margin", "limit", "padding", "range", "animate", "snap", "step", "format"];
-
-            // Only change options that we're actually passed to update.
-            updateAble.forEach(function(name) {
-                if (optionsToUpdate[name] !== undefined) {
-                    originalOptions[name] = optionsToUpdate[name];
-                }
-            });
-
-            var newOptions = testOptions(originalOptions);
-
-            // Load new options into the slider state
-            updateAble.forEach(function(name) {
-                if (optionsToUpdate[name] !== undefined) {
-                    options[name] = newOptions[name];
-                }
-            });
-
-            scope_Spectrum = newOptions.spectrum;
-
-            // Limit, margin and padding depend on the spectrum but are stored outside of it. (#677)
-            options.margin = newOptions.margin;
-            options.limit = newOptions.limit;
-            options.padding = newOptions.padding;
-
-            // Update pips, removes existing.
-            if (options.pips) {
-                pips(options.pips);
-            }
-
-            // Invalidate the current positioning so valueSet forces an update.
-            scope_Locations = [];
-            valueSet(optionsToUpdate.start || v, fireSetEvent);
-        }
-
-        // Create the base element, initialize HTML and set classes.
-        // Add handles and connect elements.
-        scope_Base = addSlider(scope_Target);
-        addElements(options.connect, scope_Base);
-
-        // Attach user events.
-        bindSliderEvents(options.events);
-
-        // Use the public value method to set the start values.
-        valueSet(options.start);
-
-        // noinspection JSUnusedGlobalSymbols
-        scope_Self = {
-            destroy: destroy,
-            steps: getCurrentStep,
-            on: bindEvent,
-            off: removeEvent,
-            get: valueGet,
-            set: valueSet,
-            reset: valueReset,
-            // Exposed for unit testing, don't use this in your application.
-            __moveHandles: function(a, b, c) {
-                moveHandles(a, b, scope_Locations, c);
-            },
-            options: originalOptions, // Issue #600, #678
-            updateOptions: updateOptions,
-            target: scope_Target, // Issue #597
-            removePips: removePips,
-            pips: pips // Issue #594
-        };
-
-        if (options.pips) {
-            pips(options.pips);
-        }
-
-        if (options.tooltips) {
-            tooltips();
-        }
-
-        aria();
-
-        return scope_Self;
-    }
-
-    // Run the standard initializer
-    function initialize(target, originalOptions) {
-        if (!target || !target.nodeName) {
-            throw new Error("noUiSlider (" + VERSION + "): create requires a single element, got: " + target);
-        }
-
-        // Throw an error if the slider was already initialized.
-        if (target.noUiSlider) {
-            throw new Error("noUiSlider (" + VERSION + "): Slider was already initialized.");
-        }
-
-        // Test the options and create the slider environment;
-        var options = testOptions(originalOptions, target);
-        var api = scope(target, options, originalOptions);
-
-        target.noUiSlider = api;
-
-        return api;
-    }
-
-    // Use an object instead of a function for future expandability;
-    return {
-        // Exposed for unit testing, don't use this in your application.
-        __spectrum: Spectrum,
-        version: VERSION,
-        create: initialize
-    };
-});
-
-
-/***/ }),
-
-/***/ 172:
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "card" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelCorpus" } }, [
-      _c("div", { staticClass: "card-body px-2" }, [
-        _c("form", { attrs: { action: "" } }, [
-          _c("div", { staticClass: "form-group mb-3" }, [
-            _c(
-              "label",
-              {
-                staticClass: "mb-0 text-14 ",
-                attrs: { for: "formCorpusTitle" }
-              },
-              [_vm._v("Title")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.corpusSearchData.corpus_title,
-                  expression: "corpusSearchData.corpus_title"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                id: "formCorpusTitle",
-                "aria-describedby": "inputTitle",
-                placeholder: '"Ridges herbology"'
-              },
-              domProps: { value: _vm.corpusSearchData.corpus_title },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(
-                    _vm.corpusSearchData,
-                    "corpus_title",
-                    $event.target.value
-                  )
-                }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "form-group mb-3" }, [
-            _c(
-              "label",
-              {
-                staticClass: "mb-0 text-14 ",
-                attrs: { for: "formCorpusLanguage" }
-              },
-              [_vm._v("Language")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.corpusSearchData.corpus_merged_languages,
-                  expression: "corpusSearchData.corpus_merged_languages"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                id: "formCorpusLanguage",
-                "aria-describedby": "inputLanguage",
-                placeholder: '"German"'
-              },
-              domProps: { value: _vm.corpusSearchData.corpus_merged_languages },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(
-                    _vm.corpusSearchData,
-                    "corpus_merged_languages",
-                    $event.target.value
-                  )
-                }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _vm._m(1),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass: "collapse formPanelCorpus-all",
-              attrs: { id: "formPanelCorpus-all1" }
-            },
-            [
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formCorpusPublisher" }
-                  },
-                  [_vm._v("Language")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.corpusSearchData.corpus_publication_publisher,
-                      expression:
-                        "corpusSearchData.corpus_publication_publisher"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formCorpusPublisher",
-                    "aria-describedby": "inputPublisher",
-                    placeholder: '"Humboldt Universität"'
-                  },
-                  domProps: {
-                    value: _vm.corpusSearchData.corpus_publication_publisher
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.corpusSearchData,
-                        "corpus_publication_publisher",
-                        $event.target.value
-                      )
-                    }
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formCorpusFormats" }
-                  },
-                  [_vm._v("Formats")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.corpusSearchData.corpus_merged_formats,
-                      expression: "corpusSearchData.corpus_merged_formats"
-                    }
-                  ],
-                  staticClass: "flexdatalist form-control",
-                  attrs: {
-                    type: "text",
-                    name: "formatslist",
-                    multiple: "multiple",
-                    list: "formatsList-Corpus",
-                    "data-min-length": "0",
-                    id: "formCorpusFormats"
-                  },
-                  domProps: {
-                    value: _vm.corpusSearchData.corpus_merged_formats
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.corpusSearchData,
-                        "corpus_merged_formats",
-                        $event.target.value
-                      )
-                    }
-                  }
-                }),
-                _vm._v(" "),
-                _vm._m(2)
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formCorpusLicenses" }
-                  },
-                  [_vm._v("License")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.corpusSearchData.corpus_publication_license,
-                      expression: "corpusSearchData.corpus_publication_license"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formCorpusLicenses",
-                    "aria-describedby": "inputLicenses",
-                    placeholder: '"cc-by"'
-                  },
-                  domProps: {
-                    value: _vm.corpusSearchData.corpus_publication_license
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.corpusSearchData,
-                        "corpus_publication_license",
-                        $event.target.value
-                      )
-                    }
-                  }
-                })
-              ])
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "collapse formPanelCorpus-all",
-            attrs: { id: "formPanelCorpus-all2" }
-          },
-          [
-            _vm._m(3),
-            _vm._v(" "),
-            _c("form", { attrs: { action: "" } }, [
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formCorpusYear" }
-                  },
-                  [_vm._v("Year of Publication")]
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "d-flex justify-content-between" }, [
-                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                    _c(
-                      "small",
-                      {
-                        staticClass: "form-text text-muted",
-                        attrs: { id: "yearFromHelp" }
-                      },
-                      [_vm._v("from")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value:
-                            _vm.corpusSearchData
-                              .corpus_publication_publication_date,
-                          expression:
-                            "corpusSearchData.corpus_publication_publication_date"
-                        }
-                      ],
-                      staticClass: "toBeValidated form-control",
-                      attrs: {
-                        placeholder: "J J J J",
-                        type: "number",
-                        min: "1",
-                        max: "9999",
-                        step: "1",
-                        name: "yearFrom",
-                        id: "formCorpusYearFrom"
-                      },
-                      domProps: {
-                        value:
-                          _vm.corpusSearchData
-                            .corpus_publication_publication_date
-                      },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.corpusSearchData,
-                            "corpus_publication_publication_date",
-                            $event.target.value
-                          )
-                        }
-                      }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                    _c(
-                      "small",
-                      {
-                        staticClass: "form-text text-muted",
-                        attrs: { id: "yearToHelp" }
-                      },
-                      [_vm._v("to")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.corpusSearchData.corpusYearTo,
-                          expression: "corpusSearchData.corpusYearTo"
-                        }
-                      ],
-                      staticClass: "toBeValidated form-control",
-                      attrs: {
-                        placeholder: "J J J J",
-                        type: "number",
-                        min: "1",
-                        max: "9999",
-                        step: "1",
-                        name: "yearTo",
-                        id: "formCorpusYearTo"
-                      },
-                      domProps: { value: _vm.corpusSearchData.corpusYearTo },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.corpusSearchData,
-                            "corpusYearTo",
-                            $event.target.value
-                          )
-                        }
-                      }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _vm._m(4)
-                ])
-              ])
-            ])
-          ]
-        )
-      ])
-    ])
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
-        attrs: {
-          "data-toggle": "collapse",
-          "data-target": "#formPanelCorpus",
-          "aria-expanded": "true",
-          "aria-controls": "formPanelCorpus"
-        }
-      },
-      [
-        _c("span", [_vm._v("Corpus")]),
-        _vm._v(" "),
-        _c("i", {
-          staticClass:
-            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
-        })
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "d-flex flex-column" }, [
-      _c(
-        "a",
-        {
-          staticClass:
-            "align-self-end text-uppercase text-dark text-14 filter-expander",
-          attrs: {
-            "data-toggle": "collapse",
-            href: "#",
-            "data-target": ".formPanelCorpus-all",
-            role: "button",
-            "aria-expanded": "false",
-            "aria-controls": "#formPanelCorpus-all1 #formPanelCorpus-all2"
-          }
-        },
-        [
-          _vm._v(
-            "\n                        + Show all Corpusfilter\n                    "
-          )
-        ]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("datalist", { attrs: { id: "formatsList-Corpus" } }, [
-      _c("option", { attrs: { value: "ANNIS" } }, [_vm._v("ANNIS")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "EXEL" } }, [_vm._v("EXEL")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "PAULA" } }, [_vm._v("PAULA")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "Negra" } }, [_vm._v("Negra")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "TEI-Header" } }, [_vm._v("TEI-Header")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "txt" } }, [_vm._v("txt")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("form", { attrs: { action: "" } }, [
-      _c("div", { staticClass: "form-group mb-3" }, [
-        _c("label", { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } }, [
-          _vm._v("Corpus size (Tokens, Words)")
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "d-flex justify-content-between" }, [
-          _c("div", { staticClass: "w-75" }, [
-            _c("div", { attrs: { id: "corpusSize" } }),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
-              },
-              [
-                _c("span", { attrs: { id: "corpusSize-minVal" } }),
-                _vm._v(" "),
-                _c("span", { attrs: { id: "corpusSize-maxVal" } })
-              ]
-            )
-          ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "disabled btn btn-sm btn-corpus-dark p-0",
-              attrs: { type: "submit" }
-            },
-            [_c("i", { staticClass: "fa fa-angle-right fa-fw fa-2x py-1" })]
-          )
-        ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass:
-          "toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end",
-        attrs: { type: "submit" }
-      },
-      [_c("i", { staticClass: "fa fa-angle-right fa-fw fa-2x py-1" })]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-b27cc1d2", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ 173:
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(465)
-/* template */
-var __vue_template__ = __webpack_require__(174)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/DocumentFilter.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-717d462c", Component.options)
-  } else {
-    hotAPI.reload("data-v-717d462c", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ 174:
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "card" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelDocuments" } }, [
-      _vm._m(1)
-    ])
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
-        attrs: {
-          "data-toggle": "collapse",
-          "data-target": "#formPanelDocuments",
-          "aria-expanded": "true",
-          "aria-controls": "formPanelDocuments"
-        }
-      },
-      [
-        _c("span", [_vm._v("Documents")]),
-        _vm._v(" "),
-        _c("i", {
-          staticClass:
-            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
-        })
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-body px-2" }, [
-      _c("form", { attrs: { action: "" } }, [
-        _c("div", { staticClass: "form-group mb-3" }, [
-          _c(
-            "label",
-            {
-              staticClass: "mb-0 text-14 ",
-              attrs: { for: "formDocumentsTitle" }
-            },
-            [_vm._v("Title")]
-          ),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              id: "formDocumentsTitle",
-              "aria-describedby": "inputTitle",
-              placeholder: '"Ridges herbology"'
-            }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-group mb-3" }, [
-          _c(
-            "label",
-            {
-              staticClass: "mb-0 text-14 ",
-              attrs: { for: "formDocumentsAuthor" }
-            },
-            [_vm._v("Author")]
-          ),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              id: "formDocumentsAuthor",
-              "aria-describedby": "inputAuthor",
-              placeholder: '"Frank Mann"'
-            }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "d-flex flex-column" }, [
-          _c(
-            "a",
-            {
-              staticClass:
-                "align-self-end text-uppercase text-dark text-14 filter-expander",
-              attrs: {
-                "data-toggle": "collapse",
-                href: "#",
-                "data-target": ".formPanelDocuments-all",
-                role: "button",
-                "aria-expanded": "false",
-                "aria-controls":
-                  "#formPanelDocuments-all1 #formPanelDocuments-all2"
-              }
-            },
-            [
-              _vm._v(
-                "\n                        + Show all Documentsfilter\n                    "
-              )
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "collapse formPanelDocuments-all",
-            attrs: { id: "formPanelDocuments-all1" }
-          },
-          [
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "mb-0 text-14 ",
-                  attrs: { for: "formDocumentsLanguage" }
-                },
-                [_vm._v("Language")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  id: "formDocumentsLanguage",
-                  "aria-describedby": "inputLanguage",
-                  placeholder: '"German"'
-                }
-              })
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "mb-0 text-14 ",
-                  attrs: { for: "formDocumentsPlace" }
-                },
-                [_vm._v("Place")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  id: "formDocumentsPlace",
-                  "aria-describedby": "inputPlace",
-                  placeholder: '"Mannheim"'
-                }
-              })
-            ])
-          ]
-        )
-      ]),
-      _vm._v(" "),
-      _c(
-        "div",
-        {
-          staticClass: "collapse formPanelDocuments-all",
-          attrs: { id: "formPanelDocuments-all2" }
-        },
-        [
-          _c("form", { attrs: { action: "" } }, [
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
-                { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } },
-                [_vm._v("Documents size (Tokens, Words)")]
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "d-flex justify-content-between" }, [
-                _c("div", { staticClass: "w-75" }, [
-                  _c("div", { attrs: { id: "documentSize" } }),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass:
-                        "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
-                    },
-                    [
-                      _c("span", { attrs: { id: "documentSize-minVal" } }),
-                      _vm._v(" "),
-                      _c("span", { attrs: { id: "documentSize-maxVal" } })
-                    ]
-                  )
-                ]),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "disabled btn btn-sm btn-corpus-dark p-0",
-                    attrs: { type: "submit" }
-                  },
-                  [
-                    _c("i", {
-                      staticClass: "fa fa-angle-right fa-fw fa-2x py-1"
-                    })
-                  ]
-                )
-              ])
-            ])
-          ]),
-          _vm._v(" "),
-          _c("form", { attrs: { action: "" } }, [
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "mb-0 text-14 ",
-                  attrs: { for: "formDocumentsYear" }
-                },
-                [_vm._v("Year of Publication")]
-              ),
-              _vm._v(" "),
-              _c("div", { staticClass: "d-flex justify-content-between" }, [
-                _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                  _c(
-                    "small",
-                    {
-                      staticClass: "form-text text-muted",
-                      attrs: { id: "yearFromHelp" }
-                    },
-                    [_vm._v("from")]
-                  ),
-                  _vm._v(" "),
-                  _c("input", {
-                    staticClass: "toBeValidated form-control",
-                    attrs: {
-                      placeholder: "J J J J",
-                      type: "number",
-                      min: "1",
-                      max: "9999",
-                      step: "1",
-                      name: "yearFrom",
-                      id: "formDocumentsYearFrom"
-                    }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                  _c(
-                    "small",
-                    {
-                      staticClass: "form-text text-muted",
-                      attrs: { id: "yearToHelp" }
-                    },
-                    [_vm._v("to")]
-                  ),
-                  _vm._v(" "),
-                  _c("input", {
-                    staticClass: "toBeValidated form-control",
-                    attrs: {
-                      placeholder: "J J J J",
-                      type: "number",
-                      min: "1",
-                      max: "9999",
-                      step: "1",
-                      name: "yearTo",
-                      id: "formDocumentsYearTo"
-                    }
-                  })
-                ]),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass:
-                      "toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end",
-                    attrs: { type: "submit" }
-                  },
-                  [
-                    _c("i", {
-                      staticClass: "fa fa-angle-right fa-fw fa-2x py-1"
-                    })
-                  ]
-                )
-              ])
-            ])
-          ])
-        ]
-      )
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-717d462c", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ 175:
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(466)
-/* template */
-var __vue_template__ = __webpack_require__(176)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/AnnotationFilter.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-147adb84", Component.options)
-  } else {
-    hotAPI.reload("data-v-147adb84", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ 176:
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "card" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c(
-      "div",
-      { class: _vm.getClass(), attrs: { id: "formPanelAnnotations" } },
-      [_vm._m(1)]
-    )
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
-        attrs: {
-          "data-toggle": "collapse",
-          "data-target": "#formPanelAnnotations",
-          "aria-expanded": "true",
-          "aria-controls": "formPanelAnnotations"
-        }
-      },
-      [
-        _c("span", [_vm._v("Annotations")]),
-        _vm._v(" "),
-        _c("i", {
-          staticClass:
-            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
-        })
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "card-body px-2" }, [
-      _c("form", { attrs: { action: "" } }, [
-        _c("div", { staticClass: "form-group mb-3" }, [
-          _c(
-            "label",
-            {
-              staticClass: "mb-0 text-14 ",
-              attrs: { for: "formAnnotationsTitle" }
-            },
-            [_vm._v("Name")]
-          ),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              id: "formAnnotationsTitle",
-              "aria-describedby": "inputName",
-              placeholder: '"Ridges herbology"'
-            }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-group mb-3" }, [
-          _c(
-            "label",
-            {
-              staticClass: "mb-0 text-14 ",
-              attrs: { for: "formAnnotationsLanguage" }
-            },
-            [_vm._v("Category")]
-          ),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              id: "formAnnotationsLanguage",
-              "aria-describedby": "inputCategory",
-              placeholder: '"German"'
-            }
-          })
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-group mb-3" }, [
-          _c(
-            "label",
-            {
-              staticClass: "mb-0 text-14 ",
-              attrs: { for: "formAnnotationsFormats" }
-            },
-            [_vm._v("Formats")]
-          ),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "flexdatalist form-control",
-            attrs: {
-              type: "text",
-              name: "formatslist",
-              multiple: "multiple",
-              list: "formatsList-Annotations",
-              "data-min-length": "0",
-              id: "formAnnotationsFormats"
-            }
-          }),
-          _vm._v(" "),
-          _c("datalist", { attrs: { id: "formatsList-Annotations" } }, [
-            _c("option", { attrs: { value: "ANNIS" } }, [_vm._v("ANNIS")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "EXEL" } }, [_vm._v("EXEL")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "PAULA" } }, [_vm._v("PAULA")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "Negra" } }, [_vm._v("Negra")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "TEI-Header" } }, [
-              _vm._v("TEI-Header")
-            ])
-          ])
-        ])
-      ])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-147adb84", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ 177:
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(462)
-/* template */
-var __vue_template__ = __webpack_require__(178)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/SearchResultHeader.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-69ab1049", Component.options)
-  } else {
-    hotAPI.reload("data-v-69ab1049", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ 178:
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { attrs: { id: "resultheader" } }, [
-    _c("div", { staticClass: "d-flex justify-content-between my-1" }, [
-      _c(
-        "ul",
-        {
-          staticClass: "nav nav-tabs",
-          attrs: { id: "searchtabs", role: "tablist" }
-        },
-        [
-          _c("li", { staticClass: "nav-item" }, [
-            _c(
-              "a",
-              {
-                staticClass: "nav-link active",
-                attrs: {
-                  id: "tab-corpora",
-                  "data-toggle": "tab",
-                  href: "#searchtab-corpora",
-                  role: "tab",
-                  "aria-controls": "searchtab-corpora",
-                  "aria-selected": "true"
-                }
-              },
-              [_vm._v("Corpora (" + _vm._s(_vm.corpusresultcounter) + ")")]
-            )
-          ]),
-          _vm._v(" "),
-          _c("li", { staticClass: "nav-item" }, [
-            _c(
-              "a",
-              {
-                staticClass: "nav-link",
-                attrs: {
-                  id: "tab-documents",
-                  "data-toggle": "tab",
-                  href: "#searchtab-documents",
-                  role: "tab",
-                  "aria-controls": "searchtab-documents",
-                  "aria-selected": "false"
-                }
-              },
-              [_vm._v("Documents (" + _vm._s(_vm.documentresultcounter) + ")")]
-            )
-          ]),
-          _vm._v(" "),
-          _c("li", { staticClass: "nav-item" }, [
-            _c(
-              "a",
-              {
-                staticClass: "nav-link",
-                attrs: {
-                  id: "tab-annotations",
-                  "data-toggle": "tab",
-                  href: "#searchtab-annotations",
-                  role: "tab",
-                  "aria-controls": "searchtab-annotations",
-                  "aria-selected": "false"
-                }
-              },
-              [
-                _vm._v(
-                  "Annotations (" + _vm._s(_vm.annotationresultcounter) + ")"
-                )
-              ]
-            )
-          ])
-        ]
-      ),
-      _vm._v(" "),
-      _vm._m(0)
-    ]),
-    _vm._v(" "),
-    _vm._m(1)
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-row " }, [
-      _c("div", { staticClass: "col-auto" }, [
-        _c("div", { staticClass: "dropdown" }, [
-          _c(
-            "button",
-            {
-              staticClass:
-                "btn btn-outline-corpus-dark rounded dropdown-toggle font-weight-bold text-uppercase ",
-              attrs: {
-                type: "button",
-                id: "searchSorting",
-                "data-toggle": "dropdown",
-                "aria-haspopup": "true",
-                "aria-expanded": "false"
-              }
-            },
-            [
-              _vm._v(
-                "\n                        Title - Alphabetical\n                    "
-              )
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass: "dropdown-menu",
-              attrs: { "aria-labelledby": "searchSort" }
-            },
-            [
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Title - alphabetical")]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Tokens - ascending")]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Tokens - descending")]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Corpus release - oldest")]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Corpus release - newest")]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Date Document - oldest")]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Date Document - newest")]
-              )
-            ]
-          )
-        ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "w-100 py-3 px-6 mb-1 bg-corpus-light d-flex flex-column"
-      },
-      [
-        _c(
-          "div",
-          {
-            staticClass:
-              "btn btn-sm font-weight-bold text-uppercase btn-outline-corpus-dark align-self-end disabled"
-          },
-          [_vm._v("\n            Apply Filter\n        ")]
-        )
-      ]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-69ab1049", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ 179:
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(180)
-/* template */
-var __vue_template__ = __webpack_require__(181)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/CorpusSearchResult.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-28722078", Component.options)
-  } else {
-    hotAPI.reload("data-v-28722078", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ 180:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(76);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresult', 'documentsbycorpus', 'annotationsbycorpus', 'corpuspaths'],
-    methods: {
-        browseUri: function browseUri(id) {
-            return '/browse/corpus/'.concat(id);
-        },
-        corpusAuthors: function corpusAuthors(forenames, surnames) {
-            var authorString = "";
-            for (var i = 0; i < forenames.length; i++) {
-                authorString += forenames[i].concat(' ').concat(surnames[i]).concat(', ');
-            }
-            authorString = authorString.substring(0, authorString.lastIndexOf(","));
-            return authorString;
-        },
-        getLicenseMarkup: function getLicenseMarkup(licenseUri) {
-            var uriSplits = licenseUri.split("/");
-            var license = uriSplits[4];
-            var licenseSplits = license.split("-");
-            var licenses = [];
-
-            for (var i = 0; i < licenseSplits.length; i++) {
-                var license = {};
-                license.uri = '/images/license-' + licenseSplits[i] + '.svg';
-                license.altText = licenseSplits[i];
-                licenses.push(license);
-            }
-            return licenses;
-        },
-        emitCorpusRelations: function emitCorpusRelations(corpusId) {
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('clearAnnotations', []);
-            this.$store.dispatch('documentByCorpus', this.documentsbycorpus[corpusId]);
-            this.$store.dispatch('annotationByCorpus', this.annotationsbycorpus[corpusId]);
-        }
-    },
-    mounted: function mounted() {
-        console.log('CorpusResultComponent mounted.');
-    }
-});
-
-/***/ }),
-
-/***/ 181:
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass: "tab-pane active",
-      attrs: {
-        id: "searchtab-corpora",
-        role: "tabpanel",
-        "aria-labelledby": "searchtab-corpora"
-      }
-    },
-    [
-      _vm._l(_vm.corpusresult.results, function(corpusresultdata, index) {
-        return _vm.corpusresult.results.length > 0
-          ? _c(
-              "div",
-              {
-                key: corpusresultdata._source.corpus_id[0],
-                staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5"
-              },
-              [
-                _c("div", { staticClass: "row" }, [
-                  _vm._m(0, true),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col" }, [
-                    _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "text-dark",
-                          attrs: { href: _vm.browseUri(corpusresultdata._id) }
-                        },
-                        [
-                          _vm._v(
-                            "\n                        " +
-                              _vm._s(
-                                _vm._f("arrayToString")(
-                                  corpusresultdata._source.corpus_title
-                                )
-                              ) +
-                              "\n                    "
-                          )
-                        ]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    corpusresultdata._source.corpus_editor_forename !=
-                      "undefined" &&
-                    corpusresultdata._source.corpus_editor_surname !=
-                      "undefined"
-                      ? _c("span", { staticClass: "text-grey text-14" }, [
-                          _vm._v(
-                            _vm._s(
-                              _vm.corpusAuthors(
-                                corpusresultdata._source.corpus_editor_forename,
-                                corpusresultdata._source.corpus_editor_surname
-                              )
-                            )
-                          )
-                        ])
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "row mt-1 " }, [
-                      _c("div", { staticClass: "col col-auto mr-1" }, [
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa fa-fw fa-clock-o mr-1"
-                            }),
-                            _vm._v(" "),
-                            _c("span", [
-                              _vm._v(
-                                "D. from " +
-                                  _vm._s(corpusresultdata._source.documentrange)
-                              )
-                            ])
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", {
-                              staticClass: "fa fa-fw fa-th-list  mr-1"
-                            }),
-                            _vm._v(" "),
-                            _c("span", [
-                              _vm._v(
-                                _vm._s(corpusresultdata._source.documentgenre)
-                              )
-                            ])
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "mt-2" }, [
-                          _c(
-                            "a",
-                            {
-                              staticClass:
-                                "text-dark text-uppercase search-description-expander",
-                              attrs: {
-                                "data-toggle": "collapse",
-                                href: "#corpusSearchItem_".concat(index),
-                                role: "button",
-                                "aria-expanded": "false",
-                                "aria-controls": "#corpusSearchItem_".concat(
-                                  index
-                                )
-                              }
-                            },
-                            [
-                              _c("i", {
-                                staticClass:
-                                  "fa fa-angle-down fa-fw text-primary font-weight-bold"
-                              }),
-                              _vm._v(
-                                "\n                                Description\n                            "
-                              )
-                            ]
-                          )
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c("div", { staticClass: "col col-auto mr-1" }, [
-                        corpusresultdata._source.corpus_languages_language !=
-                        "undefined"
-                          ? _c(
-                              "div",
-                              {
-                                staticClass:
-                                  "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                              },
-                              [
-                                _c("i", {
-                                  staticClass: "fa fa-fw fa-globe mr-1"
-                                }),
-                                _vm._v(" "),
-                                _c("span", [
-                                  _vm._v(
-                                    _vm._s(
-                                      _vm._f("truncatelist")(
-                                        corpusresultdata._source
-                                          .corpus_languages_language[0]
-                                      )
-                                    )
-                                  )
-                                ])
-                              ]
-                            )
-                          : _vm._e(),
-                        _vm._v(" "),
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                            _vm._v(" "),
-                            _c("span", [
-                              _vm._v(
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    corpusresultdata._source.corpus_size_value
-                                  )
-                                ) +
-                                  " " +
-                                  _vm._s(
-                                    _vm._f("arrayToString")(
-                                      corpusresultdata._source.corpus_size_type
-                                    )
-                                  )
-                              )
-                            ])
-                          ]
-                        ),
-                        _vm._v(" "),
-                        _c("div", { staticClass: "mt-2" }, [
-                          _c(
-                            "a",
-                            {
-                              staticClass:
-                                "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                              attrs: { href: "#" }
-                            },
-                            [
-                              _c("i", {
-                                staticClass:
-                                  "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                              }),
-                              _vm._v(" "),
-                              typeof corpusresultdata._source
-                                .corpus_documents != "undefined"
-                                ? _c(
-                                    "span",
-                                    {
-                                      staticClass:
-                                        "text-primary text-14 font-weight-bold"
-                                    },
-                                    [
-                                      _vm._v(
-                                        _vm._s(
-                                          corpusresultdata._source
-                                            .corpus_documents.length
-                                        )
-                                      )
-                                    ]
-                                  )
-                                : _vm._e()
-                            ]
-                          )
-                        ])
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        { staticClass: "col col-auto mr-1" },
-                        [
-                          _vm._l(
-                            _vm.getLicenseMarkup(
-                              corpusresultdata._source
-                                .corpus_publication_license[0]
-                            ),
-                            function(licenseObject) {
-                              return corpusresultdata._source
-                                .corpus_publication_license != "undefined"
-                                ? _c(
-                                    "div",
-                                    {
-                                      staticClass:
-                                        "d-flex justify-content-start align-items-center"
-                                    },
-                                    [
-                                      _c("img", {
-                                        staticClass: "py-1",
-                                        attrs: {
-                                          src: licenseObject.uri,
-                                          alt: "license".concat(
-                                            licenseObject.altText
-                                          )
-                                        }
-                                      })
-                                    ]
-                                  )
-                                : _vm._e()
-                            }
-                          ),
-                          _vm._v(" "),
-                          corpusresultdata._source
-                            .corpus_publication_publication_date != "undefined"
-                            ? _c(
-                                "div",
-                                {
-                                  staticClass:
-                                    "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 flex-nowrap"
-                                },
-                                [
-                                  _c("i", {
-                                    staticClass:
-                                      "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
-                                  }),
-                                  _vm._v(" "),
-                                  _c("span", [
-                                    _vm._v(
-                                      _vm._s(
-                                        _vm._f("lastElement")(
-                                          corpusresultdata._source
-                                            .corpus_publication_publication_date
-                                        )
-                                      )
-                                    )
-                                  ])
-                                ]
-                              )
-                            : _vm._e(),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "mt-2" }, [
-                            typeof corpusresultdata._source.annotation_id !=
-                            "undefined"
-                              ? _c(
-                                  "a",
-                                  {
-                                    staticClass:
-                                      "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1",
-                                    attrs: { href: "# " }
-                                  },
-                                  [
-                                    _c("i", {
-                                      staticClass:
-                                        "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                                    }),
-                                    _vm._v(" "),
-                                    _c(
-                                      "span",
-                                      {
-                                        staticClass: "text-14 font-weight-bold"
-                                      },
-                                      [
-                                        _vm._v(
-                                          _vm._s(
-                                            corpusresultdata._source
-                                              .annotation_id.length
-                                          )
-                                        )
-                                      ]
-                                    )
-                                  ]
-                                )
-                              : _vm._e()
-                          ])
-                        ],
-                        2
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-2 mr-3" }, [
-                    _c("div", { staticClass: "dropdown" }, [
-                      _c(
-                        "button",
-                        {
-                          staticClass:
-                            "btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4",
-                          attrs: {
-                            type: "button",
-                            "data-toggle": "dropdown",
-                            "aria-haspopup": "true",
-                            "aria-expanded": "false"
-                          }
-                        },
-                        [
-                          _vm._v(
-                            "\n                        Download\n                    "
-                          )
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "div",
-                        {
-                          staticClass: "dropdown-menu",
-                          attrs: { "aria-labelledby": "dropdownMenuButton" }
-                        },
-                        [
-                          _c(
-                            "a",
-                            {
-                              staticClass: "dropdown-item text-14",
-                              attrs: {
-                                href: "/download/tei/".concat(
-                                  corpusresultdata._source.corpuspath
-                                )
-                              }
-                            },
-                            [_vm._v("TEI-Header")]
-                          )
-                        ]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "custom-control custom-checkbox" },
-                      [
-                        _c("input", {
-                          staticClass: "custom-control-input",
-                          attrs: {
-                            type: "checkbox",
-                            id: "filtercheck-corpusSearchItem".concat(index)
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c(
-                          "label",
-                          {
-                            staticClass: "custom-control-label text-14",
-                            attrs: {
-                              for: "filtercheck-corpusSearchItem".concat(index)
-                            }
-                          },
-                          [
-                            _vm._v(
-                              "\n                        Set as Filter\n                    "
-                            )
-                          ]
-                        )
-                      ]
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col-2" }),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col" }, [
-                    _c(
-                      "div",
-                      {
-                        staticClass: "collapse row pl-0 pr-3 pb-0",
-                        attrs: { id: "corpusSearchItem_".concat(index) }
-                      },
-                      [
-                        _c("hr"),
-                        _vm._v(" "),
-                        _c("p", [
-                          _vm._v(
-                            "\n                        " +
-                              _vm._s(
-                                _vm._f("lastElement")(
-                                  corpusresultdata._source
-                                    .corpus_encoding_project_description
-                                )
-                              ) +
-                              "\n                        "
-                          ),
-                          _c("a", { attrs: { href: "#" } }, [_vm._v("MORE")])
-                        ])
-                      ]
-                    )
-                  ])
-                ])
-              ]
-            )
-          : _vm._e()
-      }),
-      _vm._v(" "),
-      _vm._m(1)
-    ],
-    2
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-2 px-2" }, [
-      _c("img", {
-        staticClass: "w-100",
-        attrs: { src: "/images/placeholder_circle.svg", alt: "circle-image" }
-      })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
-      },
-      [
-        _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
-          _c("ul", { staticClass: "pagination" }, [
-            _c("li", { staticClass: "page-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "page-link",
-                  attrs: { href: "#", "aria-label": "Previous" }
-                },
-                [
-                  _c("span", { attrs: { "aria-hidden": "true" } }, [
-                    _vm._v("«")
-                  ]),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "sr-only" }, [_vm._v("Previous")])
-                ]
-              )
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "page-item font-weight-bold active" }, [
-              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                _vm._v("1")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "page-item font-weight-bold" }, [
-              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                _vm._v("2")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "page-item font-weight-bold" }, [
-              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                _vm._v("3")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "page-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "page-link",
-                  attrs: { href: "#", "aria-label": "Next" }
-                },
-                [
-                  _c("span", { attrs: { "aria-hidden": "true" } }, [
-                    _vm._v("»")
-                  ]),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
-                ]
-              )
-            ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-row" }, [
-          _c("div", { staticClass: "col-auto" }, [
-            _c(
-              "select",
-              {
-                staticClass:
-                  "custom-select custom-select-sm font-weight-bold text-uppercase"
-              },
-              [
-                _c("option", { attrs: { selected: "" } }, [
-                  _vm._v("6 results / page")
-                ]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
-              ]
-            )
-          ])
-        ])
-      ]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-28722078", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ 182:
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(183)
-/* template */
-var __vue_template__ = __webpack_require__(184)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/DocumentSearchResult.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-0487c357", Component.options)
-  } else {
-    hotAPI.reload("data-v-0487c357", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ 183:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['documentresult', 'corpusbydocument', 'annotationsbydocument', 'corpusbydocument'],
-    methods: {
-        browseUri: function browseUri(id) {
-            return '/browse/document/'.concat(id);
-        },
-        emitDocumentRelations: function emitDocumentRelations(documentId) {
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearAnnotations', []);
-            this.$store.dispatch('corpusByDocument', this.corpusbydocument[documentId]);
-            this.$store.dispatch('annotationByDocument', this.annotationsbydocument[documentId]);
-        }
-    },
-    mounted: function mounted() {
-        console.log('DocumentResultComponent mounted.');
-    }
-});
-
-/***/ }),
-
-/***/ 184:
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass: "tab-pane",
-      attrs: {
-        id: "searchtab-documents",
-        role: "tabpanel",
-        "aria-labelledby": "searchtab-documents"
-      }
-    },
-    [
-      _vm._l(_vm.documentresult.results, function(documentresultdata, index) {
-        return _vm.documentresult.results.length > 0
-          ? _c(
-              "div",
-              {
-                key: documentresultdata._id,
-                staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5"
-              },
-              [
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col" }, [
-                    _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "text-dark",
-                          attrs: { href: "document_Metadata--fromSearch.html" }
-                        },
-                        [
-                          _vm._v(
-                            "\n                        " +
-                              _vm._s(
-                                _vm._f("arrayToString")(
-                                  documentresultdata._source.document_title
-                                )
-                              ) +
-                              "\n                    "
-                          )
-                        ]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c("span", { staticClass: "text-grey text-14" }, [
-                      _vm._v(
-                        "\n                    Corpus: " +
-                          _vm._s(documentresultdata._source.corpus_name) +
-                          "\n                    "
-                      ),
-                      _c("br"),
-                      _vm._v(
-                        " " +
-                          _vm._s(
-                            _vm._f("arrayToString")(
-                              documentresultdata._source.document_author_surname
-                            )
-                          ) +
-                          ", " +
-                          _vm._s(
-                            _vm._f("arrayToString")(
-                              documentresultdata._source
-                                .document_author_forename
-                            )
-                          )
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "row mt-2" }, [
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "col d-flex flex-wrap justify-content-start"
-                        },
-                        [
-                          _c("div", { staticClass: "mr-7" }, [
-                            _c(
-                              "div",
-                              {
-                                staticClass:
-                                  "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                              },
-                              [
-                                _c("i", {
-                                  staticClass: "fa fa-fw fa-clock-o mr-1"
-                                }),
-                                _vm._v(" "),
-                                _c("span", [
-                                  _vm._v(
-                                    _vm._s(
-                                      _vm._f("arrayToString")(
-                                        documentresultdata._source
-                                          .document_publication_publishing_date
-                                      )
-                                    )
-                                  )
-                                ])
-                              ]
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            {
-                              staticClass:
-                                "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                            },
-                            [
-                              _c("i", {
-                                staticClass: "fa fa-fw fa-cubes mr-1"
-                              }),
-                              _vm._v(" "),
-                              _c("span", [
-                                _vm._v(
-                                  " " +
-                                    _vm._s(
-                                      _vm._f("arrayToString")(
-                                        documentresultdata._source
-                                          .document_size_extent
-                                      )
-                                    ) +
-                                    " " +
-                                    _vm._s(
-                                      _vm._f("arrayToString")(
-                                        documentresultdata._source
-                                          .document_size_type
-                                      )
-                                    )
-                                )
-                              ])
-                            ]
-                          )
-                        ]
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass:
-                        "col-4 mr-3 d-flex justify-content-between align-items-start"
-                    },
-                    [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                          attrs: { href: "# " }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            { staticClass: "text-14 font-weight-bold" },
-                            [
-                              _vm._v(
-                                _vm._s(
-                                  documentresultdata._source
-                                    .document_list_of_annotations_id.length
-                                )
-                              )
-                            ]
-                          )
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _vm._m(0, true)
-                    ]
-                  )
-                ])
-              ]
-            )
-          : _vm._e()
-      }),
-      _vm._v(" "),
-      _vm._m(1)
-    ],
-    2
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "custom-control custom-checkbox" }, [
-      _c("input", {
-        staticClass: "custom-control-input",
-        attrs: { type: "checkbox", id: "filtercheck-documentSearchItem0001" }
-      }),
-      _vm._v(" "),
-      _c(
-        "label",
-        {
-          staticClass: "custom-control-label text-14",
-          attrs: { for: "filtercheck-documentSearchItem0001" }
-        },
-        [
-          _vm._v(
-            "\n                        Set as Filter\n                    "
-          )
-        ]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
-      },
-      [
-        _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
-          _c("ul", { staticClass: "pagination" }, [
-            _c("li", { staticClass: "page-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "page-link",
-                  attrs: { href: "#", "aria-label": "Previous" }
-                },
-                [
-                  _c("span", { attrs: { "aria-hidden": "true" } }, [
-                    _vm._v("«")
-                  ]),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "sr-only" }, [_vm._v("Previous")])
-                ]
-              )
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "page-item font-weight-bold active" }, [
-              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                _vm._v("1")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "page-item font-weight-bold" }, [
-              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                _vm._v("2")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "page-item font-weight-bold" }, [
-              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                _vm._v("3")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "page-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "page-link",
-                  attrs: { href: "#", "aria-label": "Next" }
-                },
-                [
-                  _c("span", { attrs: { "aria-hidden": "true" } }, [
-                    _vm._v("»")
-                  ]),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
-                ]
-              )
-            ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-row" }, [
-          _c("div", { staticClass: "col-auto" }, [
-            _c(
-              "select",
-              {
-                staticClass:
-                  "custom-select custom-select-sm font-weight-bold text-uppercase"
-              },
-              [
-                _c("option", { attrs: { selected: "" } }, [
-                  _vm._v("6 results / page")
-                ]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
-              ]
-            )
-          ])
-        ])
-      ]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-0487c357", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ 185:
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(186)
-/* template */
-var __vue_template__ = __webpack_require__(187)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/AnnotationSearchResult.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-d7ceacaa", Component.options)
-  } else {
-    hotAPI.reload("data-v-d7ceacaa", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-
-/***/ 186:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['annotationresult', 'corpusbyannotation', 'documentsbyannotation'],
-    methods: {
-        browseUri: function browseUri(id, type) {
-            return '/browse/' + type + '/'.concat(id);
-        },
-        emitAnnotationRelations: function emitAnnotationRelations(annotationId) {
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('corpusByAnnotation', this.corpusbyannotation[annotationId]);
-            this.$store.dispatch('documentByAnnotation', this.documentsbyannotation[annotationId]);
-        }
-    },
-    mounted: function mounted() {
-        console.log('AnnotationResultComponent mounted.');
-    }
-});
-
-/***/ }),
-
-/***/ 187:
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass: "tab-pane",
-      attrs: {
-        id: "searchtab-annotations",
-        role: "tabpanel",
-        "aria-labelledby": "searchtab-annotations"
-      }
-    },
-    [
-      _vm._l(_vm.annotationresult.results, function(
-        annotationresultdata,
-        index
-      ) {
-        return _vm.annotationresult.results.length > 0
-          ? _c(
-              "div",
-              {
-                key: annotationresultdata._id,
-                staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5"
-              },
-              [
-                _c("div", { staticClass: "row" }, [
-                  _c("div", { staticClass: "col" }, [
-                    _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                      _c(
-                        "a",
-                        {
-                          staticClass: "text-dark",
-                          attrs: {
-                            href: "annotation_Guidelines--fromSearch.html"
-                          }
-                        },
-                        [
-                          _vm._v(
-                            "\n                        " +
-                              _vm._s(
-                                _vm._f("arrayToString")(
-                                  annotationresultdata._source.preparation_title
-                                )
-                              ) +
-                              "\n                    "
-                          )
-                        ]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c("span", { staticClass: "text-grey text-14" }, [
-                      _vm._v(
-                        "\n                    Corpus: " +
-                          _vm._s(annotationresultdata._source.corpus_name) +
-                          "\n                  "
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "col-2" }, [
-                    _c("span", { staticClass: "text-grey text-14" }, [
-                      _vm._v(
-                        _vm._s(
-                          _vm._f("lastElement")(
-                            annotationresultdata._source
-                              .preparation_encoding_annotation_group
-                          )
-                        )
-                      )
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass:
-                        "col-4 d-flex justify-content-between align-items-start"
-                    },
-                    [
-                      _c(
-                        "a",
-                        {
-                          staticClass:
-                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                          attrs: { href: "#" }
-                        },
-                        [
-                          _c("i", {
-                            staticClass:
-                              "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                          }),
-                          _vm._v(" "),
-                          _c(
-                            "span",
-                            {
-                              staticClass:
-                                "text-primary text-14 font-weight-bold"
-                            },
-                            [
-                              _vm._v(
-                                _vm._s(
-                                  annotationresultdata._source.in_documents
-                                    .length
-                                )
-                              )
-                            ]
-                          )
-                        ]
-                      ),
-                      _vm._v(" "),
-                      _vm._m(0, true)
-                    ]
-                  )
-                ])
-              ]
-            )
-          : _vm._e()
-      }),
-      _vm._v(" "),
-      _vm._m(1)
-    ],
-    2
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "custom-control custom-checkbox" }, [
-      _c("input", {
-        staticClass: "custom-control-input",
-        attrs: { type: "checkbox", id: "filtercheck-annotationSearchItem0001" }
-      }),
-      _vm._v(" "),
-      _c(
-        "label",
-        {
-          staticClass: "custom-control-label text-14",
-          attrs: { for: "filtercheck-annotationSearchItem0001" }
-        },
-        [
-          _vm._v(
-            "\n                        Set as Filter\n                    "
-          )
-        ]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
-      },
-      [
-        _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
-          _c("ul", { staticClass: "pagination" }, [
-            _c("li", { staticClass: "page-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "page-link",
-                  attrs: { href: "#", "aria-label": "Previous" }
-                },
-                [
-                  _c("span", { attrs: { "aria-hidden": "true" } }, [
-                    _vm._v("«")
-                  ]),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "sr-only" }, [_vm._v("Previous")])
-                ]
-              )
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "page-item font-weight-bold active" }, [
-              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                _vm._v("1")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "page-item font-weight-bold" }, [
-              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                _vm._v("2")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "page-item font-weight-bold" }, [
-              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-                _vm._v("3")
-              ])
-            ]),
-            _vm._v(" "),
-            _c("li", { staticClass: "page-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "page-link",
-                  attrs: { href: "#", "aria-label": "Next" }
-                },
-                [
-                  _c("span", { attrs: { "aria-hidden": "true" } }, [
-                    _vm._v("»")
-                  ]),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
-                ]
-              )
-            ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-row" }, [
-          _c("div", { staticClass: "col-auto" }, [
-            _c(
-              "select",
-              {
-                staticClass:
-                  "custom-select custom-select-sm font-weight-bold text-uppercase"
-              },
-              [
-                _c("option", { attrs: { selected: "" } }, [
-                  _vm._v("6 results / page")
-                ]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
-                _vm._v(" "),
-                _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
-              ]
-            )
-          ])
-        ])
-      ]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-d7ceacaa", module.exports)
-  }
-}
-
-/***/ }),
-
-/***/ 188:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 190:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 191:
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 21:
-/***/ (function(module, exports) {
-
-module.exports = function(module) {
-	if(!module.webpackPolyfill) {
-		module.deprecate = function() {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if(!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-
-/***/ }),
-
-/***/ 25:
+/* 23 */,
+/* 24 */,
+/* 25 */,
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18570,20 +12775,19 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-
-/***/ 26:
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(4);
-var settle = __webpack_require__(56);
-var buildURL = __webpack_require__(58);
-var parseHeaders = __webpack_require__(59);
-var isURLSameOrigin = __webpack_require__(60);
-var createError = __webpack_require__(27);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(61);
+var settle = __webpack_require__(57);
+var buildURL = __webpack_require__(59);
+var parseHeaders = __webpack_require__(60);
+var isURLSameOrigin = __webpack_require__(61);
+var createError = __webpack_require__(28);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(62);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -18680,7 +12884,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(62);
+      var cookies = __webpack_require__(63);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -18758,14 +12962,13 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-
-/***/ 27:
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var enhanceError = __webpack_require__(57);
+var enhanceError = __webpack_require__(58);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -18784,8 +12987,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-
-/***/ 28:
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18797,8 +12999,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-
-/***/ 29:
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18824,319 +13025,17 @@ module.exports = Cancel;
 
 
 /***/ }),
-
-/***/ 4:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var bind = __webpack_require__(25);
-var isBuffer = __webpack_require__(53);
-
-/*global toString:true*/
-
-// utils is a library of generic helper functions non-specific to axios
-
-var toString = Object.prototype.toString;
-
-/**
- * Determine if a value is an Array
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an Array, otherwise false
- */
-function isArray(val) {
-  return toString.call(val) === '[object Array]';
-}
-
-/**
- * Determine if a value is an ArrayBuffer
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an ArrayBuffer, otherwise false
- */
-function isArrayBuffer(val) {
-  return toString.call(val) === '[object ArrayBuffer]';
-}
-
-/**
- * Determine if a value is a FormData
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an FormData, otherwise false
- */
-function isFormData(val) {
-  return (typeof FormData !== 'undefined') && (val instanceof FormData);
-}
-
-/**
- * Determine if a value is a view on an ArrayBuffer
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
- */
-function isArrayBufferView(val) {
-  var result;
-  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
-    result = ArrayBuffer.isView(val);
-  } else {
-    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
-  }
-  return result;
-}
-
-/**
- * Determine if a value is a String
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a String, otherwise false
- */
-function isString(val) {
-  return typeof val === 'string';
-}
-
-/**
- * Determine if a value is a Number
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Number, otherwise false
- */
-function isNumber(val) {
-  return typeof val === 'number';
-}
-
-/**
- * Determine if a value is undefined
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if the value is undefined, otherwise false
- */
-function isUndefined(val) {
-  return typeof val === 'undefined';
-}
-
-/**
- * Determine if a value is an Object
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an Object, otherwise false
- */
-function isObject(val) {
-  return val !== null && typeof val === 'object';
-}
-
-/**
- * Determine if a value is a Date
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Date, otherwise false
- */
-function isDate(val) {
-  return toString.call(val) === '[object Date]';
-}
-
-/**
- * Determine if a value is a File
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a File, otherwise false
- */
-function isFile(val) {
-  return toString.call(val) === '[object File]';
-}
-
-/**
- * Determine if a value is a Blob
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Blob, otherwise false
- */
-function isBlob(val) {
-  return toString.call(val) === '[object Blob]';
-}
-
-/**
- * Determine if a value is a Function
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Function, otherwise false
- */
-function isFunction(val) {
-  return toString.call(val) === '[object Function]';
-}
-
-/**
- * Determine if a value is a Stream
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Stream, otherwise false
- */
-function isStream(val) {
-  return isObject(val) && isFunction(val.pipe);
-}
-
-/**
- * Determine if a value is a URLSearchParams object
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a URLSearchParams object, otherwise false
- */
-function isURLSearchParams(val) {
-  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
-}
-
-/**
- * Trim excess whitespace off the beginning and end of a string
- *
- * @param {String} str The String to trim
- * @returns {String} The String freed of excess whitespace
- */
-function trim(str) {
-  return str.replace(/^\s*/, '').replace(/\s*$/, '');
-}
-
-/**
- * Determine if we're running in a standard browser environment
- *
- * This allows axios to run in a web worker, and react-native.
- * Both environments support XMLHttpRequest, but not fully standard globals.
- *
- * web workers:
- *  typeof window -> undefined
- *  typeof document -> undefined
- *
- * react-native:
- *  navigator.product -> 'ReactNative'
- */
-function isStandardBrowserEnv() {
-  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
-    return false;
-  }
-  return (
-    typeof window !== 'undefined' &&
-    typeof document !== 'undefined'
-  );
-}
-
-/**
- * Iterate over an Array or an Object invoking a function for each item.
- *
- * If `obj` is an Array callback will be called passing
- * the value, index, and complete array for each item.
- *
- * If 'obj' is an Object callback will be called passing
- * the value, key, and complete object for each property.
- *
- * @param {Object|Array} obj The object to iterate
- * @param {Function} fn The callback to invoke for each item
- */
-function forEach(obj, fn) {
-  // Don't bother if no value provided
-  if (obj === null || typeof obj === 'undefined') {
-    return;
-  }
-
-  // Force an array if not already something iterable
-  if (typeof obj !== 'object' && !isArray(obj)) {
-    /*eslint no-param-reassign:0*/
-    obj = [obj];
-  }
-
-  if (isArray(obj)) {
-    // Iterate over array values
-    for (var i = 0, l = obj.length; i < l; i++) {
-      fn.call(null, obj[i], i, obj);
-    }
-  } else {
-    // Iterate over object keys
-    for (var key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        fn.call(null, obj[key], key, obj);
-      }
-    }
-  }
-}
-
-/**
- * Accepts varargs expecting each argument to be an object, then
- * immutably merges the properties of each object and returns result.
- *
- * When multiple objects contain the same key the later object in
- * the arguments list will take precedence.
- *
- * Example:
- *
- * ```js
- * var result = merge({foo: 123}, {foo: 456});
- * console.log(result.foo); // outputs 456
- * ```
- *
- * @param {Object} obj1 Object to merge
- * @returns {Object} Result of all merge properties
- */
-function merge(/* obj1, obj2, obj3, ... */) {
-  var result = {};
-  function assignValue(val, key) {
-    if (typeof result[key] === 'object' && typeof val === 'object') {
-      result[key] = merge(result[key], val);
-    } else {
-      result[key] = val;
-    }
-  }
-
-  for (var i = 0, l = arguments.length; i < l; i++) {
-    forEach(arguments[i], assignValue);
-  }
-  return result;
-}
-
-/**
- * Extends object a by mutably adding to it the properties of object b.
- *
- * @param {Object} a The object to be extended
- * @param {Object} b The object to copy properties from
- * @param {Object} thisArg The object to bind function to
- * @return {Object} The resulting value of object a
- */
-function extend(a, b, thisArg) {
-  forEach(b, function assignValue(val, key) {
-    if (thisArg && typeof val === 'function') {
-      a[key] = bind(val, thisArg);
-    } else {
-      a[key] = val;
-    }
-  });
-  return a;
-}
-
-module.exports = {
-  isArray: isArray,
-  isArrayBuffer: isArrayBuffer,
-  isBuffer: isBuffer,
-  isFormData: isFormData,
-  isArrayBufferView: isArrayBufferView,
-  isString: isString,
-  isNumber: isNumber,
-  isObject: isObject,
-  isUndefined: isUndefined,
-  isDate: isDate,
-  isFile: isFile,
-  isBlob: isBlob,
-  isFunction: isFunction,
-  isStream: isStream,
-  isURLSearchParams: isURLSearchParams,
-  isStandardBrowserEnv: isStandardBrowserEnv,
-  forEach: forEach,
-  merge: merge,
-  extend: extend,
-  trim: trim
-};
-
-
-/***/ }),
-
-/***/ 40:
+/* 31 */,
+/* 32 */,
+/* 33 */,
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module, global) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -25930,468 +19829,19 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(21)(module), __webpack_require__(7)))
 
 /***/ }),
-
-/***/ 461:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(76);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'corpussearched', 'corpusloading', 'documentsbycorpus', 'annotationsbycorpus', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
-    methods: {
-        guid: function guid(key) {
-            return key + ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
-                return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
-            });
-        }
-    },
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    mounted: function mounted() {
-        console.log('CorpusResultComponent mounted.');
-    }
-});
-
-/***/ }),
-
-/***/ 462:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'documentsbycorpus', 'annotationsbycorpus', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
-    mounted: function mounted() {
-        console.log('CorpusResultHeaderComponent mounted.');
-    }
-});
-
-/***/ }),
-
-/***/ 463:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(76);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults'],
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    mounted: function mounted() {
-        console.log('CorpusResultComponent mounted.');
-    }
-});
-
-/***/ }),
-
-/***/ 464:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(76);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults'],
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    methods: {
-        getClass: function getClass() {
-            var classes = "collapse";
-            if (this.corpusresults.length >= 1) {
-                classes += " show";
-            }
-            return classes;
-        }
-    },
-    mounted: function mounted() {
-        console.log('CorpusActiveFilterComponent mounted.');
-    }
-});
-
-/***/ }),
-
-/***/ 465:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(76);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults'],
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    methods: {
-        getClass: function getClass() {
-            var classes = "collapse";
-            if (this.corpusresults.length >= 1) {
-                classes += " show";
-            }
-            return classes;
-        }
-    },
-    mounted: function mounted() {
-        console.log('CorpusActiveFilterComponent mounted.');
-    }
-});
-
-/***/ }),
-
-/***/ 466:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(76);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults'],
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    methods: {
-        getClass: function getClass() {
-            var classes = "collapse";
-            if (this.corpusresults.length >= 1) {
-                classes += " show";
-            }
-            return classes;
-        }
-    },
-    mounted: function mounted() {
-        console.log('CorpusActiveFilterComponent mounted.');
-    }
-});
-
-/***/ }),
-
-/***/ 49:
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-window._ = __webpack_require__(40);
+window._ = __webpack_require__(41);
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -26401,7 +19851,7 @@ window._ = __webpack_require__(40);
 
 try {
   //window.$ = window.jQuery = require('jquery');
-  __webpack_require__(50);
+  __webpack_require__(51);
 } catch (e) {}
 
 /**
@@ -26410,7 +19860,7 @@ try {
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = __webpack_require__(51);
+window.axios = __webpack_require__(52);
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -26444,8 +19894,7 @@ if (token) {
 // });
 
 /***/ }),
-
-/***/ 50:
+/* 51 */
 /***/ (function(module, exports) {
 
 /*!
@@ -28828,24 +22277,22 @@ if (typeof jQuery === 'undefined') {
 
 
 /***/ }),
-
-/***/ 51:
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(52);
+module.exports = __webpack_require__(53);
 
 /***/ }),
-
-/***/ 52:
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(4);
-var bind = __webpack_require__(25);
-var Axios = __webpack_require__(54);
-var defaults = __webpack_require__(15);
+var bind = __webpack_require__(26);
+var Axios = __webpack_require__(55);
+var defaults = __webpack_require__(16);
 
 /**
  * Create an instance of Axios
@@ -28878,15 +22325,15 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(29);
-axios.CancelToken = __webpack_require__(68);
-axios.isCancel = __webpack_require__(28);
+axios.Cancel = __webpack_require__(30);
+axios.CancelToken = __webpack_require__(69);
+axios.isCancel = __webpack_require__(29);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(69);
+axios.spread = __webpack_require__(70);
 
 module.exports = axios;
 
@@ -28895,8 +22342,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-
-/***/ 53:
+/* 54 */
 /***/ (function(module, exports) {
 
 /*!
@@ -28923,19 +22369,18 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-
-/***/ 54:
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(15);
+var defaults = __webpack_require__(16);
 var utils = __webpack_require__(4);
-var InterceptorManager = __webpack_require__(63);
-var dispatchRequest = __webpack_require__(64);
-var isAbsoluteURL = __webpack_require__(66);
-var combineURLs = __webpack_require__(67);
+var InterceptorManager = __webpack_require__(64);
+var dispatchRequest = __webpack_require__(65);
+var isAbsoluteURL = __webpack_require__(67);
+var combineURLs = __webpack_require__(68);
 
 /**
  * Create a new instance of Axios
@@ -29017,8 +22462,7 @@ module.exports = Axios;
 
 
 /***/ }),
-
-/***/ 55:
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29037,14 +22481,13 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-
-/***/ 56:
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var createError = __webpack_require__(27);
+var createError = __webpack_require__(28);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -29071,8 +22514,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-
-/***/ 57:
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29100,8 +22542,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-
-/***/ 58:
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29176,8 +22617,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-
-/***/ 59:
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29221,118 +22661,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-
-/***/ 6:
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
-
-/***/ 60:
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29407,8 +22736,7 @@ module.exports = (
 
 
 /***/ }),
-
-/***/ 61:
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29451,8 +22779,7 @@ module.exports = btoa;
 
 
 /***/ }),
-
-/***/ 62:
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29512,8 +22839,7 @@ module.exports = (
 
 
 /***/ }),
-
-/***/ 63:
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29572,17 +22898,16 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-
-/***/ 64:
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(4);
-var transformData = __webpack_require__(65);
-var isCancel = __webpack_require__(28);
-var defaults = __webpack_require__(15);
+var transformData = __webpack_require__(66);
+var isCancel = __webpack_require__(29);
+var defaults = __webpack_require__(16);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -29659,8 +22984,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-
-/***/ 65:
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29687,8 +23011,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-
-/***/ 66:
+/* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29709,8 +23032,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-
-/***/ 67:
+/* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29731,14 +23053,13 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-
-/***/ 68:
+/* 69 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Cancel = __webpack_require__(29);
+var Cancel = __webpack_require__(30);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -29796,8 +23117,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-
-/***/ 69:
+/* 70 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -29831,42 +23151,13 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-
-/***/ 7:
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-
-/***/ 70:
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
  * Created by rolfguescini on 28.06.17.
  */
-Vue = __webpack_require__(17);
+Vue = __webpack_require__(22);
 
 Vue.filter('arrayToString', function (array) {
     var string = '';
@@ -29936,8 +23227,7 @@ Vue.filter('truncatelist', function (string) {
 });
 
 /***/ }),
-
-/***/ 71:
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -29993,7 +23283,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(72);
+__webpack_require__(73);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -30007,8 +23297,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
-
-/***/ 72:
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -30198,11 +23487,10 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(17)))
 
 /***/ }),
-
-/***/ 73:
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -30730,7 +24018,7 @@ function isPrimitive(arg) {
 }
 exports.isPrimitive = isPrimitive;
 
-exports.isBuffer = __webpack_require__(74);
+exports.isBuffer = __webpack_require__(75);
 
 function objectToString(o) {
   return Object.prototype.toString.call(o);
@@ -30774,7 +24062,7 @@ exports.log = function() {
  *     prototype.
  * @param {function} superCtor Constructor function to inherit prototype from.
  */
-exports.inherits = __webpack_require__(75);
+exports.inherits = __webpack_require__(76);
 
 exports._extend = function(origin, add) {
   // Don't do anything if add isn't an object
@@ -30792,11 +24080,10 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(16)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(17)))
 
 /***/ }),
-
-/***/ 74:
+/* 75 */
 /***/ (function(module, exports) {
 
 module.exports = function isBuffer(arg) {
@@ -30807,8 +24094,7 @@ module.exports = function isBuffer(arg) {
 }
 
 /***/ }),
-
-/***/ 75:
+/* 76 */
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -30837,951 +24123,7744 @@ if (typeof Object.create === 'function') {
 
 
 /***/ }),
+/* 77 */,
+/* 78 */,
+/* 79 */,
+/* 80 */,
+/* 81 */,
+/* 82 */,
+/* 83 */,
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */,
+/* 88 */,
+/* 89 */,
+/* 90 */,
+/* 91 */,
+/* 92 */,
+/* 93 */,
+/* 94 */,
+/* 95 */,
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
+/* 105 */,
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */,
+/* 114 */,
+/* 115 */,
+/* 116 */,
+/* 117 */,
+/* 118 */,
+/* 119 */,
+/* 120 */,
+/* 121 */,
+/* 122 */,
+/* 123 */,
+/* 124 */,
+/* 125 */,
+/* 126 */,
+/* 127 */,
+/* 128 */,
+/* 129 */,
+/* 130 */,
+/* 131 */,
+/* 132 */,
+/* 133 */,
+/* 134 */,
+/* 135 */,
+/* 136 */,
+/* 137 */,
+/* 138 */,
+/* 139 */,
+/* 140 */,
+/* 141 */,
+/* 142 */,
+/* 143 */,
+/* 144 */,
+/* 145 */,
+/* 146 */,
+/* 147 */,
+/* 148 */,
+/* 149 */,
+/* 150 */,
+/* 151 */,
+/* 152 */,
+/* 153 */,
+/* 154 */,
+/* 155 */,
+/* 156 */
+/***/ (function(module, exports, __webpack_require__) {
 
-/***/ 76:
+__webpack_require__(157);
+__webpack_require__(193);
+__webpack_require__(195);
+module.exports = __webpack_require__(196);
+
+
+/***/ }),
+/* 157 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* unused harmony export Store */
-/* unused harmony export install */
-/* unused harmony export mapState */
-/* unused harmony export mapMutations */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return mapGetters; });
-/* unused harmony export mapActions */
-/* unused harmony export createNamespacedHelpers */
-/**
- * vuex v2.5.0
- * (c) 2017 Evan You
- * @license MIT
- */
-var applyMixin = function (Vue) {
-  var version = Number(Vue.version.split('.')[0]);
-
-  if (version >= 2) {
-    Vue.mixin({ beforeCreate: vuexInit });
-  } else {
-    // override init and inject vuex init procedure
-    // for 1.x backwards compatibility.
-    var _init = Vue.prototype._init;
-    Vue.prototype._init = function (options) {
-      if ( options === void 0 ) options = {};
-
-      options.init = options.init
-        ? [vuexInit].concat(options.init)
-        : vuexInit;
-      _init.call(this, options);
-    };
-  }
-
-  /**
-   * Vuex init hook, injected into each instances init hooks list.
-   */
-
-  function vuexInit () {
-    var options = this.$options;
-    // store injection
-    if (options.store) {
-      this.$store = typeof options.store === 'function'
-        ? options.store()
-        : options.store;
-    } else if (options.parent && options.parent.$store) {
-      this.$store = options.parent.$store;
-    }
-  }
-};
-
-var devtoolHook =
-  typeof window !== 'undefined' &&
-  window.__VUE_DEVTOOLS_GLOBAL_HOOK__;
-
-function devtoolPlugin (store) {
-  if (!devtoolHook) { return }
-
-  store._devtoolHook = devtoolHook;
-
-  devtoolHook.emit('vuex:init', store);
-
-  devtoolHook.on('vuex:travel-to-state', function (targetState) {
-    store.replaceState(targetState);
-  });
-
-  store.subscribe(function (mutation, state) {
-    devtoolHook.emit('vuex:mutation', mutation, state);
-  });
-}
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__store__ = __webpack_require__(158);
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
- * Get the first item that pass the test
- * by second argument function
- *
- * @param {Array} list
- * @param {Function} f
- * @return {*}
+ * First we will load all of this project's JavaScript dependencies which
+ * includes Vue and other libraries. It is a great starting point when
+ * building robust, powerful web applications using Vue and Laravel.
  */
-/**
- * Deep copy the given object considering circular structure.
- * This function caches all nested objects and its copies.
- * If it detects circular structure, use cached copy to avoid infinite loop.
- *
- * @param {*} obj
- * @param {Array<Object>} cache
- * @return {*}
- */
+
+__webpack_require__(50);
+__webpack_require__(71);
+__webpack_require__(41);
+window.Vue = __webpack_require__(22);
+var util = __webpack_require__(74);
 
 
 /**
- * forEach for object
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
  */
-function forEachValue (obj, fn) {
-  Object.keys(obj).forEach(function (key) { return fn(obj[key], key); });
-}
 
-function isObject (obj) {
-  return obj !== null && typeof obj === 'object'
-}
+Vue.component('generalsearchwrapper', __webpack_require__(159));
+Vue.component('searchfilterwrapper', __webpack_require__(162));
+Vue.component('searchresultwrapper', __webpack_require__(165));
 
-function isPromise (val) {
-  return val && typeof val.then === 'function'
-}
+Vue.component('activefilter', __webpack_require__(168));
+Vue.component('corpusfilter', __webpack_require__(171));
+Vue.component('documentfilter', __webpack_require__(175));
+Vue.component('annotationfilter', __webpack_require__(178));
 
-function assert (condition, msg) {
-  if (!condition) { throw new Error(("[vuex] " + msg)) }
-}
+Vue.component('searchresultheader', __webpack_require__(181));
+Vue.component('corpussearchresult', __webpack_require__(184));
+Vue.component('documentsearchresult', __webpack_require__(187));
+Vue.component('annotationsearchresult', __webpack_require__(190));
 
-var Module = function Module (rawModule, runtime) {
-  this.runtime = runtime;
-  this._children = Object.create(null);
-  this._rawModule = rawModule;
-  var rawState = rawModule.state;
-  this.state = (typeof rawState === 'function' ? rawState() : rawState) || {};
-};
+window.axios.defaults.headers.post['Content-Type'] = 'application/json';
 
-var prototypeAccessors$1 = { namespaced: { configurable: true } };
-
-prototypeAccessors$1.namespaced.get = function () {
-  return !!this._rawModule.namespaced
-};
-
-Module.prototype.addChild = function addChild (key, module) {
-  this._children[key] = module;
-};
-
-Module.prototype.removeChild = function removeChild (key) {
-  delete this._children[key];
-};
-
-Module.prototype.getChild = function getChild (key) {
-  return this._children[key]
-};
-
-Module.prototype.update = function update (rawModule) {
-  this._rawModule.namespaced = rawModule.namespaced;
-  if (rawModule.actions) {
-    this._rawModule.actions = rawModule.actions;
-  }
-  if (rawModule.mutations) {
-    this._rawModule.mutations = rawModule.mutations;
-  }
-  if (rawModule.getters) {
-    this._rawModule.getters = rawModule.getters;
-  }
-};
-
-Module.prototype.forEachChild = function forEachChild (fn) {
-  forEachValue(this._children, fn);
-};
-
-Module.prototype.forEachGetter = function forEachGetter (fn) {
-  if (this._rawModule.getters) {
-    forEachValue(this._rawModule.getters, fn);
-  }
-};
-
-Module.prototype.forEachAction = function forEachAction (fn) {
-  if (this._rawModule.actions) {
-    forEachValue(this._rawModule.actions, fn);
-  }
-};
-
-Module.prototype.forEachMutation = function forEachMutation (fn) {
-  if (this._rawModule.mutations) {
-    forEachValue(this._rawModule.mutations, fn);
-  }
-};
-
-Object.defineProperties( Module.prototype, prototypeAccessors$1 );
-
-var ModuleCollection = function ModuleCollection (rawRootModule) {
-  // register root module (Vuex.Store options)
-  this.register([], rawRootModule, false);
-};
-
-ModuleCollection.prototype.get = function get (path) {
-  return path.reduce(function (module, key) {
-    return module.getChild(key)
-  }, this.root)
-};
-
-ModuleCollection.prototype.getNamespace = function getNamespace (path) {
-  var module = this.root;
-  return path.reduce(function (namespace, key) {
-    module = module.getChild(key);
-    return namespace + (module.namespaced ? key + '/' : '')
-  }, '')
-};
-
-ModuleCollection.prototype.update = function update$1 (rawRootModule) {
-  update([], this.root, rawRootModule);
-};
-
-ModuleCollection.prototype.register = function register (path, rawModule, runtime) {
-    var this$1 = this;
-    if ( runtime === void 0 ) runtime = true;
-
-  if (true) {
-    assertRawModule(path, rawModule);
-  }
-
-  var newModule = new Module(rawModule, runtime);
-  if (path.length === 0) {
-    this.root = newModule;
-  } else {
-    var parent = this.get(path.slice(0, -1));
-    parent.addChild(path[path.length - 1], newModule);
-  }
-
-  // register nested modules
-  if (rawModule.modules) {
-    forEachValue(rawModule.modules, function (rawChildModule, key) {
-      this$1.register(path.concat(key), rawChildModule, runtime);
-    });
-  }
-};
-
-ModuleCollection.prototype.unregister = function unregister (path) {
-  var parent = this.get(path.slice(0, -1));
-  var key = path[path.length - 1];
-  if (!parent.getChild(key).runtime) { return }
-
-  parent.removeChild(key);
-};
-
-function update (path, targetModule, newModule) {
-  if (true) {
-    assertRawModule(path, newModule);
-  }
-
-  // update target module
-  targetModule.update(newModule);
-
-  // update nested modules
-  if (newModule.modules) {
-    for (var key in newModule.modules) {
-      if (!targetModule.getChild(key)) {
-        if (true) {
-          console.warn(
-            "[vuex] trying to add a new module '" + key + "' on hot reloading, " +
-            'manual reload is needed'
-          );
-        }
-        return
-      }
-      update(
-        path.concat(key),
-        targetModule.getChild(key),
-        newModule.modules[key]
-      );
-    }
-  }
-}
-
-var functionAssert = {
-  assert: function (value) { return typeof value === 'function'; },
-  expected: 'function'
-};
-
-var objectAssert = {
-  assert: function (value) { return typeof value === 'function' ||
-    (typeof value === 'object' && typeof value.handler === 'function'); },
-  expected: 'function or object with "handler" function'
-};
-
-var assertTypes = {
-  getters: functionAssert,
-  mutations: functionAssert,
-  actions: objectAssert
-};
-
-function assertRawModule (path, rawModule) {
-  Object.keys(assertTypes).forEach(function (key) {
-    if (!rawModule[key]) { return }
-
-    var assertOptions = assertTypes[key];
-
-    forEachValue(rawModule[key], function (value, type) {
-      assert(
-        assertOptions.assert(value),
-        makeAssertionMessage(path, key, type, value, assertOptions.expected)
-      );
-    });
-  });
-}
-
-function makeAssertionMessage (path, key, type, value, expected) {
-  var buf = key + " should be " + expected + " but \"" + key + "." + type + "\"";
-  if (path.length > 0) {
-    buf += " in module \"" + (path.join('.')) + "\"";
-  }
-  buf += " is " + (JSON.stringify(value)) + ".";
-  return buf
-}
-
-var Vue; // bind on install
-
-var Store = function Store (options) {
-  var this$1 = this;
-  if ( options === void 0 ) options = {};
-
-  // Auto install if it is not done yet and `window` has `Vue`.
-  // To allow users to avoid auto-installation in some cases,
-  // this code should be placed here. See #731
-  if (!Vue && typeof window !== 'undefined' && window.Vue) {
-    install(window.Vue);
-  }
-
-  if (true) {
-    assert(Vue, "must call Vue.use(Vuex) before creating a store instance.");
-    assert(typeof Promise !== 'undefined', "vuex requires a Promise polyfill in this browser.");
-    assert(this instanceof Store, "Store must be called with the new operator.");
-  }
-
-  var plugins = options.plugins; if ( plugins === void 0 ) plugins = [];
-  var strict = options.strict; if ( strict === void 0 ) strict = false;
-
-  var state = options.state; if ( state === void 0 ) state = {};
-  if (typeof state === 'function') {
-    state = state() || {};
-  }
-
-  // store internal state
-  this._committing = false;
-  this._actions = Object.create(null);
-  this._actionSubscribers = [];
-  this._mutations = Object.create(null);
-  this._wrappedGetters = Object.create(null);
-  this._modules = new ModuleCollection(options);
-  this._modulesNamespaceMap = Object.create(null);
-  this._subscribers = [];
-  this._watcherVM = new Vue();
-
-  // bind commit and dispatch to self
-  var store = this;
-  var ref = this;
-  var dispatch = ref.dispatch;
-  var commit = ref.commit;
-  this.dispatch = function boundDispatch (type, payload) {
-    return dispatch.call(store, type, payload)
-  };
-  this.commit = function boundCommit (type, payload, options) {
-    return commit.call(store, type, payload, options)
-  };
-
-  // strict mode
-  this.strict = strict;
-
-  // init root module.
-  // this also recursively registers all sub-modules
-  // and collects all module getters inside this._wrappedGetters
-  installModule(this, state, [], this._modules.root);
-
-  // initialize the store vm, which is responsible for the reactivity
-  // (also registers _wrappedGetters as computed properties)
-  resetStoreVM(this, state);
-
-  // apply plugins
-  plugins.forEach(function (plugin) { return plugin(this$1); });
-
-  if (Vue.config.devtools) {
-    devtoolPlugin(this);
-  }
-};
-
-var prototypeAccessors = { state: { configurable: true } };
-
-prototypeAccessors.state.get = function () {
-  return this._vm._data.$$state
-};
-
-prototypeAccessors.state.set = function (v) {
-  if (true) {
-    assert(false, "Use store.replaceState() to explicit replace store state.");
-  }
-};
-
-Store.prototype.commit = function commit (_type, _payload, _options) {
-    var this$1 = this;
-
-  // check object-style commit
-  var ref = unifyObjectStyle(_type, _payload, _options);
-    var type = ref.type;
-    var payload = ref.payload;
-    var options = ref.options;
-
-  var mutation = { type: type, payload: payload };
-  var entry = this._mutations[type];
-  if (!entry) {
-    if (true) {
-      console.error(("[vuex] unknown mutation type: " + type));
-    }
-    return
-  }
-  this._withCommit(function () {
-    entry.forEach(function commitIterator (handler) {
-      handler(payload);
-    });
-  });
-  this._subscribers.forEach(function (sub) { return sub(mutation, this$1.state); });
-
-  if (
-    "development" !== 'production' &&
-    options && options.silent
-  ) {
-    console.warn(
-      "[vuex] mutation type: " + type + ". Silent option has been removed. " +
-      'Use the filter functionality in the vue-devtools'
-    );
-  }
-};
-
-Store.prototype.dispatch = function dispatch (_type, _payload) {
-    var this$1 = this;
-
-  // check object-style dispatch
-  var ref = unifyObjectStyle(_type, _payload);
-    var type = ref.type;
-    var payload = ref.payload;
-
-  var action = { type: type, payload: payload };
-  var entry = this._actions[type];
-  if (!entry) {
-    if (true) {
-      console.error(("[vuex] unknown action type: " + type));
-    }
-    return
-  }
-
-  this._actionSubscribers.forEach(function (sub) { return sub(action, this$1.state); });
-
-  return entry.length > 1
-    ? Promise.all(entry.map(function (handler) { return handler(payload); }))
-    : entry[0](payload)
-};
-
-Store.prototype.subscribe = function subscribe (fn) {
-  return genericSubscribe(fn, this._subscribers)
-};
-
-Store.prototype.subscribeAction = function subscribeAction (fn) {
-  return genericSubscribe(fn, this._actionSubscribers)
-};
-
-Store.prototype.watch = function watch (getter, cb, options) {
-    var this$1 = this;
-
-  if (true) {
-    assert(typeof getter === 'function', "store.watch only accepts a function.");
-  }
-  return this._watcherVM.$watch(function () { return getter(this$1.state, this$1.getters); }, cb, options)
-};
-
-Store.prototype.replaceState = function replaceState (state) {
-    var this$1 = this;
-
-  this._withCommit(function () {
-    this$1._vm._data.$$state = state;
-  });
-};
-
-Store.prototype.registerModule = function registerModule (path, rawModule, options) {
-    if ( options === void 0 ) options = {};
-
-  if (typeof path === 'string') { path = [path]; }
-
-  if (true) {
-    assert(Array.isArray(path), "module path must be a string or an Array.");
-    assert(path.length > 0, 'cannot register the root module by using registerModule.');
-  }
-
-  this._modules.register(path, rawModule);
-  installModule(this, this.state, path, this._modules.get(path), options.preserveState);
-  // reset store to update getters...
-  resetStoreVM(this, this.state);
-};
-
-Store.prototype.unregisterModule = function unregisterModule (path) {
-    var this$1 = this;
-
-  if (typeof path === 'string') { path = [path]; }
-
-  if (true) {
-    assert(Array.isArray(path), "module path must be a string or an Array.");
-  }
-
-  this._modules.unregister(path);
-  this._withCommit(function () {
-    var parentState = getNestedState(this$1.state, path.slice(0, -1));
-    Vue.delete(parentState, path[path.length - 1]);
-  });
-  resetStore(this);
-};
-
-Store.prototype.hotUpdate = function hotUpdate (newOptions) {
-  this._modules.update(newOptions);
-  resetStore(this, true);
-};
-
-Store.prototype._withCommit = function _withCommit (fn) {
-  var committing = this._committing;
-  this._committing = true;
-  fn();
-  this._committing = committing;
-};
-
-Object.defineProperties( Store.prototype, prototypeAccessors );
-
-function genericSubscribe (fn, subs) {
-  if (subs.indexOf(fn) < 0) {
-    subs.push(fn);
-  }
-  return function () {
-    var i = subs.indexOf(fn);
-    if (i > -1) {
-      subs.splice(i, 1);
-    }
-  }
-}
-
-function resetStore (store, hot) {
-  store._actions = Object.create(null);
-  store._mutations = Object.create(null);
-  store._wrappedGetters = Object.create(null);
-  store._modulesNamespaceMap = Object.create(null);
-  var state = store.state;
-  // init all modules
-  installModule(store, state, [], store._modules.root, true);
-  // reset vm
-  resetStoreVM(store, state, hot);
-}
-
-function resetStoreVM (store, state, hot) {
-  var oldVm = store._vm;
-
-  // bind store public getters
-  store.getters = {};
-  var wrappedGetters = store._wrappedGetters;
-  var computed = {};
-  forEachValue(wrappedGetters, function (fn, key) {
-    // use computed to leverage its lazy-caching mechanism
-    computed[key] = function () { return fn(store); };
-    Object.defineProperty(store.getters, key, {
-      get: function () { return store._vm[key]; },
-      enumerable: true // for local getters
-    });
-  });
-
-  // use a Vue instance to store the state tree
-  // suppress warnings just in case the user has added
-  // some funky global mixins
-  var silent = Vue.config.silent;
-  Vue.config.silent = true;
-  store._vm = new Vue({
+var app = new Vue({
+    el: '#searchApp',
+    store: __WEBPACK_IMPORTED_MODULE_0__store__["a" /* default */],
     data: {
-      $$state: state
+        results: [],
+        corpusresults: [],
+        documentresults: [],
+        annotationresults: [],
+        searches: [],
+        documentsByCorpus: [],
+        annotationsByCorpus: [],
+        corpusByDocument: [],
+        annotationsByDocument: [],
+        documentsByAnnotation: [],
+        corpusByAnnotation: [],
+        corpussearched: false,
+        corpusloading: false,
+        documentsearched: false,
+        documentloading: false,
+        annotationsearched: false,
+        corpusCacheString: "",
+        documentCacheString: "",
+        annotationCacheString: "",
+        annotationloading: false,
+        postAnnotationData: {},
+        corpusresultcounter: 0,
+        documentresultcounter: 0,
+        annotationresultcounter: 0,
+        publishedIndexes: window.laudatioApp.publishedIndexes
     },
-    computed: computed
-  });
-  Vue.config.silent = silent;
+    methods: {
+        askElastic: function askElastic(search) {
+            var _this = this;
 
-  // enable strict mode for new vm
-  if (store.strict) {
-    enableStrictMode(store);
-  }
+            this.corpusloading = true;
+            this.corpusresults = [];
+            this.corpussearched = false;
+            this.corpusCacheString = "";
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+            this.corpusresults = [];
+            this.documentresults = [];
+            this.annotationresults = [];
+            this.corpusresultcounter = 0;
+            this.documentresultcounter = 0;
+            this.annotationresultcounter = 0;
+            if (search.generalSearchTerm != "") {
+                this.searches = [];
+                this.searches.push(search.generalSearchTerm);
+                var postData = {
+                    searchData: {
+                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code",
+                        //"corpus_publication_publication_date",
+                        "document_title", "document_author_forename", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place",
+                        //"document_publication_publishing_date",
+                        "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_tool_version"],
+                        query: "" + search.generalSearchTerm + "",
+                        indices: this.publishedIndexes.allPublishedIndices.join(",")
+                    }
+                };
 
-  if (oldVm) {
-    if (hot) {
-      // dispatch changes in all subscribed watchers
-      // to force getter re-evaluation for hot reloading.
-      store._withCommit(function () {
-        oldVm._data.$$state = null;
-      });
-    }
-    Vue.nextTick(function () { return oldVm.$destroy(); });
-  }
-}
+                var corpus_ids = [];
 
-function installModule (store, rootState, path, module, hot) {
-  var isRoot = !path.length;
-  var namespace = store._modules.getNamespace(path);
+                window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
+                    if (res.data.results.length > 0) {
+                        /*
+                        /* @todo: This is far too brittle: corpus/document/annotation could part of someones corpusname
+                        /* Also: when we publish, the new working version shuffles the corpus/doc/anno keyword foirther than place 0
+                         */
+                        for (var ri = 0; ri < res.data.results.length; ri++) {
+                            console.log(JSON.stringify(res.data.results[ri]._index));
+                            if (res.data.results[ri]._index.indexOf("corpus_") == 0) {
+                                console.log("WE HAVE A CORPUS");
+                                _this.corpusresults.push(res.data.results[ri]);
+                                _this.corpusresultcounter++;
+                            } else if (res.data.results[ri]._index.indexOf("document_") == 0) {
+                                console.log("WE HAVE A DOCUMENT");
+                                _this.documentresults.push(res.data.results[ri]);
+                                _this.documentresultcounter++;
+                            } else if (res.data.results[ri]._index.indexOf("annotation_") == 0) {
+                                console.log("WE HAVE A ANOTATION");
+                                _this.annotationresults.push(res.data.results[ri]);
+                                _this.annotationresultcounter++;
+                            } ///end which index
+                        } //end for results
+                    } //end if results
+                });
 
-  // register in namespace map
-  if (module.namespaced) {
-    store._modulesNamespaceMap[namespace] = module;
-  }
+                console.log("SCORPUS_ " + JSON.stringify(this.corpusresults));
+                console.log("SANNI_ " + JSON.stringify(this.annotationresults));
+                this.corpusloading = false;
+            } else {
+                this.corpusloading = false;
+            }
+        },
+        askElastic_old: function askElastic_old(search) {
+            var _this2 = this;
 
-  // set state
-  if (!isRoot && !hot) {
-    var parentState = getNestedState(rootState, path.slice(0, -1));
-    var moduleName = path[path.length - 1];
-    store._withCommit(function () {
-      Vue.set(parentState, moduleName, module.state);
-    });
-  }
+            this.corpusloading = true;
+            this.corpusresults = [];
+            this.corpussearched = false;
+            this.corpusCacheString = "";
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+            this.corpusresultcounter = 0;
+            this.documentresultcounter = 0;
+            this.annotationresultcounter = 0;
+            if (search.generalSearchTerm != "") {
+                this.searches = [];
+                this.searches.push(search.generalSearchTerm);
+                var postData = {
+                    searchData: {
+                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code",
+                        //"corpus_publication_publication_date",
+                        "document_title", "document_author_forename", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place",
+                        //"document_publication_publishing_date",
+                        "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_tool_version"],
+                        query: "" + search.generalSearchTerm + "",
+                        indices: this.publishedIndexes.allPublishedIndices.join(",")
+                    }
+                };
 
-  var local = module.context = makeLocalContext(store, namespace, path);
+                var corpus_ids = [];
 
-  module.forEachMutation(function (mutation, key) {
-    var namespacedType = namespace + key;
-    registerMutation(store, namespacedType, mutation, local);
-  });
+                window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
+                    _this2.corpussearched = true;
+                    var corpusRefs = [];
+                    //console.log("RES: "+JSON.stringify(res));
 
-  module.forEachAction(function (action, key) {
-    var type = action.root ? key : namespace + key;
-    var handler = action.handler || action;
-    registerAction(store, type, handler, local);
-  });
+                    if (res.data.results.length > 0) {
+                        _this2.corpusresults.push({
+                            search: search.generalSearchTerm,
+                            results: res.data.results,
+                            total: res.data.total
+                        });
 
-  module.forEachGetter(function (getter, key) {
-    var namespacedType = namespace + key;
-    registerGetter(store, namespacedType, getter, local);
-  });
+                        var localCorpusCacheString = "";
+                        var documentIndex = "";
+                        var annotationIndex = "";
 
-  module.forEachChild(function (child, key) {
-    installModule(store, rootState, path.concat(key), child, hot);
-  });
-}
+                        for (var ri = 0; ri < res.data.results.length; ri++) {
+                            corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
+                            corpus_ids.push({
+                                "in_corpora": "" + res.data.results[ri]._source.corpus_id[0] + ""
+                            });
+                            localCorpusCacheString = res.data.results[ri]._source.corpus_id[0];
+                            documentIndex = res.data.results[ri]._index.replace("corpus", "document");
+                            annotationIndex = res.data.results[ri]._index.replace("corpus", "annotation");
+                            _this2.corpusresultcounter++;
+                        }
 
-/**
- * make localized dispatch, commit, getters and state
- * if there is no namespace, just use root ones
- */
-function makeLocalContext (store, namespace, path) {
-  var noNamespace = namespace === '';
+                        if (corpus_ids.length > 0) {
+                            var documentPostData = {
+                                corpus_ids: corpus_ids,
+                                corpusRefs: corpusRefs,
+                                cacheString: localCorpusCacheString,
+                                index: documentIndex,
+                                fields: ["document_title", "document_publication_publishing_date", "document_publication_place", "document_list_of_annotations_id", "in_corpora", "document_size_extent", "document_size_type", "document_author_forename", "document_author_surname"]
+                            };
 
-  var local = {
-    dispatch: noNamespace ? store.dispatch : function (_type, _payload, _options) {
-      var args = unifyObjectStyle(_type, _payload, _options);
-      var payload = args.payload;
-      var options = args.options;
-      var type = args.type;
+                            var annotationPostData = {
+                                corpus_ids: corpus_ids,
+                                corpusRefs: corpusRefs,
+                                cacheString: localCorpusCacheString,
+                                index: annotationIndex,
+                                fields: ["preparation_encoding_annotation_group", "preparation_annotation_id", "_id", "preparation_title", "in_documents", "in_corpora", "preparation_author_annotator_forename", "preparation_author_annotator_surname", "generated_id"]
 
-      if (!options || !options.root) {
-        type = namespace + type;
-        if ("development" !== 'production' && !store._actions[type]) {
-          console.error(("[vuex] unknown local action type: " + (args.type) + ", global type: " + type));
-          return
+                                /**
+                                 * Get all documents contained in the corpora
+                                 */
+                            };window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
+                                if (Object.keys(documentRes.data.results).length > 0) {
+                                    var documentsByCorpusCounter = 0;
+                                    _this2.documentsByCorpus = 0;
+                                    var documentsByCorpus = {};
+                                    Object.keys(documentRes.data.results).forEach(function (key) {
+                                        documentsByCorpus[key] = { results: documentRes.data.results[key] };
+                                        documentsByCorpusCounter += documentRes.data.results[key].length;
+                                    });
+                                    _this2.documentresultcounter = documentsByCorpusCounter;
+                                }
+
+                                _this2.documentsByCorpus = documentsByCorpus;
+                            });
+
+                            /**
+                             * get all annotations contained pro corpus
+                             */
+                            window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(annotationPostData)).then(function (annotationRes) {
+
+                                if (Object.keys(annotationRes.data.results).length > 0) {
+                                    var annotationsByCorpus = {};
+                                    _this2.annotationsByCorpus = 0;
+                                    var annotationsByCorpusCounter = 0;
+                                    Object.keys(annotationRes.data.results).forEach(function (key) {
+                                        annotationsByCorpus[key] = { results: annotationRes.data.results[key] };
+                                        annotationsByCorpusCounter += annotationRes.data.results[key].length;
+                                    });
+                                    _this2.annotationresultcounter = annotationsByCorpusCounter;
+                                }
+                                _this2.annotationsByCorpus = annotationsByCorpus;
+                            });
+                        }
+                        _this2.corpusloading = false;
+                    } else {
+                        _this2.corpusloading = false;
+                    } //end if generaldata
+                });
+            } else {
+                this.corpusloading = false;
+            }
+        },
+        get_if_exist: function get_if_exist(collection, str) {
+            var value = "";
+            for (var i = 0; i < collection.length; i++) {
+                var obj = collection[i];
+                if (obj.hasOwnProperty(str)) {
+                    value = obj[str];
+                }
+            }
+            return value;
+        },
+        remove_if_exist: function remove_if_exist(collection, str) {
+            for (var i = 0; i < collection.length; i++) {
+                var obj = collection[i];
+                if (obj.hasOwnProperty(str)) {
+                    collection.splice(i, 1);
+                }
+            }
+            return collection;
+        },
+
+        submitCorpusSearch: function submitCorpusSearch(corpusSearchObject) {
+            var _this3 = this;
+
+            this.corpusloading = true;
+            this.corpusresults = [];
+            this.corpussearched = false;
+            this.corpusCacheString = "";
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+
+            var postDataCollection = [];
+            var thereAreMore = false;
+            var hasDateAndSize = false;
+            var dateAndSize = ["corpus_publication_publication_date", "corpusYearTo", "corpus_size_value", "corpusSizeTo", "corpusyeartype", "corpussizetype"];
+            for (var p in corpusSearchObject) {
+                if (corpusSearchObject[p].length > 0) {
+                    if (dateAndSize.indexOf(p) > -1 && corpusSearchObject[p] != "" && (corpusSearchObject['corpusyeartype'] == "range" || corpusSearchObject['corpussizetype'] == "range")) {
+                        if (!hasDateAndSize) {
+                            hasDateAndSize = true;
+                        }
+                    } else {
+                        if (!thereAreMore && corpusSearchObject[p] != "") {
+                            thereAreMore = true;
+                        }
+                    }
+
+                    postDataCollection.push(_defineProperty({}, p, corpusSearchObject[p]));
+                    this.corpusCacheString += '|' + p + '|' + corpusSearchObject[p];
+                }
+            }
+
+            if (postDataCollection.length > 0) {
+                console.log(JSON.stringify(postDataCollection));
+
+                var corpusyeartype = this.get_if_exist(postDataCollection, 'corpusyeartype');
+                var corpussizetype = this.get_if_exist(postDataCollection, 'corpussizetype');
+                var corpus_publication_publication_date = this.get_if_exist(postDataCollection, 'corpus_publication_publication_date');
+                var corpusYearTo = this.get_if_exist(postDataCollection, 'corpusYearTo');
+
+                var corpus_size_value = this.get_if_exist(postDataCollection, 'corpus_size_value');
+                var corpusSizeTo = this.get_if_exist(postDataCollection, 'corpusSizeTo');
+
+                if (corpusyeartype && !corpus_publication_publication_date && corpusyeartype && !corpusYearTo) {
+                    postDataCollection = this.remove_if_exist(postDataCollection, "corpusyeartype");
+                }
+
+                if (corpussizetype && !corpus_size_value && corpussizetype && !corpusSizeTo) {
+                    postDataCollection = this.remove_if_exist(postDataCollection, "corpussizetype");
+                }
+
+                if (hasDateAndSize && thereAreMore) {
+                    postDataCollection.push({ "mixedSearch": "true" });
+                } else {
+                    postDataCollection.push({ "mixedSearch": "false" });
+                }
+
+                var postData = {
+                    searchData: postDataCollection,
+                    scope: 'corpus',
+                    cacheString: this.corpusCacheString
+                };
+
+                var corpus_ids = [];
+
+                window.axios.post('api/searchapi/searchCorpus', JSON.stringify(postData)).then(function (res) {
+                    _this3.corpussearched = true;
+                    var corpusRefs = [];
+
+                    if (res.data.results.length > 0) {
+                        _this3.corpusresults.push({
+                            search: postDataCollection,
+                            results: res.data.results,
+                            total: res.data.total
+                        });
+
+                        for (var ri = 0; ri < res.data.results.length; ri++) {
+                            corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
+                            corpus_ids.push({
+                                'in_corpora': '' + res.data.results[ri]._source.corpus_id[0] + ''
+                            });
+                        }
+
+                        if (corpus_ids.length > 0) {
+                            var documentPostData = {
+                                corpus_ids: corpus_ids,
+                                corpusRefs: corpusRefs,
+                                cacheString: _this3.corpusCacheString
+
+                                /**
+                                 * Get all documents contained in the corpora
+                                 */
+                            };window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
+
+                                if (Object.keys(documentRes.data.results).length > 0) {
+                                    var documentsByCorpus = {};
+                                    Object.keys(documentRes.data.results).forEach(function (key) {
+                                        documentsByCorpus[key] = { results: documentRes.data.results[key] };
+                                    });
+                                }
+
+                                _this3.documentsByCorpus = documentsByCorpus;
+                            });
+
+                            /**
+                             * get all annotations contained pro corpus
+                             */
+                            window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(documentPostData)).then(function (annotationRes) {
+
+                                if (Object.keys(annotationRes.data.results).length > 0) {
+                                    var annotationsByCorpus = {};
+                                    Object.keys(annotationRes.data.results).forEach(function (key) {
+                                        annotationsByCorpus[key] = { results: annotationRes.data.results[key] };
+                                    });
+                                }
+                                _this3.annotationsByCorpus = annotationsByCorpus;
+                            });
+                        }
+                    } //end if data
+
+                    _this3.corpussearched = true;
+                    _this3.corpusloading = false;
+                });
+            }
+        },
+
+        submitDocumentSearch: function submitDocumentSearch(documentSearchObject) {
+            var _this4 = this;
+
+            this.documentloading = true;
+            this.documentresults = [];
+            this.documentsearched = false;
+            this.documentCacheString = "";
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+            var postDataCollection = [];
+            var thereAreMore = false;
+            var hasDateAndSize = false;
+            var dateAndSize = ["document_publication_publishing_date", "document_publication_publishing_date_to", "document_size_extent", "document_size_extent_to", "documentyeartype", "documentsizetype"];
+            for (var p in documentSearchObject) {
+                if (documentSearchObject[p].length > 0) {
+                    if (dateAndSize.indexOf(p) > -1 && documentSearchObject[p] != "" && (documentSearchObject['documentyeartype'] == "range" || documentSearchObject['documentsizetype'] == "range")) {
+                        if (!hasDateAndSize) {
+                            hasDateAndSize = true;
+                        }
+                    } else {
+                        if (!thereAreMore && documentSearchObject[p] != "") {
+                            thereAreMore = true;
+                        }
+                    }
+                    postDataCollection.push(_defineProperty({}, p, documentSearchObject[p]));
+                    this.documentCacheString += '|' + p + '|' + documentSearchObject[p];
+                }
+            }
+
+            if (postDataCollection.length > 0) {
+                var postData = {
+                    searchData: postDataCollection,
+                    cacheString: this.documentCacheString,
+                    scope: 'document'
+                };
+
+                var documentyeartype = this.get_if_exist(postDataCollection, 'documentyeartype');
+                var documentsizetype = this.get_if_exist(postDataCollection, 'documentsizetype');
+
+                var document_publication_publishing_date = this.get_if_exist(postDataCollection, 'document_publication_publishing_date');
+                var document_publication_publishing_date_to = this.get_if_exist(postDataCollection, 'document_publication_publishing_date_to');
+                var document_size_extent = this.get_if_exist(postDataCollection, 'document_size_extent');
+                var document_size_extent_to = this.get_if_exist(postDataCollection, 'document_size_extent_to');
+                if (documentyeartype && !document_publication_publishing_date && documentyeartype && !document_publication_publishing_date_to) {
+                    postDataCollection = this.remove_if_exist(postDataCollection, "documentyeartype");
+                }
+
+                if (documentsizetype && !document_size_extent && documentsizetype && !document_size_extent_to) {
+                    postDataCollection = this.remove_if_exist(postDataCollection, "documentsizetype");
+                }
+
+                if (hasDateAndSize && thereAreMore) {
+                    postDataCollection.push({ "mixedSearch": "true" });
+                } else {
+                    postDataCollection.push({ "mixedSearch": "false" });
+                }
+                console.log("POSTDATACOLLECTION: " + JSON.stringify(postData));
+                var that = this;
+                window.axios.post('api/searchapi/searchDocument', JSON.stringify(postData)).then(function (res) {
+                    _this4.documentsearched = true;
+
+                    if (res.data.results.length > 0) {
+
+                        var documentRefs = [];
+                        var corpusRefs = [];
+
+                        var corpus_ids = [];
+                        var document_ids = [];
+
+                        for (var j = 0; j < res.data.results.length; j++) {
+                            var in_corpora = res.data.results[j]._source.in_corpora;
+                            documentRefs.push(res.data.results[j]._id);
+                            document_ids.push({
+                                'in_documents': '' + res.data.results[j]._id + ''
+                            });
+                            if (typeof in_corpora != 'undefined' && in_corpora.length > 0) {
+                                for (var jid = 0; jid < in_corpora.length; jid++) {
+                                    corpusRefs.push({
+                                        '_id': '' + in_corpora[jid] + ''
+                                    });
+                                }
+                            } else if (typeof in_corpora != 'undefined' && in_corpora.length == 0 || typeof in_corpora == 'undefined') {
+                                corpusRefs.push({
+                                    '_id': '0'
+                                });
+                            }
+                        }
+
+                        var annotationPostData = {
+                            documentRefs: documentRefs,
+                            document_ids: document_ids,
+                            cacheString: _this4.documentCacheString
+                        };
+
+                        var corpusPostData = {
+                            documentRefs: documentRefs,
+                            corpusRefs: corpusRefs,
+                            cacheString: _this4.documentCacheString
+                        };
+                        console.log("annotationPostData: " + _this4.documentCacheString);
+                        window.axios.post('api/searchapi/getAnnotationsByDocument', JSON.stringify(annotationPostData)).then(function (annotationRes) {
+                            if (Object.keys(annotationRes.data.results).length > 0) {
+                                var annotationsByDocument = {};
+                                Object.keys(annotationRes.data.results).forEach(function (key) {
+                                    annotationsByDocument[key] = annotationRes.data.results[key];
+                                });
+                            }
+
+                            _this4.annotationsByDocument = annotationsByDocument;
+                        });
+
+                        //console.log("corpusPostData: "+JSON.stringify(corpusPostData));
+                        window.axios.post('api/searchapi/getCorpusByDocument', JSON.stringify(corpusPostData)).then(function (corpusRes) {
+
+                            if (Object.keys(corpusRes.data.results).length > 0) {
+                                var corpusByDocument = {};
+                                Object.keys(corpusRes.data.results).forEach(function (key) {
+                                    corpusByDocument[key] = { results: corpusRes.data.results[key] };
+                                });
+                            }
+
+                            _this4.corpusByDocument = corpusByDocument;
+                        });
+
+                        var postDocumentData = {
+                            documentRefs: documentRefs,
+                            corpusRefs: corpusRefs,
+                            cacheString: _this4.documentCacheString
+                        };
+
+                        window.axios.post('api/searchapi/getCorpusTitlesByDocument', postDocumentData).then(function (corpusByDocumentRes) {
+                            if (Object.keys(corpusByDocumentRes.data.results).length > 0) {
+                                var corpusTitleByDocument = [];
+
+                                Object.keys(corpusByDocumentRes.data.results).forEach(function (key) {
+                                    corpusTitleByDocument[key] = corpusByDocumentRes.data.results[key];
+                                });
+
+                                _this4.documentresults.push({
+                                    search: documentSearchObject.document_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                    corpusByDocument: corpusTitleByDocument
+                                });
+                            } else {
+                                _this4.documentresults.push({
+                                    search: documentSearchObject.document_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                    corpusByDocument: []
+                                });
+                            }
+                        });
+                        _this4.documentloading = false;
+                    }
+                });
+            }
+        },
+        searchAnnotation: function searchAnnotation(postData, postAnnotationData) {
+            var _this5 = this;
+
+            var annotationterms = [];
+
+            window.axios.post('api/searchapi/searchAnnotation', postData).then(function (res) {
+                _this5.annotationsearched = true;
+                console.log("RESSS: " + JSON.stringify(res));
+                var documentRefs = {};
+                var corpusRefs = {};
+                var annotationRefs = [];
+                if (res.data.results.length > 0) {
+
+                    for (var j = 0; j < res.data.results.length; j++) {
+
+                        annotationRefs.push(res.data.results[j]._id);
+                        var id = res.data.results[j]._id;
+
+                        if (typeof documentRefs[id] == 'undefined') {
+                            documentRefs[id] = [];
+                        }
+
+                        if (typeof corpusRefs[id] == 'undefined') {
+                            corpusRefs[id] = [];
+                        }
+
+                        if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length > 0) {
+                            for (var jid = 0; jid < res.data.results[j]._source.in_documents.length; jid++) {
+                                documentRefs[id].push({
+                                    '_id': '' + res.data.results[j]._source.in_documents[jid] + ''
+                                });
+                            }
+                        } else if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length == 0 || typeof res.data.results[j]._source.in_documents == 'undefined') {
+                            documentRefs[id].push({
+                                '_id': '0'
+                            });
+                        }
+
+                        if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length > 0) {
+                            for (var cid = 0; cid < res.data.results[j]._source.in_corpora.length; cid++) {
+                                corpusRefs[id].push({
+                                    '_id': '' + res.data.results[j]._source.in_corpora[cid] + ''
+                                });
+                            }
+                        } else if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length == 0 || typeof res.data.results[j]._source.in_corpora == 'undefined') {
+                            corpusRefs[id].push({
+                                '_id': '0'
+                            });
+                        }
+                    } //end for annotationResults
+
+                    _this5.annotationresults.push({
+                        results: res.data.results,
+                        total: res.data.total
+                    });
+                }
+                _this5.postAnnotationData.corpusRefs = corpusRefs;
+                _this5.postAnnotationData.documentRefs = documentRefs;
+                _this5.postAnnotationData.annotationRefs = annotationRefs;
+            });
+
+            this.postAnnotationData.cacheString = this.annotationCacheString;
+        },
+        getDocumentsByAnnotation: function getDocumentsByAnnotation(postAnnotationData) {
+            var _this6 = this;
+
+            console.log("getDocumentsByAnnotation: " + JSON.stringify(this.postAnnotationData));
+            window.axios.post('api/searchapi/getDocumentsByAnnotation', this.postAnnotationData).then(function (documentsByAnnotationRes) {
+                _this6.annotationsearched = true;
+                console.log("documentsByAnnotationRes: " + documentsByAnnotationRes);
+                if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
+                    var documentsByAnnotation = {};
+                    Object.keys(documentsByAnnotationRes.data.results).forEach(function (key) {
+                        documentsByAnnotation[key] = { results: documentsByAnnotationRes.data.results[key] };
+                    });
+
+                    _this6.documentsByAnnotation = documentsByAnnotation;
+
+                    /*
+                     this.annotationresults.push({
+                     search: annotationSearchObject.preparation_title,
+                     results: res.data.results,
+                     total: res.data.total,
+                     });
+                     */
+                } else {
+                        /*
+                         this.annotationresults.push({
+                         search: annotationSearchObject.preparation_title,
+                         results: res.data.results,
+                         total: res.data.total,
+                         });
+                         */
+                    }
+            });
+        },
+        getCorporaByAnnotation: function getCorporaByAnnotation(postAnnotationData) {
+            var _this7 = this;
+
+            console.log("getCorporaByAnnotation: " + JSON.stringify(this.postAnnotationData));
+            window.axios.post('api/searchapi/getCorporaByAnnotation', this.postAnnotationData).then(function (corpussByAnnotationRes) {
+
+                if (Object.keys(corpussByAnnotationRes.data.results).length > 0) {
+                    var corpusByAnnotation = {};
+                    Object.keys(corpussByAnnotationRes.data.results).forEach(function (key) {
+                        corpusByAnnotation[key] = { results: corpussByAnnotationRes.data.results[key] };
+                    });
+
+                    _this7.corpusByAnnotation = corpusByAnnotation;
+                }
+            });
+        },
+        removeAnnotationSpinner: function removeAnnotationSpinner() {
+            this.annotationsearched = true;
+            this.annotationloading = true;
+        },
+        submitAnnotationSearch: function submitAnnotationSearch(annotationSearchObject) {
+            var _this8 = this;
+
+            this.annotationloading = true;
+            this.annotationresults = [];
+            this.annotationsearched = false;
+            var postAnnotationData = {};
+            var postDataCollection = [];
+
+            this.annotationCacheString = "";
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+            var documentsByAnnotationTime = 0;
+
+            for (var p in annotationSearchObject) {
+                if (annotationSearchObject[p].length > 0) {
+                    postDataCollection.push(_defineProperty({}, p, annotationSearchObject[p]));
+                    this.annotationCacheString += '|' + p + '|' + annotationSearchObject[p];
+                }
+            }
+
+            if (postDataCollection.length > 0) {
+                var postData = {
+                    searchData: postDataCollection,
+                    cacheString: this.annotationCacheString,
+                    scope: 'annotation'
+                };
+                var searchAnnotation0 = performance.now();
+                window.axios.post('api/searchapi/searchAnnotation', postData).then(function (res) {
+                    _this8.annotationsearched = true;
+                    if (res.data.results.length > 0) {
+                        var annotationterms = [];
+
+                        var documentRefs = {};
+                        var corpusRefs = {};
+                        var annotationRefs = [];
+
+                        for (var j = 0; j < res.data.results.length; j++) {
+
+                            annotationRefs.push(res.data.results[j]._id);
+                            var id = res.data.results[j]._id;
+
+                            if (typeof documentRefs[id] == 'undefined') {
+                                documentRefs[id] = [];
+                            }
+
+                            if (typeof corpusRefs[id] == 'undefined') {
+                                corpusRefs[id] = [];
+                            }
+
+                            if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length >= 1) {
+                                for (var jid = 0; jid < res.data.results[j]._source.in_documents.length; jid++) {
+                                    documentRefs[id].push({
+                                        '_id': '' + res.data.results[j]._source.in_documents[jid] + ''
+                                    });
+                                }
+                            }
+
+                            if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length >= 1) {
+                                for (var cid = 0; cid < res.data.results[j]._source.in_corpora.length; cid++) {
+                                    corpusRefs[id].push({
+                                        '_id': '' + res.data.results[j]._source.in_corpora[cid] + ''
+                                    });
+                                }
+                            }
+                        } //end for annotationResults
+                        var searchAnnotation1 = performance.now();
+                        console.log("searchAnnotation took " + (searchAnnotation1 - searchAnnotation0) + " milliseconds.");
+
+                        postAnnotationData.corpusRefs = corpusRefs;
+                        postAnnotationData.documentRefs = documentRefs;
+                        postAnnotationData.annotationRefs = annotationRefs;
+                        postAnnotationData.cacheString = _this8.annotationCacheString;
+                        console.log("getDocumentsByAnnotation  " + JSON.stringify(postAnnotationData));
+                        var getDocumentsByAnnotation1 = performance.now();
+
+                        window.axios.post('api/searchapi/getDocumentsByAnnotation', postAnnotationData).then(function (documentsByAnnotationRes) {
+                            _this8.annotationsearched = true;
+                            if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
+                                var documentsByAnnotation = {};
+                                Object.keys(documentsByAnnotationRes.data.results).forEach(function (key) {
+                                    documentsByAnnotation[key] = { results: documentsByAnnotationRes.data.results[key] };
+                                });
+
+                                _this8.documentsByAnnotation = documentsByAnnotation;
+                            }
+                        });
+
+                        var getDocumentsByAnnotation2 = performance.now();
+                        console.log("getDocumentsByAnnotation took " + (getDocumentsByAnnotation2 - getDocumentsByAnnotation1) + " milliseconds.");
+                        documentsByAnnotationTime += getDocumentsByAnnotation2 - getDocumentsByAnnotation1;
+
+                        var getCorporaByAnnotation1 = performance.now();
+                        window.axios.post('api/searchapi/getCorporaByAnnotation', postAnnotationData).then(function (corpussByAnnotationRes) {
+
+                            if (Object.keys(corpussByAnnotationRes.data.results).length > 0) {
+                                var corpusByAnnotation = {};
+                                Object.keys(corpussByAnnotationRes.data.results).forEach(function (key) {
+                                    corpusByAnnotation[key] = { results: corpussByAnnotationRes.data.results[key] };
+                                });
+
+                                _this8.corpusByAnnotation = corpusByAnnotation;
+
+                                _this8.annotationresults.push({
+                                    search: annotationSearchObject.preparation_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                    took: res.data.milliseconds
+                                });
+                            } else {
+                                _this8.annotationresults.push({
+                                    search: annotationSearchObject.preparation_title,
+                                    results: res.data.results,
+                                    total: res.data.total,
+                                    took: res.data.milliseconds
+                                });
+                            }
+                        });
+                        _this8.annotationloading = false;
+                        var getCorporaByAnnotation2 = performance.now();
+                        console.log("getCorporaByAnnotation took " + (getCorporaByAnnotation2 - getCorporaByAnnotation1) + " milliseconds.");
+                    }
+                });
+            }
+            console.log("DocumentsByAnnotation total took " + documentsByAnnotationTime + " milliseconds.");
         }
-      }
-
-      return store.dispatch(type, payload)
-    },
-
-    commit: noNamespace ? store.commit : function (_type, _payload, _options) {
-      var args = unifyObjectStyle(_type, _payload, _options);
-      var payload = args.payload;
-      var options = args.options;
-      var type = args.type;
-
-      if (!options || !options.root) {
-        type = namespace + type;
-        if ("development" !== 'production' && !store._mutations[type]) {
-          console.error(("[vuex] unknown local mutation type: " + (args.type) + ", global type: " + type));
-          return
-        }
-      }
-
-      store.commit(type, payload, options);
     }
-  };
-
-  // getters and state object must be gotten lazily
-  // because they will be changed by vm update
-  Object.defineProperties(local, {
-    getters: {
-      get: noNamespace
-        ? function () { return store.getters; }
-        : function () { return makeLocalGetters(store, namespace); }
-    },
-    state: {
-      get: function () { return getNestedState(store.state, path); }
-    }
-  });
-
-  return local
-}
-
-function makeLocalGetters (store, namespace) {
-  var gettersProxy = {};
-
-  var splitPos = namespace.length;
-  Object.keys(store.getters).forEach(function (type) {
-    // skip if the target getter is not match this namespace
-    if (type.slice(0, splitPos) !== namespace) { return }
-
-    // extract local getter type
-    var localType = type.slice(splitPos);
-
-    // Add a port to the getters proxy.
-    // Define as getter property because
-    // we do not want to evaluate the getters in this time.
-    Object.defineProperty(gettersProxy, localType, {
-      get: function () { return store.getters[type]; },
-      enumerable: true
-    });
-  });
-
-  return gettersProxy
-}
-
-function registerMutation (store, type, handler, local) {
-  var entry = store._mutations[type] || (store._mutations[type] = []);
-  entry.push(function wrappedMutationHandler (payload) {
-    handler.call(store, local.state, payload);
-  });
-}
-
-function registerAction (store, type, handler, local) {
-  var entry = store._actions[type] || (store._actions[type] = []);
-  entry.push(function wrappedActionHandler (payload, cb) {
-    var res = handler.call(store, {
-      dispatch: local.dispatch,
-      commit: local.commit,
-      getters: local.getters,
-      state: local.state,
-      rootGetters: store.getters,
-      rootState: store.state
-    }, payload, cb);
-    if (!isPromise(res)) {
-      res = Promise.resolve(res);
-    }
-    if (store._devtoolHook) {
-      return res.catch(function (err) {
-        store._devtoolHook.emit('vuex:error', err);
-        throw err
-      })
-    } else {
-      return res
-    }
-  });
-}
-
-function registerGetter (store, type, rawGetter, local) {
-  if (store._wrappedGetters[type]) {
-    if (true) {
-      console.error(("[vuex] duplicate getter key: " + type));
-    }
-    return
-  }
-  store._wrappedGetters[type] = function wrappedGetter (store) {
-    return rawGetter(
-      local.state, // local state
-      local.getters, // local getters
-      store.state, // root state
-      store.getters // root getters
-    )
-  };
-}
-
-function enableStrictMode (store) {
-  store._vm.$watch(function () { return this._data.$$state }, function () {
-    if (true) {
-      assert(store._committing, "Do not mutate vuex store state outside mutation handlers.");
-    }
-  }, { deep: true, sync: true });
-}
-
-function getNestedState (state, path) {
-  return path.length
-    ? path.reduce(function (state, key) { return state[key]; }, state)
-    : state
-}
-
-function unifyObjectStyle (type, payload, options) {
-  if (isObject(type) && type.type) {
-    options = payload;
-    payload = type;
-    type = type.type;
-  }
-
-  if (true) {
-    assert(typeof type === 'string', ("Expects string as the type, but found " + (typeof type) + "."));
-  }
-
-  return { type: type, payload: payload, options: options }
-}
-
-function install (_Vue) {
-  if (Vue && _Vue === Vue) {
-    if (true) {
-      console.error(
-        '[vuex] already installed. Vue.use(Vuex) should be called only once.'
-      );
-    }
-    return
-  }
-  Vue = _Vue;
-  applyMixin(Vue);
-}
-
-var mapState = normalizeNamespace(function (namespace, states) {
-  var res = {};
-  normalizeMap(states).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    res[key] = function mappedState () {
-      var state = this.$store.state;
-      var getters = this.$store.getters;
-      if (namespace) {
-        var module = getModuleByNamespace(this.$store, 'mapState', namespace);
-        if (!module) {
-          return
-        }
-        state = module.context.state;
-        getters = module.context.getters;
-      }
-      return typeof val === 'function'
-        ? val.call(this, state, getters)
-        : state[val]
-    };
-    // mark vuex getter for devtools
-    res[key].vuex = true;
-  });
-  return res
 });
 
-var mapMutations = normalizeNamespace(function (namespace, mutations) {
-  var res = {};
-  normalizeMap(mutations).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
+/***/ }),
+/* 158 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-    res[key] = function mappedMutation () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(13);
 
-      var commit = this.$store.commit;
-      if (namespace) {
-        var module = getModuleByNamespace(this.$store, 'mapMutations', namespace);
-        if (!module) {
-          return
-        }
-        commit = module.context.commit;
-      }
-      return typeof val === 'function'
-        ? val.apply(this, [commit].concat(args))
-        : commit.apply(this.$store, [val].concat(args))
-    };
-  });
-  return res
-});
 
-var mapGetters = normalizeNamespace(function (namespace, getters) {
-  var res = {};
-  normalizeMap(getters).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
 
-    val = namespace + val;
-    res[key] = function mappedGetter () {
-      if (namespace && !getModuleByNamespace(this.$store, 'mapGetters', namespace)) {
-        return
-      }
-      if ("development" !== 'production' && !(val in this.$store.getters)) {
-        console.error(("[vuex] unknown getter: " + val));
-        return
-      }
-      return this.$store.getters[val]
-    };
-    // mark vuex getter for devtools
-    res[key].vuex = true;
-  });
-  return res
-});
-
-var mapActions = normalizeNamespace(function (namespace, actions) {
-  var res = {};
-  normalizeMap(actions).forEach(function (ref) {
-    var key = ref.key;
-    var val = ref.val;
-
-    res[key] = function mappedAction () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
-      var dispatch = this.$store.dispatch;
-      if (namespace) {
-        var module = getModuleByNamespace(this.$store, 'mapActions', namespace);
-        if (!module) {
-          return
-        }
-        dispatch = module.context.dispatch;
-      }
-      return typeof val === 'function'
-        ? val.apply(this, [dispatch].concat(args))
-        : dispatch.apply(this.$store, [val].concat(args))
-    };
-  });
-  return res
-});
-
-var createNamespacedHelpers = function (namespace) { return ({
-  mapState: mapState.bind(null, namespace),
-  mapGetters: mapGetters.bind(null, namespace),
-  mapMutations: mapMutations.bind(null, namespace),
-  mapActions: mapActions.bind(null, namespace)
-}); };
-
-function normalizeMap (map) {
-  return Array.isArray(map)
-    ? map.map(function (key) { return ({ key: key, val: key }); })
-    : Object.keys(map).map(function (key) { return ({ key: key, val: map[key] }); })
-}
-
-function normalizeNamespace (fn) {
-  return function (namespace, map) {
-    if (typeof namespace !== 'string') {
-      map = namespace;
-      namespace = '';
-    } else if (namespace.charAt(namespace.length - 1) !== '/') {
-      namespace += '/';
-    }
-    return fn(namespace, map)
-  }
-}
-
-function getModuleByNamespace (store, helper, namespace) {
-  var module = store._modulesNamespaceMap[namespace];
-  if ("development" !== 'production' && !module) {
-    console.error(("[vuex] module namespace not found in " + helper + "(): " + namespace));
-  }
-  return module
-}
-
-var index_esm = {
-  Store: Store,
-  install: install,
-  version: '2.5.0',
-  mapState: mapState,
-  mapMutations: mapMutations,
-  mapGetters: mapGetters,
-  mapActions: mapActions,
-  createNamespacedHelpers: createNamespacedHelpers
+var initialState = {
+    "token": null,
+    "user": {}
 };
 
+/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
+    state: {
+        documentsByCorpus: [],
+        annotationsByCorpus: [],
+        corpusByDocument: [],
+        annotationsByDocument: [],
+        corpusByAnnotation: [],
+        documentsByAnnotation: []
+    },
 
-/* harmony default export */ __webpack_exports__["a"] = (index_esm);
+    actions: {
+        documentByCorpus: function documentByCorpus(_ref, documents) {
+            var commit = _ref.commit;
 
+            commit('PUSH_DOCUMENT_BY_CORPUS', documents);
+        },
+        annotationByCorpus: function annotationByCorpus(_ref2, annotations) {
+            var commit = _ref2.commit;
+
+            commit('PUSH_ANNOTATION_BY_CORPUS', annotations);
+        },
+        annotationByDocument: function annotationByDocument(_ref3, annotations) {
+            var commit = _ref3.commit;
+
+            commit('PUSH_ANNOTATION_BY_DOCUMENT', annotations);
+        },
+        corpusByDocument: function corpusByDocument(_ref4, corpora) {
+            var commit = _ref4.commit;
+
+            commit('PUSH_CORPUS_BY_DOCUMENT', corpora);
+        },
+        documentByAnnotation: function documentByAnnotation(_ref5, documents) {
+            var commit = _ref5.commit;
+
+            commit('PUSH_DOCUMENT_BY_ANNOTATION', documents);
+        },
+        corpusByAnnotation: function corpusByAnnotation(_ref6, corpora) {
+            var commit = _ref6.commit;
+
+            commit('PUSH_CORPUS_BY_ANNOTATION', corpora);
+        },
+        clearCorpus: function clearCorpus(_ref7, corpora) {
+            var commit = _ref7.commit;
+
+            commit('CLEAR_CORPUS_STATE', corpora);
+        },
+        clearDocuments: function clearDocuments(_ref8, documents) {
+            var commit = _ref8.commit;
+
+            commit('CLEAR_DOCUMENT_STATE', documents);
+        },
+        clearAnnotations: function clearAnnotations(_ref9, documents) {
+            var commit = _ref9.commit;
+
+            commit('CLEAR_ANNOTATION_STATE', documents);
+        }
+    },
+    getters: {
+        corpusdocuments: function corpusdocuments(state) {
+            return state.documentsByCorpus;
+        },
+        corpusannotations: function corpusannotations(state) {
+            return state.annotationsByCorpus;
+        },
+        documentannotations: function documentannotations(state) {
+            return state.annotationsByDocument;
+        },
+        documentcorpus: function documentcorpus(state) {
+            return state.corpusByDocument;
+        },
+        annotationcorpus: function annotationcorpus(state) {
+            return state.corpusByAnnotation;
+        },
+        annotationdocuments: function annotationdocuments(state) {
+            return state.documentsByAnnotation;
+        }
+
+    },
+    mutations: {
+        PUSH_DOCUMENT_BY_CORPUS: function PUSH_DOCUMENT_BY_CORPUS(state, documents) {
+            state.documentsByCorpus.push(documents);
+        },
+        PUSH_ANNOTATION_BY_CORPUS: function PUSH_ANNOTATION_BY_CORPUS(state, annotations) {
+            state.annotationsByCorpus.push(annotations);
+        },
+        PUSH_ANNOTATION_BY_DOCUMENT: function PUSH_ANNOTATION_BY_DOCUMENT(state, annotations) {
+            state.annotationsByDocument.push(annotations);
+        },
+        PUSH_CORPUS_BY_DOCUMENT: function PUSH_CORPUS_BY_DOCUMENT(state, corpora) {
+            state.corpusByDocument.push(corpora);
+        },
+        PUSH_DOCUMENT_BY_ANNOTATION: function PUSH_DOCUMENT_BY_ANNOTATION(state, documents) {
+            state.documentsByAnnotation.push(documents);
+        },
+        PUSH_CORPUS_BY_ANNOTATION: function PUSH_CORPUS_BY_ANNOTATION(state, corpora) {
+            state.corpusByAnnotation.push(corpora);
+        },
+        CLEAR_CORPUS_STATE: function CLEAR_CORPUS_STATE(state, corpora) {
+            while (state.corpusByDocument.length > 0) {
+                state.corpusByDocument.pop();
+            }
+
+            while (state.corpusByAnnotation.length > 0) {
+                state.corpusByAnnotation.pop();
+            }
+        },
+        CLEAR_DOCUMENT_STATE: function CLEAR_DOCUMENT_STATE(state, documents) {
+            while (state.documentsByCorpus.length > 0) {
+                state.documentsByCorpus.pop();
+            }
+
+            while (state.documentsByAnnotation.length > 0) {
+                state.documentsByAnnotation.pop();
+            }
+        },
+        CLEAR_ANNOTATION_STATE: function CLEAR_ANNOTATION_STATE(state, annotations) {
+            while (state.annotationsByCorpus.length > 0) {
+                state.annotationsByCorpus.pop();
+            }
+            while (state.annotationsByDocument.length > 0) {
+                state.annotationsByDocument.pop();
+            }
+        }
+    }
+}));
+
+/***/ }),
+/* 159 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(160)
+/* template */
+var __vue_template__ = __webpack_require__(161)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/GeneralSearchWrapper.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1b5752fa", Component.options)
+  } else {
+    hotAPI.reload("data-v-1b5752fa", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 160 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            generalSearchTerm: ''
+        };
+    },
+
+    props: ['results'],
+    methods: {
+        searchGeneral: function searchGeneral() {
+            this.$emit('searchedgeneral', {
+                generalSearchTerm: this.generalSearchTerm,
+                scope: 'general'
+            });
+            this.generalSearchTerm = '';
+        }
+    },
+    mounted: function mounted() {
+        console.log('General SearchComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 161 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass:
+        "col-6 d-flex justify-content-center align-items-center ml-auto mr-auto"
+    },
+    [
+      _c("form", { staticClass: "form-group serviceBarSearch w-100" }, [
+        _c("div", { staticClass: "input-group" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.generalSearchTerm,
+                expression: "generalSearchTerm"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              placeholder: "Search metadata (German or English)",
+              "aria-label": "search metadata",
+              "aria-describedby": "basic-addon2"
+            },
+            domProps: { value: _vm.generalSearchTerm },
+            on: {
+              keyup: function($event) {
+                if (
+                  !("button" in $event) &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.searchGeneral($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.generalSearchTerm = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group-append" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-corpus-dark pl-4 pr-4",
+                attrs: { type: "button" },
+                on: { click: _vm.searchGeneral }
+              },
+              [
+                _c("i", {
+                  staticClass: "text-primary fa fa-fw fa-search fa-lg "
+                })
+              ]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("i", {
+        staticClass: "btn p-0 fa fa-info-circle fa-fw fa-lg ml-3",
+        attrs: {
+          "data-toggle": "tooltip",
+          role: "button",
+          "data-placement": "bottom",
+          title: "Get help how to search"
+        }
+      })
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "clear-search close",
+        attrs: { type: "button", "aria-label": "Close" }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1b5752fa", module.exports)
+  }
+}
+
+/***/ }),
+/* 162 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(163)
+/* template */
+var __vue_template__ = __webpack_require__(164)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/SearchFilterWrapper.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5d977368", Component.options)
+  } else {
+    hotAPI.reload("data-v-5d977368", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 163 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults'],
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    mounted: function mounted() {
+        console.log('CorpusResultComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 164 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "col-3 " }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [_c("activefilter", { attrs: { corpusresults: _vm.corpusresults } })],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [_c("corpusfilter", { attrs: { corpusresults: _vm.corpusresults } })],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [_c("documentfilter", { attrs: { corpusresults: _vm.corpusresults } })],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [_c("annotationfilter", { attrs: { corpusresults: _vm.corpusresults } })],
+      1
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "d-flex justify-content-between mt-7 mb-3" },
+      [_c("h3", { staticClass: "h3 font-weight-normal" }, [_vm._v("Filter")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-5d977368", module.exports)
+  }
+}
+
+/***/ }),
+/* 165 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(166)
+/* template */
+var __vue_template__ = __webpack_require__(167)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/SearchResultWrapper.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-028d3ef2", Component.options)
+  } else {
+    hotAPI.reload("data-v-028d3ef2", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 166 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'corpussearched', 'corpusloading', 'documentsbycorpus', 'annotationsbycorpus', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    methods: {
+        guid: function guid(key) {
+            return key + ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
+                return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
+            });
+        }
+    },
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    mounted: function mounted() {
+        console.log('CorpusResultComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 167 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "col" },
+    [
+      _c("i", {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.corpusloading,
+            expression: "corpusloading"
+          }
+        ],
+        staticClass: "fa fa-circle-o-notch fa-spin fa-3x fa-fw"
+      }),
+      _vm._v(" "),
+      _c(
+        "span",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.corpusloading,
+              expression: "corpusloading"
+            }
+          ],
+          staticClass: "sr-only"
+        },
+        [_vm._v("Loading...")]
+      ),
+      _vm._v(" "),
+      _vm.searches != "undefined" &&
+      _vm.searches.length >= 1 &&
+      _vm.corpusresults != "undefined" &&
+      _vm.corpusresults.length >= 1
+        ? _c("h3", { staticClass: "h3 font-weight-normal mb-4" }, [
+            _vm._v(
+              '\n        Results for the search "' +
+                _vm._s(_vm.searches.join(" ")) +
+                '"'
+            )
+          ])
+        : _vm.corpusresults != "undefined" &&
+          _vm.corpusresults.length < 1 &&
+          _vm.corpussearched &&
+          !_vm.corpusloading
+          ? _c(
+              "div",
+              {
+                staticClass: "alert alert-info alert-dismissible fade show",
+                attrs: { role: "alert" }
+              },
+              [
+                _c("strong", [
+                  _vm._v("The search "),
+                  _c("i", [_vm._v('"' + _vm._s(_vm.searches.join(" ")) + '"')]),
+                  _vm._v(" returned no results!")
+                ]),
+                _vm._v(" "),
+                _vm._m(0)
+              ]
+            )
+          : _vm._e(),
+      _vm._v(" "),
+      _c("searchresultheader", {
+        attrs: {
+          corpusresults: _vm.corpusresults,
+          documentresults: _vm.documentresults,
+          annotationresults: _vm.annotationresults,
+          documentsbycorpus: _vm.documentsbycorpus,
+          annotationsbycorpus: _vm.annotationsbycorpus,
+          corpusresultcounter: _vm.corpusresultcounter,
+          documentresultcounter: _vm.documentresultcounter,
+          annotationresultcounter: _vm.annotationresultcounter
+        }
+      }),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "tab-content" },
+        [
+          _vm._l(_vm.corpusresults, function(corpusresult, index) {
+            return _vm.corpusresults != "undefined" &&
+              _vm.corpusresults.length >= 1
+              ? _c("corpussearchresult", {
+                  key: _vm.guid(index),
+                  attrs: {
+                    corpusresult: corpusresult,
+                    documentsbycorpus: _vm.documentsbycorpus,
+                    annotationsbycorpus: _vm.annotationsbycorpus
+                  }
+                })
+              : _vm._e()
+          }),
+          _vm._v(" "),
+          _vm._l(_vm.documentresults, function(documentresult, documentindex) {
+            return _vm.documentresults != "undefined" &&
+              _vm.documentresults.length >= 1
+              ? _c("documentsearchresult", {
+                  key: _vm.guid(documentindex),
+                  attrs: { documentresult: documentresult }
+                })
+              : _vm._e()
+          }),
+          _vm._v(" "),
+          _c("annotationsearchresult", {
+            attrs: { annotationresults: _vm.annotationresults }
+          })
+        ],
+        2
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "alert",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-028d3ef2", module.exports)
+  }
+}
+
+/***/ }),
+/* 168 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(169)
+/* template */
+var __vue_template__ = __webpack_require__(170)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ActiveFilter.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-62a9a656", Component.options)
+  } else {
+    hotAPI.reload("data-v-62a9a656", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 169 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults'],
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    methods: {
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        }
+    },
+    mounted: function mounted() {
+        console.log('CorpusActiveFilterComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 170 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelActives" } }, [
+      _vm._m(1)
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
+        attrs: {
+          "data-toggle": "collapse",
+          "data-target": "#formPanelActives",
+          "aria-expanded": "true",
+          "aria-controls": "formPanelActives"
+        }
+      },
+      [
+        _c("span", [_vm._v("Active Filter (1)")]),
+        _vm._v(" "),
+        _c("i", {
+          staticClass:
+            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "card-body p-1" }, [
+      _c("form", { attrs: { action: "" } }, [
+        _c("div", { staticClass: "d-flex flex-wrap py-2" }, [
+          _c("div", { staticClass: "m-1" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                attrs: { href: "#" }
+              },
+              [
+                _c("i", { staticClass: "fa fa-close fa-fw" }),
+                _vm._v(
+                  "\n                            FilterValue\n                        "
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "m-1" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                attrs: { href: "#" }
+              },
+              [
+                _c("i", { staticClass: "fa fa-close fa-fw" }),
+                _vm._v(
+                  "\n                            FilValue\n                        "
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "m-1" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                attrs: { href: "#" }
+              },
+              [
+                _c("i", { staticClass: "fa fa-close fa-fw" }),
+                _vm._v(
+                  "\n                            FilterValue 323\n                        "
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "m-1" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                attrs: { href: "#" }
+              },
+              [
+                _c("i", { staticClass: "fa fa-close fa-fw" }),
+                _vm._v(
+                  "\n                            14511551\n                        "
+                )
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "m-1" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                attrs: { href: "#" }
+              },
+              [
+                _c("i", { staticClass: "fa fa-close fa-fw" }),
+                _vm._v(
+                  "\n                            FilterValue\n                        "
+                )
+              ]
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "d-flex flex-column" }, [
+          _c(
+            "a",
+            {
+              staticClass:
+                "align-self-end text-uppercase text-dark text-12 p-2",
+              attrs: { href: "#", role: "button" }
+            },
+            [
+              _vm._v(
+                "\n                        Clear all Filter\n                    "
+              )
+            ]
+          )
+        ])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-62a9a656", module.exports)
+  }
+}
+
+/***/ }),
+/* 171 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(172)
+/* template */
+var __vue_template__ = __webpack_require__(174)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/CorpusFilter.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-b27cc1d2", Component.options)
+  } else {
+    hotAPI.reload("data-v-b27cc1d2", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 172 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults'],
+    data: function data() {
+        return {
+            corpusSearchData: {
+                corpus_title: '',
+                corpus_publication_publisher: '',
+                corpus_editor_forename: '',
+                corpus_editor_surname: '',
+                corpus_merged_editors: '',
+                corpus_publication_publication_date: '',
+                corpusYearTo: '',
+                corpusyeartype: 'exact',
+                corpussizetype: 'exact',
+                corpus_size_value: '',
+                corpusSizeTo: '',
+                corpus_merged_languages: '',
+                corpus_merged_formats: '',
+                corpus_publication_license: ''
+            },
+            scope: 'corpus'
+        };
+    },
+    methods: {
+        emitCorpusData: function emitCorpusData() {
+
+            this.$emit('corpus-search', this.corpusSearchData);
+        },
+
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        }
+    },
+    mounted: function mounted() {
+        console.log('CorpusFilterBlock mounted.');
+    }
+});
+
+$(function () {
+    var rangeSliderList = ['corpusSize'];
+
+    var _loop = function _loop() {
+        var i = h;
+
+        var el = document.getElementById(rangeSliderList[i]);
+
+        if (el) {
+            //console.log("el: "+el)
+            el.style.height = '8px';
+            el.style.margin = '0 auto 8px';
+
+            noUiSlider.create(el, {
+                animate: true,
+                start: [1, 999999], // 4 handles, starting at...
+                margin: 1, // Handles must be at least 300 apart
+                limit: 999998, // ... but no more than 600
+                connect: true, // Display a colored bar between the handles
+                orientation: 'horizontal', // Orient the slider vertically
+                behaviour: 'tap-drag', // Move handle on tap, bar is draggable
+                step: 1,
+
+                range: {
+                    'min': 1,
+                    'max': 999999
+                }
+            });
+
+            var paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
+                paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
+
+            el.noUiSlider.on('update', function (values, handle) {
+                //console.log($(el).attr("id")+handle+" => "+values)
+                if (handle) {
+                    //this.corpusSearchData
+                    paddingMax.innerHTML = Math.round(values[handle]);
+                } else {
+                    paddingMin.innerHTML = Math.round(values[handle]);
+                }
+            });
+
+            el.noUiSlider.on('change', function () {
+                // Validate corresponding form
+                var parentForm = $(el).closest('form');
+                $(parentForm).find('*[type=submit]').removeClass('disabled');
+            });
+        }
+    };
+
+    for (var h = 0; h < rangeSliderList.length; h++) {
+        _loop();
+    }
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(173)))
+
+/***/ }),
+/* 173 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! nouislider - 12.0.0 - 9/14/2018 */
+(function(factory) {
+    if (true) {
+        // AMD. Register as an anonymous module.
+        !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    } else if (typeof exports === "object") {
+        // Node/CommonJS
+        module.exports = factory();
+    } else {
+        // Browser globals
+        window.noUiSlider = factory();
+    }
+})(function() {
+    "use strict";
+
+    var VERSION = "12.0.0";
+
+    function isValidFormatter(entry) {
+        return typeof entry === "object" && typeof entry.to === "function" && typeof entry.from === "function";
+    }
+
+    function removeElement(el) {
+        el.parentElement.removeChild(el);
+    }
+
+    function isSet(value) {
+        return value !== null && value !== undefined;
+    }
+
+    // Bindable version
+    function preventDefault(e) {
+        e.preventDefault();
+    }
+
+    // Removes duplicates from an array.
+    function unique(array) {
+        return array.filter(function(a) {
+            return !this[a] ? (this[a] = true) : false;
+        }, {});
+    }
+
+    // Round a value to the closest 'to'.
+    function closest(value, to) {
+        return Math.round(value / to) * to;
+    }
+
+    // Current position of an element relative to the document.
+    function offset(elem, orientation) {
+        var rect = elem.getBoundingClientRect();
+        var doc = elem.ownerDocument;
+        var docElem = doc.documentElement;
+        var pageOffset = getPageOffset(doc);
+
+        // getBoundingClientRect contains left scroll in Chrome on Android.
+        // I haven't found a feature detection that proves this. Worst case
+        // scenario on mis-match: the 'tap' feature on horizontal sliders breaks.
+        if (/webkit.*Chrome.*Mobile/i.test(navigator.userAgent)) {
+            pageOffset.x = 0;
+        }
+
+        return orientation
+            ? rect.top + pageOffset.y - docElem.clientTop
+            : rect.left + pageOffset.x - docElem.clientLeft;
+    }
+
+    // Checks whether a value is numerical.
+    function isNumeric(a) {
+        return typeof a === "number" && !isNaN(a) && isFinite(a);
+    }
+
+    // Sets a class and removes it after [duration] ms.
+    function addClassFor(element, className, duration) {
+        if (duration > 0) {
+            addClass(element, className);
+            setTimeout(function() {
+                removeClass(element, className);
+            }, duration);
+        }
+    }
+
+    // Limits a value to 0 - 100
+    function limit(a) {
+        return Math.max(Math.min(a, 100), 0);
+    }
+
+    // Wraps a variable as an array, if it isn't one yet.
+    // Note that an input array is returned by reference!
+    function asArray(a) {
+        return Array.isArray(a) ? a : [a];
+    }
+
+    // Counts decimals
+    function countDecimals(numStr) {
+        numStr = String(numStr);
+        var pieces = numStr.split(".");
+        return pieces.length > 1 ? pieces[1].length : 0;
+    }
+
+    // http://youmightnotneedjquery.com/#add_class
+    function addClass(el, className) {
+        if (el.classList) {
+            el.classList.add(className);
+        } else {
+            el.className += " " + className;
+        }
+    }
+
+    // http://youmightnotneedjquery.com/#remove_class
+    function removeClass(el, className) {
+        if (el.classList) {
+            el.classList.remove(className);
+        } else {
+            el.className = el.className.replace(
+                new RegExp("(^|\\b)" + className.split(" ").join("|") + "(\\b|$)", "gi"),
+                " "
+            );
+        }
+    }
+
+    // https://plainjs.com/javascript/attributes/adding-removing-and-testing-for-classes-9/
+    function hasClass(el, className) {
+        return el.classList
+            ? el.classList.contains(className)
+            : new RegExp("\\b" + className + "\\b").test(el.className);
+    }
+
+    // https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY#Notes
+    function getPageOffset(doc) {
+        var supportPageOffset = window.pageXOffset !== undefined;
+        var isCSS1Compat = (doc.compatMode || "") === "CSS1Compat";
+        var x = supportPageOffset
+            ? window.pageXOffset
+            : isCSS1Compat
+                ? doc.documentElement.scrollLeft
+                : doc.body.scrollLeft;
+        var y = supportPageOffset
+            ? window.pageYOffset
+            : isCSS1Compat
+                ? doc.documentElement.scrollTop
+                : doc.body.scrollTop;
+
+        return {
+            x: x,
+            y: y
+        };
+    }
+
+    // we provide a function to compute constants instead
+    // of accessing window.* as soon as the module needs it
+    // so that we do not compute anything if not needed
+    function getActions() {
+        // Determine the events to bind. IE11 implements pointerEvents without
+        // a prefix, which breaks compatibility with the IE10 implementation.
+        return window.navigator.pointerEnabled
+            ? {
+                  start: "pointerdown",
+                  move: "pointermove",
+                  end: "pointerup"
+              }
+            : window.navigator.msPointerEnabled
+                ? {
+                      start: "MSPointerDown",
+                      move: "MSPointerMove",
+                      end: "MSPointerUp"
+                  }
+                : {
+                      start: "mousedown touchstart",
+                      move: "mousemove touchmove",
+                      end: "mouseup touchend"
+                  };
+    }
+
+    // https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
+    // Issue #785
+    function getSupportsPassive() {
+        var supportsPassive = false;
+
+        /* eslint-disable */
+        try {
+            var opts = Object.defineProperty({}, "passive", {
+                get: function() {
+                    supportsPassive = true;
+                }
+            });
+
+            window.addEventListener("test", null, opts);
+        } catch (e) {}
+        /* eslint-enable */
+
+        return supportsPassive;
+    }
+
+    function getSupportsTouchActionNone() {
+        return window.CSS && CSS.supports && CSS.supports("touch-action", "none");
+    }
+
+    // Value calculation
+
+    // Determine the size of a sub-range in relation to a full range.
+    function subRangeRatio(pa, pb) {
+        return 100 / (pb - pa);
+    }
+
+    // (percentage) How many percent is this value of this range?
+    function fromPercentage(range, value) {
+        return (value * 100) / (range[1] - range[0]);
+    }
+
+    // (percentage) Where is this value on this range?
+    function toPercentage(range, value) {
+        return fromPercentage(range, range[0] < 0 ? value + Math.abs(range[0]) : value - range[0]);
+    }
+
+    // (value) How much is this percentage on this range?
+    function isPercentage(range, value) {
+        return (value * (range[1] - range[0])) / 100 + range[0];
+    }
+
+    // Range conversion
+
+    function getJ(value, arr) {
+        var j = 1;
+
+        while (value >= arr[j]) {
+            j += 1;
+        }
+
+        return j;
+    }
+
+    // (percentage) Input a value, find where, on a scale of 0-100, it applies.
+    function toStepping(xVal, xPct, value) {
+        if (value >= xVal.slice(-1)[0]) {
+            return 100;
+        }
+
+        var j = getJ(value, xVal);
+        var va = xVal[j - 1];
+        var vb = xVal[j];
+        var pa = xPct[j - 1];
+        var pb = xPct[j];
+
+        return pa + toPercentage([va, vb], value) / subRangeRatio(pa, pb);
+    }
+
+    // (value) Input a percentage, find where it is on the specified range.
+    function fromStepping(xVal, xPct, value) {
+        // There is no range group that fits 100
+        if (value >= 100) {
+            return xVal.slice(-1)[0];
+        }
+
+        var j = getJ(value, xPct);
+        var va = xVal[j - 1];
+        var vb = xVal[j];
+        var pa = xPct[j - 1];
+        var pb = xPct[j];
+
+        return isPercentage([va, vb], (value - pa) * subRangeRatio(pa, pb));
+    }
+
+    // (percentage) Get the step that applies at a certain value.
+    function getStep(xPct, xSteps, snap, value) {
+        if (value === 100) {
+            return value;
+        }
+
+        var j = getJ(value, xPct);
+        var a = xPct[j - 1];
+        var b = xPct[j];
+
+        // If 'snap' is set, steps are used as fixed points on the slider.
+        if (snap) {
+            // Find the closest position, a or b.
+            if (value - a > (b - a) / 2) {
+                return b;
+            }
+
+            return a;
+        }
+
+        if (!xSteps[j - 1]) {
+            return value;
+        }
+
+        return xPct[j - 1] + closest(value - xPct[j - 1], xSteps[j - 1]);
+    }
+
+    // Entry parsing
+
+    function handleEntryPoint(index, value, that) {
+        var percentage;
+
+        // Wrap numerical input in an array.
+        if (typeof value === "number") {
+            value = [value];
+        }
+
+        // Reject any invalid input, by testing whether value is an array.
+        if (!Array.isArray(value)) {
+            throw new Error("noUiSlider (" + VERSION + "): 'range' contains invalid value.");
+        }
+
+        // Covert min/max syntax to 0 and 100.
+        if (index === "min") {
+            percentage = 0;
+        } else if (index === "max") {
+            percentage = 100;
+        } else {
+            percentage = parseFloat(index);
+        }
+
+        // Check for correct input.
+        if (!isNumeric(percentage) || !isNumeric(value[0])) {
+            throw new Error("noUiSlider (" + VERSION + "): 'range' value isn't numeric.");
+        }
+
+        // Store values.
+        that.xPct.push(percentage);
+        that.xVal.push(value[0]);
+
+        // NaN will evaluate to false too, but to keep
+        // logging clear, set step explicitly. Make sure
+        // not to override the 'step' setting with false.
+        if (!percentage) {
+            if (!isNaN(value[1])) {
+                that.xSteps[0] = value[1];
+            }
+        } else {
+            that.xSteps.push(isNaN(value[1]) ? false : value[1]);
+        }
+
+        that.xHighestCompleteStep.push(0);
+    }
+
+    function handleStepPoint(i, n, that) {
+        // Ignore 'false' stepping.
+        if (!n) {
+            return true;
+        }
+
+        // Factor to range ratio
+        that.xSteps[i] =
+            fromPercentage([that.xVal[i], that.xVal[i + 1]], n) / subRangeRatio(that.xPct[i], that.xPct[i + 1]);
+
+        var totalSteps = (that.xVal[i + 1] - that.xVal[i]) / that.xNumSteps[i];
+        var highestStep = Math.ceil(Number(totalSteps.toFixed(3)) - 1);
+        var step = that.xVal[i] + that.xNumSteps[i] * highestStep;
+
+        that.xHighestCompleteStep[i] = step;
+    }
+
+    // Interface
+
+    function Spectrum(entry, snap, singleStep) {
+        this.xPct = [];
+        this.xVal = [];
+        this.xSteps = [singleStep || false];
+        this.xNumSteps = [false];
+        this.xHighestCompleteStep = [];
+
+        this.snap = snap;
+
+        var index;
+        var ordered = []; // [0, 'min'], [1, '50%'], [2, 'max']
+
+        // Map the object keys to an array.
+        for (index in entry) {
+            if (entry.hasOwnProperty(index)) {
+                ordered.push([entry[index], index]);
+            }
+        }
+
+        // Sort all entries by value (numeric sort).
+        if (ordered.length && typeof ordered[0][0] === "object") {
+            ordered.sort(function(a, b) {
+                return a[0][0] - b[0][0];
+            });
+        } else {
+            ordered.sort(function(a, b) {
+                return a[0] - b[0];
+            });
+        }
+
+        // Convert all entries to subranges.
+        for (index = 0; index < ordered.length; index++) {
+            handleEntryPoint(ordered[index][1], ordered[index][0], this);
+        }
+
+        // Store the actual step values.
+        // xSteps is sorted in the same order as xPct and xVal.
+        this.xNumSteps = this.xSteps.slice(0);
+
+        // Convert all numeric steps to the percentage of the subrange they represent.
+        for (index = 0; index < this.xNumSteps.length; index++) {
+            handleStepPoint(index, this.xNumSteps[index], this);
+        }
+    }
+
+    Spectrum.prototype.getMargin = function(value) {
+        var step = this.xNumSteps[0];
+
+        if (step && (value / step) % 1 !== 0) {
+            throw new Error("noUiSlider (" + VERSION + "): 'limit', 'margin' and 'padding' must be divisible by step.");
+        }
+
+        return this.xPct.length === 2 ? fromPercentage(this.xVal, value) : false;
+    };
+
+    Spectrum.prototype.toStepping = function(value) {
+        value = toStepping(this.xVal, this.xPct, value);
+
+        return value;
+    };
+
+    Spectrum.prototype.fromStepping = function(value) {
+        return fromStepping(this.xVal, this.xPct, value);
+    };
+
+    Spectrum.prototype.getStep = function(value) {
+        value = getStep(this.xPct, this.xSteps, this.snap, value);
+
+        return value;
+    };
+
+    Spectrum.prototype.getNearbySteps = function(value) {
+        var j = getJ(value, this.xPct);
+
+        return {
+            stepBefore: {
+                startValue: this.xVal[j - 2],
+                step: this.xNumSteps[j - 2],
+                highestStep: this.xHighestCompleteStep[j - 2]
+            },
+            thisStep: {
+                startValue: this.xVal[j - 1],
+                step: this.xNumSteps[j - 1],
+                highestStep: this.xHighestCompleteStep[j - 1]
+            },
+            stepAfter: {
+                startValue: this.xVal[j],
+                step: this.xNumSteps[j],
+                highestStep: this.xHighestCompleteStep[j]
+            }
+        };
+    };
+
+    Spectrum.prototype.countStepDecimals = function() {
+        var stepDecimals = this.xNumSteps.map(countDecimals);
+        return Math.max.apply(null, stepDecimals);
+    };
+
+    // Outside testing
+    Spectrum.prototype.convert = function(value) {
+        return this.getStep(this.toStepping(value));
+    };
+
+    /*	Every input option is tested and parsed. This'll prevent
+        endless validation in internal methods. These tests are
+        structured with an item for every option available. An
+        option can be marked as required by setting the 'r' flag.
+        The testing function is provided with three arguments:
+            - The provided value for the option;
+            - A reference to the options object;
+            - The name for the option;
+
+        The testing function returns false when an error is detected,
+        or true when everything is OK. It can also modify the option
+        object, to make sure all values can be correctly looped elsewhere. */
+
+    var defaultFormatter = {
+        to: function(value) {
+            return value !== undefined && value.toFixed(2);
+        },
+        from: Number
+    };
+
+    function validateFormat(entry) {
+        // Any object with a to and from method is supported.
+        if (isValidFormatter(entry)) {
+            return true;
+        }
+
+        throw new Error("noUiSlider (" + VERSION + "): 'format' requires 'to' and 'from' methods.");
+    }
+
+    function testStep(parsed, entry) {
+        if (!isNumeric(entry)) {
+            throw new Error("noUiSlider (" + VERSION + "): 'step' is not numeric.");
+        }
+
+        // The step option can still be used to set stepping
+        // for linear sliders. Overwritten if set in 'range'.
+        parsed.singleStep = entry;
+    }
+
+    function testRange(parsed, entry) {
+        // Filter incorrect input.
+        if (typeof entry !== "object" || Array.isArray(entry)) {
+            throw new Error("noUiSlider (" + VERSION + "): 'range' is not an object.");
+        }
+
+        // Catch missing start or end.
+        if (entry.min === undefined || entry.max === undefined) {
+            throw new Error("noUiSlider (" + VERSION + "): Missing 'min' or 'max' in 'range'.");
+        }
+
+        // Catch equal start or end.
+        if (entry.min === entry.max) {
+            throw new Error("noUiSlider (" + VERSION + "): 'range' 'min' and 'max' cannot be equal.");
+        }
+
+        parsed.spectrum = new Spectrum(entry, parsed.snap, parsed.singleStep);
+    }
+
+    function testStart(parsed, entry) {
+        entry = asArray(entry);
+
+        // Validate input. Values aren't tested, as the public .val method
+        // will always provide a valid location.
+        if (!Array.isArray(entry) || !entry.length) {
+            throw new Error("noUiSlider (" + VERSION + "): 'start' option is incorrect.");
+        }
+
+        // Store the number of handles.
+        parsed.handles = entry.length;
+
+        // When the slider is initialized, the .val method will
+        // be called with the start options.
+        parsed.start = entry;
+    }
+
+    function testSnap(parsed, entry) {
+        // Enforce 100% stepping within subranges.
+        parsed.snap = entry;
+
+        if (typeof entry !== "boolean") {
+            throw new Error("noUiSlider (" + VERSION + "): 'snap' option must be a boolean.");
+        }
+    }
+
+    function testAnimate(parsed, entry) {
+        // Enforce 100% stepping within subranges.
+        parsed.animate = entry;
+
+        if (typeof entry !== "boolean") {
+            throw new Error("noUiSlider (" + VERSION + "): 'animate' option must be a boolean.");
+        }
+    }
+
+    function testAnimationDuration(parsed, entry) {
+        parsed.animationDuration = entry;
+
+        if (typeof entry !== "number") {
+            throw new Error("noUiSlider (" + VERSION + "): 'animationDuration' option must be a number.");
+        }
+    }
+
+    function testConnect(parsed, entry) {
+        var connect = [false];
+        var i;
+
+        // Map legacy options
+        if (entry === "lower") {
+            entry = [true, false];
+        } else if (entry === "upper") {
+            entry = [false, true];
+        }
+
+        // Handle boolean options
+        if (entry === true || entry === false) {
+            for (i = 1; i < parsed.handles; i++) {
+                connect.push(entry);
+            }
+
+            connect.push(false);
+        }
+
+        // Reject invalid input
+        else if (!Array.isArray(entry) || !entry.length || entry.length !== parsed.handles + 1) {
+            throw new Error("noUiSlider (" + VERSION + "): 'connect' option doesn't match handle count.");
+        } else {
+            connect = entry;
+        }
+
+        parsed.connect = connect;
+    }
+
+    function testOrientation(parsed, entry) {
+        // Set orientation to an a numerical value for easy
+        // array selection.
+        switch (entry) {
+            case "horizontal":
+                parsed.ort = 0;
+                break;
+            case "vertical":
+                parsed.ort = 1;
+                break;
+            default:
+                throw new Error("noUiSlider (" + VERSION + "): 'orientation' option is invalid.");
+        }
+    }
+
+    function testMargin(parsed, entry) {
+        if (!isNumeric(entry)) {
+            throw new Error("noUiSlider (" + VERSION + "): 'margin' option must be numeric.");
+        }
+
+        // Issue #582
+        if (entry === 0) {
+            return;
+        }
+
+        parsed.margin = parsed.spectrum.getMargin(entry);
+
+        if (!parsed.margin) {
+            throw new Error("noUiSlider (" + VERSION + "): 'margin' option is only supported on linear sliders.");
+        }
+    }
+
+    function testLimit(parsed, entry) {
+        if (!isNumeric(entry)) {
+            throw new Error("noUiSlider (" + VERSION + "): 'limit' option must be numeric.");
+        }
+
+        parsed.limit = parsed.spectrum.getMargin(entry);
+
+        if (!parsed.limit || parsed.handles < 2) {
+            throw new Error(
+                "noUiSlider (" +
+                    VERSION +
+                    "): 'limit' option is only supported on linear sliders with 2 or more handles."
+            );
+        }
+    }
+
+    function testPadding(parsed, entry) {
+        if (!isNumeric(entry) && !Array.isArray(entry)) {
+            throw new Error(
+                "noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers."
+            );
+        }
+
+        if (Array.isArray(entry) && !(entry.length === 2 || isNumeric(entry[0]) || isNumeric(entry[1]))) {
+            throw new Error(
+                "noUiSlider (" + VERSION + "): 'padding' option must be numeric or array of exactly 2 numbers."
+            );
+        }
+
+        if (entry === 0) {
+            return;
+        }
+
+        if (!Array.isArray(entry)) {
+            entry = [entry, entry];
+        }
+
+        // 'getMargin' returns false for invalid values.
+        parsed.padding = [parsed.spectrum.getMargin(entry[0]), parsed.spectrum.getMargin(entry[1])];
+
+        if (parsed.padding[0] === false || parsed.padding[1] === false) {
+            throw new Error("noUiSlider (" + VERSION + "): 'padding' option is only supported on linear sliders.");
+        }
+
+        if (parsed.padding[0] < 0 || parsed.padding[1] < 0) {
+            throw new Error("noUiSlider (" + VERSION + "): 'padding' option must be a positive number(s).");
+        }
+
+        if (parsed.padding[0] + parsed.padding[1] >= 100) {
+            throw new Error("noUiSlider (" + VERSION + "): 'padding' option must not exceed 100% of the range.");
+        }
+    }
+
+    function testDirection(parsed, entry) {
+        // Set direction as a numerical value for easy parsing.
+        // Invert connection for RTL sliders, so that the proper
+        // handles get the connect/background classes.
+        switch (entry) {
+            case "ltr":
+                parsed.dir = 0;
+                break;
+            case "rtl":
+                parsed.dir = 1;
+                break;
+            default:
+                throw new Error("noUiSlider (" + VERSION + "): 'direction' option was not recognized.");
+        }
+    }
+
+    function testBehaviour(parsed, entry) {
+        // Make sure the input is a string.
+        if (typeof entry !== "string") {
+            throw new Error("noUiSlider (" + VERSION + "): 'behaviour' must be a string containing options.");
+        }
+
+        // Check if the string contains any keywords.
+        // None are required.
+        var tap = entry.indexOf("tap") >= 0;
+        var drag = entry.indexOf("drag") >= 0;
+        var fixed = entry.indexOf("fixed") >= 0;
+        var snap = entry.indexOf("snap") >= 0;
+        var hover = entry.indexOf("hover") >= 0;
+
+        if (fixed) {
+            if (parsed.handles !== 2) {
+                throw new Error("noUiSlider (" + VERSION + "): 'fixed' behaviour must be used with 2 handles");
+            }
+
+            // Use margin to enforce fixed state
+            testMargin(parsed, parsed.start[1] - parsed.start[0]);
+        }
+
+        parsed.events = {
+            tap: tap || snap,
+            drag: drag,
+            fixed: fixed,
+            snap: snap,
+            hover: hover
+        };
+    }
+
+    function testTooltips(parsed, entry) {
+        if (entry === false) {
+            return;
+        }
+
+        if (entry === true) {
+            parsed.tooltips = [];
+
+            for (var i = 0; i < parsed.handles; i++) {
+                parsed.tooltips.push(true);
+            }
+        } else {
+            parsed.tooltips = asArray(entry);
+
+            if (parsed.tooltips.length !== parsed.handles) {
+                throw new Error("noUiSlider (" + VERSION + "): must pass a formatter for all handles.");
+            }
+
+            parsed.tooltips.forEach(function(formatter) {
+                if (
+                    typeof formatter !== "boolean" &&
+                    (typeof formatter !== "object" || typeof formatter.to !== "function")
+                ) {
+                    throw new Error("noUiSlider (" + VERSION + "): 'tooltips' must be passed a formatter or 'false'.");
+                }
+            });
+        }
+    }
+
+    function testAriaFormat(parsed, entry) {
+        parsed.ariaFormat = entry;
+        validateFormat(entry);
+    }
+
+    function testFormat(parsed, entry) {
+        parsed.format = entry;
+        validateFormat(entry);
+    }
+
+    function testKeyboardSupport(parsed, entry) {
+        parsed.keyboardSupport = entry;
+
+        if (typeof entry !== "boolean") {
+            throw new Error("noUiSlider (" + VERSION + "): 'keyboardSupport' option must be a boolean.");
+        }
+    }
+
+    function testDocumentElement(parsed, entry) {
+        // This is an advanced option. Passed values are used without validation.
+        parsed.documentElement = entry;
+    }
+
+    function testCssPrefix(parsed, entry) {
+        if (typeof entry !== "string" && entry !== false) {
+            throw new Error("noUiSlider (" + VERSION + "): 'cssPrefix' must be a string or `false`.");
+        }
+
+        parsed.cssPrefix = entry;
+    }
+
+    function testCssClasses(parsed, entry) {
+        if (typeof entry !== "object") {
+            throw new Error("noUiSlider (" + VERSION + "): 'cssClasses' must be an object.");
+        }
+
+        if (typeof parsed.cssPrefix === "string") {
+            parsed.cssClasses = {};
+
+            for (var key in entry) {
+                if (!entry.hasOwnProperty(key)) {
+                    continue;
+                }
+
+                parsed.cssClasses[key] = parsed.cssPrefix + entry[key];
+            }
+        } else {
+            parsed.cssClasses = entry;
+        }
+    }
+
+    // Test all developer settings and parse to assumption-safe values.
+    function testOptions(options) {
+        // To prove a fix for #537, freeze options here.
+        // If the object is modified, an error will be thrown.
+        // Object.freeze(options);
+
+        var parsed = {
+            margin: 0,
+            limit: 0,
+            padding: 0,
+            animate: true,
+            animationDuration: 300,
+            ariaFormat: defaultFormatter,
+            format: defaultFormatter
+        };
+
+        // Tests are executed in the order they are presented here.
+        var tests = {
+            step: { r: false, t: testStep },
+            start: { r: true, t: testStart },
+            connect: { r: true, t: testConnect },
+            direction: { r: true, t: testDirection },
+            snap: { r: false, t: testSnap },
+            animate: { r: false, t: testAnimate },
+            animationDuration: { r: false, t: testAnimationDuration },
+            range: { r: true, t: testRange },
+            orientation: { r: false, t: testOrientation },
+            margin: { r: false, t: testMargin },
+            limit: { r: false, t: testLimit },
+            padding: { r: false, t: testPadding },
+            behaviour: { r: true, t: testBehaviour },
+            ariaFormat: { r: false, t: testAriaFormat },
+            format: { r: false, t: testFormat },
+            tooltips: { r: false, t: testTooltips },
+            keyboardSupport: { r: true, t: testKeyboardSupport },
+            documentElement: { r: false, t: testDocumentElement },
+            cssPrefix: { r: true, t: testCssPrefix },
+            cssClasses: { r: true, t: testCssClasses }
+        };
+
+        var defaults = {
+            connect: false,
+            direction: "ltr",
+            behaviour: "tap",
+            orientation: "horizontal",
+            keyboardSupport: true,
+            cssPrefix: "noUi-",
+            cssClasses: {
+                target: "target",
+                base: "base",
+                origin: "origin",
+                handle: "handle",
+                handleLower: "handle-lower",
+                handleUpper: "handle-upper",
+                horizontal: "horizontal",
+                vertical: "vertical",
+                background: "background",
+                connect: "connect",
+                connects: "connects",
+                ltr: "ltr",
+                rtl: "rtl",
+                draggable: "draggable",
+                drag: "state-drag",
+                tap: "state-tap",
+                active: "active",
+                tooltip: "tooltip",
+                pips: "pips",
+                pipsHorizontal: "pips-horizontal",
+                pipsVertical: "pips-vertical",
+                marker: "marker",
+                markerHorizontal: "marker-horizontal",
+                markerVertical: "marker-vertical",
+                markerNormal: "marker-normal",
+                markerLarge: "marker-large",
+                markerSub: "marker-sub",
+                value: "value",
+                valueHorizontal: "value-horizontal",
+                valueVertical: "value-vertical",
+                valueNormal: "value-normal",
+                valueLarge: "value-large",
+                valueSub: "value-sub"
+            }
+        };
+
+        // AriaFormat defaults to regular format, if any.
+        if (options.format && !options.ariaFormat) {
+            options.ariaFormat = options.format;
+        }
+
+        // Run all options through a testing mechanism to ensure correct
+        // input. It should be noted that options might get modified to
+        // be handled properly. E.g. wrapping integers in arrays.
+        Object.keys(tests).forEach(function(name) {
+            // If the option isn't set, but it is required, throw an error.
+            if (!isSet(options[name]) && defaults[name] === undefined) {
+                if (tests[name].r) {
+                    throw new Error("noUiSlider (" + VERSION + "): '" + name + "' is required.");
+                }
+
+                return true;
+            }
+
+            tests[name].t(parsed, !isSet(options[name]) ? defaults[name] : options[name]);
+        });
+
+        // Forward pips options
+        parsed.pips = options.pips;
+
+        // All recent browsers accept unprefixed transform.
+        // We need -ms- for IE9 and -webkit- for older Android;
+        // Assume use of -webkit- if unprefixed and -ms- are not supported.
+        // https://caniuse.com/#feat=transforms2d
+        var d = document.createElement("div");
+        var msPrefix = d.style.msTransform !== undefined;
+        var noPrefix = d.style.transform !== undefined;
+
+        parsed.transformRule = noPrefix ? "transform" : msPrefix ? "msTransform" : "webkitTransform";
+
+        // Pips don't move, so we can place them using left/top.
+        var styles = [["left", "top"], ["right", "bottom"]];
+
+        parsed.style = styles[parsed.dir][parsed.ort];
+
+        return parsed;
+    }
+
+    function scope(target, options, originalOptions) {
+        var actions = getActions();
+        var supportsTouchActionNone = getSupportsTouchActionNone();
+        var supportsPassive = supportsTouchActionNone && getSupportsPassive();
+
+        // All variables local to 'scope' are prefixed with 'scope_'
+        var scope_Target = target;
+        var scope_Locations = [];
+        var scope_Base;
+        var scope_Handles;
+        var scope_HandleNumbers = [];
+        var scope_ActiveHandlesCount = 0;
+        var scope_Connects;
+        var scope_Spectrum = options.spectrum;
+        var scope_Values = [];
+        var scope_Events = {};
+        var scope_Self;
+        var scope_Pips;
+        var scope_Document = target.ownerDocument;
+        var scope_DocumentElement = options.documentElement || scope_Document.documentElement;
+        var scope_Body = scope_Document.body;
+
+        // Pips constants
+        var PIPS_NONE = -1;
+        var PIPS_NO_VALUE = 0;
+        var PIPS_LARGE_VALUE = 1;
+        var PIPS_SMALL_VALUE = 2;
+
+        // For horizontal sliders in standard ltr documents,
+        // make .noUi-origin overflow to the left so the document doesn't scroll.
+        var scope_DirOffset = scope_Document.dir === "rtl" || options.ort === 1 ? 0 : 100;
+
+        // Creates a node, adds it to target, returns the new node.
+        function addNodeTo(addTarget, className) {
+            var div = scope_Document.createElement("div");
+
+            if (className) {
+                addClass(div, className);
+            }
+
+            addTarget.appendChild(div);
+
+            return div;
+        }
+
+        // Append a origin to the base
+        function addOrigin(base, handleNumber) {
+            var origin = addNodeTo(base, options.cssClasses.origin);
+            var handle = addNodeTo(origin, options.cssClasses.handle);
+
+            handle.setAttribute("data-handle", handleNumber);
+
+            if (options.keyboardSupport) {
+                // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/tabindex
+                // 0 = focusable and reachable
+                handle.setAttribute("tabindex", "0");
+            }
+
+            handle.setAttribute("role", "slider");
+            handle.setAttribute("aria-orientation", options.ort ? "vertical" : "horizontal");
+
+            if (handleNumber === 0) {
+                addClass(handle, options.cssClasses.handleLower);
+            } else if (handleNumber === options.handles - 1) {
+                addClass(handle, options.cssClasses.handleUpper);
+            }
+
+            return origin;
+        }
+
+        // Insert nodes for connect elements
+        function addConnect(base, add) {
+            if (!add) {
+                return false;
+            }
+
+            return addNodeTo(base, options.cssClasses.connect);
+        }
+
+        // Add handles to the slider base.
+        function addElements(connectOptions, base) {
+            var connectBase = addNodeTo(base, options.cssClasses.connects);
+
+            scope_Handles = [];
+            scope_Connects = [];
+
+            scope_Connects.push(addConnect(connectBase, connectOptions[0]));
+
+            // [::::O====O====O====]
+            // connectOptions = [0, 1, 1, 1]
+
+            for (var i = 0; i < options.handles; i++) {
+                // Keep a list of all added handles.
+                scope_Handles.push(addOrigin(base, i));
+                scope_HandleNumbers[i] = i;
+                scope_Connects.push(addConnect(connectBase, connectOptions[i + 1]));
+            }
+        }
+
+        // Initialize a single slider.
+        function addSlider(addTarget) {
+            // Apply classes and data to the target.
+            addClass(addTarget, options.cssClasses.target);
+
+            if (options.dir === 0) {
+                addClass(addTarget, options.cssClasses.ltr);
+            } else {
+                addClass(addTarget, options.cssClasses.rtl);
+            }
+
+            if (options.ort === 0) {
+                addClass(addTarget, options.cssClasses.horizontal);
+            } else {
+                addClass(addTarget, options.cssClasses.vertical);
+            }
+
+            return addNodeTo(addTarget, options.cssClasses.base);
+        }
+
+        function addTooltip(handle, handleNumber) {
+            if (!options.tooltips[handleNumber]) {
+                return false;
+            }
+
+            return addNodeTo(handle.firstChild, options.cssClasses.tooltip);
+        }
+
+        // The tooltips option is a shorthand for using the 'update' event.
+        function tooltips() {
+            // Tooltips are added with options.tooltips in original order.
+            var tips = scope_Handles.map(addTooltip);
+
+            bindEvent("update", function(values, handleNumber, unencoded) {
+                if (!tips[handleNumber]) {
+                    return;
+                }
+
+                var formattedValue = values[handleNumber];
+
+                if (options.tooltips[handleNumber] !== true) {
+                    formattedValue = options.tooltips[handleNumber].to(unencoded[handleNumber]);
+                }
+
+                tips[handleNumber].innerHTML = formattedValue;
+            });
+        }
+
+        function aria() {
+            bindEvent("update", function(values, handleNumber, unencoded, tap, positions) {
+                // Update Aria Values for all handles, as a change in one changes min and max values for the next.
+                scope_HandleNumbers.forEach(function(index) {
+                    var handle = scope_Handles[index];
+
+                    var min = checkHandlePosition(scope_Locations, index, 0, true, true, true);
+                    var max = checkHandlePosition(scope_Locations, index, 100, true, true, true);
+
+                    var now = positions[index];
+
+                    // Formatted value for display
+                    var text = options.ariaFormat.to(unencoded[index]);
+
+                    // Map to slider range values
+                    min = scope_Spectrum.fromStepping(min).toFixed(1);
+                    max = scope_Spectrum.fromStepping(max).toFixed(1);
+                    now = scope_Spectrum.fromStepping(now).toFixed(1);
+
+                    handle.children[0].setAttribute("aria-valuemin", min);
+                    handle.children[0].setAttribute("aria-valuemax", max);
+                    handle.children[0].setAttribute("aria-valuenow", now);
+                    handle.children[0].setAttribute("aria-valuetext", text);
+                });
+            });
+        }
+
+        function getGroup(mode, values, stepped) {
+            // Use the range.
+            if (mode === "range" || mode === "steps") {
+                return scope_Spectrum.xVal;
+            }
+
+            if (mode === "count") {
+                if (values < 2) {
+                    throw new Error("noUiSlider (" + VERSION + "): 'values' (>= 2) required for mode 'count'.");
+                }
+
+                // Divide 0 - 100 in 'count' parts.
+                var interval = values - 1;
+                var spread = 100 / interval;
+
+                values = [];
+
+                // List these parts and have them handled as 'positions'.
+                while (interval--) {
+                    values[interval] = interval * spread;
+                }
+
+                values.push(100);
+
+                mode = "positions";
+            }
+
+            if (mode === "positions") {
+                // Map all percentages to on-range values.
+                return values.map(function(value) {
+                    return scope_Spectrum.fromStepping(stepped ? scope_Spectrum.getStep(value) : value);
+                });
+            }
+
+            if (mode === "values") {
+                // If the value must be stepped, it needs to be converted to a percentage first.
+                if (stepped) {
+                    return values.map(function(value) {
+                        // Convert to percentage, apply step, return to value.
+                        return scope_Spectrum.fromStepping(scope_Spectrum.getStep(scope_Spectrum.toStepping(value)));
+                    });
+                }
+
+                // Otherwise, we can simply use the values.
+                return values;
+            }
+        }
+
+        function generateSpread(density, mode, group) {
+            function safeIncrement(value, increment) {
+                // Avoid floating point variance by dropping the smallest decimal places.
+                return (value + increment).toFixed(7) / 1;
+            }
+
+            var indexes = {};
+            var firstInRange = scope_Spectrum.xVal[0];
+            var lastInRange = scope_Spectrum.xVal[scope_Spectrum.xVal.length - 1];
+            var ignoreFirst = false;
+            var ignoreLast = false;
+            var prevPct = 0;
+
+            // Create a copy of the group, sort it and filter away all duplicates.
+            group = unique(
+                group.slice().sort(function(a, b) {
+                    return a - b;
+                })
+            );
+
+            // Make sure the range starts with the first element.
+            if (group[0] !== firstInRange) {
+                group.unshift(firstInRange);
+                ignoreFirst = true;
+            }
+
+            // Likewise for the last one.
+            if (group[group.length - 1] !== lastInRange) {
+                group.push(lastInRange);
+                ignoreLast = true;
+            }
+
+            group.forEach(function(current, index) {
+                // Get the current step and the lower + upper positions.
+                var step;
+                var i;
+                var q;
+                var low = current;
+                var high = group[index + 1];
+                var newPct;
+                var pctDifference;
+                var pctPos;
+                var type;
+                var steps;
+                var realSteps;
+                var stepSize;
+                var isSteps = mode === "steps";
+
+                // When using 'steps' mode, use the provided steps.
+                // Otherwise, we'll step on to the next subrange.
+                if (isSteps) {
+                    step = scope_Spectrum.xNumSteps[index];
+                }
+
+                // Default to a 'full' step.
+                if (!step) {
+                    step = high - low;
+                }
+
+                // Low can be 0, so test for false. If high is undefined,
+                // we are at the last subrange. Index 0 is already handled.
+                if (low === false || high === undefined) {
+                    return;
+                }
+
+                // Make sure step isn't 0, which would cause an infinite loop (#654)
+                step = Math.max(step, 0.0000001);
+
+                // Find all steps in the subrange.
+                for (i = low; i <= high; i = safeIncrement(i, step)) {
+                    // Get the percentage value for the current step,
+                    // calculate the size for the subrange.
+                    newPct = scope_Spectrum.toStepping(i);
+                    pctDifference = newPct - prevPct;
+
+                    steps = pctDifference / density;
+                    realSteps = Math.round(steps);
+
+                    // This ratio represents the amount of percentage-space a point indicates.
+                    // For a density 1 the points/percentage = 1. For density 2, that percentage needs to be re-divided.
+                    // Round the percentage offset to an even number, then divide by two
+                    // to spread the offset on both sides of the range.
+                    stepSize = pctDifference / realSteps;
+
+                    // Divide all points evenly, adding the correct number to this subrange.
+                    // Run up to <= so that 100% gets a point, event if ignoreLast is set.
+                    for (q = 1; q <= realSteps; q += 1) {
+                        // The ratio between the rounded value and the actual size might be ~1% off.
+                        // Correct the percentage offset by the number of points
+                        // per subrange. density = 1 will result in 100 points on the
+                        // full range, 2 for 50, 4 for 25, etc.
+                        pctPos = prevPct + q * stepSize;
+                        indexes[pctPos.toFixed(5)] = [scope_Spectrum.fromStepping(pctPos), 0];
+                    }
+
+                    // Determine the point type.
+                    type = group.indexOf(i) > -1 ? PIPS_LARGE_VALUE : isSteps ? PIPS_SMALL_VALUE : PIPS_NO_VALUE;
+
+                    // Enforce the 'ignoreFirst' option by overwriting the type for 0.
+                    if (!index && ignoreFirst) {
+                        type = 0;
+                    }
+
+                    if (!(i === high && ignoreLast)) {
+                        // Mark the 'type' of this point. 0 = plain, 1 = real value, 2 = step value.
+                        indexes[newPct.toFixed(5)] = [i, type];
+                    }
+
+                    // Update the percentage count.
+                    prevPct = newPct;
+                }
+            });
+
+            return indexes;
+        }
+
+        function addMarking(spread, filterFunc, formatter) {
+            var element = scope_Document.createElement("div");
+
+            var valueSizeClasses = [];
+            valueSizeClasses[PIPS_NO_VALUE] = options.cssClasses.valueNormal;
+            valueSizeClasses[PIPS_LARGE_VALUE] = options.cssClasses.valueLarge;
+            valueSizeClasses[PIPS_SMALL_VALUE] = options.cssClasses.valueSub;
+
+            var markerSizeClasses = [];
+            markerSizeClasses[PIPS_NO_VALUE] = options.cssClasses.markerNormal;
+            markerSizeClasses[PIPS_LARGE_VALUE] = options.cssClasses.markerLarge;
+            markerSizeClasses[PIPS_SMALL_VALUE] = options.cssClasses.markerSub;
+
+            var valueOrientationClasses = [options.cssClasses.valueHorizontal, options.cssClasses.valueVertical];
+            var markerOrientationClasses = [options.cssClasses.markerHorizontal, options.cssClasses.markerVertical];
+
+            addClass(element, options.cssClasses.pips);
+            addClass(element, options.ort === 0 ? options.cssClasses.pipsHorizontal : options.cssClasses.pipsVertical);
+
+            function getClasses(type, source) {
+                var a = source === options.cssClasses.value;
+                var orientationClasses = a ? valueOrientationClasses : markerOrientationClasses;
+                var sizeClasses = a ? valueSizeClasses : markerSizeClasses;
+
+                return source + " " + orientationClasses[options.ort] + " " + sizeClasses[type];
+            }
+
+            function addSpread(offset, value, type) {
+                // Apply the filter function, if it is set.
+                type = filterFunc ? filterFunc(value, type) : type;
+
+                if (type === PIPS_NONE) {
+                    return;
+                }
+
+                // Add a marker for every point
+                var node = addNodeTo(element, false);
+                node.className = getClasses(type, options.cssClasses.marker);
+                node.style[options.style] = offset + "%";
+
+                // Values are only appended for points marked '1' or '2'.
+                if (type > PIPS_NO_VALUE) {
+                    node = addNodeTo(element, false);
+                    node.className = getClasses(type, options.cssClasses.value);
+                    node.setAttribute("data-value", value);
+                    node.style[options.style] = offset + "%";
+                    node.innerHTML = formatter.to(value);
+                }
+            }
+
+            // Append all points.
+            Object.keys(spread).forEach(function(offset) {
+                addSpread(offset, spread[offset][0], spread[offset][1]);
+            });
+
+            return element;
+        }
+
+        function removePips() {
+            if (scope_Pips) {
+                removeElement(scope_Pips);
+                scope_Pips = null;
+            }
+        }
+
+        function pips(grid) {
+            // Fix #669
+            removePips();
+
+            var mode = grid.mode;
+            var density = grid.density || 1;
+            var filter = grid.filter || false;
+            var values = grid.values || false;
+            var stepped = grid.stepped || false;
+            var group = getGroup(mode, values, stepped);
+            var spread = generateSpread(density, mode, group);
+            var format = grid.format || {
+                to: Math.round
+            };
+
+            scope_Pips = scope_Target.appendChild(addMarking(spread, filter, format));
+
+            return scope_Pips;
+        }
+
+        // Shorthand for base dimensions.
+        function baseSize() {
+            var rect = scope_Base.getBoundingClientRect();
+            var alt = "offset" + ["Width", "Height"][options.ort];
+            return options.ort === 0 ? rect.width || scope_Base[alt] : rect.height || scope_Base[alt];
+        }
+
+        // Handler for attaching events trough a proxy.
+        function attachEvent(events, element, callback, data) {
+            // This function can be used to 'filter' events to the slider.
+            // element is a node, not a nodeList
+
+            var method = function(e) {
+                e = fixEvent(e, data.pageOffset, data.target || element);
+
+                // fixEvent returns false if this event has a different target
+                // when handling (multi-) touch events;
+                if (!e) {
+                    return false;
+                }
+
+                // doNotReject is passed by all end events to make sure released touches
+                // are not rejected, leaving the slider "stuck" to the cursor;
+                if (scope_Target.hasAttribute("disabled") && !data.doNotReject) {
+                    return false;
+                }
+
+                // Stop if an active 'tap' transition is taking place.
+                if (hasClass(scope_Target, options.cssClasses.tap) && !data.doNotReject) {
+                    return false;
+                }
+
+                // Ignore right or middle clicks on start #454
+                if (events === actions.start && e.buttons !== undefined && e.buttons > 1) {
+                    return false;
+                }
+
+                // Ignore right or middle clicks on start #454
+                if (data.hover && e.buttons) {
+                    return false;
+                }
+
+                // 'supportsPassive' is only true if a browser also supports touch-action: none in CSS.
+                // iOS safari does not, so it doesn't get to benefit from passive scrolling. iOS does support
+                // touch-action: manipulation, but that allows panning, which breaks
+                // sliders after zooming/on non-responsive pages.
+                // See: https://bugs.webkit.org/show_bug.cgi?id=133112
+                if (!supportsPassive) {
+                    e.preventDefault();
+                }
+
+                e.calcPoint = e.points[options.ort];
+
+                // Call the event handler with the event [ and additional data ].
+                callback(e, data);
+            };
+
+            var methods = [];
+
+            // Bind a closure on the target for every event type.
+            events.split(" ").forEach(function(eventName) {
+                element.addEventListener(eventName, method, supportsPassive ? { passive: true } : false);
+                methods.push([eventName, method]);
+            });
+
+            return methods;
+        }
+
+        // Provide a clean event with standardized offset values.
+        function fixEvent(e, pageOffset, eventTarget) {
+            // Filter the event to register the type, which can be
+            // touch, mouse or pointer. Offset changes need to be
+            // made on an event specific basis.
+            var touch = e.type.indexOf("touch") === 0;
+            var mouse = e.type.indexOf("mouse") === 0;
+            var pointer = e.type.indexOf("pointer") === 0;
+
+            var x;
+            var y;
+
+            // IE10 implemented pointer events with a prefix;
+            if (e.type.indexOf("MSPointer") === 0) {
+                pointer = true;
+            }
+
+            // In the event that multitouch is activated, the only thing one handle should be concerned
+            // about is the touches that originated on top of it.
+            if (touch) {
+                // Returns true if a touch originated on the target.
+                var isTouchOnTarget = function(checkTouch) {
+                    return checkTouch.target === eventTarget || eventTarget.contains(checkTouch.target);
+                };
+
+                // In the case of touchstart events, we need to make sure there is still no more than one
+                // touch on the target so we look amongst all touches.
+                if (e.type === "touchstart") {
+                    var targetTouches = Array.prototype.filter.call(e.touches, isTouchOnTarget);
+
+                    // Do not support more than one touch per handle.
+                    if (targetTouches.length > 1) {
+                        return false;
+                    }
+
+                    x = targetTouches[0].pageX;
+                    y = targetTouches[0].pageY;
+                } else {
+                    // In the other cases, find on changedTouches is enough.
+                    var targetTouch = Array.prototype.find.call(e.changedTouches, isTouchOnTarget);
+
+                    // Cancel if the target touch has not moved.
+                    if (!targetTouch) {
+                        return false;
+                    }
+
+                    x = targetTouch.pageX;
+                    y = targetTouch.pageY;
+                }
+            }
+
+            pageOffset = pageOffset || getPageOffset(scope_Document);
+
+            if (mouse || pointer) {
+                x = e.clientX + pageOffset.x;
+                y = e.clientY + pageOffset.y;
+            }
+
+            e.pageOffset = pageOffset;
+            e.points = [x, y];
+            e.cursor = mouse || pointer; // Fix #435
+
+            return e;
+        }
+
+        // Translate a coordinate in the document to a percentage on the slider
+        function calcPointToPercentage(calcPoint) {
+            var location = calcPoint - offset(scope_Base, options.ort);
+            var proposal = (location * 100) / baseSize();
+
+            // Clamp proposal between 0% and 100%
+            // Out-of-bound coordinates may occur when .noUi-base pseudo-elements
+            // are used (e.g. contained handles feature)
+            proposal = limit(proposal);
+
+            return options.dir ? 100 - proposal : proposal;
+        }
+
+        // Find handle closest to a certain percentage on the slider
+        function getClosestHandle(proposal) {
+            var closest = 100;
+            var handleNumber = false;
+
+            scope_Handles.forEach(function(handle, index) {
+                // Disabled handles are ignored
+                if (handle.hasAttribute("disabled")) {
+                    return;
+                }
+
+                var pos = Math.abs(scope_Locations[index] - proposal);
+
+                if (pos < closest || (pos === 100 && closest === 100)) {
+                    handleNumber = index;
+                    closest = pos;
+                }
+            });
+
+            return handleNumber;
+        }
+
+        // Fire 'end' when a mouse or pen leaves the document.
+        function documentLeave(event, data) {
+            if (event.type === "mouseout" && event.target.nodeName === "HTML" && event.relatedTarget === null) {
+                eventEnd(event, data);
+            }
+        }
+
+        // Handle movement on document for handle and range drag.
+        function eventMove(event, data) {
+            // Fix #498
+            // Check value of .buttons in 'start' to work around a bug in IE10 mobile (data.buttonsProperty).
+            // https://connect.microsoft.com/IE/feedback/details/927005/mobile-ie10-windows-phone-buttons-property-of-pointermove-event-always-zero
+            // IE9 has .buttons and .which zero on mousemove.
+            // Firefox breaks the spec MDN defines.
+            if (navigator.appVersion.indexOf("MSIE 9") === -1 && event.buttons === 0 && data.buttonsProperty !== 0) {
+                return eventEnd(event, data);
+            }
+
+            // Check if we are moving up or down
+            var movement = (options.dir ? -1 : 1) * (event.calcPoint - data.startCalcPoint);
+
+            // Convert the movement into a percentage of the slider width/height
+            var proposal = (movement * 100) / data.baseSize;
+
+            moveHandles(movement > 0, proposal, data.locations, data.handleNumbers);
+        }
+
+        // Unbind move events on document, call callbacks.
+        function eventEnd(event, data) {
+            // The handle is no longer active, so remove the class.
+            if (data.handle) {
+                removeClass(data.handle, options.cssClasses.active);
+                scope_ActiveHandlesCount -= 1;
+            }
+
+            // Unbind the move and end events, which are added on 'start'.
+            data.listeners.forEach(function(c) {
+                scope_DocumentElement.removeEventListener(c[0], c[1]);
+            });
+
+            if (scope_ActiveHandlesCount === 0) {
+                // Remove dragging class.
+                removeClass(scope_Target, options.cssClasses.drag);
+                setZindex();
+
+                // Remove cursor styles and text-selection events bound to the body.
+                if (event.cursor) {
+                    scope_Body.style.cursor = "";
+                    scope_Body.removeEventListener("selectstart", preventDefault);
+                }
+            }
+
+            data.handleNumbers.forEach(function(handleNumber) {
+                fireEvent("change", handleNumber);
+                fireEvent("set", handleNumber);
+                fireEvent("end", handleNumber);
+            });
+        }
+
+        // Bind move events on document.
+        function eventStart(event, data) {
+            var handle;
+            if (data.handleNumbers.length === 1) {
+                var handleOrigin = scope_Handles[data.handleNumbers[0]];
+
+                // Ignore 'disabled' handles
+                if (handleOrigin.hasAttribute("disabled")) {
+                    return false;
+                }
+
+                handle = handleOrigin.children[0];
+                scope_ActiveHandlesCount += 1;
+
+                // Mark the handle as 'active' so it can be styled.
+                addClass(handle, options.cssClasses.active);
+            }
+
+            // A drag should never propagate up to the 'tap' event.
+            event.stopPropagation();
+
+            // Record the event listeners.
+            var listeners = [];
+
+            // Attach the move and end events.
+            var moveEvent = attachEvent(actions.move, scope_DocumentElement, eventMove, {
+                // The event target has changed so we need to propagate the original one so that we keep
+                // relying on it to extract target touches.
+                target: event.target,
+                handle: handle,
+                listeners: listeners,
+                startCalcPoint: event.calcPoint,
+                baseSize: baseSize(),
+                pageOffset: event.pageOffset,
+                handleNumbers: data.handleNumbers,
+                buttonsProperty: event.buttons,
+                locations: scope_Locations.slice()
+            });
+
+            var endEvent = attachEvent(actions.end, scope_DocumentElement, eventEnd, {
+                target: event.target,
+                handle: handle,
+                listeners: listeners,
+                doNotReject: true,
+                handleNumbers: data.handleNumbers
+            });
+
+            var outEvent = attachEvent("mouseout", scope_DocumentElement, documentLeave, {
+                target: event.target,
+                handle: handle,
+                listeners: listeners,
+                doNotReject: true,
+                handleNumbers: data.handleNumbers
+            });
+
+            // We want to make sure we pushed the listeners in the listener list rather than creating
+            // a new one as it has already been passed to the event handlers.
+            listeners.push.apply(listeners, moveEvent.concat(endEvent, outEvent));
+
+            // Text selection isn't an issue on touch devices,
+            // so adding cursor styles can be skipped.
+            if (event.cursor) {
+                // Prevent the 'I' cursor and extend the range-drag cursor.
+                scope_Body.style.cursor = getComputedStyle(event.target).cursor;
+
+                // Mark the target with a dragging state.
+                if (scope_Handles.length > 1) {
+                    addClass(scope_Target, options.cssClasses.drag);
+                }
+
+                // Prevent text selection when dragging the handles.
+                // In noUiSlider <= 9.2.0, this was handled by calling preventDefault on mouse/touch start/move,
+                // which is scroll blocking. The selectstart event is supported by FireFox starting from version 52,
+                // meaning the only holdout is iOS Safari. This doesn't matter: text selection isn't triggered there.
+                // The 'cursor' flag is false.
+                // See: http://caniuse.com/#search=selectstart
+                scope_Body.addEventListener("selectstart", preventDefault, false);
+            }
+
+            data.handleNumbers.forEach(function(handleNumber) {
+                fireEvent("start", handleNumber);
+            });
+        }
+
+        // Move closest handle to tapped location.
+        function eventTap(event) {
+            // The tap event shouldn't propagate up
+            event.stopPropagation();
+
+            var proposal = calcPointToPercentage(event.calcPoint);
+            var handleNumber = getClosestHandle(proposal);
+
+            // Tackle the case that all handles are 'disabled'.
+            if (handleNumber === false) {
+                return false;
+            }
+
+            // Flag the slider as it is now in a transitional state.
+            // Transition takes a configurable amount of ms (default 300). Re-enable the slider after that.
+            if (!options.events.snap) {
+                addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
+            }
+
+            setHandle(handleNumber, proposal, true, true);
+
+            setZindex();
+
+            fireEvent("slide", handleNumber, true);
+            fireEvent("update", handleNumber, true);
+            fireEvent("change", handleNumber, true);
+            fireEvent("set", handleNumber, true);
+
+            if (options.events.snap) {
+                eventStart(event, { handleNumbers: [handleNumber] });
+            }
+        }
+
+        // Fires a 'hover' event for a hovered mouse/pen position.
+        function eventHover(event) {
+            var proposal = calcPointToPercentage(event.calcPoint);
+
+            var to = scope_Spectrum.getStep(proposal);
+            var value = scope_Spectrum.fromStepping(to);
+
+            Object.keys(scope_Events).forEach(function(targetEvent) {
+                if ("hover" === targetEvent.split(".")[0]) {
+                    scope_Events[targetEvent].forEach(function(callback) {
+                        callback.call(scope_Self, value);
+                    });
+                }
+            });
+        }
+
+        // Attach events to several slider parts.
+        function bindSliderEvents(behaviour) {
+            // Attach the standard drag event to the handles.
+            if (!behaviour.fixed) {
+                scope_Handles.forEach(function(handle, index) {
+                    // These events are only bound to the visual handle
+                    // element, not the 'real' origin element.
+                    attachEvent(actions.start, handle.children[0], eventStart, {
+                        handleNumbers: [index]
+                    });
+                });
+            }
+
+            // Attach the tap event to the slider base.
+            if (behaviour.tap) {
+                attachEvent(actions.start, scope_Base, eventTap, {});
+            }
+
+            // Fire hover events
+            if (behaviour.hover) {
+                attachEvent(actions.move, scope_Base, eventHover, {
+                    hover: true
+                });
+            }
+
+            // Make the range draggable.
+            if (behaviour.drag) {
+                scope_Connects.forEach(function(connect, index) {
+                    if (connect === false || index === 0 || index === scope_Connects.length - 1) {
+                        return;
+                    }
+
+                    var handleBefore = scope_Handles[index - 1];
+                    var handleAfter = scope_Handles[index];
+                    var eventHolders = [connect];
+
+                    addClass(connect, options.cssClasses.draggable);
+
+                    // When the range is fixed, the entire range can
+                    // be dragged by the handles. The handle in the first
+                    // origin will propagate the start event upward,
+                    // but it needs to be bound manually on the other.
+                    if (behaviour.fixed) {
+                        eventHolders.push(handleBefore.children[0]);
+                        eventHolders.push(handleAfter.children[0]);
+                    }
+
+                    eventHolders.forEach(function(eventHolder) {
+                        attachEvent(actions.start, eventHolder, eventStart, {
+                            handles: [handleBefore, handleAfter],
+                            handleNumbers: [index - 1, index]
+                        });
+                    });
+                });
+            }
+        }
+
+        // Attach an event to this slider, possibly including a namespace
+        function bindEvent(namespacedEvent, callback) {
+            scope_Events[namespacedEvent] = scope_Events[namespacedEvent] || [];
+            scope_Events[namespacedEvent].push(callback);
+
+            // If the event bound is 'update,' fire it immediately for all handles.
+            if (namespacedEvent.split(".")[0] === "update") {
+                scope_Handles.forEach(function(a, index) {
+                    fireEvent("update", index);
+                });
+            }
+        }
+
+        // Undo attachment of event
+        function removeEvent(namespacedEvent) {
+            var event = namespacedEvent && namespacedEvent.split(".")[0];
+            var namespace = event && namespacedEvent.substring(event.length);
+
+            Object.keys(scope_Events).forEach(function(bind) {
+                var tEvent = bind.split(".")[0];
+                var tNamespace = bind.substring(tEvent.length);
+
+                if ((!event || event === tEvent) && (!namespace || namespace === tNamespace)) {
+                    delete scope_Events[bind];
+                }
+            });
+        }
+
+        // External event handling
+        function fireEvent(eventName, handleNumber, tap) {
+            Object.keys(scope_Events).forEach(function(targetEvent) {
+                var eventType = targetEvent.split(".")[0];
+
+                if (eventName === eventType) {
+                    scope_Events[targetEvent].forEach(function(callback) {
+                        callback.call(
+                            // Use the slider public API as the scope ('this')
+                            scope_Self,
+                            // Return values as array, so arg_1[arg_2] is always valid.
+                            scope_Values.map(options.format.to),
+                            // Handle index, 0 or 1
+                            handleNumber,
+                            // Un-formatted slider values
+                            scope_Values.slice(),
+                            // Event is fired by tap, true or false
+                            tap || false,
+                            // Left offset of the handle, in relation to the slider
+                            scope_Locations.slice()
+                        );
+                    });
+                }
+            });
+        }
+
+        function toPct(pct) {
+            return pct + "%";
+        }
+
+        // Split out the handle positioning logic so the Move event can use it, too
+        function checkHandlePosition(reference, handleNumber, to, lookBackward, lookForward, getValue) {
+            // For sliders with multiple handles, limit movement to the other handle.
+            // Apply the margin option by adding it to the handle positions.
+            if (scope_Handles.length > 1) {
+                if (lookBackward && handleNumber > 0) {
+                    to = Math.max(to, reference[handleNumber - 1] + options.margin);
+                }
+
+                if (lookForward && handleNumber < scope_Handles.length - 1) {
+                    to = Math.min(to, reference[handleNumber + 1] - options.margin);
+                }
+            }
+
+            // The limit option has the opposite effect, limiting handles to a
+            // maximum distance from another. Limit must be > 0, as otherwise
+            // handles would be unmovable.
+            if (scope_Handles.length > 1 && options.limit) {
+                if (lookBackward && handleNumber > 0) {
+                    to = Math.min(to, reference[handleNumber - 1] + options.limit);
+                }
+
+                if (lookForward && handleNumber < scope_Handles.length - 1) {
+                    to = Math.max(to, reference[handleNumber + 1] - options.limit);
+                }
+            }
+
+            // The padding option keeps the handles a certain distance from the
+            // edges of the slider. Padding must be > 0.
+            if (options.padding) {
+                if (handleNumber === 0) {
+                    to = Math.max(to, options.padding[0]);
+                }
+
+                if (handleNumber === scope_Handles.length - 1) {
+                    to = Math.min(to, 100 - options.padding[1]);
+                }
+            }
+
+            to = scope_Spectrum.getStep(to);
+
+            // Limit percentage to the 0 - 100 range
+            to = limit(to);
+
+            // Return false if handle can't move
+            if (to === reference[handleNumber] && !getValue) {
+                return false;
+            }
+
+            return to;
+        }
+
+        // Uses slider orientation to create CSS rules. a = base value;
+        function inRuleOrder(v, a) {
+            var o = options.ort;
+            return (o ? a : v) + ", " + (o ? v : a);
+        }
+
+        // Moves handle(s) by a percentage
+        // (bool, % to move, [% where handle started, ...], [index in scope_Handles, ...])
+        function moveHandles(upward, proposal, locations, handleNumbers) {
+            var proposals = locations.slice();
+
+            var b = [!upward, upward];
+            var f = [upward, !upward];
+
+            // Copy handleNumbers so we don't change the dataset
+            handleNumbers = handleNumbers.slice();
+
+            // Check to see which handle is 'leading'.
+            // If that one can't move the second can't either.
+            if (upward) {
+                handleNumbers.reverse();
+            }
+
+            // Step 1: get the maximum percentage that any of the handles can move
+            if (handleNumbers.length > 1) {
+                handleNumbers.forEach(function(handleNumber, o) {
+                    var to = checkHandlePosition(
+                        proposals,
+                        handleNumber,
+                        proposals[handleNumber] + proposal,
+                        b[o],
+                        f[o],
+                        false
+                    );
+
+                    // Stop if one of the handles can't move.
+                    if (to === false) {
+                        proposal = 0;
+                    } else {
+                        proposal = to - proposals[handleNumber];
+                        proposals[handleNumber] = to;
+                    }
+                });
+            }
+
+            // If using one handle, check backward AND forward
+            else {
+                b = f = [true];
+            }
+
+            var state = false;
+
+            // Step 2: Try to set the handles with the found percentage
+            handleNumbers.forEach(function(handleNumber, o) {
+                state = setHandle(handleNumber, locations[handleNumber] + proposal, b[o], f[o]) || state;
+            });
+
+            // Step 3: If a handle moved, fire events
+            if (state) {
+                handleNumbers.forEach(function(handleNumber) {
+                    fireEvent("update", handleNumber);
+                    fireEvent("slide", handleNumber);
+                });
+            }
+        }
+
+        // Takes a base value and an offset. This offset is used for the connect bar size.
+        // In the initial design for this feature, the origin element was 1% wide.
+        // Unfortunately, a rounding bug in Chrome makes it impossible to implement this feature
+        // in this manner: https://bugs.chromium.org/p/chromium/issues/detail?id=798223
+        function transformDirection(a, b) {
+            return options.dir ? 100 - a - b : a;
+        }
+
+        // Updates scope_Locations and scope_Values, updates visual state
+        function updateHandlePosition(handleNumber, to) {
+            // Update locations.
+            scope_Locations[handleNumber] = to;
+
+            // Convert the value to the slider stepping/range.
+            scope_Values[handleNumber] = scope_Spectrum.fromStepping(to);
+
+            var rule = "translate(" + inRuleOrder(toPct(transformDirection(to, 0) - scope_DirOffset), "0") + ")";
+            scope_Handles[handleNumber].style[options.transformRule] = rule;
+
+            updateConnect(handleNumber);
+            updateConnect(handleNumber + 1);
+        }
+
+        // Handles before the slider middle are stacked later = higher,
+        // Handles after the middle later is lower
+        // [[7] [8] .......... | .......... [5] [4]
+        function setZindex() {
+            scope_HandleNumbers.forEach(function(handleNumber) {
+                var dir = scope_Locations[handleNumber] > 50 ? -1 : 1;
+                var zIndex = 3 + (scope_Handles.length + dir * handleNumber);
+                scope_Handles[handleNumber].style.zIndex = zIndex;
+            });
+        }
+
+        // Test suggested values and apply margin, step.
+        function setHandle(handleNumber, to, lookBackward, lookForward) {
+            to = checkHandlePosition(scope_Locations, handleNumber, to, lookBackward, lookForward, false);
+
+            if (to === false) {
+                return false;
+            }
+
+            updateHandlePosition(handleNumber, to);
+
+            return true;
+        }
+
+        // Updates style attribute for connect nodes
+        function updateConnect(index) {
+            // Skip connects set to false
+            if (!scope_Connects[index]) {
+                return;
+            }
+
+            var l = 0;
+            var h = 100;
+
+            if (index !== 0) {
+                l = scope_Locations[index - 1];
+            }
+
+            if (index !== scope_Connects.length - 1) {
+                h = scope_Locations[index];
+            }
+
+            // We use two rules:
+            // 'translate' to change the left/top offset;
+            // 'scale' to change the width of the element;
+            // As the element has a width of 100%, a translation of 100% is equal to 100% of the parent (.noUi-base)
+            var connectWidth = h - l;
+            var translateRule = "translate(" + inRuleOrder(toPct(transformDirection(l, connectWidth)), "0") + ")";
+            var scaleRule = "scale(" + inRuleOrder(connectWidth / 100, "1") + ")";
+
+            scope_Connects[index].style[options.transformRule] = translateRule + " " + scaleRule;
+        }
+
+        // Parses value passed to .set method. Returns current value if not parse-able.
+        function resolveToValue(to, handleNumber) {
+            // Setting with null indicates an 'ignore'.
+            // Inputting 'false' is invalid.
+            if (to === null || to === false || to === undefined) {
+                return scope_Locations[handleNumber];
+            }
+
+            // If a formatted number was passed, attempt to decode it.
+            if (typeof to === "number") {
+                to = String(to);
+            }
+
+            to = options.format.from(to);
+            to = scope_Spectrum.toStepping(to);
+
+            // If parsing the number failed, use the current value.
+            if (to === false || isNaN(to)) {
+                return scope_Locations[handleNumber];
+            }
+
+            return to;
+        }
+
+        // Set the slider value.
+        function valueSet(input, fireSetEvent) {
+            var values = asArray(input);
+            var isInit = scope_Locations[0] === undefined;
+
+            // Event fires by default
+            fireSetEvent = fireSetEvent === undefined ? true : !!fireSetEvent;
+
+            // Animation is optional.
+            // Make sure the initial values were set before using animated placement.
+            if (options.animate && !isInit) {
+                addClassFor(scope_Target, options.cssClasses.tap, options.animationDuration);
+            }
+
+            // First pass, without lookAhead but with lookBackward. Values are set from left to right.
+            scope_HandleNumbers.forEach(function(handleNumber) {
+                setHandle(handleNumber, resolveToValue(values[handleNumber], handleNumber), true, false);
+            });
+
+            // Second pass. Now that all base values are set, apply constraints
+            scope_HandleNumbers.forEach(function(handleNumber) {
+                setHandle(handleNumber, scope_Locations[handleNumber], true, true);
+            });
+
+            setZindex();
+
+            scope_HandleNumbers.forEach(function(handleNumber) {
+                fireEvent("update", handleNumber);
+
+                // Fire the event only for handles that received a new value, as per #579
+                if (values[handleNumber] !== null && fireSetEvent) {
+                    fireEvent("set", handleNumber);
+                }
+            });
+        }
+
+        // Reset slider to initial values
+        function valueReset(fireSetEvent) {
+            valueSet(options.start, fireSetEvent);
+        }
+
+        // Get the slider value.
+        function valueGet() {
+            var values = scope_Values.map(options.format.to);
+
+            // If only one handle is used, return a single value.
+            if (values.length === 1) {
+                return values[0];
+            }
+
+            return values;
+        }
+
+        // Removes classes from the root and empties it.
+        function destroy() {
+            for (var key in options.cssClasses) {
+                if (!options.cssClasses.hasOwnProperty(key)) {
+                    continue;
+                }
+                removeClass(scope_Target, options.cssClasses[key]);
+            }
+
+            while (scope_Target.firstChild) {
+                scope_Target.removeChild(scope_Target.firstChild);
+            }
+
+            delete scope_Target.noUiSlider;
+        }
+
+        // Get the current step size for the slider.
+        function getCurrentStep() {
+            // Check all locations, map them to their stepping point.
+            // Get the step point, then find it in the input list.
+            return scope_Locations.map(function(location, index) {
+                var nearbySteps = scope_Spectrum.getNearbySteps(location);
+                var value = scope_Values[index];
+                var increment = nearbySteps.thisStep.step;
+                var decrement = null;
+
+                // If the next value in this step moves into the next step,
+                // the increment is the start of the next step - the current value
+                if (increment !== false) {
+                    if (value + increment > nearbySteps.stepAfter.startValue) {
+                        increment = nearbySteps.stepAfter.startValue - value;
+                    }
+                }
+
+                // If the value is beyond the starting point
+                if (value > nearbySteps.thisStep.startValue) {
+                    decrement = nearbySteps.thisStep.step;
+                } else if (nearbySteps.stepBefore.step === false) {
+                    decrement = false;
+                }
+
+                // If a handle is at the start of a step, it always steps back into the previous step first
+                else {
+                    decrement = value - nearbySteps.stepBefore.highestStep;
+                }
+
+                // Now, if at the slider edges, there is not in/decrement
+                if (location === 100) {
+                    increment = null;
+                } else if (location === 0) {
+                    decrement = null;
+                }
+
+                // As per #391, the comparison for the decrement step can have some rounding issues.
+                var stepDecimals = scope_Spectrum.countStepDecimals();
+
+                // Round per #391
+                if (increment !== null && increment !== false) {
+                    increment = Number(increment.toFixed(stepDecimals));
+                }
+
+                if (decrement !== null && decrement !== false) {
+                    decrement = Number(decrement.toFixed(stepDecimals));
+                }
+
+                return [decrement, increment];
+            });
+        }
+
+        // Updateable: margin, limit, padding, step, range, animate, snap
+        function updateOptions(optionsToUpdate, fireSetEvent) {
+            // Spectrum is created using the range, snap, direction and step options.
+            // 'snap' and 'step' can be updated.
+            // If 'snap' and 'step' are not passed, they should remain unchanged.
+            var v = valueGet();
+
+            var updateAble = ["margin", "limit", "padding", "range", "animate", "snap", "step", "format"];
+
+            // Only change options that we're actually passed to update.
+            updateAble.forEach(function(name) {
+                if (optionsToUpdate[name] !== undefined) {
+                    originalOptions[name] = optionsToUpdate[name];
+                }
+            });
+
+            var newOptions = testOptions(originalOptions);
+
+            // Load new options into the slider state
+            updateAble.forEach(function(name) {
+                if (optionsToUpdate[name] !== undefined) {
+                    options[name] = newOptions[name];
+                }
+            });
+
+            scope_Spectrum = newOptions.spectrum;
+
+            // Limit, margin and padding depend on the spectrum but are stored outside of it. (#677)
+            options.margin = newOptions.margin;
+            options.limit = newOptions.limit;
+            options.padding = newOptions.padding;
+
+            // Update pips, removes existing.
+            if (options.pips) {
+                pips(options.pips);
+            }
+
+            // Invalidate the current positioning so valueSet forces an update.
+            scope_Locations = [];
+            valueSet(optionsToUpdate.start || v, fireSetEvent);
+        }
+
+        // Create the base element, initialize HTML and set classes.
+        // Add handles and connect elements.
+        scope_Base = addSlider(scope_Target);
+        addElements(options.connect, scope_Base);
+
+        // Attach user events.
+        bindSliderEvents(options.events);
+
+        // Use the public value method to set the start values.
+        valueSet(options.start);
+
+        // noinspection JSUnusedGlobalSymbols
+        scope_Self = {
+            destroy: destroy,
+            steps: getCurrentStep,
+            on: bindEvent,
+            off: removeEvent,
+            get: valueGet,
+            set: valueSet,
+            reset: valueReset,
+            // Exposed for unit testing, don't use this in your application.
+            __moveHandles: function(a, b, c) {
+                moveHandles(a, b, scope_Locations, c);
+            },
+            options: originalOptions, // Issue #600, #678
+            updateOptions: updateOptions,
+            target: scope_Target, // Issue #597
+            removePips: removePips,
+            pips: pips // Issue #594
+        };
+
+        if (options.pips) {
+            pips(options.pips);
+        }
+
+        if (options.tooltips) {
+            tooltips();
+        }
+
+        aria();
+
+        return scope_Self;
+    }
+
+    // Run the standard initializer
+    function initialize(target, originalOptions) {
+        if (!target || !target.nodeName) {
+            throw new Error("noUiSlider (" + VERSION + "): create requires a single element, got: " + target);
+        }
+
+        // Throw an error if the slider was already initialized.
+        if (target.noUiSlider) {
+            throw new Error("noUiSlider (" + VERSION + "): Slider was already initialized.");
+        }
+
+        // Test the options and create the slider environment;
+        var options = testOptions(originalOptions, target);
+        var api = scope(target, options, originalOptions);
+
+        target.noUiSlider = api;
+
+        return api;
+    }
+
+    // Use an object instead of a function for future expandability;
+    return {
+        // Exposed for unit testing, don't use this in your application.
+        __spectrum: Spectrum,
+        version: VERSION,
+        create: initialize
+    };
+});
+
+
+/***/ }),
+/* 174 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelCorpus" } }, [
+      _c("div", { staticClass: "card-body px-2" }, [
+        _c("form", { attrs: { action: "" } }, [
+          _c("div", { staticClass: "form-group mb-3" }, [
+            _c(
+              "label",
+              {
+                staticClass: "mb-0 text-14 ",
+                attrs: { for: "formCorpusTitle" }
+              },
+              [_vm._v("Title")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.corpusSearchData.corpus_title,
+                  expression: "corpusSearchData.corpus_title"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                type: "text",
+                id: "formCorpusTitle",
+                "aria-describedby": "inputTitle",
+                placeholder: '"Ridges herbology"'
+              },
+              domProps: { value: _vm.corpusSearchData.corpus_title },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(
+                    _vm.corpusSearchData,
+                    "corpus_title",
+                    $event.target.value
+                  )
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-group mb-3" }, [
+            _c(
+              "label",
+              {
+                staticClass: "mb-0 text-14 ",
+                attrs: { for: "formCorpusLanguage" }
+              },
+              [_vm._v("Language")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.corpusSearchData.corpus_merged_languages,
+                  expression: "corpusSearchData.corpus_merged_languages"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                type: "text",
+                id: "formCorpusLanguage",
+                "aria-describedby": "inputLanguage",
+                placeholder: '"German"'
+              },
+              domProps: { value: _vm.corpusSearchData.corpus_merged_languages },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(
+                    _vm.corpusSearchData,
+                    "corpus_merged_languages",
+                    $event.target.value
+                  )
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _vm._m(1),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "collapse formPanelCorpus-all",
+              attrs: { id: "formPanelCorpus-all1" }
+            },
+            [
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusPublisher" }
+                  },
+                  [_vm._v("Language")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.corpusSearchData.corpus_publication_publisher,
+                      expression:
+                        "corpusSearchData.corpus_publication_publisher"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    id: "formCorpusPublisher",
+                    "aria-describedby": "inputPublisher",
+                    placeholder: '"Humboldt Universität"'
+                  },
+                  domProps: {
+                    value: _vm.corpusSearchData.corpus_publication_publisher
+                  },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.corpusSearchData,
+                        "corpus_publication_publisher",
+                        $event.target.value
+                      )
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusFormats" }
+                  },
+                  [_vm._v("Formats")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.corpusSearchData.corpus_merged_formats,
+                      expression: "corpusSearchData.corpus_merged_formats"
+                    }
+                  ],
+                  staticClass: "flexdatalist form-control",
+                  attrs: {
+                    type: "text",
+                    name: "formatslist",
+                    multiple: "multiple",
+                    list: "formatsList-Corpus",
+                    "data-min-length": "0",
+                    id: "formCorpusFormats"
+                  },
+                  domProps: {
+                    value: _vm.corpusSearchData.corpus_merged_formats
+                  },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.corpusSearchData,
+                        "corpus_merged_formats",
+                        $event.target.value
+                      )
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _vm._m(2)
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusLicenses" }
+                  },
+                  [_vm._v("License")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.corpusSearchData.corpus_publication_license,
+                      expression: "corpusSearchData.corpus_publication_license"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    id: "formCorpusLicenses",
+                    "aria-describedby": "inputLicenses",
+                    placeholder: '"cc-by"'
+                  },
+                  domProps: {
+                    value: _vm.corpusSearchData.corpus_publication_license
+                  },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.corpusSearchData,
+                        "corpus_publication_license",
+                        $event.target.value
+                      )
+                    }
+                  }
+                })
+              ])
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "collapse formPanelCorpus-all",
+            attrs: { id: "formPanelCorpus-all2" }
+          },
+          [
+            _vm._m(3),
+            _vm._v(" "),
+            _c("form", { attrs: { action: "" } }, [
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusYear" }
+                  },
+                  [_vm._v("Year of Publication")]
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "d-flex justify-content-between" }, [
+                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                    _c(
+                      "small",
+                      {
+                        staticClass: "form-text text-muted",
+                        attrs: { id: "yearFromHelp" }
+                      },
+                      [_vm._v("from")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value:
+                            _vm.corpusSearchData
+                              .corpus_publication_publication_date,
+                          expression:
+                            "corpusSearchData.corpus_publication_publication_date"
+                        }
+                      ],
+                      staticClass: "toBeValidated form-control",
+                      attrs: {
+                        placeholder: "J J J J",
+                        type: "number",
+                        min: "1",
+                        max: "9999",
+                        step: "1",
+                        name: "yearFrom",
+                        id: "formCorpusYearFrom"
+                      },
+                      domProps: {
+                        value:
+                          _vm.corpusSearchData
+                            .corpus_publication_publication_date
+                      },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.corpusSearchData,
+                            "corpus_publication_publication_date",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                    _c(
+                      "small",
+                      {
+                        staticClass: "form-text text-muted",
+                        attrs: { id: "yearToHelp" }
+                      },
+                      [_vm._v("to")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.corpusSearchData.corpusYearTo,
+                          expression: "corpusSearchData.corpusYearTo"
+                        }
+                      ],
+                      staticClass: "toBeValidated form-control",
+                      attrs: {
+                        placeholder: "J J J J",
+                        type: "number",
+                        min: "1",
+                        max: "9999",
+                        step: "1",
+                        name: "yearTo",
+                        id: "formCorpusYearTo"
+                      },
+                      domProps: { value: _vm.corpusSearchData.corpusYearTo },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.corpusSearchData,
+                            "corpusYearTo",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _vm._m(4)
+                ])
+              ])
+            ])
+          ]
+        )
+      ])
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
+        attrs: {
+          "data-toggle": "collapse",
+          "data-target": "#formPanelCorpus",
+          "aria-expanded": "true",
+          "aria-controls": "formPanelCorpus"
+        }
+      },
+      [
+        _c("span", [_vm._v("Corpus")]),
+        _vm._v(" "),
+        _c("i", {
+          staticClass:
+            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "d-flex flex-column" }, [
+      _c(
+        "a",
+        {
+          staticClass:
+            "align-self-end text-uppercase text-dark text-14 filter-expander",
+          attrs: {
+            "data-toggle": "collapse",
+            href: "#",
+            "data-target": ".formPanelCorpus-all",
+            role: "button",
+            "aria-expanded": "false",
+            "aria-controls": "#formPanelCorpus-all1 #formPanelCorpus-all2"
+          }
+        },
+        [
+          _vm._v(
+            "\n                        + Show all Corpusfilter\n                    "
+          )
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("datalist", { attrs: { id: "formatsList-Corpus" } }, [
+      _c("option", { attrs: { value: "ANNIS" } }, [_vm._v("ANNIS")]),
+      _vm._v(" "),
+      _c("option", { attrs: { value: "EXEL" } }, [_vm._v("EXEL")]),
+      _vm._v(" "),
+      _c("option", { attrs: { value: "PAULA" } }, [_vm._v("PAULA")]),
+      _vm._v(" "),
+      _c("option", { attrs: { value: "Negra" } }, [_vm._v("Negra")]),
+      _vm._v(" "),
+      _c("option", { attrs: { value: "TEI-Header" } }, [_vm._v("TEI-Header")]),
+      _vm._v(" "),
+      _c("option", { attrs: { value: "txt" } }, [_vm._v("txt")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("form", { attrs: { action: "" } }, [
+      _c("div", { staticClass: "form-group mb-3" }, [
+        _c("label", { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } }, [
+          _vm._v("Corpus size (Tokens, Words)")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "d-flex justify-content-between" }, [
+          _c("div", { staticClass: "w-75" }, [
+            _c("div", { attrs: { id: "corpusSize" } }),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass:
+                  "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
+              },
+              [
+                _c("span", { attrs: { id: "corpusSize-minVal" } }),
+                _vm._v(" "),
+                _c("span", { attrs: { id: "corpusSize-maxVal" } })
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "disabled btn btn-sm btn-corpus-dark p-0",
+              attrs: { type: "submit" }
+            },
+            [_c("i", { staticClass: "fa fa-angle-right fa-fw fa-2x py-1" })]
+          )
+        ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass:
+          "toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end",
+        attrs: { type: "submit" }
+      },
+      [_c("i", { staticClass: "fa fa-angle-right fa-fw fa-2x py-1" })]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-b27cc1d2", module.exports)
+  }
+}
+
+/***/ }),
+/* 175 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(176)
+/* template */
+var __vue_template__ = __webpack_require__(177)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/DocumentFilter.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-717d462c", Component.options)
+  } else {
+    hotAPI.reload("data-v-717d462c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 176 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults'],
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    methods: {
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        }
+    },
+    mounted: function mounted() {
+        console.log('CorpusActiveFilterComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 177 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelDocuments" } }, [
+      _vm._m(1)
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
+        attrs: {
+          "data-toggle": "collapse",
+          "data-target": "#formPanelDocuments",
+          "aria-expanded": "true",
+          "aria-controls": "formPanelDocuments"
+        }
+      },
+      [
+        _c("span", [_vm._v("Documents")]),
+        _vm._v(" "),
+        _c("i", {
+          staticClass:
+            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "card-body px-2" }, [
+      _c("form", { attrs: { action: "" } }, [
+        _c("div", { staticClass: "form-group mb-3" }, [
+          _c(
+            "label",
+            {
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formDocumentsTitle" }
+            },
+            [_vm._v("Title")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "formDocumentsTitle",
+              "aria-describedby": "inputTitle",
+              placeholder: '"Ridges herbology"'
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group mb-3" }, [
+          _c(
+            "label",
+            {
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formDocumentsAuthor" }
+            },
+            [_vm._v("Author")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "formDocumentsAuthor",
+              "aria-describedby": "inputAuthor",
+              placeholder: '"Frank Mann"'
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "d-flex flex-column" }, [
+          _c(
+            "a",
+            {
+              staticClass:
+                "align-self-end text-uppercase text-dark text-14 filter-expander",
+              attrs: {
+                "data-toggle": "collapse",
+                href: "#",
+                "data-target": ".formPanelDocuments-all",
+                role: "button",
+                "aria-expanded": "false",
+                "aria-controls":
+                  "#formPanelDocuments-all1 #formPanelDocuments-all2"
+              }
+            },
+            [
+              _vm._v(
+                "\n                        + Show all Documentsfilter\n                    "
+              )
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "collapse formPanelDocuments-all",
+            attrs: { id: "formPanelDocuments-all1" }
+          },
+          [
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formDocumentsLanguage" }
+                },
+                [_vm._v("Language")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                staticClass: "form-control",
+                attrs: {
+                  type: "text",
+                  id: "formDocumentsLanguage",
+                  "aria-describedby": "inputLanguage",
+                  placeholder: '"German"'
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formDocumentsPlace" }
+                },
+                [_vm._v("Place")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                staticClass: "form-control",
+                attrs: {
+                  type: "text",
+                  id: "formDocumentsPlace",
+                  "aria-describedby": "inputPlace",
+                  placeholder: '"Mannheim"'
+                }
+              })
+            ])
+          ]
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          staticClass: "collapse formPanelDocuments-all",
+          attrs: { id: "formPanelDocuments-all2" }
+        },
+        [
+          _c("form", { attrs: { action: "" } }, [
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } },
+                [_vm._v("Documents size (Tokens, Words)")]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex justify-content-between" }, [
+                _c("div", { staticClass: "w-75" }, [
+                  _c("div", { attrs: { id: "documentSize" } }),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
+                    },
+                    [
+                      _c("span", { attrs: { id: "documentSize-minVal" } }),
+                      _vm._v(" "),
+                      _c("span", { attrs: { id: "documentSize-maxVal" } })
+                    ]
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "disabled btn btn-sm btn-corpus-dark p-0",
+                    attrs: { type: "submit" }
+                  },
+                  [
+                    _c("i", {
+                      staticClass: "fa fa-angle-right fa-fw fa-2x py-1"
+                    })
+                  ]
+                )
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("form", { attrs: { action: "" } }, [
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formDocumentsYear" }
+                },
+                [_vm._v("Year of Publication")]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex justify-content-between" }, [
+                _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                  _c(
+                    "small",
+                    {
+                      staticClass: "form-text text-muted",
+                      attrs: { id: "yearFromHelp" }
+                    },
+                    [_vm._v("from")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    staticClass: "toBeValidated form-control",
+                    attrs: {
+                      placeholder: "J J J J",
+                      type: "number",
+                      min: "1",
+                      max: "9999",
+                      step: "1",
+                      name: "yearFrom",
+                      id: "formDocumentsYearFrom"
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                  _c(
+                    "small",
+                    {
+                      staticClass: "form-text text-muted",
+                      attrs: { id: "yearToHelp" }
+                    },
+                    [_vm._v("to")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    staticClass: "toBeValidated form-control",
+                    attrs: {
+                      placeholder: "J J J J",
+                      type: "number",
+                      min: "1",
+                      max: "9999",
+                      step: "1",
+                      name: "yearTo",
+                      id: "formDocumentsYearTo"
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass:
+                      "toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end",
+                    attrs: { type: "submit" }
+                  },
+                  [
+                    _c("i", {
+                      staticClass: "fa fa-angle-right fa-fw fa-2x py-1"
+                    })
+                  ]
+                )
+              ])
+            ])
+          ])
+        ]
+      )
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-717d462c", module.exports)
+  }
+}
+
+/***/ }),
+/* 178 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(179)
+/* template */
+var __vue_template__ = __webpack_require__(180)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/AnnotationFilter.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-147adb84", Component.options)
+  } else {
+    hotAPI.reload("data-v-147adb84", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 179 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults'],
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    methods: {
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        }
+    },
+    mounted: function mounted() {
+        console.log('CorpusActiveFilterComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 180 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c(
+      "div",
+      { class: _vm.getClass(), attrs: { id: "formPanelAnnotations" } },
+      [_vm._m(1)]
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
+        attrs: {
+          "data-toggle": "collapse",
+          "data-target": "#formPanelAnnotations",
+          "aria-expanded": "true",
+          "aria-controls": "formPanelAnnotations"
+        }
+      },
+      [
+        _c("span", [_vm._v("Annotations")]),
+        _vm._v(" "),
+        _c("i", {
+          staticClass:
+            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "card-body px-2" }, [
+      _c("form", { attrs: { action: "" } }, [
+        _c("div", { staticClass: "form-group mb-3" }, [
+          _c(
+            "label",
+            {
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formAnnotationsTitle" }
+            },
+            [_vm._v("Name")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "formAnnotationsTitle",
+              "aria-describedby": "inputName",
+              placeholder: '"Ridges herbology"'
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group mb-3" }, [
+          _c(
+            "label",
+            {
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formAnnotationsLanguage" }
+            },
+            [_vm._v("Category")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "formAnnotationsLanguage",
+              "aria-describedby": "inputCategory",
+              placeholder: '"German"'
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group mb-3" }, [
+          _c(
+            "label",
+            {
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formAnnotationsFormats" }
+            },
+            [_vm._v("Formats")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            staticClass: "flexdatalist form-control",
+            attrs: {
+              type: "text",
+              name: "formatslist",
+              multiple: "multiple",
+              list: "formatsList-Annotations",
+              "data-min-length": "0",
+              id: "formAnnotationsFormats"
+            }
+          }),
+          _vm._v(" "),
+          _c("datalist", { attrs: { id: "formatsList-Annotations" } }, [
+            _c("option", { attrs: { value: "ANNIS" } }, [_vm._v("ANNIS")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "EXEL" } }, [_vm._v("EXEL")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "PAULA" } }, [_vm._v("PAULA")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "Negra" } }, [_vm._v("Negra")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "TEI-Header" } }, [
+              _vm._v("TEI-Header")
+            ])
+          ])
+        ])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-147adb84", module.exports)
+  }
+}
+
+/***/ }),
+/* 181 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(182)
+/* template */
+var __vue_template__ = __webpack_require__(183)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/SearchResultHeader.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-69ab1049", Component.options)
+  } else {
+    hotAPI.reload("data-v-69ab1049", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 182 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'documentsbycorpus', 'annotationsbycorpus', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    mounted: function mounted() {
+        console.log('CorpusResultHeaderComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 183 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { attrs: { id: "resultheader" } }, [
+    _c("div", { staticClass: "d-flex justify-content-between my-1" }, [
+      _c(
+        "ul",
+        {
+          staticClass: "nav nav-tabs",
+          attrs: { id: "searchtabs", role: "tablist" }
+        },
+        [
+          _c("li", { staticClass: "nav-item" }, [
+            _c(
+              "a",
+              {
+                staticClass: "nav-link active",
+                attrs: {
+                  id: "tab-corpora",
+                  "data-toggle": "tab",
+                  href: "#searchtab-corpora",
+                  role: "tab",
+                  "aria-controls": "searchtab-corpora",
+                  "aria-selected": "true"
+                }
+              },
+              [_vm._v("Corpora (" + _vm._s(_vm.corpusresultcounter) + ")")]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { staticClass: "nav-item" }, [
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "tab-documents",
+                  "data-toggle": "tab",
+                  href: "#searchtab-documents",
+                  role: "tab",
+                  "aria-controls": "searchtab-documents",
+                  "aria-selected": "false"
+                }
+              },
+              [_vm._v("Documents (" + _vm._s(_vm.documentresultcounter) + ")")]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { staticClass: "nav-item" }, [
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "tab-annotations",
+                  "data-toggle": "tab",
+                  href: "#searchtab-annotations",
+                  role: "tab",
+                  "aria-controls": "searchtab-annotations",
+                  "aria-selected": "false"
+                }
+              },
+              [
+                _vm._v(
+                  "Annotations (" + _vm._s(_vm.annotationresultcounter) + ")"
+                )
+              ]
+            )
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _vm._m(0)
+    ]),
+    _vm._v(" "),
+    _vm._m(1)
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-row " }, [
+      _c("div", { staticClass: "col-auto" }, [
+        _c("div", { staticClass: "dropdown" }, [
+          _c(
+            "button",
+            {
+              staticClass:
+                "btn btn-outline-corpus-dark rounded dropdown-toggle font-weight-bold text-uppercase ",
+              attrs: {
+                type: "button",
+                id: "searchSorting",
+                "data-toggle": "dropdown",
+                "aria-haspopup": "true",
+                "aria-expanded": "false"
+              }
+            },
+            [
+              _vm._v(
+                "\n                        Title - Alphabetical\n                    "
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "dropdown-menu",
+              attrs: { "aria-labelledby": "searchSort" }
+            },
+            [
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Title - alphabetical")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Tokens - ascending")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Tokens - descending")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Corpus release - oldest")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Corpus release - newest")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Date Document - oldest")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Date Document - newest")]
+              )
+            ]
+          )
+        ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "w-100 py-3 px-6 mb-1 bg-corpus-light d-flex flex-column"
+      },
+      [
+        _c(
+          "div",
+          {
+            staticClass:
+              "btn btn-sm font-weight-bold text-uppercase btn-outline-corpus-dark align-self-end disabled"
+          },
+          [_vm._v("\n            Apply Filter\n        ")]
+        )
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-69ab1049", module.exports)
+  }
+}
+
+/***/ }),
+/* 184 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(185)
+/* template */
+var __vue_template__ = __webpack_require__(186)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/CorpusSearchResult.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-28722078", Component.options)
+  } else {
+    hotAPI.reload("data-v-28722078", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 185 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresult', 'documentsbycorpus', 'annotationsbycorpus', 'corpuspaths'],
+    methods: {
+        browseUri: function browseUri(id) {
+            return '/browse/corpus/'.concat(id);
+        },
+        corpusAuthors: function corpusAuthors(forenames, surnames) {
+            var authorString = "";
+            for (var i = 0; i < forenames.length; i++) {
+                authorString += forenames[i].concat(' ').concat(surnames[i]).concat(', ');
+            }
+            authorString = authorString.substring(0, authorString.lastIndexOf(","));
+            return authorString;
+        },
+        getLicenseMarkup: function getLicenseMarkup(licenseUri) {
+            var uriSplits = licenseUri.split("/");
+            var license = uriSplits[4];
+            var licenseSplits = license.split("-");
+            var licenses = [];
+
+            for (var i = 0; i < licenseSplits.length; i++) {
+                var license = {};
+                license.uri = '/images/license-' + licenseSplits[i] + '.svg';
+                license.altText = licenseSplits[i];
+                licenses.push(license);
+            }
+            return licenses;
+        },
+        emitCorpusRelations: function emitCorpusRelations(corpusId) {
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+            this.$store.dispatch('documentByCorpus', this.documentsbycorpus[corpusId]);
+            this.$store.dispatch('annotationByCorpus', this.annotationsbycorpus[corpusId]);
+        }
+    },
+    mounted: function mounted() {
+        console.log('CorpusResultComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 186 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "tab-pane active",
+      attrs: {
+        id: "searchtab-corpora",
+        role: "tabpanel",
+        "aria-labelledby": "searchtab-corpora"
+      }
+    },
+    [
+      _c(
+        "div",
+        { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
+        [
+          _c("div", { staticClass: "row" }, [
+            _vm.corpusresult._source.corpuslogo == ""
+              ? _c("div", { staticClass: "col-2" }, [
+                  _c("img", {
+                    staticClass: "w-100",
+                    attrs: {
+                      src: "/images/placeholder_circle.svg",
+                      alt: "circle-image"
+                    }
+                  })
+                ])
+              : _c("div", { staticClass: "col-2" }, [
+                  _c("img", {
+                    staticClass: "rounded-circle bg-white w-100",
+                    attrs: {
+                      src: "/images/corpuslogos/"
+                        .concat(_vm.corpusresult._source.projectpath)
+                        .concat("_")
+                        .concat(_vm.corpusresult._source.corpuspath)
+                        .concat("_")
+                        .concat(_vm.corpusresult._source.corpuslogo),
+                      alt: "corpus-logo"
+                    }
+                  })
+                ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "col" }, [
+              _c("h4", { staticClass: "h4 font-weight-bold" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "text-dark",
+                    attrs: { href: _vm.browseUri(_vm.corpusresult._id) }
+                  },
+                  [
+                    _vm._v(
+                      "\n                        " +
+                        _vm._s(
+                          _vm._f("arrayToString")(
+                            _vm.corpusresult._source.corpus_title
+                          )
+                        ) +
+                        "\n                    "
+                    )
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _vm.corpusresult._source.corpus_editor_forename != "undefined" &&
+              _vm.corpusresult._source.corpus_editor_surname != "undefined"
+                ? _c("span", { staticClass: "text-grey text-14" }, [
+                    _vm._v(
+                      _vm._s(
+                        _vm.corpusAuthors(
+                          _vm.corpusresult._source.corpus_editor_forename,
+                          _vm.corpusresult._source.corpus_editor_surname
+                        )
+                      )
+                    )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _c("div", { staticClass: "row mt-1 " }, [
+                _c("div", { staticClass: "col col-auto mr-1" }, [
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                    },
+                    [
+                      _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
+                      _vm._v(" "),
+                      _c("span", [
+                        _vm._v(
+                          "D. from " +
+                            _vm._s(_vm.corpusresult._source.documentrange)
+                        )
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                    },
+                    [
+                      _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
+                      _vm._v(" "),
+                      _c("span", [
+                        _vm._v(_vm._s(_vm.corpusresult._source.documentgenre))
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "mt-2" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "text-dark text-uppercase search-description-expander",
+                        attrs: {
+                          "data-toggle": "collapse",
+                          href: "#corpusSearchItem_".concat(
+                            _vm.corpusresult._id
+                          ),
+                          role: "button",
+                          "aria-expanded": "false",
+                          "aria-controls": "#corpusSearchItem_".concat(
+                            _vm.corpusresult._id
+                          )
+                        }
+                      },
+                      [
+                        _c("i", {
+                          staticClass:
+                            "fa fa-angle-down fa-fw text-primary font-weight-bold"
+                        }),
+                        _vm._v(
+                          "\n                                Description\n                            "
+                        )
+                      ]
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "col col-auto mr-1" }, [
+                  _vm.corpusresult._source.corpus_languages_language !=
+                  "undefined"
+                    ? _c(
+                        "div",
+                        {
+                          staticClass:
+                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                        },
+                        [
+                          _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
+                          _vm._v(" "),
+                          _c("span", [
+                            _vm._v(
+                              _vm._s(
+                                _vm._f("truncatelist")(
+                                  _vm.corpusresult._source
+                                    .corpus_languages_language[0]
+                                )
+                              )
+                            )
+                          ])
+                        ]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                    },
+                    [
+                      _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
+                      _vm._v(" "),
+                      _c("span", [
+                        _vm._v(
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              _vm.corpusresult._source.corpus_size_value
+                            )
+                          ) +
+                            " " +
+                            _vm._s(
+                              _vm._f("arrayToString")(
+                                _vm.corpusresult._source.corpus_size_type
+                              )
+                            )
+                        )
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "mt-2" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                        attrs: { href: "#" }
+                      },
+                      [
+                        _c("i", {
+                          staticClass:
+                            "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
+                        }),
+                        _vm._v(" "),
+                        typeof _vm.corpusresult._source.corpus_documents !=
+                        "undefined"
+                          ? _c(
+                              "span",
+                              {
+                                staticClass:
+                                  "text-primary text-14 font-weight-bold"
+                              },
+                              [
+                                _vm._v(
+                                  _vm._s(
+                                    _vm.corpusresult._source.corpus_documents
+                                      .length
+                                  )
+                                )
+                              ]
+                            )
+                          : _vm._e()
+                      ]
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "col col-auto mr-1" },
+                  [
+                    _vm._l(
+                      _vm.getLicenseMarkup(
+                        _vm.corpusresult._source.corpus_publication_license[0]
+                      ),
+                      function(licenseObject) {
+                        return _vm.corpusresult._source
+                          .corpus_publication_license != "undefined"
+                          ? _c(
+                              "div",
+                              {
+                                staticClass:
+                                  "d-flex justify-content-start align-items-center"
+                              },
+                              [
+                                _c("img", {
+                                  staticClass: "py-1",
+                                  attrs: {
+                                    src: licenseObject.uri,
+                                    alt: "license".concat(licenseObject.altText)
+                                  }
+                                })
+                              ]
+                            )
+                          : _vm._e()
+                      }
+                    ),
+                    _vm._v(" "),
+                    _vm.corpusresult._source
+                      .corpus_publication_publication_date != "undefined"
+                      ? _c(
+                          "div",
+                          {
+                            staticClass:
+                              "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 flex-nowrap"
+                          },
+                          [
+                            _c("i", {
+                              staticClass:
+                                "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
+                            }),
+                            _vm._v(" "),
+                            _c("span", [
+                              _vm._v(
+                                _vm._s(
+                                  _vm._f("lastElement")(
+                                    _vm.corpusresult._source
+                                      .corpus_publication_publication_date
+                                  )
+                                )
+                              )
+                            ])
+                          ]
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "mt-2" }, [
+                      typeof _vm.corpusresult._source.annotation_id !=
+                      "undefined"
+                        ? _c(
+                            "a",
+                            {
+                              staticClass:
+                                "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1",
+                              attrs: { href: "# " }
+                            },
+                            [
+                              _c("i", {
+                                staticClass:
+                                  "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                              }),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                { staticClass: "text-14 font-weight-bold" },
+                                [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm.corpusresult._source.annotation_id
+                                        .length
+                                    )
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        : _vm._e()
+                    ])
+                  ],
+                  2
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-2 mr-3" }, [
+              _c("div", { staticClass: "dropdown" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass:
+                      "btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4",
+                    attrs: {
+                      type: "button",
+                      "data-toggle": "dropdown",
+                      "aria-haspopup": "true",
+                      "aria-expanded": "false"
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                        Download\n                    "
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticClass: "dropdown-menu",
+                    attrs: { "aria-labelledby": "dropdownMenuButton" }
+                  },
+                  [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "dropdown-item text-14",
+                        attrs: {
+                          href: "/download/tei/".concat(
+                            _vm.corpusresult._source.corpuspath
+                          )
+                        }
+                      },
+                      [_vm._v("TEI-Header")]
+                    )
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "custom-control custom-checkbox" }, [
+                _c("input", {
+                  staticClass: "custom-control-input",
+                  attrs: {
+                    type: "checkbox",
+                    id: "filtercheck-corpusSearchItem".concat(
+                      _vm.corpusresult._id
+                    )
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "label",
+                  {
+                    staticClass: "custom-control-label text-14",
+                    attrs: {
+                      for: "filtercheck-corpusSearchItem".concat(
+                        _vm.corpusresult._id
+                      )
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                        Set as Filter\n                    "
+                    )
+                  ]
+                )
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col-2" }),
+            _vm._v(" "),
+            _c("div", { staticClass: "col" }, [
+              _c(
+                "div",
+                {
+                  staticClass: "collapse row pl-0 pr-3 pb-0",
+                  attrs: {
+                    id: "corpusSearchItem_".concat(_vm.corpusresult._id)
+                  }
+                },
+                [
+                  _c("hr"),
+                  _vm._v(" "),
+                  _c("p", [
+                    _vm._v(
+                      "\n                        " +
+                        _vm._s(
+                          _vm._f("lastElement")(
+                            _vm.corpusresult._source
+                              .corpus_encoding_project_description
+                          )
+                        ) +
+                        "\n                        "
+                    ),
+                    _c("a", { attrs: { href: "#" } }, [_vm._v("MORE")])
+                  ])
+                ]
+              )
+            ])
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _vm._m(0)
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
+      },
+      [
+        _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
+          _c("ul", { staticClass: "pagination" }, [
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Previous" }
+                },
+                [
+                  _c("span", { attrs: { "aria-hidden": "true" } }, [
+                    _vm._v("«")
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "sr-only" }, [_vm._v("Previous")])
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold active" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("1")
+              ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("2")
+              ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("3")
+              ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Next" }
+                },
+                [
+                  _c("span", { attrs: { "aria-hidden": "true" } }, [
+                    _vm._v("»")
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
+                ]
+              )
+            ])
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-row" }, [
+          _c("div", { staticClass: "col-auto" }, [
+            _c(
+              "select",
+              {
+                staticClass:
+                  "custom-select custom-select-sm font-weight-bold text-uppercase"
+              },
+              [
+                _c("option", { attrs: { selected: "" } }, [
+                  _vm._v("6 results / page")
+                ]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
+              ]
+            )
+          ])
+        ])
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-28722078", module.exports)
+  }
+}
+
+/***/ }),
+/* 187 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(188)
+/* template */
+var __vue_template__ = __webpack_require__(189)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/DocumentSearchResult.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-0487c357", Component.options)
+  } else {
+    hotAPI.reload("data-v-0487c357", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 188 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['documentresult', 'corpusbydocument', 'annotationsbydocument', 'corpusbydocument'],
+    methods: {
+        browseUri: function browseUri(id) {
+            return '/browse/document/'.concat(id);
+        },
+        emitDocumentRelations: function emitDocumentRelations(documentId) {
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearAnnotations', []);
+            this.$store.dispatch('corpusByDocument', this.corpusbydocument[documentId]);
+            this.$store.dispatch('annotationByDocument', this.annotationsbydocument[documentId]);
+        }
+    },
+    mounted: function mounted() {
+        console.log('DocumentResultComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 189 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "tab-pane",
+      attrs: {
+        id: "searchtab-documents",
+        role: "tabpanel",
+        "aria-labelledby": "searchtab-documents"
+      }
+    },
+    [
+      _vm._l(_vm.documentresult.results, function(documentresultdata, index) {
+        return _vm.documentresult.results.length > 0
+          ? _c(
+              "div",
+              {
+                key: documentresultdata._id,
+                staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5"
+              },
+              [
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col" }, [
+                    _c("h4", { staticClass: "h4 font-weight-bold" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "text-dark",
+                          attrs: { href: "document_Metadata--fromSearch.html" }
+                        },
+                        [
+                          _vm._v(
+                            "\n                        " +
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  documentresultdata._source.document_title
+                                )
+                              ) +
+                              "\n                    "
+                          )
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "text-grey text-14" }, [
+                      _vm._v(
+                        "\n                    Corpus: " +
+                          _vm._s(documentresultdata._source.corpus_name) +
+                          "\n                    "
+                      ),
+                      _c("br"),
+                      _vm._v(
+                        " " +
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              documentresultdata._source.document_author_surname
+                            )
+                          ) +
+                          ", " +
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              documentresultdata._source
+                                .document_author_forename
+                            )
+                          )
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "row mt-2" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass:
+                            "col d-flex flex-wrap justify-content-start"
+                        },
+                        [
+                          _c("div", { staticClass: "mr-7" }, [
+                            _c(
+                              "div",
+                              {
+                                staticClass:
+                                  "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                              },
+                              [
+                                _c("i", {
+                                  staticClass: "fa fa-fw fa-clock-o mr-1"
+                                }),
+                                _vm._v(" "),
+                                _c("span", [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm._f("arrayToString")(
+                                        documentresultdata._source
+                                          .document_publication_publishing_date
+                                      )
+                                    )
+                                  )
+                                ])
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            {
+                              staticClass:
+                                "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                            },
+                            [
+                              _c("i", {
+                                staticClass: "fa fa-fw fa-cubes mr-1"
+                              }),
+                              _vm._v(" "),
+                              _c("span", [
+                                _vm._v(
+                                  " " +
+                                    _vm._s(
+                                      _vm._f("arrayToString")(
+                                        documentresultdata._source
+                                          .document_size_extent
+                                      )
+                                    ) +
+                                    " " +
+                                    _vm._s(
+                                      _vm._f("arrayToString")(
+                                        documentresultdata._source
+                                          .document_size_type
+                                      )
+                                    )
+                                )
+                              ])
+                            ]
+                          )
+                        ]
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "col-4 mr-3 d-flex justify-content-between align-items-start"
+                    },
+                    [
+                      _c(
+                        "a",
+                        {
+                          staticClass:
+                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                          attrs: { href: "# " }
+                        },
+                        [
+                          _c("i", {
+                            staticClass:
+                              "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "span",
+                            { staticClass: "text-14 font-weight-bold" },
+                            [
+                              _vm._v(
+                                _vm._s(
+                                  documentresultdata._source
+                                    .document_list_of_annotations_id.length
+                                )
+                              )
+                            ]
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _vm._m(0, true)
+                    ]
+                  )
+                ])
+              ]
+            )
+          : _vm._e()
+      }),
+      _vm._v(" "),
+      _vm._m(1)
+    ],
+    2
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "custom-control custom-checkbox" }, [
+      _c("input", {
+        staticClass: "custom-control-input",
+        attrs: { type: "checkbox", id: "filtercheck-documentSearchItem0001" }
+      }),
+      _vm._v(" "),
+      _c(
+        "label",
+        {
+          staticClass: "custom-control-label text-14",
+          attrs: { for: "filtercheck-documentSearchItem0001" }
+        },
+        [
+          _vm._v(
+            "\n                        Set as Filter\n                    "
+          )
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
+      },
+      [
+        _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
+          _c("ul", { staticClass: "pagination" }, [
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Previous" }
+                },
+                [
+                  _c("span", { attrs: { "aria-hidden": "true" } }, [
+                    _vm._v("«")
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "sr-only" }, [_vm._v("Previous")])
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold active" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("1")
+              ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("2")
+              ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("3")
+              ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Next" }
+                },
+                [
+                  _c("span", { attrs: { "aria-hidden": "true" } }, [
+                    _vm._v("»")
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
+                ]
+              )
+            ])
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-row" }, [
+          _c("div", { staticClass: "col-auto" }, [
+            _c(
+              "select",
+              {
+                staticClass:
+                  "custom-select custom-select-sm font-weight-bold text-uppercase"
+              },
+              [
+                _c("option", { attrs: { selected: "" } }, [
+                  _vm._v("6 results / page")
+                ]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
+              ]
+            )
+          ])
+        ])
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-0487c357", module.exports)
+  }
+}
+
+/***/ }),
+/* 190 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(191)
+/* template */
+var __vue_template__ = __webpack_require__(192)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/AnnotationSearchResult.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-d7ceacaa", Component.options)
+  } else {
+    hotAPI.reload("data-v-d7ceacaa", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 191 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['annotationresults', 'corpusbyannotation', 'documentsbyannotation'],
+    methods: {
+        browseUri: function browseUri(id, type) {
+            return '/browse/annotation/'.concat(id);
+        },
+        emitAnnotationRelations: function emitAnnotationRelations(annotationId) {
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('corpusByAnnotation', this.corpusbyannotation[annotationId]);
+            this.$store.dispatch('documentByAnnotation', this.documentsbyannotation[annotationId]);
+        }
+    },
+    mounted: function mounted() {
+        console.log('AnnotationResultComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 192 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "tab-pane",
+      attrs: {
+        id: "searchtab-annotations",
+        role: "tabpanel",
+        "aria-labelledby": "searchtab-annotations"
+      }
+    },
+    [
+      _vm._l(_vm.annotationresults, function(annotationresult, index) {
+        return _vm.annotationresults.length > 0
+          ? _c(
+              "div",
+              {
+                key: annotationresult._id,
+                staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5"
+              },
+              [
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col" }, [
+                    _c("h4", { staticClass: "h4 font-weight-bold" }, [
+                      _c(
+                        "a",
+                        {
+                          staticClass: "text-dark",
+                          attrs: { href: _vm.browseUri(annotationresult._id) }
+                        },
+                        [
+                          _vm._v(
+                            "\n                        " +
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  annotationresult._source.preparation_title
+                                )
+                              ) +
+                              "\n                    "
+                          )
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "text-grey text-14" }, [
+                      _vm._v(
+                        "\n                    Corpus: " +
+                          _vm._s(annotationresult._source.corpus_name) +
+                          "\n                  "
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-2" }, [
+                    _c("span", { staticClass: "text-grey text-14" }, [
+                      _vm._v(
+                        _vm._s(
+                          _vm._f("lastElement")(
+                            annotationresult._source
+                              .preparation_encoding_annotation_group
+                          )
+                        )
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "col-4 d-flex justify-content-between align-items-start"
+                    },
+                    [
+                      _c(
+                        "a",
+                        {
+                          staticClass:
+                            "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                          attrs: { href: "#" }
+                        },
+                        [
+                          _c("i", {
+                            staticClass:
+                              "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "span",
+                            {
+                              staticClass:
+                                "text-primary text-14 font-weight-bold"
+                            },
+                            [
+                              _vm._v(
+                                _vm._s(
+                                  annotationresult._source.in_documents.length
+                                )
+                              )
+                            ]
+                          )
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _vm._m(0, true)
+                    ]
+                  )
+                ])
+              ]
+            )
+          : _vm._e()
+      }),
+      _vm._v(" "),
+      _vm._m(1)
+    ],
+    2
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "custom-control custom-checkbox" }, [
+      _c("input", {
+        staticClass: "custom-control-input",
+        attrs: { type: "checkbox", id: "filtercheck-annotationSearchItem0001" }
+      }),
+      _vm._v(" "),
+      _c(
+        "label",
+        {
+          staticClass: "custom-control-label text-14",
+          attrs: { for: "filtercheck-annotationSearchItem0001" }
+        },
+        [
+          _vm._v(
+            "\n                        Set as Filter\n                    "
+          )
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
+      },
+      [
+        _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
+          _c("ul", { staticClass: "pagination" }, [
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Previous" }
+                },
+                [
+                  _c("span", { attrs: { "aria-hidden": "true" } }, [
+                    _vm._v("«")
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "sr-only" }, [_vm._v("Previous")])
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold active" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("1")
+              ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("2")
+              ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item font-weight-bold" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("3")
+              ])
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Next" }
+                },
+                [
+                  _c("span", { attrs: { "aria-hidden": "true" } }, [
+                    _vm._v("»")
+                  ]),
+                  _vm._v(" "),
+                  _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
+                ]
+              )
+            ])
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-row" }, [
+          _c("div", { staticClass: "col-auto" }, [
+            _c(
+              "select",
+              {
+                staticClass:
+                  "custom-select custom-select-sm font-weight-bold text-uppercase"
+              },
+              [
+                _c("option", { attrs: { selected: "" } }, [
+                  _vm._v("6 results / page")
+                ]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
+                _vm._v(" "),
+                _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
+              ]
+            )
+          ])
+        ])
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-d7ceacaa", module.exports)
+  }
+}
+
+/***/ }),
+/* 193 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 194 */,
+/* 195 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 196 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
-
-/******/ });
+/******/ ]);

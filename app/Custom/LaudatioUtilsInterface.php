@@ -40,6 +40,7 @@ interface LaudatioUtilsInterface
     public function getCorpusLogoByCorpusId($corpusid,$corpus_index);
     public function getDocumentGenreByCorpusId($corpusid,$index);
     public function getCorpusAndProjectPathByCorpusId($corpusid,$corpus_index);
+    public function getCorpusPathByCorpusId($corpusid,$corpus_index);
     public function deleteModels($path);
     public function deleteModel($type,$id);
     public function updateDirectoryPaths($directory_path,$corpusId);
@@ -55,6 +56,7 @@ interface LaudatioUtilsInterface
     //public function getLicenseByCorpus($data);
     public function getDocumentRange($data,$documentResult);
     public function getCorpusNameByCorpusId($corpusid,$index);
+    public function getCorpusNameByObjectElasticsearchId($type,$objectId);
 
     public function getCurrentCorpusIndexByElasticsearchId($elasticSearchId);
     public function getCurrentDocumentIndexByElasticsearchId($elasticSearchId);
