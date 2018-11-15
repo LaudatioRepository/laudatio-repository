@@ -132,17 +132,14 @@ const app = new Vue({
                         for (var ri = 0; ri < res.data.results.length; ri++) {
                             console.log(JSON.stringify(res.data.results[ri]._index));
                             if(res.data.results[ri]._index.indexOf("corpus_") == 0){
-                                console.log("WE HAVE A CORPUS")
                                 this.corpusresults.push(res.data.results[ri]);
                                 this.corpusresultcounter++;
                             }
                             else if(res.data.results[ri]._index.indexOf("document_") == 0){
-                                console.log("WE HAVE A DOCUMENT")
                                 this.documentresults.push(res.data.results[ri]);
                                 this.documentresultcounter ++;
                             }
                             else if(res.data.results[ri]._index.indexOf("annotation_") == 0){
-                                console.log("WE HAVE A ANOTATION")
                                 this.annotationresults.push(res.data.results[ri]);
                                 this.annotationresultcounter ++;
                             }///end which index
@@ -150,8 +147,6 @@ const app = new Vue({
                     }//end if results
                 });
 
-                console.log("SCORPUS_ "+JSON.stringify(this.corpusresults))
-                console.log("SANNI_ "+JSON.stringify(this.annotationresults))
                 this.corpusloading = false;
             }
             else{
@@ -335,6 +330,16 @@ const app = new Vue({
                 }
             }
             return collection
+        },
+        submitCorpusFilter: function (corpusFilterObject) {
+            var filter_corpus_title = corpusFilterObject.corpus_title;
+            console.log("CARO HAT HUNGER: "+filter_corpus_title);
+            for(var i = 0; i < this.corpusresults.length; i++) {
+                console.log("RESULT: "+this.corpusresults[i]._source.corpus_title);
+                if(this.corpusresults[i]._source.corpus_title[0].toLowerCase().indexOf(filter_corpus_title.toLowerCase()) == -1) {
+                    this.corpusresults.splice(i,1);
+                }
+            }
         },
         submitCorpusSearch: function (corpusSearchObject) {
             this.corpusloading = true;

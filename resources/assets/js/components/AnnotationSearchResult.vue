@@ -31,7 +31,7 @@
 
         </div>
 
-     <div class="container d-flex flex-column align-items-center justify-content-center mb-5 mt-5">
+     <!--div class="container d-flex flex-column align-items-center justify-content-center mb-5 mt-5">
         <nav aria-label="Page navigation">
             <ul class="pagination">
                 <li class="page-item">
@@ -68,7 +68,7 @@
                 </select>
             </div>
         </div>
-    </div>
+    </div-->
     </div>
 </template>
 <script>

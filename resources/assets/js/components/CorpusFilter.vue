@@ -10,12 +10,12 @@
                 <form action="">
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formCorpusTitle">Title</label>
-                        <input type="text" class="form-control" id="formCorpusTitle" aria-describedby="inputTitle" placeholder='"Ridges herbology"' v-model="corpusSearchData.corpus_title">
+                        <input type="text" class="form-control" id="formCorpusTitle" aria-describedby="inputTitle" placeholder='"Ridges herbology"' v-model="corpusFilterData.corpus_title">
                     </div>
 
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formCorpusLanguage">Language</label>
-                        <input type="text" class="form-control" id="formCorpusLanguage" aria-describedby="inputLanguage" placeholder='"German"' v-model="corpusSearchData.corpus_merged_languages">
+                        <input type="text" class="form-control" id="formCorpusLanguage" aria-describedby="inputLanguage" placeholder='"German"' v-model="corpusFilterData.corpus_merged_languages">
                     </div>
 
                     <div class="d-flex flex-column">
@@ -29,13 +29,13 @@
 
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formCorpusPublisher">Language</label>
-                            <input type="text" class="form-control" id="formCorpusPublisher" aria-describedby="inputPublisher" placeholder='"Humboldt Universität"' v-model="corpusSearchData.corpus_publication_publisher">
+                            <input type="text" class="form-control" id="formCorpusPublisher" aria-describedby="inputPublisher" placeholder='"Humboldt Universität"' v-model="corpusFilterData.corpus_publication_publisher">
                         </div>
 
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formCorpusFormats">Formats</label>
                             <input type="text" name="formatslist" multiple="multiple" list="formatsList-Corpus" class="flexdatalist form-control"
-                                   data-min-length="0" id="formCorpusFormats" v-model="corpusSearchData.corpus_merged_formats" >
+                                   data-min-length="0" id="formCorpusFormats" v-model="corpusFilterData.corpus_merged_formats" >
                             <datalist id="formatsList-Corpus">
                                 <!--[if IE 9]><select disabled style="display:none" class="ie9_fix"><![endif]-->
                                 <option value="ANNIS">ANNIS</option>
@@ -50,7 +50,7 @@
 
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formCorpusLicenses">License</label>
-                            <input type="text" class="form-control" id="formCorpusLicenses" aria-describedby="inputLicenses" placeholder='"cc-by"' v-model="corpusSearchData.corpus_publication_license">
+                            <input type="text" class="form-control" id="formCorpusLicenses" aria-describedby="inputLicenses" placeholder='"cc-by"' v-model="corpusFilterData.corpus_publication_license">
                         </div>
                     </div>
                 </form>
@@ -85,18 +85,19 @@
                                 <div class="d-flex flex-column w-35">
                                     <small id="yearFromHelp" class="form-text text-muted">from</small>
                                     <input class="toBeValidated form-control" placeholder="J J J J" type="number" min="1" max="9999" step="1"
-                                           name="yearFrom" id="formCorpusYearFrom"  v-model="corpusSearchData.corpus_publication_publication_date" />
+                                           name="yearFrom" id="formCorpusYearFrom"  v-model="corpusFilterData.corpus_publication_publication_date" />
                                 </div>
                                 <div class="d-flex flex-column w-35">
                                     <small id="yearToHelp" class="form-text text-muted">to</small>
                                     <input class="toBeValidated form-control" placeholder="J J J J" type="number" min="1" max="9999" step="1"
-                                           name="yearTo" id="formCorpusYearTo" v-model="corpusSearchData.corpusYearTo"  />
+                                           name="yearTo" id="formCorpusYearTo" v-model="corpusFilterData.corpusYearTo"  />
                                 </div>
                                 <button type="submit" class="toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end">
                                     <i class="fa fa-angle-right fa-fw fa-2x py-1"></i>
                                 </button>
                             </div>
                         </div>
+                        <a class="btn btn-primary corpus-search-submit-button" @click="emitCorpusData">Search corpora</a>
                     </form>
 
                 </div>
@@ -110,12 +111,9 @@
         props: ['corpusresults'],
         data: function(){
             return {
-                corpusSearchData : {
+                corpusFilterData : {
                     corpus_title: '',
                     corpus_publication_publisher: '',
-                    corpus_editor_forename: '',
-                    corpus_editor_surname: '',
-                    corpus_merged_editors: '',
                     corpus_publication_publication_date: '',
                     corpusYearTo: '',
                     corpusyeartype: 'exact',
@@ -131,8 +129,7 @@
         },
         methods: {
             emitCorpusData(){
-
-                this.$emit('corpus-search',this.corpusSearchData);
+                this.$emit('corpus-filter',this.corpusFilterData);
             },
             getClass: function () {
                 var classes = "collapse";
@@ -182,7 +179,7 @@
                 el.noUiSlider.on('update', function ( values, handle ) {
                     //console.log($(el).attr("id")+handle+" => "+values)
                     if ( handle ) {
-                        //this.corpusSearchData
+                        //this.corpusFilterData
                         paddingMax.innerHTML = Math.round(values[handle]);
 
                     } else {

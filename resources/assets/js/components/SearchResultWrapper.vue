@@ -28,6 +28,7 @@
 
 
         <div class="tab-content">
+            <div class="tab-pane active" id="searchtab-corpora" role="tabpanel" aria-labelledby="searchtab-corpora">
             <corpussearchresult
                     v-if="corpusresults != 'undefined' && corpusresults.length >= 1"
                     v-for="(corpusresult, index) in corpusresults"
@@ -35,17 +36,57 @@
                     :key="guid(index)"
                     :documentsbycorpus="documentsbycorpus"
                     :annotationsbycorpus="annotationsbycorpus"></corpussearchresult>
+            </div>
 
             <documentsearchresult
-                    v-if="documentresults != 'undefined' && documentresults.length >= 1"
-                    v-for="(documentresult, documentindex) in documentresults"
-                    v-bind:documentresult="documentresult"
-                    :key="guid(documentindex)"></documentsearchresult>
+                   :documentresults="documentresults"></documentsearchresult>
 
             <annotationsearchresult
                    :annotationresults="annotationresults"></annotationsearchresult>
         </div>
 
+        <div class="container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
+             v-if="
+                    (corpusresults != 'undefined' && corpusresults.length > 0) ||
+                    (documentresults != 'undefined' && documentresults.length > 0) ||
+                    (annotationresults != 'undefined' && annotationresults.length > 0)">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item font-weight-bold active">
+                        <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item font-weight-bold">
+                        <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item font-weight-bold">
+                        <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="form-row">
+                <div class="col-auto">
+
+                    <select class="custom-select custom-select-sm font-weight-bold text-uppercase">
+                        <option selected>6 results / page</option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script>
