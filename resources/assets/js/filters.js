@@ -50,6 +50,7 @@ Vue.filter('toLocale', function (to) {
     return '/' + i18n.locale + to
 })
 
+
 Vue.filter('truncate', function(string){
     // Make sure an element and number of items to truncate is provided
     if (!string) return;

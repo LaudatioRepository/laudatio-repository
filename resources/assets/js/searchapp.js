@@ -163,7 +163,6 @@ const app = new Vue({
                         /* Also: when we publish, the new working version shuffles the corpus/doc/anno keyword foirther than place 0
                          */
                         for (var ri = 0; ri < res.data.results.length; ri++) {
-                            console.log(JSON.stringify(res.data.results[ri]._index));
                             if(res.data.results[ri]._index.indexOf("corpus_") == 0){
                                 this.corpusresults.push(res.data.results[ri]);
                                 this.corpusresultcounter++;
@@ -253,7 +252,6 @@ const app = new Vue({
             this.documentresultcounter = counter;
         },
         updateAnnotationCounter: function (counter) {
-            console.log("updateAnnotationCounter: "+counter)
             this.annotationresultcounter = counter;
         }
     }

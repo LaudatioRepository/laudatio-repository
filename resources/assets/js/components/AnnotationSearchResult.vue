@@ -12,7 +12,7 @@
                   </span>
             </div>
             <div class="col-2">
-                <span class="text-grey text-14">{{annotationresult._source.preparation_encoding_annotation_group | lastElement}}</span>
+                <div class="text-grey text-14" v-for="(group, groupindex) in unique(annotationresult._source.preparation_encoding_annotation_group)" v-bind:group="group" :key="groupindex">{{group}}</div>
             </div>
             <div class="col-4 d-flex justify-content-between align-items-start">
                 <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
@@ -81,10 +81,13 @@
                 this.$store.dispatch('clearDocuments',[])
                 this.$store.dispatch('corpusByAnnotation',this.corpusbyannotation[annotationId])
                 this.$store.dispatch('documentByAnnotation',this.documentsbyannotation[annotationId])
+            },
+            unique: function (array) {
+                return [...new Set(array)]
             }
         },
         mounted() {
-            console.log('AnnotationResultComponent mounted.')
+
         }
     }
 </script>

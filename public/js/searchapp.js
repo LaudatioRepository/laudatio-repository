@@ -24326,7 +24326,6 @@ var app = new Vue({
                         /* Also: when we publish, the new working version shuffles the corpus/doc/anno keyword foirther than place 0
                          */
                         for (var ri = 0; ri < res.data.results.length; ri++) {
-                            console.log(JSON.stringify(res.data.results[ri]._index));
                             if (res.data.results[ri]._index.indexOf("corpus_") == 0) {
                                 _this.corpusresults.push(res.data.results[ri]);
                                 _this.corpusresultcounter++;
@@ -24409,7 +24408,6 @@ var app = new Vue({
             this.documentresultcounter = counter;
         },
         updateAnnotationCounter: function updateAnnotationCounter(counter) {
-            console.log("updateAnnotationCounter: " + counter);
             this.annotationresultcounter = counter;
         }
     }
@@ -31264,6 +31262,8 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 //
 //
 //
@@ -31347,11 +31347,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$store.dispatch('clearDocuments', []);
             this.$store.dispatch('corpusByAnnotation', this.corpusbyannotation[annotationId]);
             this.$store.dispatch('documentByAnnotation', this.documentsbyannotation[annotationId]);
+        },
+        unique: function unique(array) {
+            return [].concat(_toConsumableArray(new Set(array)));
         }
     },
-    mounted: function mounted() {
-        console.log('AnnotationResultComponent mounted.');
-    }
+    mounted: function mounted() {}
 });
 
 /***/ }),
@@ -31399,18 +31400,27 @@ var render = function() {
               ])
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "col-2" }, [
-              _c("span", { staticClass: "text-grey text-14" }, [
-                _vm._v(
-                  _vm._s(
-                    _vm._f("lastElement")(
-                      _vm.annotationresult._source
-                        .preparation_encoding_annotation_group
-                    )
+            _c(
+              "div",
+              { staticClass: "col-2" },
+              _vm._l(
+                _vm.unique(
+                  _vm.annotationresult._source
+                    .preparation_encoding_annotation_group
+                ),
+                function(group, groupindex) {
+                  return _c(
+                    "div",
+                    {
+                      key: groupindex,
+                      staticClass: "text-grey text-14",
+                      attrs: { group: group }
+                    },
+                    [_vm._v(_vm._s(group))]
                   )
-                )
-              ])
-            ]),
+                }
+              )
+            ),
             _vm._v(" "),
             _c(
               "div",
