@@ -103,6 +103,8 @@ const app = new Vue({
                             //"corpus_publication_publication_date",
                             "document_title",
                             "document_author_forename",
+                            "document_size_type",
+                            "document_size_extent",
                             "document_author_surname",
                             "document_editor_forename",
                             "document_editor_surname",
@@ -142,6 +144,8 @@ const app = new Vue({
                             "document_publication_place",
                             "document_publication_publishing_date",
                             "document_list_of_annotations_id",
+                            "document_size_type",
+                            "document_size_extent",
                             "preparation_title",
                             "preparation_annotation_id",
                             "preparation_encoding_annotation_group",
@@ -208,9 +212,17 @@ const app = new Vue({
                 for (var key in this.corpusresults[i]._source) {
                     if (this.corpusresults[i]._source.hasOwnProperty(key)) {
                         if(corpusFilterObject.hasOwnProperty(key)) {
-                            if(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
-                                this.corpusresults[i]._source.visibility = 0;
-                                this.corpusresultcounter--;
+                            if(key == "document_size_extent") {
+                                if(! this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.document_size_extent,corpusFilterObject.document_size_extent_to)){
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
+                            }
+                            else {
+                                if(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
                             }
                         }
                     }
@@ -222,9 +234,17 @@ const app = new Vue({
                 for (var key in this.documentresults[i]._source) {
                     if (this.documentresults[i]._source.hasOwnProperty(key)) {
                         if(documentFilterObject.hasOwnProperty(key)) {
-                            if(this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
-                                this.documentresults[i]._source.visibility = 0;
-                                this.documentresultcounter--;
+                            if(key == "document_size_extent") {
+                                if(! this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent,documentFilterObject.document_size_extent_to)){
+                                    this.documentresults[i]._source.visibility = 0;
+                                    this.documentresultcounter--;
+                                }
+                            }
+                            else {
+                                if(this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
+                                    this.documentresults[i]._source.visibility = 0;
+                                    this.documentresultcounter--;
+                                }
                             }
                         }
                     }
@@ -253,6 +273,10 @@ const app = new Vue({
         },
         updateAnnotationCounter: function (counter) {
             this.annotationresultcounter = counter;
+        },
+        isBetween: function(theNumber, min, max) {
+            if(parseInt(theNumber) >= Math.floor(min) && parseInt(theNumber) <= Math.floor(max)) return true;
+            else return false
         }
     }
 });

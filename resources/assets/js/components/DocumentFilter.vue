@@ -94,7 +94,7 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults'],
+        props: ['corpusresults','documentresults','annotationresults'],
         data: function(){
             return {
                 documentFilterData : {
@@ -123,7 +123,11 @@
         methods: {
             getClass: function () {
                 var classes = "collapse";
-                if(this.corpusresults.length >= 1){
+                if(
+                    this.corpusresults.length >= 1 ||
+                    this.documentresults.length >= 1 ||
+                    this.annotationresults.length >= 1
+                ){
                     classes += " show"
                 }
                 return classes;

@@ -106,7 +106,7 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults'],
+        props: ['corpusresults','documentresults','annotationresults'],
         data: function(){
             return {
                 corpusFilterData : {
@@ -131,14 +131,17 @@
             },
             getClass: function () {
                 var classes = "collapse";
-                if(this.corpusresults.length >= 1){
+                if(
+                    this.corpusresults.length >= 1 ||
+                    this.documentresults.length >= 1 ||
+                    this.annotationresults.length >= 1
+                ){
                     classes += " show"
                 }
                 return classes;
             }
         },
         mounted() {
-            console.log('CorpusFilterBlock mounted.')
             let myvue = this;
 
             var rangeSliderList = ['corpusSize']

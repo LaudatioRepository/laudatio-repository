@@ -96,7 +96,7 @@
             }
         },
         mounted() {
-            console.log('DocumentResultComponent mounted.')
+            
         }
     }
 </script>

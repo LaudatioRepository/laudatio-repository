@@ -24308,10 +24308,10 @@ var app = new Vue({
                     searchData: {
                         fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code",
                         //"corpus_publication_publication_date",
-                        "document_title", "document_author_forename", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place",
+                        "document_title", "document_author_forename", "document_size_type", "document_size_extent", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place",
                         //"document_publication_publishing_date",
                         "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name"],
-                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "document_title", "document_author_forename", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "in_documents"],
+                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "document_title", "document_author_forename", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "in_documents"],
                         query: "" + search.generalSearchTerm + "",
                         indices: this.publishedIndexes.allPublishedIndices.join(",")
                     }
@@ -24364,9 +24364,16 @@ var app = new Vue({
                 for (var key in this.corpusresults[i]._source) {
                     if (this.corpusresults[i]._source.hasOwnProperty(key)) {
                         if (corpusFilterObject.hasOwnProperty(key)) {
-                            if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
-                                this.corpusresults[i]._source.visibility = 0;
-                                this.corpusresultcounter--;
+                            if (key == "document_size_extent") {
+                                if (!this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.document_size_extent, corpusFilterObject.document_size_extent_to)) {
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
+                            } else {
+                                if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
                             }
                         }
                     }
@@ -24378,9 +24385,16 @@ var app = new Vue({
                 for (var key in this.documentresults[i]._source) {
                     if (this.documentresults[i]._source.hasOwnProperty(key)) {
                         if (documentFilterObject.hasOwnProperty(key)) {
-                            if (this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
-                                this.documentresults[i]._source.visibility = 0;
-                                this.documentresultcounter--;
+                            if (key == "document_size_extent") {
+                                if (!this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent, documentFilterObject.document_size_extent_to)) {
+                                    this.documentresults[i]._source.visibility = 0;
+                                    this.documentresultcounter--;
+                                }
+                            } else {
+                                if (this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
+                                    this.documentresults[i]._source.visibility = 0;
+                                    this.documentresultcounter--;
+                                }
                             }
                         }
                     }
@@ -24409,6 +24423,9 @@ var app = new Vue({
         },
         updateAnnotationCounter: function updateAnnotationCounter(counter) {
             this.annotationresultcounter = counter;
+        },
+        isBetween: function isBetween(theNumber, min, max) {
+            if (parseInt(theNumber) >= Math.floor(min) && parseInt(theNumber) <= Math.floor(max)) return true;else return false;
         }
     }
 });
@@ -24881,6 +24898,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -24969,7 +24992,11 @@ var render = function() {
       [
         _c("corpusfilter", {
           ref: "corpusFilter",
-          attrs: { corpusresults: _vm.corpusresults },
+          attrs: {
+            corpusresults: _vm.corpusresults,
+            documentresults: _vm.documentresults,
+            annotationresults: _vm.annotationresults
+          },
           on: { "corpus-filter": _vm.emitCorpusFilter }
         })
       ],
@@ -24982,7 +25009,11 @@ var render = function() {
       [
         _c("documentfilter", {
           ref: "documentFilter",
-          attrs: { corpusresults: _vm.corpusresults },
+          attrs: {
+            corpusresults: _vm.corpusresults,
+            documentresults: _vm.documentresults,
+            annotationresults: _vm.annotationresults
+          },
           on: { "document-filter": _vm.emitDocumentFilter }
         })
       ],
@@ -24995,7 +25026,11 @@ var render = function() {
       [
         _c("annotationfilter", {
           ref: "annotationFilter",
-          attrs: { corpusresults: _vm.corpusresults },
+          attrs: {
+            corpusresults: _vm.corpusresults,
+            documentresults: _vm.documentresults,
+            annotationresults: _vm.annotationresults
+          },
           on: { "annotation-filter": _vm.emitAnnotationFilter }
         })
       ],
@@ -25915,7 +25950,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults'],
+    props: ['corpusresults', 'documentresults', 'annotationresults'],
     data: function data() {
         return {
             corpusFilterData: {
@@ -25941,14 +25976,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
         getClass: function getClass() {
             var classes = "collapse";
-            if (this.corpusresults.length >= 1) {
+            if (this.corpusresults.length >= 1 || this.documentresults.length >= 1 || this.annotationresults.length >= 1) {
                 classes += " show";
             }
             return classes;
         }
     },
     mounted: function mounted() {
-        console.log('CorpusFilterBlock mounted.');
         var myvue = this;
 
         var rangeSliderList = ['corpusSize'];
@@ -28968,7 +29002,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults'],
+    props: ['corpusresults', 'documentresults', 'annotationresults'],
     data: function data() {
         return {
             documentFilterData: {
@@ -28996,7 +29030,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         getClass: function getClass() {
             var classes = "collapse";
-            if (this.corpusresults.length >= 1) {
+            if (this.corpusresults.length >= 1 || this.documentresults.length >= 1 || this.annotationresults.length >= 1) {
                 classes += " show";
             }
             return classes;
@@ -29620,7 +29654,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults'],
+    props: ['corpusresults', 'documentresults', 'annotationresults'],
     data: function data() {
         return {
             annotationFilterData: {
@@ -29638,7 +29672,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         getClass: function getClass() {
             var classes = "collapse";
-            if (this.corpusresults.length >= 1) {
+            if (this.corpusresults.length >= 1 || this.documentresults.length >= 1 || this.annotationresults.length >= 1) {
                 classes += " show";
             }
             return classes;
@@ -31013,9 +31047,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$store.dispatch('annotationByDocument', this.annotationsbydocument[documentId]);
         }
     },
-    mounted: function mounted() {
-        console.log('DocumentResultComponent mounted.');
-    }
+    mounted: function mounted() {}
 });
 
 /***/ }),

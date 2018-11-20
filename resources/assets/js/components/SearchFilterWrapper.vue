@@ -20,6 +20,8 @@
         <div class="mb-4">
             <corpusfilter
                 :corpusresults="corpusresults"
+                :documentresults="documentresults"
+                :annotationresults="annotationresults"
                 ref="corpusFilter"
                 v-on:corpus-filter="emitCorpusFilter"
                 ></corpusfilter>
@@ -27,6 +29,8 @@
         <div class="mb-4">
             <documentfilter
                 :corpusresults="corpusresults"
+                :documentresults="documentresults"
+                :annotationresults="annotationresults"
                 ref="documentFilter"
                 v-on:document-filter="emitDocumentFilter"
                 ></documentfilter>
@@ -34,6 +38,8 @@
         <div class="mb-4">
             <annotationfilter
                 :corpusresults="corpusresults"
+                :documentresults="documentresults"
+                :annotationresults="annotationresults"
                 ref="annotationFilter"
                 v-on:annotation-filter="emitAnnotationFilter"
                 ></annotationfilter>
