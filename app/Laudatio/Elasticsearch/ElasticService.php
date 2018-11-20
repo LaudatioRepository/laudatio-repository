@@ -906,7 +906,8 @@ class ElasticService implements ElasticsearchInterface
             'index' => trim($searchData['indices']),
             'type' => 'doc',
             'body' => $queryBody,
-            '_source_exclude' => ['message']
+            //'_source_exclude' => ['message']
+            '_source' => $searchData['source'],
         ];
         $results = Elasticsearch::search($params);
         return $results;

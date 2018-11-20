@@ -64,6 +64,9 @@
                     classes += " show"
                 }
                 return classes;
+            },
+            emitAnnotationFilter: function () {
+                this.$emit('annotation-filter',this.annotationFilterData);
             }
         },
         mounted() {

@@ -31,7 +31,14 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults','activefilters'],
+        props: ['corpusresults','documentresults','annotationresults','activefilters','corpusresultcounter','documentresultcounter','annotationresultcounter'],
+        data: function() {
+            return {
+                localcorpusresultcounter: this.corpusresultcounter,
+                localdocumentresultcounter: this.documentresultcounter,
+                localannotationresultcounter: this.annotationresultcounter,
+            }
+        },
         computed:
             mapGetters({
                 stateDocumentCorpusresults: 'documentcorpus',
@@ -46,9 +53,36 @@
                 return classes;
             },
             resetFilters() {
+                this.localcorpusresultcounter = this.corpusresultcounter;
                 for(var i = 0; i < this.corpusresults.length; i++) {
                     this.corpusresults[i]._source.visibility = 1;
+                    if(this.corpusresults[i]._source.visibility == 0) {
+                        this.corpusresults[i]._source.visibility = 1;
+                        this.localcorpusresultcounter++;
+                    }
                 }
+                this.$emit('corpus-resultcounter',this.localcorpusresultcounter);
+
+                this.localdocumentresultcounter = this.documentresultcounter;
+                for(var i = 0; i < this.documentresults.length; i++) {
+                    if(this.documentresults[i]._source.visibility == 0) {
+                        this.documentresults[i]._source.visibility = 1;
+                        this.localdocumentresultcounter++;
+                    }
+                }
+                this.$emit('document-resultcounter',this.localdocumentresultcounter);
+
+
+                this.localannotationresultcounter = this.annotationresultcounter;
+                for(var i = 0; i < this.annotationresults.length; i++) {
+                    if(this.annotationresults[i]._source.visibility == 0) {
+                        this.annotationresults[i]._source.visibility = 1;
+                        this.localannotationresultcounter++;
+                    }
+                }
+                this.$emit('annotation-resultcounter',this.localannotationresultcounter);
+
+
             }
         },
         mounted() {

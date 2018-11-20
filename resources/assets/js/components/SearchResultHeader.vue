@@ -44,7 +44,7 @@
 </template>
 <script>
     export default {
-        props: ['corpusresults','documentresults','annotationresults','documentsbycorpus','annotationsbycorpus','corpusresultcounter','documentresultcounter','annotationresultcounter'],
+        props: ['corpusresults','documentresults','annotationresults','corpusresultcounter','documentresultcounter','annotationresultcounter'],
         mounted() {
             console.log('CorpusResultHeaderComponent mounted.')
         }

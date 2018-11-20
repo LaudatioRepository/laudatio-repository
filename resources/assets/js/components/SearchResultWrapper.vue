@@ -1,12 +1,33 @@
 <template>
     <div class="col">
-        <i v-show="corpusloading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
-        <span v-show="corpusloading" class="sr-only">Loading...</span>
-        <h3 class="h3 font-weight-normal mb-4" v-if="searches != 'undefined' && searches.length >= 1 && corpussearched && !corpusloading && corpusresults != 'undefined' && corpusresults.length >= 1">
+        <i v-show="dataloading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
+        <span v-show="dataloading" class="sr-only">Loading...</span>
+        <h3 class="h3 font-weight-normal mb-4" v-if="
+            searches != 'undefined' &&
+            searches.length >= 1 &&
+            datasearched &&
+            !dataloading &&
+            (corpusresults != 'undefined' &&
+            corpusresults.length >= 1) ||
+            (documentresults != 'undefined' &&
+            documentresults.length >= 1) ||
+            (annotationresults != 'undefined' &&
+            annotationresults.length >= 1)">
             Results for the search &quot;{{searches.join(" ")}}&quot;</h3>
 
 
-        <div  v-else-if="corpusresults != 'undefined' && corpusresults.length < 1 && corpussearched && !corpusloading && searches != 'undefined' && searches.length >= 1" class="alert alert-info alert-dismissible fade show" role="alert">
+        <div  v-else-if="
+                        corpusresults != 'undefined' &&
+                        corpusresults.length < 1 &&
+                        documentresults != 'undefined' &&
+                        documentresults.length < 1 &&
+                        annotationresults != 'undefined' &&
+                        annotationresults.length < 1 &&
+                        datasearched &&
+                        !dataloading &&
+                        searches != 'undefined' &&
+                        searches.length >= 1"
+                        class="alert alert-info alert-dismissible fade show" role="alert">
             <strong>The search <i>&quot;{{searches.join(" ")}}&quot;</i> returned no results!</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -19,8 +40,6 @@
                 :corpusresults="corpusresults"
                 :documentresults="documentresults"
                 :annotationresults="annotationresults"
-                :documentsbycorpus="documentsbycorpus"
-                :annotationsbycorpus="annotationsbycorpus"
                 :corpusresultcounter="corpusresultcounter"
                 :documentresultcounter="documentresultcounter"
                 :annotationresultcounter="annotationresultcounter"
@@ -34,15 +53,25 @@
                     v-for="(corpusresult, index) in corpusresults"
                     v-bind:corpusresult="corpusresult"
                     :key="guid(index)"
-                    :documentsbycorpus="documentsbycorpus"
-                    :annotationsbycorpus="annotationsbycorpus"></corpussearchresult>
+                    ></corpussearchresult>
+            </div>
+            <div class="tab-pane" id="searchtab-documents" role="tabpanel" aria-labelledby="searchtab-documents">
+                <documentsearchresult
+                        v-if="documentresults != 'undefined' && documentresults.length >= 1"
+                        v-for="(documentresult, documentindex) in documentresults"
+                        v-bind:documentresult="documentresult"
+                        :key="guid(documentindex)"
+                        ></documentsearchresult>
             </div>
 
-            <documentsearchresult
-                   :documentresults="documentresults"></documentsearchresult>
-
-            <annotationsearchresult
-                   :annotationresults="annotationresults"></annotationsearchresult>
+            <div class="tab-pane" id="searchtab-annotations" role="tabpanel" aria-labelledby="searchtab-annotations">
+                <annotationsearchresult
+                        v-if="annotationresults != 'undefined' && annotationresults.length >= 1"
+                        v-for="(annotationresult, annotationindex) in annotationresults"
+                        v-bind:annotationresult="annotationresult"
+                        :key="guid(annotationindex)"
+                        ></annotationsearchresult>
+            </div>
         </div>
 
         <div class="container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
@@ -92,7 +121,7 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults', 'documentresults', 'annotationresults', 'corpussearched','corpusloading','documentsbycorpus','annotationsbycorpus', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter'],
+        props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched','dataloading', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter'],
         methods: {
             guid: function(key) {
                 return key + ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>

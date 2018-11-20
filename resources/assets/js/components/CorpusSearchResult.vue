@@ -139,7 +139,7 @@
 <script>
     import { mapState, mapActions } from 'vuex'
     export default {
-        props: ['corpusresult','documentsbycorpus','annotationsbycorpus','corpuspaths'],
+        props: ['corpusresult','corpuspaths'],
         methods: {
             browseUri: function(id) {
                 return '/browse/corpus/'.concat(id);

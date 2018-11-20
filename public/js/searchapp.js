@@ -24218,7 +24218,6 @@ module.exports = __webpack_require__(196);
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__store__ = __webpack_require__(158);
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -24271,8 +24270,8 @@ var app = new Vue({
         annotationsByDocument: [],
         documentsByAnnotation: [],
         corpusByAnnotation: [],
-        corpussearched: false,
-        corpusloading: false,
+        datasearched: false,
+        dataloading: false,
         documentsearched: false,
         documentloading: false,
         annotationsearched: false,
@@ -24290,9 +24289,9 @@ var app = new Vue({
         askElastic: function askElastic(search) {
             var _this = this;
 
-            this.corpusloading = true;
+            this.dataloading = true;
             this.corpusresults = [];
-            this.corpussearched = false;
+            this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', []);
             this.$store.dispatch('clearDocuments', []);
@@ -24312,6 +24311,7 @@ var app = new Vue({
                         "document_title", "document_author_forename", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place",
                         //"document_publication_publishing_date",
                         "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name"],
+                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "document_title", "document_author_forename", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "in_documents"],
                         query: "" + search.generalSearchTerm + "",
                         indices: this.publishedIndexes.allPublishedIndices.join(",")
                     }
@@ -24339,603 +24339,78 @@ var app = new Vue({
                             } ///end which index
                         } //end for results
                     } //end if results
-                    _this.corpusloading = false;
-                    _this.corpussearched = true;
+                    _this.dataloading = false;
+                    _this.datasearched = true;
                     _this.searches.push(search.generalSearchTerm);
                 });
             } else {
-                this.corpusloading = false;
+                this.dataloading = false;
             }
         },
-        get_if_exist: function get_if_exist(collection, str) {
-            var value = "";
-            for (var i = 0; i < collection.length; i++) {
-                var obj = collection[i];
-                if (obj.hasOwnProperty(str)) {
-                    value = obj[str];
-                }
+        renderArrayToString: function renderArrayToString(array) {
+            var string = "";
+            if (array) if (array.isArray && array.length == 1) {
+                string = array[0].toString();
+            } else {
+                string = array.toString();
             }
-            return value;
-        },
-        remove_if_exist: function remove_if_exist(collection, str) {
-            for (var i = 0; i < collection.length; i++) {
-                var obj = collection[i];
-                if (obj.hasOwnProperty(str)) {
-                    collection.splice(i, 1);
-                }
+            if (string == "NA") {
+                string = "-";
             }
-            return collection;
+            return string;
         },
 
-        triggerFilters: function triggerFilters() {
-            console.log("SETFILTERS");
-        },
         submitCorpusFilter: function submitCorpusFilter(corpusFilterObject) {
-            console.log(JSON.stringify(corpusFilterObject));
-            var filter_corpus_title = corpusFilterObject.corpus_title;
-            var filter_corpus_publication_publisher = corpusFilterObject.corpus_publication_publisher;
-            var filter_corpus_merged_languages = corpusFilterObject.corpus_merged_languages;
-            var filter_corpus_publication_publisher = corpusFilterObject.corpus_publication_publisher;
-            var filter_corpus_merged_formats = corpusFilterObject.corpus_merged_formats;
-            var filter_corpus_publication_license = corpusFilterObject.corpus_publication_license;
-            var filter_corpus_publication_publication_date = corpusFilterObject.corpus_publication_publication_date;
-            var filter_corpusYearTo = corpusFilterObject.corpusYearTo;
-
             for (var i = 0; i < this.corpusresults.length; i++) {
-
-                if (this.corpusresults[i]._source.corpus_title[0].toLowerCase().indexOf(filter_corpus_title.toLowerCase()) == -1) {
-                    this.corpusresults[i]._source.visibility = 0;
-                    this.corpusresultcounter--;
+                for (var key in this.corpusresults[i]._source) {
+                    if (this.corpusresults[i]._source.hasOwnProperty(key)) {
+                        if (corpusFilterObject.hasOwnProperty(key)) {
+                            if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
+                                this.corpusresults[i]._source.visibility = 0;
+                                this.corpusresultcounter--;
+                            }
+                        }
+                    }
                 }
-                /*
-                else if(this.corpusresults[i]._source.corpus_merged_languages.toLowerCase().indexOf(filter_corpus_merged_languages.toLowerCase()) == -1) {
-                    this.corpusresults.splice(i,1);
-                }
-                else if(this.corpusresults[i]._source.corpus_publication_publisher[0].toLowerCase().indexOf(filter_corpus_publication_publisher.toLowerCase()) == -1) {
-                    this.corpusresults.splice(i,1);
-                }
-                else if(this.corpusresults[i]._source.corpus_merged_formats.toLowerCase().indexOf(filter_corpus_merged_formats.toLowerCase()) == -1) {
-                    this.corpusresults.splice(i,1);
-                }
-                else if(this.corpusresults[i]._source.corpus_publication_license[0].toLowerCase().indexOf(filter_corpus_publication_license.toLowerCase()) == -1) {
-                    this.corpusresults.splice(i,1);
-                }
-                */
             }
         },
         submitDocumentFilter: function submitDocumentFilter(documentFilterObject) {
-            console.log("documentFilterObject: " + JSON.stringify(documentFilterObject));
+            for (var i = 0; i < this.documentresults.length; i++) {
+                for (var key in this.documentresults[i]._source) {
+                    if (this.documentresults[i]._source.hasOwnProperty(key)) {
+                        if (documentFilterObject.hasOwnProperty(key)) {
+                            if (this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
+                                this.documentresults[i]._source.visibility = 0;
+                                this.documentresultcounter--;
+                            }
+                        }
+                    }
+                }
+            }
         },
         submitAnnotationFilter: function submitAnnotationFilter(annotationFilterObject) {
-            console.log("annotationFilterObject: " + JSON.stringify(annotationFilterObject));
-        },
-        submitCorpusSearch: function submitCorpusSearch(corpusSearchObject) {
-            var _this2 = this;
-
-            this.corpusloading = true;
-            this.corpusresults = [];
-            this.corpussearched = false;
-            this.corpusCacheString = "";
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('clearAnnotations', []);
-
-            var postDataCollection = [];
-            var thereAreMore = false;
-            var hasDateAndSize = false;
-            var dateAndSize = ["corpus_publication_publication_date", "corpusYearTo", "corpus_size_value", "corpusSizeTo", "corpusyeartype", "corpussizetype"];
-            for (var p in corpusSearchObject) {
-                if (corpusSearchObject[p].length > 0) {
-                    if (dateAndSize.indexOf(p) > -1 && corpusSearchObject[p] != "" && (corpusSearchObject['corpusyeartype'] == "range" || corpusSearchObject['corpussizetype'] == "range")) {
-                        if (!hasDateAndSize) {
-                            hasDateAndSize = true;
-                        }
-                    } else {
-                        if (!thereAreMore && corpusSearchObject[p] != "") {
-                            thereAreMore = true;
+            for (var i = 0; i < this.annotationresults.length; i++) {
+                for (var key in this.annotationresults[i]._source) {
+                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
+                        if (annotationFilterObject.hasOwnProperty(key)) {
+                            if (this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
+                                this.annotationresults[i]._source.visibility = 0;
+                                this.annotationresultcounter--;
+                            }
                         }
                     }
-
-                    postDataCollection.push(_defineProperty({}, p, corpusSearchObject[p]));
-                    this.corpusCacheString += '|' + p + '|' + corpusSearchObject[p];
                 }
             }
-
-            if (postDataCollection.length > 0) {
-                console.log(JSON.stringify(postDataCollection));
-
-                var corpusyeartype = this.get_if_exist(postDataCollection, 'corpusyeartype');
-                var corpussizetype = this.get_if_exist(postDataCollection, 'corpussizetype');
-                var corpus_publication_publication_date = this.get_if_exist(postDataCollection, 'corpus_publication_publication_date');
-                var corpusYearTo = this.get_if_exist(postDataCollection, 'corpusYearTo');
-
-                var corpus_size_value = this.get_if_exist(postDataCollection, 'corpus_size_value');
-                var corpusSizeTo = this.get_if_exist(postDataCollection, 'corpusSizeTo');
-
-                if (corpusyeartype && !corpus_publication_publication_date && corpusyeartype && !corpusYearTo) {
-                    postDataCollection = this.remove_if_exist(postDataCollection, "corpusyeartype");
-                }
-
-                if (corpussizetype && !corpus_size_value && corpussizetype && !corpusSizeTo) {
-                    postDataCollection = this.remove_if_exist(postDataCollection, "corpussizetype");
-                }
-
-                if (hasDateAndSize && thereAreMore) {
-                    postDataCollection.push({ "mixedSearch": "true" });
-                } else {
-                    postDataCollection.push({ "mixedSearch": "false" });
-                }
-
-                var postData = {
-                    searchData: postDataCollection,
-                    scope: 'corpus',
-                    cacheString: this.corpusCacheString
-                };
-
-                var corpus_ids = [];
-
-                window.axios.post('api/searchapi/searchCorpus', JSON.stringify(postData)).then(function (res) {
-                    _this2.corpussearched = true;
-                    var corpusRefs = [];
-
-                    if (res.data.results.length > 0) {
-                        _this2.corpusresults.push({
-                            search: postDataCollection,
-                            results: res.data.results,
-                            total: res.data.total
-                        });
-
-                        for (var ri = 0; ri < res.data.results.length; ri++) {
-                            corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
-                            corpus_ids.push({
-                                'in_corpora': '' + res.data.results[ri]._source.corpus_id[0] + ''
-                            });
-                        }
-
-                        if (corpus_ids.length > 0) {
-                            var documentPostData = {
-                                corpus_ids: corpus_ids,
-                                corpusRefs: corpusRefs,
-                                cacheString: _this2.corpusCacheString
-
-                                /**
-                                 * Get all documents contained in the corpora
-                                 */
-                            };window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(function (documentRes) {
-
-                                if (Object.keys(documentRes.data.results).length > 0) {
-                                    var documentsByCorpus = {};
-                                    Object.keys(documentRes.data.results).forEach(function (key) {
-                                        documentsByCorpus[key] = { results: documentRes.data.results[key] };
-                                    });
-                                }
-
-                                _this2.documentsByCorpus = documentsByCorpus;
-                            });
-
-                            /**
-                             * get all annotations contained pro corpus
-                             */
-                            window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(documentPostData)).then(function (annotationRes) {
-
-                                if (Object.keys(annotationRes.data.results).length > 0) {
-                                    var annotationsByCorpus = {};
-                                    Object.keys(annotationRes.data.results).forEach(function (key) {
-                                        annotationsByCorpus[key] = { results: annotationRes.data.results[key] };
-                                    });
-                                }
-                                _this2.annotationsByCorpus = annotationsByCorpus;
-                            });
-                        }
-                    } //end if data
-
-                    _this2.corpussearched = true;
-                    _this2.corpusloading = false;
-                });
-            }
         },
-
-        submitDocumentSearch: function submitDocumentSearch(documentSearchObject) {
-            var _this3 = this;
-
-            this.documentloading = true;
-            this.documentresults = [];
-            this.documentsearched = false;
-            this.documentCacheString = "";
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('clearAnnotations', []);
-            var postDataCollection = [];
-            var thereAreMore = false;
-            var hasDateAndSize = false;
-            var dateAndSize = ["document_publication_publishing_date", "document_publication_publishing_date_to", "document_size_extent", "document_size_extent_to", "documentyeartype", "documentsizetype"];
-            for (var p in documentSearchObject) {
-                if (documentSearchObject[p].length > 0) {
-                    if (dateAndSize.indexOf(p) > -1 && documentSearchObject[p] != "" && (documentSearchObject['documentyeartype'] == "range" || documentSearchObject['documentsizetype'] == "range")) {
-                        if (!hasDateAndSize) {
-                            hasDateAndSize = true;
-                        }
-                    } else {
-                        if (!thereAreMore && documentSearchObject[p] != "") {
-                            thereAreMore = true;
-                        }
-                    }
-                    postDataCollection.push(_defineProperty({}, p, documentSearchObject[p]));
-                    this.documentCacheString += '|' + p + '|' + documentSearchObject[p];
-                }
-            }
-
-            if (postDataCollection.length > 0) {
-                var postData = {
-                    searchData: postDataCollection,
-                    cacheString: this.documentCacheString,
-                    scope: 'document'
-                };
-
-                var documentyeartype = this.get_if_exist(postDataCollection, 'documentyeartype');
-                var documentsizetype = this.get_if_exist(postDataCollection, 'documentsizetype');
-
-                var document_publication_publishing_date = this.get_if_exist(postDataCollection, 'document_publication_publishing_date');
-                var document_publication_publishing_date_to = this.get_if_exist(postDataCollection, 'document_publication_publishing_date_to');
-                var document_size_extent = this.get_if_exist(postDataCollection, 'document_size_extent');
-                var document_size_extent_to = this.get_if_exist(postDataCollection, 'document_size_extent_to');
-                if (documentyeartype && !document_publication_publishing_date && documentyeartype && !document_publication_publishing_date_to) {
-                    postDataCollection = this.remove_if_exist(postDataCollection, "documentyeartype");
-                }
-
-                if (documentsizetype && !document_size_extent && documentsizetype && !document_size_extent_to) {
-                    postDataCollection = this.remove_if_exist(postDataCollection, "documentsizetype");
-                }
-
-                if (hasDateAndSize && thereAreMore) {
-                    postDataCollection.push({ "mixedSearch": "true" });
-                } else {
-                    postDataCollection.push({ "mixedSearch": "false" });
-                }
-                console.log("POSTDATACOLLECTION: " + JSON.stringify(postData));
-                var that = this;
-                window.axios.post('api/searchapi/searchDocument', JSON.stringify(postData)).then(function (res) {
-                    _this3.documentsearched = true;
-
-                    if (res.data.results.length > 0) {
-
-                        var documentRefs = [];
-                        var corpusRefs = [];
-
-                        var corpus_ids = [];
-                        var document_ids = [];
-
-                        for (var j = 0; j < res.data.results.length; j++) {
-                            var in_corpora = res.data.results[j]._source.in_corpora;
-                            documentRefs.push(res.data.results[j]._id);
-                            document_ids.push({
-                                'in_documents': '' + res.data.results[j]._id + ''
-                            });
-                            if (typeof in_corpora != 'undefined' && in_corpora.length > 0) {
-                                for (var jid = 0; jid < in_corpora.length; jid++) {
-                                    corpusRefs.push({
-                                        '_id': '' + in_corpora[jid] + ''
-                                    });
-                                }
-                            } else if (typeof in_corpora != 'undefined' && in_corpora.length == 0 || typeof in_corpora == 'undefined') {
-                                corpusRefs.push({
-                                    '_id': '0'
-                                });
-                            }
-                        }
-
-                        var annotationPostData = {
-                            documentRefs: documentRefs,
-                            document_ids: document_ids,
-                            cacheString: _this3.documentCacheString
-                        };
-
-                        var corpusPostData = {
-                            documentRefs: documentRefs,
-                            corpusRefs: corpusRefs,
-                            cacheString: _this3.documentCacheString
-                        };
-                        console.log("annotationPostData: " + _this3.documentCacheString);
-                        window.axios.post('api/searchapi/getAnnotationsByDocument', JSON.stringify(annotationPostData)).then(function (annotationRes) {
-                            if (Object.keys(annotationRes.data.results).length > 0) {
-                                var annotationsByDocument = {};
-                                Object.keys(annotationRes.data.results).forEach(function (key) {
-                                    annotationsByDocument[key] = annotationRes.data.results[key];
-                                });
-                            }
-
-                            _this3.annotationsByDocument = annotationsByDocument;
-                        });
-
-                        //console.log("corpusPostData: "+JSON.stringify(corpusPostData));
-                        window.axios.post('api/searchapi/getCorpusByDocument', JSON.stringify(corpusPostData)).then(function (corpusRes) {
-
-                            if (Object.keys(corpusRes.data.results).length > 0) {
-                                var corpusByDocument = {};
-                                Object.keys(corpusRes.data.results).forEach(function (key) {
-                                    corpusByDocument[key] = { results: corpusRes.data.results[key] };
-                                });
-                            }
-
-                            _this3.corpusByDocument = corpusByDocument;
-                        });
-
-                        var postDocumentData = {
-                            documentRefs: documentRefs,
-                            corpusRefs: corpusRefs,
-                            cacheString: _this3.documentCacheString
-                        };
-
-                        window.axios.post('api/searchapi/getCorpusTitlesByDocument', postDocumentData).then(function (corpusByDocumentRes) {
-                            if (Object.keys(corpusByDocumentRes.data.results).length > 0) {
-                                var corpusTitleByDocument = [];
-
-                                Object.keys(corpusByDocumentRes.data.results).forEach(function (key) {
-                                    corpusTitleByDocument[key] = corpusByDocumentRes.data.results[key];
-                                });
-
-                                _this3.documentresults.push({
-                                    search: documentSearchObject.document_title,
-                                    results: res.data.results,
-                                    total: res.data.total,
-                                    corpusByDocument: corpusTitleByDocument
-                                });
-                            } else {
-                                _this3.documentresults.push({
-                                    search: documentSearchObject.document_title,
-                                    results: res.data.results,
-                                    total: res.data.total,
-                                    corpusByDocument: []
-                                });
-                            }
-                        });
-                        _this3.documentloading = false;
-                    }
-                });
-            }
+        updateCorpusCounter: function updateCorpusCounter(counter) {
+            this.corpusresultcounter = counter;
         },
-        searchAnnotation: function searchAnnotation(postData, postAnnotationData) {
-            var _this4 = this;
-
-            var annotationterms = [];
-
-            window.axios.post('api/searchapi/searchAnnotation', postData).then(function (res) {
-                _this4.annotationsearched = true;
-                console.log("RESSS: " + JSON.stringify(res));
-                var documentRefs = {};
-                var corpusRefs = {};
-                var annotationRefs = [];
-                if (res.data.results.length > 0) {
-
-                    for (var j = 0; j < res.data.results.length; j++) {
-
-                        annotationRefs.push(res.data.results[j]._id);
-                        var id = res.data.results[j]._id;
-
-                        if (typeof documentRefs[id] == 'undefined') {
-                            documentRefs[id] = [];
-                        }
-
-                        if (typeof corpusRefs[id] == 'undefined') {
-                            corpusRefs[id] = [];
-                        }
-
-                        if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length > 0) {
-                            for (var jid = 0; jid < res.data.results[j]._source.in_documents.length; jid++) {
-                                documentRefs[id].push({
-                                    '_id': '' + res.data.results[j]._source.in_documents[jid] + ''
-                                });
-                            }
-                        } else if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length == 0 || typeof res.data.results[j]._source.in_documents == 'undefined') {
-                            documentRefs[id].push({
-                                '_id': '0'
-                            });
-                        }
-
-                        if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length > 0) {
-                            for (var cid = 0; cid < res.data.results[j]._source.in_corpora.length; cid++) {
-                                corpusRefs[id].push({
-                                    '_id': '' + res.data.results[j]._source.in_corpora[cid] + ''
-                                });
-                            }
-                        } else if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length == 0 || typeof res.data.results[j]._source.in_corpora == 'undefined') {
-                            corpusRefs[id].push({
-                                '_id': '0'
-                            });
-                        }
-                    } //end for annotationResults
-
-                    _this4.annotationresults.push({
-                        results: res.data.results,
-                        total: res.data.total
-                    });
-                }
-                _this4.postAnnotationData.corpusRefs = corpusRefs;
-                _this4.postAnnotationData.documentRefs = documentRefs;
-                _this4.postAnnotationData.annotationRefs = annotationRefs;
-            });
-
-            this.postAnnotationData.cacheString = this.annotationCacheString;
+        updateDocumentCounter: function updateDocumentCounter(counter) {
+            this.documentresultcounter = counter;
         },
-        getDocumentsByAnnotation: function getDocumentsByAnnotation(postAnnotationData) {
-            var _this5 = this;
-
-            console.log("getDocumentsByAnnotation: " + JSON.stringify(this.postAnnotationData));
-            window.axios.post('api/searchapi/getDocumentsByAnnotation', this.postAnnotationData).then(function (documentsByAnnotationRes) {
-                _this5.annotationsearched = true;
-                console.log("documentsByAnnotationRes: " + documentsByAnnotationRes);
-                if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
-                    var documentsByAnnotation = {};
-                    Object.keys(documentsByAnnotationRes.data.results).forEach(function (key) {
-                        documentsByAnnotation[key] = { results: documentsByAnnotationRes.data.results[key] };
-                    });
-
-                    _this5.documentsByAnnotation = documentsByAnnotation;
-
-                    /*
-                     this.annotationresults.push({
-                     search: annotationSearchObject.preparation_title,
-                     results: res.data.results,
-                     total: res.data.total,
-                     });
-                     */
-                } else {
-                        /*
-                         this.annotationresults.push({
-                         search: annotationSearchObject.preparation_title,
-                         results: res.data.results,
-                         total: res.data.total,
-                         });
-                         */
-                    }
-            });
-        },
-        getCorporaByAnnotation: function getCorporaByAnnotation(postAnnotationData) {
-            var _this6 = this;
-
-            console.log("getCorporaByAnnotation: " + JSON.stringify(this.postAnnotationData));
-            window.axios.post('api/searchapi/getCorporaByAnnotation', this.postAnnotationData).then(function (corpussByAnnotationRes) {
-
-                if (Object.keys(corpussByAnnotationRes.data.results).length > 0) {
-                    var corpusByAnnotation = {};
-                    Object.keys(corpussByAnnotationRes.data.results).forEach(function (key) {
-                        corpusByAnnotation[key] = { results: corpussByAnnotationRes.data.results[key] };
-                    });
-
-                    _this6.corpusByAnnotation = corpusByAnnotation;
-                }
-            });
-        },
-        removeAnnotationSpinner: function removeAnnotationSpinner() {
-            this.annotationsearched = true;
-            this.annotationloading = true;
-        },
-        submitAnnotationSearch: function submitAnnotationSearch(annotationSearchObject) {
-            var _this7 = this;
-
-            this.annotationloading = true;
-            this.annotationresults = [];
-            this.annotationsearched = false;
-            var postAnnotationData = {};
-            var postDataCollection = [];
-
-            this.annotationCacheString = "";
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('clearAnnotations', []);
-            var documentsByAnnotationTime = 0;
-
-            for (var p in annotationSearchObject) {
-                if (annotationSearchObject[p].length > 0) {
-                    postDataCollection.push(_defineProperty({}, p, annotationSearchObject[p]));
-                    this.annotationCacheString += '|' + p + '|' + annotationSearchObject[p];
-                }
-            }
-
-            if (postDataCollection.length > 0) {
-                var postData = {
-                    searchData: postDataCollection,
-                    cacheString: this.annotationCacheString,
-                    scope: 'annotation'
-                };
-                var searchAnnotation0 = performance.now();
-                window.axios.post('api/searchapi/searchAnnotation', postData).then(function (res) {
-                    _this7.annotationsearched = true;
-                    if (res.data.results.length > 0) {
-                        var annotationterms = [];
-
-                        var documentRefs = {};
-                        var corpusRefs = {};
-                        var annotationRefs = [];
-
-                        for (var j = 0; j < res.data.results.length; j++) {
-
-                            annotationRefs.push(res.data.results[j]._id);
-                            var id = res.data.results[j]._id;
-
-                            if (typeof documentRefs[id] == 'undefined') {
-                                documentRefs[id] = [];
-                            }
-
-                            if (typeof corpusRefs[id] == 'undefined') {
-                                corpusRefs[id] = [];
-                            }
-
-                            if (typeof res.data.results[j]._source.in_documents != 'undefined' && res.data.results[j]._source.in_documents.length >= 1) {
-                                for (var jid = 0; jid < res.data.results[j]._source.in_documents.length; jid++) {
-                                    documentRefs[id].push({
-                                        '_id': '' + res.data.results[j]._source.in_documents[jid] + ''
-                                    });
-                                }
-                            }
-
-                            if (typeof res.data.results[j]._source.in_corpora != 'undefined' && res.data.results[j]._source.in_corpora.length >= 1) {
-                                for (var cid = 0; cid < res.data.results[j]._source.in_corpora.length; cid++) {
-                                    corpusRefs[id].push({
-                                        '_id': '' + res.data.results[j]._source.in_corpora[cid] + ''
-                                    });
-                                }
-                            }
-                        } //end for annotationResults
-                        var searchAnnotation1 = performance.now();
-                        console.log("searchAnnotation took " + (searchAnnotation1 - searchAnnotation0) + " milliseconds.");
-
-                        postAnnotationData.corpusRefs = corpusRefs;
-                        postAnnotationData.documentRefs = documentRefs;
-                        postAnnotationData.annotationRefs = annotationRefs;
-                        postAnnotationData.cacheString = _this7.annotationCacheString;
-                        console.log("getDocumentsByAnnotation  " + JSON.stringify(postAnnotationData));
-                        var getDocumentsByAnnotation1 = performance.now();
-
-                        window.axios.post('api/searchapi/getDocumentsByAnnotation', postAnnotationData).then(function (documentsByAnnotationRes) {
-                            _this7.annotationsearched = true;
-                            if (Object.keys(documentsByAnnotationRes.data.results).length > 0) {
-                                var documentsByAnnotation = {};
-                                Object.keys(documentsByAnnotationRes.data.results).forEach(function (key) {
-                                    documentsByAnnotation[key] = { results: documentsByAnnotationRes.data.results[key] };
-                                });
-
-                                _this7.documentsByAnnotation = documentsByAnnotation;
-                            }
-                        });
-
-                        var getDocumentsByAnnotation2 = performance.now();
-                        console.log("getDocumentsByAnnotation took " + (getDocumentsByAnnotation2 - getDocumentsByAnnotation1) + " milliseconds.");
-                        documentsByAnnotationTime += getDocumentsByAnnotation2 - getDocumentsByAnnotation1;
-
-                        var getCorporaByAnnotation1 = performance.now();
-                        window.axios.post('api/searchapi/getCorporaByAnnotation', postAnnotationData).then(function (corpussByAnnotationRes) {
-
-                            if (Object.keys(corpussByAnnotationRes.data.results).length > 0) {
-                                var corpusByAnnotation = {};
-                                Object.keys(corpussByAnnotationRes.data.results).forEach(function (key) {
-                                    corpusByAnnotation[key] = { results: corpussByAnnotationRes.data.results[key] };
-                                });
-
-                                _this7.corpusByAnnotation = corpusByAnnotation;
-
-                                _this7.annotationresults.push({
-                                    search: annotationSearchObject.preparation_title,
-                                    results: res.data.results,
-                                    total: res.data.total,
-                                    took: res.data.milliseconds
-                                });
-                            } else {
-                                _this7.annotationresults.push({
-                                    search: annotationSearchObject.preparation_title,
-                                    results: res.data.results,
-                                    total: res.data.total,
-                                    took: res.data.milliseconds
-                                });
-                            }
-                        });
-                        _this7.annotationloading = false;
-                        var getCorporaByAnnotation2 = performance.now();
-                        console.log("getCorporaByAnnotation took " + (getCorporaByAnnotation2 - getCorporaByAnnotation1) + " milliseconds.");
-                    }
-                });
-            }
-            console.log("DocumentsByAnnotation total took " + documentsByAnnotationTime + " milliseconds.");
+        updateAnnotationCounter: function updateAnnotationCounter(counter) {
+            console.log("updateAnnotationCounter: " + counter);
+            this.annotationresultcounter = counter;
         }
     }
 });
@@ -25386,13 +24861,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'activefilters'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
     methods: {
         applyFilters: function applyFilters() {
             this.$refs.corpusFilter.emitCorpusFilter();
+            this.$refs.documentFilter.emitDocumentFilter();
+            this.$refs.annotationFilter.emitAnnotationFilter();
         },
         emitCorpusFilter: function emitCorpusFilter(corpusFilterEmitData) {
             this.$emit('corpus-filter', corpusFilterEmitData);
@@ -25400,8 +24899,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         emitDocumentFilter: function emitDocumentFilter(documentFilterEmitData) {
             this.$emit('document-filter', documentFilterEmitData);
         },
-        emitAnnotationFilter: function emitAnnotationFilter(annotaitonFilterEmitData) {
-            this.$emit('annotation-filter', annotaitonFilterEmitData);
+        emitAnnotationFilter: function emitAnnotationFilter(annotationFilterEmitData) {
+            this.$emit('annotation-filter', annotationFilterEmitData);
+        },
+        emitCorpusResultCounter: function emitCorpusResultCounter(emittedCorpusResultCounter) {
+            this.$emit('corpus-resultcounter', emittedCorpusResultCounter);
+        },
+        emitDocumentResultCounter: function emitDocumentResultCounter(emittedDocumentResultCounter) {
+            this.$emit('document-resultcounter', emittedDocumentResultCounter);
+        },
+        emitAnnotationResultCounter: function emitAnnotationResultCounter(emittedAnnotationResultCounter) {
+            this.$emit('annotation-resultcounter', emittedAnnotationResultCounter);
         }
     },
     computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
@@ -25440,7 +24948,17 @@ var render = function() {
         _c("activefilter", {
           attrs: {
             corpusresults: _vm.corpusresults,
+            documentresults: _vm.documentresults,
+            annotationresults: _vm.annotationresults,
+            corpusresultcounter: _vm.corpusresultcounter,
+            documentresultcounter: _vm.documentresultcounter,
+            annotationresultcounter: _vm.annotationresultcounter,
             activefilters: _vm.activefilters
+          },
+          on: {
+            "corpus-resultcounter": _vm.emitCorpusResultCounter,
+            "document-resultcounter": _vm.emitDocumentResultCounter,
+            "annotation-resultcounter": _vm.emitAnnotationResultCounter
           }
         })
       ],
@@ -25642,10 +25160,39 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'corpussearched', 'corpusloading', 'documentsbycorpus', 'annotationsbycorpus', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched', 'dataloading', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
     methods: {
         guid: function guid(key) {
             return key + ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
@@ -25679,8 +25226,8 @@ var render = function() {
           {
             name: "show",
             rawName: "v-show",
-            value: _vm.corpusloading,
-            expression: "corpusloading"
+            value: _vm.dataloading,
+            expression: "dataloading"
           }
         ],
         staticClass: "fa fa-circle-o-notch fa-spin fa-3x fa-fw"
@@ -25693,8 +25240,8 @@ var render = function() {
             {
               name: "show",
               rawName: "v-show",
-              value: _vm.corpusloading,
-              expression: "corpusloading"
+              value: _vm.dataloading,
+              expression: "dataloading"
             }
           ],
           staticClass: "sr-only"
@@ -25702,12 +25249,14 @@ var render = function() {
         [_vm._v("Loading...")]
       ),
       _vm._v(" "),
-      _vm.searches != "undefined" &&
-      _vm.searches.length >= 1 &&
-      _vm.corpussearched &&
-      !_vm.corpusloading &&
-      _vm.corpusresults != "undefined" &&
-      _vm.corpusresults.length >= 1
+      (_vm.searches != "undefined" &&
+        _vm.searches.length >= 1 &&
+        _vm.datasearched &&
+        !_vm.dataloading &&
+        (_vm.corpusresults != "undefined" && _vm.corpusresults.length >= 1)) ||
+      (_vm.documentresults != "undefined" && _vm.documentresults.length >= 1) ||
+      (_vm.annotationresults != "undefined" &&
+        _vm.annotationresults.length >= 1)
         ? _c("h3", { staticClass: "h3 font-weight-normal mb-4" }, [
             _vm._v(
               '\n        Results for the search "' +
@@ -25717,8 +25266,12 @@ var render = function() {
           ])
         : _vm.corpusresults != "undefined" &&
           _vm.corpusresults.length < 1 &&
-          _vm.corpussearched &&
-          !_vm.corpusloading &&
+          _vm.documentresults != "undefined" &&
+          _vm.documentresults.length < 1 &&
+          _vm.annotationresults != "undefined" &&
+          _vm.annotationresults.length < 1 &&
+          _vm.datasearched &&
+          !_vm.dataloading &&
           _vm.searches != "undefined" &&
           _vm.searches.length >= 1
           ? _c(
@@ -25744,53 +25297,79 @@ var render = function() {
           corpusresults: _vm.corpusresults,
           documentresults: _vm.documentresults,
           annotationresults: _vm.annotationresults,
-          documentsbycorpus: _vm.documentsbycorpus,
-          annotationsbycorpus: _vm.annotationsbycorpus,
           corpusresultcounter: _vm.corpusresultcounter,
           documentresultcounter: _vm.documentresultcounter,
           annotationresultcounter: _vm.annotationresultcounter
         }
       }),
       _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "tab-content" },
-        [
-          _c(
-            "div",
-            {
-              staticClass: "tab-pane active",
-              attrs: {
-                id: "searchtab-corpora",
-                role: "tabpanel",
-                "aria-labelledby": "searchtab-corpora"
-              }
-            },
-            _vm._l(_vm.corpusresults, function(corpusresult, index) {
-              return _vm.corpusresults != "undefined" &&
-                _vm.corpusresults.length >= 1
-                ? _c("corpussearchresult", {
-                    key: _vm.guid(index),
-                    attrs: {
-                      corpusresult: corpusresult,
-                      documentsbycorpus: _vm.documentsbycorpus,
-                      annotationsbycorpus: _vm.annotationsbycorpus
-                    }
-                  })
-                : _vm._e()
-            })
-          ),
-          _vm._v(" "),
-          _c("documentsearchresult", {
-            attrs: { documentresults: _vm.documentresults }
-          }),
-          _vm._v(" "),
-          _c("annotationsearchresult", {
-            attrs: { annotationresults: _vm.annotationresults }
+      _c("div", { staticClass: "tab-content" }, [
+        _c(
+          "div",
+          {
+            staticClass: "tab-pane active",
+            attrs: {
+              id: "searchtab-corpora",
+              role: "tabpanel",
+              "aria-labelledby": "searchtab-corpora"
+            }
+          },
+          _vm._l(_vm.corpusresults, function(corpusresult, index) {
+            return _vm.corpusresults != "undefined" &&
+              _vm.corpusresults.length >= 1
+              ? _c("corpussearchresult", {
+                  key: _vm.guid(index),
+                  attrs: { corpusresult: corpusresult }
+                })
+              : _vm._e()
           })
-        ],
-        1
-      ),
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "tab-pane",
+            attrs: {
+              id: "searchtab-documents",
+              role: "tabpanel",
+              "aria-labelledby": "searchtab-documents"
+            }
+          },
+          _vm._l(_vm.documentresults, function(documentresult, documentindex) {
+            return _vm.documentresults != "undefined" &&
+              _vm.documentresults.length >= 1
+              ? _c("documentsearchresult", {
+                  key: _vm.guid(documentindex),
+                  attrs: { documentresult: documentresult }
+                })
+              : _vm._e()
+          })
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "tab-pane",
+            attrs: {
+              id: "searchtab-annotations",
+              role: "tabpanel",
+              "aria-labelledby": "searchtab-annotations"
+            }
+          },
+          _vm._l(_vm.annotationresults, function(
+            annotationresult,
+            annotationindex
+          ) {
+            return _vm.annotationresults != "undefined" &&
+              _vm.annotationresults.length >= 1
+              ? _c("annotationsearchresult", {
+                  key: _vm.guid(annotationindex),
+                  attrs: { annotationresult: annotationresult }
+                })
+              : _vm._e()
+          })
+        )
+      ]),
       _vm._v(" "),
       (_vm.corpusresults != "undefined" && _vm.corpusresults.length > 0) ||
       (_vm.documentresults != "undefined" && _vm.documentresults.length > 0) ||
@@ -26006,7 +25585,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'activefilters'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    data: function data() {
+        return {
+            localcorpusresultcounter: this.corpusresultcounter,
+            localdocumentresultcounter: this.documentresultcounter,
+            localannotationresultcounter: this.annotationresultcounter
+        };
+    },
     computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
         stateDocumentCorpusresults: 'documentcorpus',
         stateAnnotationCorpusresults: 'annotationcorpus'
@@ -26020,9 +25606,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return classes;
         },
         resetFilters: function resetFilters() {
+            this.localcorpusresultcounter = this.corpusresultcounter;
             for (var i = 0; i < this.corpusresults.length; i++) {
                 this.corpusresults[i]._source.visibility = 1;
+                if (this.corpusresults[i]._source.visibility == 0) {
+                    this.corpusresults[i]._source.visibility = 1;
+                    this.localcorpusresultcounter++;
+                }
             }
+            this.$emit('corpus-resultcounter', this.localcorpusresultcounter);
+
+            this.localdocumentresultcounter = this.documentresultcounter;
+            for (var i = 0; i < this.documentresults.length; i++) {
+                if (this.documentresults[i]._source.visibility == 0) {
+                    this.documentresults[i]._source.visibility = 1;
+                    this.localdocumentresultcounter++;
+                }
+            }
+            this.$emit('document-resultcounter', this.localdocumentresultcounter);
+
+            this.localannotationresultcounter = this.annotationresultcounter;
+            for (var i = 0; i < this.annotationresults.length; i++) {
+                if (this.annotationresults[i]._source.visibility == 0) {
+                    this.annotationresults[i]._source.visibility = 1;
+                    this.localannotationresultcounter++;
+                }
+            }
+            this.$emit('annotation-resultcounter', this.localannotationresultcounter);
         }
     },
     mounted: function mounted() {
@@ -30034,6 +29644,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 classes += " show";
             }
             return classes;
+        },
+        emitAnnotationFilter: function emitAnnotationFilter() {
+            this.$emit('annotation-filter', this.annotationFilterData);
         }
     },
     mounted: function mounted() {
@@ -30367,7 +29980,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'documentsbycorpus', 'annotationsbycorpus', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
     mounted: function mounted() {
         console.log('CorpusResultHeaderComponent mounted.');
     }
@@ -30764,7 +30377,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresult', 'documentsbycorpus', 'annotationsbycorpus', 'corpuspaths'],
+    props: ['corpusresult', 'corpuspaths'],
     methods: {
         browseUri: function browseUri(id) {
             return '/browse/corpus/'.concat(id);
@@ -31387,12 +31000,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['documentresults', 'corpusbydocument', 'annotationsbydocument', 'corpusbydocument'],
+    props: ['documentresult'],
     methods: {
         browseUri: function browseUri(id) {
             return '/browse/document/'.concat(id);
@@ -31417,182 +31028,157 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass: "tab-pane",
-      attrs: {
-        id: "searchtab-documents",
-        role: "tabpanel",
-        "aria-labelledby": "searchtab-documents"
-      }
-    },
-    _vm._l(_vm.documentresults, function(documentresult, index) {
-      return _vm.documentresults.length > 0
-        ? _c(
-            "div",
-            {
-              key: documentresult._id,
-              staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5"
-            },
-            [
-              _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "col" }, [
-                  _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "text-dark",
-                        attrs: { href: _vm.browseUri(documentresult._id) }
-                      },
-                      [
-                        _vm._v(
-                          "\n                        " +
-                            _vm._s(
-                              _vm._f("arrayToString")(
-                                documentresult._source.document_title
-                              )
-                            ) +
-                            "\n                    "
-                        )
-                      ]
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "text-grey text-14" }, [
+  return _vm.documentresult._source.visibility == 1
+    ? _c(
+        "div",
+        { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
+        [
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col" }, [
+              _c("h4", { staticClass: "h4 font-weight-bold" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "text-dark",
+                    attrs: { href: _vm.browseUri(_vm.documentresult._id) }
+                  },
+                  [
                     _vm._v(
-                      "\n                    Corpus: " +
-                        _vm._s(documentresult._source.corpus_name) +
-                        "\n                    "
-                    ),
-                    _c("br"),
-                    _vm._v(
-                      " " +
+                      "\n                    " +
                         _vm._s(
                           _vm._f("arrayToString")(
-                            documentresult._source.document_author_surname
+                            _vm.documentresult._source.document_title
                           )
                         ) +
-                        ", " +
-                        _vm._s(
-                          _vm._f("arrayToString")(
-                            documentresult._source.document_author_forename
-                          )
-                        )
+                        "\n                "
                     )
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "row mt-2" }, [
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("span", { staticClass: "text-grey text-14" }, [
+                _vm._v(
+                  "\n                Corpus: " +
+                    _vm._s(_vm.documentresult._source.corpus_name) +
+                    "\n                "
+                ),
+                _c("br"),
+                _vm._v(
+                  " " +
+                    _vm._s(
+                      _vm._f("arrayToString")(
+                        _vm.documentresult._source.document_author_surname
+                      )
+                    ) +
+                    ", " +
+                    _vm._s(
+                      _vm._f("arrayToString")(
+                        _vm.documentresult._source.document_author_forename
+                      )
+                    )
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "row mt-2" }, [
+                _c(
+                  "div",
+                  { staticClass: "col d-flex flex-wrap justify-content-start" },
+                  [
+                    _c("div", { staticClass: "mr-7" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass:
+                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                        },
+                        [
+                          _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
+                          _vm._v(" "),
+                          _c("span", [
+                            _vm._v(
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  _vm.documentresult._source
+                                    .document_publication_publishing_date
+                                )
+                              )
+                            )
+                          ])
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
                     _c(
                       "div",
                       {
                         staticClass:
-                          "col d-flex flex-wrap justify-content-start"
+                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
                       },
                       [
-                        _c("div", { staticClass: "mr-7" }, [
-                          _c(
-                            "div",
-                            {
-                              staticClass:
-                                "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                            },
-                            [
-                              _c("i", {
-                                staticClass: "fa fa-fw fa-clock-o mr-1"
-                              }),
-                              _vm._v(" "),
-                              _c("span", [
-                                _vm._v(
-                                  _vm._s(
-                                    _vm._f("arrayToString")(
-                                      documentresult._source
-                                        .document_publication_publishing_date
-                                    )
-                                  )
-                                )
-                              ])
-                            ]
-                          )
-                        ]),
+                        _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
                         _vm._v(" "),
-                        _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                            _vm._v(" "),
-                            _c("span", [
-                              _vm._v(
-                                " " +
-                                  _vm._s(
-                                    _vm._f("arrayToString")(
-                                      documentresult._source
-                                        .document_size_extent
-                                    )
-                                  ) +
-                                  " " +
-                                  _vm._s(
-                                    _vm._f("arrayToString")(
-                                      documentresult._source.document_size_type
-                                    )
-                                  )
+                        _c("span", [
+                          _vm._v(
+                            " " +
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  _vm.documentresult._source
+                                    .document_size_extent
+                                )
+                              ) +
+                              " " +
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  _vm.documentresult._source.document_size_type
+                                )
                               )
-                            ])
-                          ]
-                        )
+                          )
+                        ])
                       ]
                     )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  {
-                    staticClass:
-                      "col-4 mr-3 d-flex justify-content-between align-items-start"
-                  },
-                  [
-                    _c(
-                      "a",
-                      {
-                        staticClass:
-                          "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                        attrs: { href: "# " }
-                      },
-                      [
-                        _c("i", {
-                          staticClass:
-                            "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                        }),
-                        _vm._v(" "),
-                        _c(
-                          "span",
-                          { staticClass: "text-14 font-weight-bold" },
-                          [
-                            _vm._v(
-                              _vm._s(
-                                documentresult._source
-                                  .document_list_of_annotations_id.length
-                              )
-                            )
-                          ]
-                        )
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _vm._m(0, true)
                   ]
                 )
               ])
-            ]
-          )
-        : _vm._e()
-    })
-  )
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass:
+                  "col-4 mr-3 d-flex justify-content-between align-items-start"
+              },
+              [
+                _c(
+                  "a",
+                  {
+                    staticClass:
+                      "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                    attrs: { href: "#" }
+                  },
+                  [
+                    _c("i", {
+                      staticClass:
+                        "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                    }),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "text-14 font-weight-bold" }, [
+                      _vm._v(
+                        _vm._s(
+                          _vm.documentresult._source
+                            .document_list_of_annotations_id.length
+                        )
+                      )
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
+                _vm._m(0)
+              ]
+            )
+          ])
+        ]
+      )
+    : _vm._e()
 }
 var staticRenderFns = [
   function() {
@@ -31611,11 +31197,7 @@ var staticRenderFns = [
           staticClass: "custom-control-label text-14",
           attrs: { for: "filtercheck-documentSearchItem0001" }
         },
-        [
-          _vm._v(
-            "\n                        Set as Filter\n                    "
-          )
-        ]
+        [_vm._v("\n                    Set as Filter\n                ")]
       )
     ])
   }
@@ -31753,11 +31335,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['annotationresults', 'corpusbyannotation', 'documentsbyannotation'],
+    props: ['annotationresult'],
     methods: {
         browseUri: function browseUri(id, type) {
             return '/browse/annotation/'.concat(id);
@@ -31782,115 +31362,97 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass: "tab-pane",
-      attrs: {
-        id: "searchtab-annotations",
-        role: "tabpanel",
-        "aria-labelledby": "searchtab-annotations"
-      }
-    },
-    _vm._l(_vm.annotationresults, function(annotationresult, index) {
-      return _vm.annotationresults.length > 0
-        ? _c(
-            "div",
-            {
-              key: annotationresult._id,
-              staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5"
-            },
-            [
-              _c("div", { staticClass: "row" }, [
-                _c("div", { staticClass: "col" }, [
-                  _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "text-dark",
-                        attrs: { href: _vm.browseUri(annotationresult._id) }
-                      },
-                      [
-                        _vm._v(
-                          "\n                        " +
-                            _vm._s(
-                              _vm._f("arrayToString")(
-                                annotationresult._source.preparation_title
-                              )
-                            ) +
-                            "\n                    "
-                        )
-                      ]
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("span", { staticClass: "text-grey text-14" }, [
-                    _vm._v(
-                      "\n                    Corpus: " +
-                        _vm._s(annotationresult._source.corpus_name) +
-                        "\n                  "
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "col-2" }, [
-                  _c("span", { staticClass: "text-grey text-14" }, [
-                    _vm._v(
-                      _vm._s(
-                        _vm._f("lastElement")(
-                          annotationresult._source
-                            .preparation_encoding_annotation_group
-                        )
-                      )
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
+  return _vm.annotationresult._source.visibility == 1
+    ? _c(
+        "div",
+        { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
+        [
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col" }, [
+              _c("h4", { staticClass: "h4 font-weight-bold" }, [
                 _c(
-                  "div",
+                  "a",
                   {
-                    staticClass:
-                      "col-4 d-flex justify-content-between align-items-start"
+                    staticClass: "text-dark",
+                    attrs: { href: _vm.browseUri(_vm.annotationresult._id) }
                   },
                   [
-                    _c(
-                      "a",
-                      {
-                        staticClass:
-                          "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                        attrs: { href: "#" }
-                      },
-                      [
-                        _c("i", {
-                          staticClass:
-                            "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                        }),
-                        _vm._v(" "),
-                        _c(
-                          "span",
-                          {
-                            staticClass: "text-primary text-14 font-weight-bold"
-                          },
-                          [
-                            _vm._v(
-                              _vm._s(
-                                annotationresult._source.in_documents.length
-                              )
-                            )
-                          ]
-                        )
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _vm._m(0, true)
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(
+                          _vm._f("arrayToString")(
+                            _vm.annotationresult._source.preparation_title
+                          )
+                        ) +
+                        "\n                "
+                    )
                   ]
                 )
+              ]),
+              _vm._v(" "),
+              _c("span", { staticClass: "text-grey text-14" }, [
+                _vm._v(
+                  "\n                Corpus: " +
+                    _vm._s(_vm.annotationresult._source.corpus_name) +
+                    "\n              "
+                )
               ])
-            ]
-          )
-        : _vm._e()
-    })
-  )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-2" }, [
+              _c("span", { staticClass: "text-grey text-14" }, [
+                _vm._v(
+                  _vm._s(
+                    _vm._f("lastElement")(
+                      _vm.annotationresult._source
+                        .preparation_encoding_annotation_group
+                    )
+                  )
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass:
+                  "col-4 d-flex justify-content-between align-items-start"
+              },
+              [
+                _c(
+                  "a",
+                  {
+                    staticClass:
+                      "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                    attrs: { href: "#" }
+                  },
+                  [
+                    _c("i", {
+                      staticClass:
+                        "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      { staticClass: "text-primary text-14 font-weight-bold" },
+                      [
+                        _vm._v(
+                          _vm._s(
+                            _vm.annotationresult._source.in_documents.length
+                          )
+                        )
+                      ]
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _vm._m(0)
+              ]
+            )
+          ])
+        ]
+      )
+    : _vm._e()
 }
 var staticRenderFns = [
   function() {
@@ -31909,11 +31471,7 @@ var staticRenderFns = [
           staticClass: "custom-control-label text-14",
           attrs: { for: "filtercheck-annotationSearchItem0001" }
         },
-        [
-          _vm._v(
-            "\n                        Set as Filter\n                    "
-          )
-        ]
+        [_vm._v("\n                    Set as Filter\n                ")]
       )
     ])
   }
