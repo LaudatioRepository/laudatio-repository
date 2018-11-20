@@ -27,21 +27,12 @@
                             Apply Filter
                         </div-->
                         <!--/div-->
-                        <a class="text-uppercase btn-outline-corpus-dark align-self-end text-uppercase text-dark text-12 p-2" href="#">
-                            Apply Filters
-                        </a>
-                        <div class="mb-4">
-                            <activefilter :corpusresults="corpusresults"></activefilter>
-                        </div>
-                        <div class="mb-4">
-                            <corpusfilter :corpusresults="corpusresults" v-on:corpus-filter="submitCorpusFilter"></corpusfilter>
-                        </div>
-                        <div class="mb-4">
-                            <documentfilter :corpusresults="corpusresults"></documentfilter>
-                        </div>
-                        <div class="mb-4">
-                            <annotationfilter :corpusresults="corpusresults"></annotationfilter>
-                        </div>
+                        <searchfilterwrapper
+                                :corpusresults="corpusresults"
+                                :activefilters="activefilters"
+                                v-on:corpus-filter="submitCorpusFilter"
+                                v-on:document-filter="submitDocumentFilter"
+                                v-on:annotation-filter="submitAnnotationFilter"></searchfilterwrapper>
                     </div>
                     <searchresultwrapper
                             :corpusresults="corpusresults"

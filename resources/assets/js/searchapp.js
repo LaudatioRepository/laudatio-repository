@@ -45,6 +45,7 @@ const app = new Vue({
         documentresults: [],
         annotationresults: [],
         searches: [],
+        activefilters: [],
         documentsByCorpus: [],
         annotationsByCorpus: [],
         corpusByDocument: [],
@@ -83,7 +84,6 @@ const app = new Vue({
             this.annotationresultcounter = 0;
             if(search.generalSearchTerm != ""){
                 this.searches = [];
-                this.searches.push(search.generalSearchTerm);
                 let postData = {
                     searchData: {
                         fields: [
@@ -114,7 +114,7 @@ const app = new Vue({
                             "preparation_annotation_id",
                             "preparation_encoding_annotation_group",
                             "preparation_encoding_annotation_sub_group",
-                            "preparation_encoding_tool_version"
+                            "preparation_encoding_full_name"
                         ],
                         query: "" + search.generalSearchTerm + "",
                         indices: this.publishedIndexes.allPublishedIndices.join(",")
@@ -145,167 +145,12 @@ const app = new Vue({
                             }///end which index
                         }//end for results
                     }//end if results
-                });
-
-                this.corpusloading = false;
-            }
-            else{
-                this.corpusloading = false;
-            }
-
-        },
-        askElastic_old: function (search) {
-            this.corpusloading = true;
-            this.corpusresults = [];
-            this.corpussearched = false;
-            this.corpusCacheString = "";
-            this.$store.dispatch('clearCorpus', [])
-            this.$store.dispatch('clearDocuments', [])
-            this.$store.dispatch('clearAnnotations', [])
-            this.corpusresultcounter = 0;
-            this.documentresultcounter = 0;
-            this.annotationresultcounter = 0;
-            if(search.generalSearchTerm != ""){
-                this.searches = [];
-                this.searches.push(search.generalSearchTerm);
-                let postData = {
-                    searchData: {
-                        fields: [
-                            "corpus_title",
-                            "corpus_editor_forename",
-                            "corpus_editor_surname",
-                            "corpus_publication_publisher",
-                            "corpus_documents",
-                            "corpus_encoding_format",
-                            "corpus_encoding_tool",
-                            "corpus_encoding_project_description",
-                            "corpus_annotator_forename",
-                            "corpus_annotator_surname",
-                            "corpus_publication_license",
-                            "corpus_languages_language",
-                            "corpus_languages_iso_code",
-                            //"corpus_publication_publication_date",
-                            "document_title",
-                            "document_author_forename",
-                            "document_author_surname",
-                            "document_editor_forename",
-                            "document_editor_surname",
-                            "document_languages_language",
-                            "document_languages_iso_code",
-                            "document_publication_place",
-                            //"document_publication_publishing_date",
-                            "preparation_title",
-                            "preparation_annotation_id",
-                            "preparation_encoding_annotation_group",
-                            "preparation_encoding_annotation_sub_group",
-                            "preparation_encoding_tool_version"
-                        ],
-                        query: "" + search.generalSearchTerm + "",
-                        indices: this.publishedIndexes.allPublishedIndices.join(",")
-                    }
-                };
-
-                let corpus_ids = [];
-
-                window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(res => {
+                    this.corpusloading = false;
                     this.corpussearched = true;
-                    var corpusRefs = [];
-                    //console.log("RES: "+JSON.stringify(res));
-
-                    if (res.data.results.length > 0) {
-                        this.corpusresults.push({
-                            search: search.generalSearchTerm,
-                            results: res.data.results,
-                            total: res.data.total,
-                        })
-
-                        var localCorpusCacheString = "";
-                        var documentIndex = "";
-                        var annotationIndex = "";
-
-                        for (var ri = 0; ri < res.data.results.length; ri++) {
-                            corpusRefs.push(res.data.results[ri]._source.corpus_id[0]);
-                            corpus_ids.push({
-                                "in_corpora": "" + res.data.results[ri]._source.corpus_id[0] + ""
-                            });
-                            localCorpusCacheString = res.data.results[ri]._source.corpus_id[0];
-                            documentIndex = res.data.results[ri]._index.replace("corpus","document");
-                            annotationIndex = res.data.results[ri]._index.replace("corpus","annotation");
-                            this.corpusresultcounter++;
-                        }
-
-                        if (corpus_ids.length > 0) {
-                            let documentPostData = {
-                                corpus_ids: corpus_ids,
-                                corpusRefs: corpusRefs,
-                                cacheString: localCorpusCacheString,
-                                index: documentIndex,
-                                fields: [
-                                    "document_title",
-                                    "document_publication_publishing_date",
-                                    "document_publication_place",
-                                    "document_list_of_annotations_id",
-                                    "in_corpora",
-                                    "document_size_extent",
-                                    "document_size_type",
-                                    "document_author_forename",
-                                    "document_author_surname",
-                                    ]
-                            }
-
-                            let annotationPostData = {
-                                corpus_ids: corpus_ids,
-                                corpusRefs: corpusRefs,
-                                cacheString: localCorpusCacheString,
-                                index: annotationIndex,
-                                fields: ["preparation_encoding_annotation_group", "preparation_annotation_id", "_id", "preparation_title", "in_documents", "in_corpora", "preparation_author_annotator_forename", "preparation_author_annotator_surname", "generated_id"]
-                            }
-
-
-
-                            /**
-                             * Get all documents contained in the corpora
-                             */
-                            window.axios.post('api/searchapi/getDocumentsByCorpus', JSON.stringify(documentPostData)).then(documentRes => {
-                                if (Object.keys(documentRes.data.results).length > 0) {
-                                    var documentsByCorpusCounter = 0;
-                                    this.documentsByCorpus = 0;
-                                    var documentsByCorpus = {}
-                                    Object.keys(documentRes.data.results).forEach(function (key) {
-                                        documentsByCorpus[key] = {results: documentRes.data.results[key]}
-                                        documentsByCorpusCounter += documentRes.data.results[key].length;
-                                    });
-                                    this.documentresultcounter = documentsByCorpusCounter;
-                                }
-
-                                this.documentsByCorpus = documentsByCorpus;
-                            });
-
-
-                            /**
-                             * get all annotations contained pro corpus
-                             */
-                            window.axios.post('api/searchapi/getAnnotationsByCorpus', JSON.stringify(annotationPostData)).then(annotationRes => {
-
-                                if (Object.keys(annotationRes.data.results).length > 0) {
-                                    var annotationsByCorpus = {}
-                                    this.annotationsByCorpus = 0;
-                                    var annotationsByCorpusCounter = 0;
-                                    Object.keys(annotationRes.data.results).forEach(function (key) {
-                                        annotationsByCorpus[key] = {results: annotationRes.data.results[key]}
-                                        annotationsByCorpusCounter += annotationRes.data.results[key].length;
-                                    });
-                                    this.annotationresultcounter = annotationsByCorpusCounter;
-                                }
-                                this.annotationsByCorpus = annotationsByCorpus;
-                            });
-                        }
-                        this.corpusloading = false;
-                    }
-                    else {
-                        this.corpusloading = false;
-                    }//end if generaldata
+                    this.searches.push(search.generalSearchTerm);
                 });
+
+
             }
             else{
                 this.corpusloading = false;
@@ -331,15 +176,47 @@ const app = new Vue({
             }
             return collection
         },
+        triggerFilters: function() {
+            console.log("SETFILTERS");
+        },
         submitCorpusFilter: function (corpusFilterObject) {
+            console.log(JSON.stringify(corpusFilterObject))
             var filter_corpus_title = corpusFilterObject.corpus_title;
-            console.log("CARO HAT HUNGER: "+filter_corpus_title);
+            var filter_corpus_publication_publisher = corpusFilterObject.corpus_publication_publisher;
+            var filter_corpus_merged_languages = corpusFilterObject.corpus_merged_languages;
+            var filter_corpus_publication_publisher = corpusFilterObject.corpus_publication_publisher;
+            var filter_corpus_merged_formats = corpusFilterObject.corpus_merged_formats;
+            var filter_corpus_publication_license = corpusFilterObject.corpus_publication_license;
+            var filter_corpus_publication_publication_date = corpusFilterObject.corpus_publication_publication_date;
+            var filter_corpusYearTo = corpusFilterObject.corpusYearTo;
+
             for(var i = 0; i < this.corpusresults.length; i++) {
-                console.log("RESULT: "+this.corpusresults[i]._source.corpus_title);
+
                 if(this.corpusresults[i]._source.corpus_title[0].toLowerCase().indexOf(filter_corpus_title.toLowerCase()) == -1) {
+                    this.corpusresults[i]._source.visibility = 0;
+                    this.corpusresultcounter--;
+                }
+                /*
+                else if(this.corpusresults[i]._source.corpus_merged_languages.toLowerCase().indexOf(filter_corpus_merged_languages.toLowerCase()) == -1) {
                     this.corpusresults.splice(i,1);
                 }
+                else if(this.corpusresults[i]._source.corpus_publication_publisher[0].toLowerCase().indexOf(filter_corpus_publication_publisher.toLowerCase()) == -1) {
+                    this.corpusresults.splice(i,1);
+                }
+                else if(this.corpusresults[i]._source.corpus_merged_formats.toLowerCase().indexOf(filter_corpus_merged_formats.toLowerCase()) == -1) {
+                    this.corpusresults.splice(i,1);
+                }
+                else if(this.corpusresults[i]._source.corpus_publication_license[0].toLowerCase().indexOf(filter_corpus_publication_license.toLowerCase()) == -1) {
+                    this.corpusresults.splice(i,1);
+                }
+                */
             }
+        },
+        submitDocumentFilter: function (documentFilterObject) {
+            console.log("documentFilterObject: "+JSON.stringify(documentFilterObject))
+        },
+        submitAnnotationFilter: function (annotationFilterObject) {
+            console.log("annotationFilterObject: "+JSON.stringify(annotationFilterObject))
         },
         submitCorpusSearch: function (corpusSearchObject) {
             this.corpusloading = true;

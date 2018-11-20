@@ -28,7 +28,7 @@
                     <div id="formPanelCorpus-all1" class="collapse formPanelCorpus-all">
 
                         <div class="form-group mb-3">
-                            <label class="mb-0 text-14 " for="formCorpusPublisher">Language</label>
+                            <label class="mb-0 text-14 " for="formCorpusPublisher">Publisher</label>
                             <input type="text" class="form-control" id="formCorpusPublisher" aria-describedby="inputPublisher" placeholder='"Humboldt Universität"' v-model="corpusFilterData.corpus_publication_publisher">
                         </div>
 
@@ -97,9 +97,7 @@
                                 </button>
                             </div>
                         </div>
-                        <a class="btn btn-primary corpus-search-submit-button" @click="emitCorpusData">Search corpora</a>
                     </form>
-
                 </div>
             </div>
         </div>
@@ -121,14 +119,14 @@
                     corpus_size_value: '',
                     corpusSizeTo: '',
                     corpus_merged_languages: '',
-                    corpus_merged_formats: '',
+                    corpus_merged_formats: [],
                     corpus_publication_license: ''
                 },
                 scope: 'corpus'
             }
         },
         methods: {
-            emitCorpusData(){
+            emitCorpusFilter(){
                 this.$emit('corpus-filter',this.corpusFilterData);
             },
             getClass: function () {
@@ -141,58 +139,70 @@
         },
         mounted() {
             console.log('CorpusFilterBlock mounted.')
+            let myvue = this;
+
+            var rangeSliderList = ['corpusSize']
+
+            for(var h = 0; h < rangeSliderList.length; h++) {
+                let i = h
+
+                let el = document.getElementById(rangeSliderList[i])
+
+                if(el) {
+                    //console.log("el: "+el)
+                    el.style.height = '8px';
+                    el.style.margin = '0 auto 8px';
+
+                    noUiSlider.create(el, {
+                        animate: true,
+                        start: [ 1, 999999 ], // 4 handles, starting at...
+                        margin: 1, // Handles must be at least 300 apart
+                        limit: 999998, // ... but no more than 600
+                        connect: true, // Display a colored bar between the handles
+                        orientation: 'horizontal', // Orient the slider vertically
+                        behaviour: 'tap-drag', // Move handle on tap, bar is draggable
+                        step: 1,
+
+                        range: {
+                            'min': 1,
+                            'max': 999999
+                        },
+                    });
+
+                    let paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
+                        paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
+
+                    el.noUiSlider.on('update', function ( values, handle ) {
+
+                        if ( handle ) {
+                            //this.corpusFilterData
+                            //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
+                            myvue.corpusFilterData.corpusSizeTo = values[handle];
+                            paddingMax.innerHTML = Math.round(values[handle]);
+
+                        } else {
+                            //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
+                            myvue.corpusFilterData.corpus_size_value = values[handle];
+                            paddingMin.innerHTML = Math.round(values[handle]);
+                        }
+                    });
+
+                    el.noUiSlider.on('change', function(){
+                        // Validate corresponding form
+                        let parentForm = $(el).closest('form')
+                        $(parentForm).find('*[type=submit]').removeClass('disabled');
+                    });
+                }
+            }//end for
+
+            $('input.flexdatalist').on('select:flexdatalist', function(event, set, options) {
+                console.log(set.value);
+                if(myvue != 'undefined'){
+                    myvue.corpusFilterData.corpus_merged_formats.push(set.value)
+                }
+                console.log("PPOP"+JSON.stringify(myvue.corpusFilterData));
+            });
+
         }
     }
-
-    $(function () {
-        var rangeSliderList = ['corpusSize']
-
-        for(var h = 0; h < rangeSliderList.length; h++) {
-            let i = h
-
-            let el = document.getElementById(rangeSliderList[i])
-
-            if(el) {
-                //console.log("el: "+el)
-                el.style.height = '8px';
-                el.style.margin = '0 auto 8px';
-
-                noUiSlider.create(el, {
-                    animate: true,
-                    start: [ 1, 999999 ], // 4 handles, starting at...
-                    margin: 1, // Handles must be at least 300 apart
-                    limit: 999998, // ... but no more than 600
-                    connect: true, // Display a colored bar between the handles
-                    orientation: 'horizontal', // Orient the slider vertically
-                    behaviour: 'tap-drag', // Move handle on tap, bar is draggable
-                    step: 1,
-
-                    range: {
-                        'min': 1,
-                        'max': 999999
-                    },
-                });
-
-                let paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
-                    paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
-
-                el.noUiSlider.on('update', function ( values, handle ) {
-                    //console.log($(el).attr("id")+handle+" => "+values)
-                    if ( handle ) {
-                        //this.corpusFilterData
-                        paddingMax.innerHTML = Math.round(values[handle]);
-
-                    } else {
-                        paddingMin.innerHTML = Math.round(values[handle]);
-                    }
-                });
-
-                el.noUiSlider.on('change', function(){
-                    // Validate corresponding form
-                    let parentForm = $(el).closest('form')
-                    $(parentForm).find('*[type=submit]').removeClass('disabled');
-                });
-            }
-        }
-    });
 </script>

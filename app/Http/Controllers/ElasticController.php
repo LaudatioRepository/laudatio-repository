@@ -149,6 +149,8 @@ class ElasticController extends Controller
                 $result['hits']['hits'][$i]['_source']['corpus_name'] = $corpusName;
             }
 
+            $result['hits']['hits'][$i]['_source']['visibility'] = 1;
+
         }
 
         $resultData = array(

@@ -14,7 +14,10 @@ export default new Vuex.Store({
         corpusByDocument: [],
         annotationsByDocument: [],
         corpusByAnnotation: [],
-        documentsByAnnotation: []
+        documentsByAnnotation: [],
+        corpusFilters: [],
+        documentFilters: [],
+        annotationFilters: []
     },
 
     actions: {
@@ -45,8 +48,19 @@ export default new Vuex.Store({
         clearAnnotations ({commit}, documents) {
             commit('CLEAR_ANNOTATION_STATE', documents)
         }
+
     },
     getters: {
+        corpusFilters: state => {
+            return state.corpusFilters
+        },
+        documentFilters: state => {
+            return state.documentFilters
+        },
+        annotationFilters: state => {
+            return state.annotationFilters
+        },
+
         corpusdocuments: state => {
             return state.documentsByCorpus
         },
@@ -64,10 +78,19 @@ export default new Vuex.Store({
         },
         annotationdocuments: state => {
             return state.documentsByAnnotation
-        },
+        }
 
     },
     mutations: {
+        PUSH_CORPUS_FILTERS (state, corpusFilter) {
+            state.corpusFilters.push(corpusFilter);
+        },
+        PUSH_DOCUMENT_FILTERS (state, documentFilter) {
+            state.documentFilters.push(documentFilter);
+        },
+        PUSH_ANNOTATION_FILTERS (state, annotationFilter) {
+            state.annotationFilters.push(annotationFilter);
+        },
         PUSH_DOCUMENT_BY_CORPUS (state, documents) {
             state.documentsByCorpus.push(documents)
         },
@@ -113,6 +136,5 @@ export default new Vuex.Store({
                 state.annotationsByDocument.pop();
             }
         }
-
     },
 })

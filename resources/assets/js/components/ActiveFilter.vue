@@ -8,41 +8,18 @@
         <div v-bind:class="getClass()" id="formPanelActives">
             <div class="card-body p-1">
                 <form action="">
-                    <!--div class="d-flex flex-wrap py-2">
+                    <div class="d-flex flex-wrap py-2" v-if="activefilters != 'undefined' && activefilters.length >= 1" v-for="(activefilter, index) in activefilters"  v-bind:activefilter="activefilter"
+                         :key="index">
                         <div class="m-1">
                             <a href="#" class="badge badge-corpus-mid p-1 text-14 font-weight-normal rounded">
                                 <i class="fa fa-close fa-fw"></i>
-                                FilterValue
+                                {{activefilter.name}}
                             </a>
                         </div>
-                        <div class="m-1">
-                            <a href="#" class="badge badge-corpus-mid p-1 text-14 font-weight-normal rounded">
-                                <i class="fa fa-close fa-fw"></i>
-                                FilValue
-                            </a>
-                        </div>
-                        <div class="m-1">
-                            <a href="#" class="badge badge-corpus-mid p-1 text-14 font-weight-normal rounded">
-                                <i class="fa fa-close fa-fw"></i>
-                                FilterValue 323
-                            </a>
-                        </div>
-                        <div class="m-1">
-                            <a href="#" class="badge badge-corpus-mid p-1 text-14 font-weight-normal rounded">
-                                <i class="fa fa-close fa-fw"></i>
-                                14511551
-                            </a>
-                        </div>
-                        <div class="m-1">
-                            <a href="#" class="badge badge-corpus-mid p-1 text-14 font-weight-normal rounded">
-                                <i class="fa fa-close fa-fw"></i>
-                                FilterValue
-                            </a>
-                        </div>
-                    </div-->
+                    </div>
 
                     <div class="d-flex flex-column">
-                        <a class="align-self-end text-uppercase text-dark text-12 p-2" href="#" role="button">
+                        <a class="align-self-end text-uppercase text-dark text-12 p-2" href="javascript:" role="button" @click="resetFilters()">
                             Clear all Filter
                         </a>
                     </div>
@@ -54,7 +31,7 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults'],
+        props: ['corpusresults','activefilters'],
         computed:
             mapGetters({
                 stateDocumentCorpusresults: 'documentcorpus',
@@ -67,6 +44,11 @@
                     classes += " show"
                 }
                 return classes;
+            },
+            resetFilters() {
+                for(var i = 0; i < this.corpusresults.length; i++) {
+                    this.corpusresults[i]._source.visibility = 1;
+                }
             }
         },
         mounted() {

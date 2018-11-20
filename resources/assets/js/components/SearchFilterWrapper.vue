@@ -1,34 +1,41 @@
 <template lang="html">
-    <div class="col-3 ">
-        <div class="d-flex justify-content-between mt-7 mb-3">
-            <h3 class="h3 font-weight-normal">Filter</h3>
-        </div>
-        <!--div class="w-100 py-3 px-6 mb-1 bg-corpus-light d-flex flex-column"-->
-            <!--div class="btn btn-sm font-weight-bold text-uppercase btn-outline-corpus-dark align-self-auto disabled py-3 px-6 mb-1">
-                Apply Filter
-            </div-->
-        <!--/div-->
-        <a class="text-uppercase btn-outline-corpus-dark align-self-end text-uppercase text-dark text-12 p-2" href="#">
+    <div>
+
+        <a class="text-uppercase btn-outline-corpus-dark align-self-end text-uppercase text-dark text-12 p-2" href="javascript:" @click="applyFilters">
             Apply Filters
         </a>
         <div class="mb-4">
-            <activefilter :corpusresults="corpusresults"></activefilter>
+            <activefilter :corpusresults="corpusresults" :activefilters="activefilters"></activefilter>
         </div>
         <div class="mb-4">
-            <corpusfilter :corpusresults="corpusresults" v-on:corpus-filter="submitCorpusFilter"></corpusfilter>
+            <corpusfilter :corpusresults="corpusresults" ref="corpusFilter" v-on:corpus-filter="emitCorpusFilter"></corpusfilter>
         </div>
         <div class="mb-4">
-            <documentfilter :corpusresults="corpusresults"></documentfilter>
+            <documentfilter :corpusresults="corpusresults" ref="documentFilter" v-on:document-filter="emitDocumentFilter"></documentfilter>
         </div>
         <div class="mb-4">
-            <annotationfilter :corpusresults="corpusresults"></annotationfilter>
+            <annotationfilter :corpusresults="corpusresults" ref="annotationFilter" v-on:annotation-filter="emitAnnotationFilter"></annotationfilter>
         </div>
     </div>
 </template>
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults'],
+        props: ['corpusresults','activefilters'],
+        methods: {
+            applyFilters: function (){
+                this.$refs.corpusFilter.emitCorpusFilter()
+            },
+            emitCorpusFilter: function (corpusFilterEmitData) {
+                this.$emit('corpus-filter',corpusFilterEmitData);
+            },
+            emitDocumentFilter: function (documentFilterEmitData) {
+                this.$emit('document-filter',documentFilterEmitData);
+            },
+            emitAnnotationFilter: function (annotaitonFilterEmitData) {
+                this.$emit('annotation-filter',annotaitonFilterEmitData);
+            }
+        },
         computed:
             mapGetters({
                 stateDocumentCorpusresults: 'documentcorpus',

@@ -10,19 +10,19 @@
                 <form action="">
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formAnnotationsTitle">Name</label>
-                        <input type="text" class="form-control" id="formAnnotationsTitle" aria-describedby="inputName" placeholder='"Ridges herbology"'>
+                        <input type="text" class="form-control" id="formAnnotationsTitle" aria-describedby="inputName" placeholder='"norm"'  v-model="annotationFilterData.preparation_title">
                     </div>
 
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formAnnotationsLanguage">Category</label>
                         <input type="text" class="form-control" id="formAnnotationsLanguage" aria-describedby="inputCategory"
-                               placeholder='"German"'>
+                               placeholder='"Lexical"' v-model="annotationFilterData.preparation_encoding_annotation_group">
                     </div>
 
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formAnnotationsFormats">Formats</label>
                         <input type="text" name="formatslist" multiple="multiple" list="formatsList-Annotations" class="flexdatalist form-control"
-                               data-min-length="0" id="formAnnotationsFormats">
+                               data-min-length="0" id="formAnnotationsFormats" v-model="annotationFilterData.preparation_encoding_annotation_group">
                         <datalist id="formatsList-Annotations">
                             <!--[if IE 9]><select disabled style="display:none" class="ie9_fix"><![endif]-->
                             <option value="ANNIS">ANNIS</option>
@@ -42,6 +42,16 @@
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
         props: ['corpusresults'],
+        data: function() {
+            return {
+                annotationFilterData : {
+                    preparation_title: '',
+                    annotation_merged_formats: [],
+                    preparation_encoding_annotation_group: '',
+                },
+                scope: 'annotation'
+            }
+        },
         computed:
             mapGetters({
                 stateDocumentCorpusresults: 'documentcorpus',
@@ -57,7 +67,15 @@
             }
         },
         mounted() {
-            console.log('CorpusActiveFilterComponent mounted.')
+            console.log('AnnotationFilterComponent mounted.')
+            let myvue = this;
+            $('input.flexdatalist').on('select:flexdatalist', function(event, set, options) {
+                console.log(set.value);
+                if(myvue != 'undefined'){
+                    myvue.annotationFilterData.annotation_merged_formats.push(set.value)
+                }
+                console.log("PPOP"+JSON.stringify(myvue.annotationFilterData));
+            });
         }
     }
 </script>
