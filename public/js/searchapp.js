@@ -24311,7 +24311,7 @@ var app = new Vue({
                         "document_title", "document_author_forename", "document_size_type", "document_size_extent", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place",
                         //"document_publication_publishing_date",
                         "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name"],
-                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "document_title", "document_author_forename", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "in_documents"],
+                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "corpus_size_type", "corpus_size_value", "document_title", "document_author_forename", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "in_documents"],
                         query: "" + search.generalSearchTerm + "",
                         indices: this.publishedIndexes.allPublishedIndices.join(",")
                     }
@@ -24360,16 +24360,17 @@ var app = new Vue({
         },
 
         submitCorpusFilter: function submitCorpusFilter(corpusFilterObject) {
+            this.resetCorpusResults();
             for (var i = 0; i < this.corpusresults.length; i++) {
                 for (var key in this.corpusresults[i]._source) {
                     if (this.corpusresults[i]._source.hasOwnProperty(key)) {
                         if (corpusFilterObject.hasOwnProperty(key)) {
-                            if (key == "document_size_extent") {
-                                if (!this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.document_size_extent, corpusFilterObject.document_size_extent_to)) {
+                            if (key == "corpus_size_value") {
+                                if (!this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value, corpusFilterObject.corpusSizeTo)) {
                                     this.corpusresults[i]._source.visibility = 0;
                                     this.corpusresultcounter--;
                                 }
-                            } else {
+                            } else if (key != "corpus_size_value" && key != "corpusSizeTo") {
                                 if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
                                     this.corpusresults[i]._source.visibility = 0;
                                     this.corpusresultcounter--;
@@ -24381,6 +24382,7 @@ var app = new Vue({
             }
         },
         submitDocumentFilter: function submitDocumentFilter(documentFilterObject) {
+            this.resetDocumentResults();
             for (var i = 0; i < this.documentresults.length; i++) {
                 for (var key in this.documentresults[i]._source) {
                     if (this.documentresults[i]._source.hasOwnProperty(key)) {
@@ -24390,7 +24392,7 @@ var app = new Vue({
                                     this.documentresults[i]._source.visibility = 0;
                                     this.documentresultcounter--;
                                 }
-                            } else {
+                            } else if (key != "document_size_extent" && key != "document_size_extent_to") {
                                 if (this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
                                     this.documentresults[i]._source.visibility = 0;
                                     this.documentresultcounter--;
@@ -24402,6 +24404,7 @@ var app = new Vue({
             }
         },
         submitAnnotationFilter: function submitAnnotationFilter(annotationFilterObject) {
+            this.resetAnnotationResults();
             for (var i = 0; i < this.annotationresults.length; i++) {
                 for (var key in this.annotationresults[i]._source) {
                     if (this.annotationresults[i]._source.hasOwnProperty(key)) {
@@ -24415,6 +24418,45 @@ var app = new Vue({
                 }
             }
         },
+        resetCorpusResults: function resetCorpusResults() {
+            for (var i = 0; i < this.corpusresults.length; i++) {
+                if (this.corpusresults[i]._source.visibility == 0) {
+                    this.corpusresults[i]._source.visibility = 1;
+                    this.corpusresultcounter++;
+                }
+            }
+
+            for (var i = 0; i < this.documentresults.length; i++) {
+                if (this.documentresults[i]._source.visibility == 0) {
+                    this.documentresults[i]._source.visibility = 1;
+                    this.documentresultcounter++;
+                }
+            }
+
+            for (var i = 0; i < this.annotationresults.length; i++) {
+                if (this.annotationresults[i]._source.visibility == 0) {
+                    this.annotationresults[i]._source.visibility = 1;
+                    this.annotationresultcounter++;
+                }
+            }
+        },
+        resetDocumentResults: function resetDocumentResults() {
+            for (var i = 0; i < this.documentresults.length; i++) {
+                if (this.documentresults[i]._source.visibility == 0) {
+                    this.documentresults[i]._source.visibility = 1;
+                    this.documentresultcounter++;
+                }
+            }
+        },
+        resetAnnotationResults: function resetAnnotationResults() {
+            for (var i = 0; i < this.annotationresults.length; i++) {
+                if (this.annotationresults[i]._source.visibility == 0) {
+                    this.annotationresults[i]._source.visibility = 1;
+                    this.annotationresultcounter++;
+                }
+            }
+        },
+
         updateCorpusCounter: function updateCorpusCounter(counter) {
             this.corpusresultcounter = counter;
         },
@@ -26021,11 +26063,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     if (handle) {
                         //this.corpusFilterData
                         //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
-                        myvue.corpusFilterData.corpusSizeTo = values[handle];
+                        myvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
                         paddingMax.innerHTML = Math.round(values[handle]);
                     } else {
                         //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                        myvue.corpusFilterData.corpus_size_value = values[handle];
+                        myvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
                         paddingMin.innerHTML = Math.round(values[handle]);
                     }
                 });

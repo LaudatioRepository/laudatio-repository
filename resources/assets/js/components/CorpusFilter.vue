@@ -180,12 +180,12 @@
                         if ( handle ) {
                             //this.corpusFilterData
                             //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
-                            myvue.corpusFilterData.corpusSizeTo = values[handle];
+                            myvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
                             paddingMax.innerHTML = Math.round(values[handle]);
 
                         } else {
                             //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                            myvue.corpusFilterData.corpus_size_value = values[handle];
+                            myvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
                             paddingMin.innerHTML = Math.round(values[handle]);
                         }
                     });

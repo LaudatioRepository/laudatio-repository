@@ -96,7 +96,7 @@
             }
         },
         mounted() {
-            
+
         }
     }
 </script>

@@ -134,6 +134,8 @@ const app = new Vue({
                             "corpus_languages_language",
                             "corpus_languages_iso_code",
                             "corpus_publication_publication_date",
+                            "corpus_size_type",
+                            "corpus_size_value",
                             "document_title",
                             "document_author_forename",
                             "document_author_surname",
@@ -208,17 +210,18 @@ const app = new Vue({
             return string;
         },
         submitCorpusFilter: function (corpusFilterObject) {
+            this.resetCorpusResults();
             for(var i = 0; i < this.corpusresults.length; i++) {
                 for (var key in this.corpusresults[i]._source) {
                     if (this.corpusresults[i]._source.hasOwnProperty(key)) {
                         if(corpusFilterObject.hasOwnProperty(key)) {
-                            if(key == "document_size_extent") {
-                                if(! this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.document_size_extent,corpusFilterObject.document_size_extent_to)){
+                            if(key == "corpus_size_value") {
+                                if(! this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value,corpusFilterObject.corpusSizeTo)){
                                     this.corpusresults[i]._source.visibility = 0;
                                     this.corpusresultcounter--;
                                 }
                             }
-                            else {
+                            else if(key != "corpus_size_value" && key != "corpusSizeTo") {
                                 if(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
                                     this.corpusresults[i]._source.visibility = 0;
                                     this.corpusresultcounter--;
@@ -230,6 +233,7 @@ const app = new Vue({
             }
         },
         submitDocumentFilter: function (documentFilterObject) {
+            this.resetDocumentResults();
             for(var i = 0; i < this.documentresults.length; i++) {
                 for (var key in this.documentresults[i]._source) {
                     if (this.documentresults[i]._source.hasOwnProperty(key)) {
@@ -240,7 +244,7 @@ const app = new Vue({
                                     this.documentresultcounter--;
                                 }
                             }
-                            else {
+                            else if(key != "document_size_extent" && key != "document_size_extent_to") {
                                 if(this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
                                     this.documentresults[i]._source.visibility = 0;
                                     this.documentresultcounter--;
@@ -252,6 +256,7 @@ const app = new Vue({
             }
         },
         submitAnnotationFilter: function (annotationFilterObject) {
+            this.resetAnnotationResults();
             for(var i = 0; i < this.annotationresults.length; i++) {
                 for (var key in this.annotationresults[i]._source) {
                     if (this.annotationresults[i]._source.hasOwnProperty(key)) {
@@ -262,6 +267,44 @@ const app = new Vue({
                             }
                         }
                     }
+                }
+            }
+        },
+        resetCorpusResults() {
+            for(var i = 0; i < this.corpusresults.length; i++) {
+                if(this.corpusresults[i]._source.visibility == 0) {
+                    this.corpusresults[i]._source.visibility = 1;
+                    this.corpusresultcounter++;
+                }
+            }
+
+            for(var i = 0; i < this.documentresults.length; i++) {
+                if(this.documentresults[i]._source.visibility == 0) {
+                    this.documentresults[i]._source.visibility = 1;
+                    this.documentresultcounter++;
+                }
+            }
+
+            for(var i = 0; i < this.annotationresults.length; i++) {
+                if(this.annotationresults[i]._source.visibility == 0) {
+                    this.annotationresults[i]._source.visibility = 1;
+                    this.annotationresultcounter++;
+                }
+            }
+        },
+        resetDocumentResults() {
+            for(var i = 0; i < this.documentresults.length; i++) {
+                if(this.documentresults[i]._source.visibility == 0) {
+                    this.documentresults[i]._source.visibility = 1;
+                    this.documentresultcounter++;
+                }
+            }
+        },
+        resetAnnotationResults() {
+            for(var i = 0; i < this.annotationresults.length; i++) {
+                if(this.annotationresults[i]._source.visibility == 0) {
+                    this.annotationresults[i]._source.visibility = 1;
+                    this.annotationresultcounter++;
                 }
             }
         },

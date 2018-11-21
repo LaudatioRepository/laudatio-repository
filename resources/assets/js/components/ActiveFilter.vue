@@ -81,8 +81,6 @@
                     }
                 }
                 this.$emit('annotation-resultcounter',this.localannotationresultcounter);
-
-
             }
         },
         mounted() {
