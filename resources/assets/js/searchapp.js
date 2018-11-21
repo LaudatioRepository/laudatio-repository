@@ -68,6 +68,19 @@ const app = new Vue({
         publishedIndexes: window.laudatioApp.publishedIndexes
     },
     methods: {
+        renderArrayToString (array) {
+            var string = "";
+            if(array){
+                if(array.isArray && array.length == 1) {
+                    string = array[0].toString();
+                }
+                else{
+                    string = array.toString();
+                }
+            }
+
+            return string;
+        },
         askElastic: function (search) {
             this.dataloading = true;
             this.corpusresults = [];
@@ -111,6 +124,7 @@ const app = new Vue({
                             "document_languages_language",
                             "document_languages_iso_code",
                             "document_publication_place",
+                            "document_merged_authors",
                             //"document_publication_publishing_date",
                             "preparation_title",
                             "preparation_annotation_id",
@@ -139,6 +153,7 @@ const app = new Vue({
                             "document_title",
                             "document_author_forename",
                             "document_author_surname",
+                            "document_merged_authors",
                             "document_editor_forename",
                             "document_editor_surname",
                             "document_languages_language",
@@ -195,37 +210,32 @@ const app = new Vue({
             }
 
         },
-        renderArrayToString (array) {
-            var string = "";
-            if(array)
-                if(array.isArray && array.length == 1) {
-                    string = array[0].toString();
-                }
-                else{
-                    string = array.toString();
-                }
-            if(string == "NA"){
-                string = "-";
-            }
-            return string;
-        },
         submitCorpusFilter: function (corpusFilterObject) {
             this.resetCorpusResults();
             for(var i = 0; i < this.corpusresults.length; i++) {
                 for (var key in this.corpusresults[i]._source) {
                     if (this.corpusresults[i]._source.hasOwnProperty(key)) {
-                        if(corpusFilterObject.hasOwnProperty(key)) {
-                            if(key == "corpus_size_value") {
+                        if(corpusFilterObject.hasOwnProperty(key) && key != "") {
+                            if(key == "corpus_size_value" && corpusFilterObject.corpus_size_value != ""  && corpusFilterObject.corpusSizeTo != "") {
                                 if(! this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value,corpusFilterObject.corpusSizeTo)){
                                     this.corpusresults[i]._source.visibility = 0;
                                     this.corpusresultcounter--;
                                 }
                             }
-                            else if(key != "corpus_size_value" && key != "corpusSizeTo") {
-                                if(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
+                            else if(key == "corpus_publication_license" && corpusFilterObject[key].toLowerCase() != "") {
+                                if(!this.hasLicense(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase(), corpusFilterObject[key].toLowerCase())){
                                     this.corpusresults[i]._source.visibility = 0;
                                     this.corpusresultcounter--;
                                 }
+                            }
+                            else{
+                                if(corpusFilterObject[key].toLowerCase() != ""){
+                                    if(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                    }
+                                }
+
                             }
                         }
                     }
@@ -244,7 +254,7 @@ const app = new Vue({
                                     this.documentresultcounter--;
                                 }
                             }
-                            else if(key != "document_size_extent" && key != "document_size_extent_to") {
+                            else {
                                 if(this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
                                     this.documentresults[i]._source.visibility = 0;
                                     this.documentresultcounter--;
@@ -277,20 +287,6 @@ const app = new Vue({
                     this.corpusresultcounter++;
                 }
             }
-
-            for(var i = 0; i < this.documentresults.length; i++) {
-                if(this.documentresults[i]._source.visibility == 0) {
-                    this.documentresults[i]._source.visibility = 1;
-                    this.documentresultcounter++;
-                }
-            }
-
-            for(var i = 0; i < this.annotationresults.length; i++) {
-                if(this.annotationresults[i]._source.visibility == 0) {
-                    this.annotationresults[i]._source.visibility = 1;
-                    this.annotationresultcounter++;
-                }
-            }
         },
         resetDocumentResults() {
             for(var i = 0; i < this.documentresults.length; i++) {
@@ -320,6 +316,11 @@ const app = new Vue({
         isBetween: function(theNumber, min, max) {
             if(parseInt(theNumber) >= Math.floor(min) && parseInt(theNumber) <= Math.floor(max)) return true;
             else return false
+        },
+        hasLicense: function(license, filter) {
+            var licenseArray = license.split("/");
+            var ccLicense = licenseArray[4];
+            return ccLicense == filter;
         }
     }
 });

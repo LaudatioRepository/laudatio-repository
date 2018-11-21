@@ -17,11 +17,15 @@
                                 <i class="fa fa-fw fa-clock-o mr-1"></i>
                                 <span>{{documentresult._source.document_publication_publishing_date | arrayToString}}</span>
                             </div>
-                        </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
-                        <i class="fa fa-fw fa-cubes mr-1"></i>
-                        <span> {{documentresult._source.document_size_extent | arrayToString}} {{documentresult._source.document_size_type | arrayToString}}</span>
-                    </div>
-
+                        </div>
+                        <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                            <i class="fa fa-fw fa-cubes mr-1"></i>
+                            <span> {{documentresult._source.document_size_extent | arrayToString}} {{documentresult._source.document_size_type | arrayToString}}</span>
+                        </div>
+                        <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap" v-if="documentresult._source.document_languages_language != 'undefined'">
+                            <i class="fa fa-fw fa-globe mr-1"></i>
+                            <span>{{documentresult._source.document_languages_language[0]}}</span>
+                        </div>
                     </div>
                 </div>
             </div>

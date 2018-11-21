@@ -50,7 +50,7 @@
 
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formCorpusLicenses">License</label>
-                            <input type="text" class="form-control" id="formCorpusLicenses" aria-describedby="inputLicenses" placeholder='"cc-by"' v-model="corpusFilterData.corpus_publication_license">
+                            <input type="text" class="form-control" id="formCorpusLicenses" aria-describedby="inputLicenses" placeholder='"by-sa"' v-model="corpusFilterData.corpus_publication_license">
                         </div>
                     </div>
                 </form>

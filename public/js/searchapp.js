@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 156);
+/******/ 	return __webpack_require__(__webpack_require__.s = 157);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -24141,1962 +24141,7 @@ if (typeof Object.create === 'function') {
 /* 92 */,
 /* 93 */,
 /* 94 */,
-/* 95 */,
-/* 96 */,
-/* 97 */,
-/* 98 */,
-/* 99 */,
-/* 100 */,
-/* 101 */,
-/* 102 */,
-/* 103 */,
-/* 104 */,
-/* 105 */,
-/* 106 */,
-/* 107 */,
-/* 108 */,
-/* 109 */,
-/* 110 */,
-/* 111 */,
-/* 112 */,
-/* 113 */,
-/* 114 */,
-/* 115 */,
-/* 116 */,
-/* 117 */,
-/* 118 */,
-/* 119 */,
-/* 120 */,
-/* 121 */,
-/* 122 */,
-/* 123 */,
-/* 124 */,
-/* 125 */,
-/* 126 */,
-/* 127 */,
-/* 128 */,
-/* 129 */,
-/* 130 */,
-/* 131 */,
-/* 132 */,
-/* 133 */,
-/* 134 */,
-/* 135 */,
-/* 136 */,
-/* 137 */,
-/* 138 */,
-/* 139 */,
-/* 140 */,
-/* 141 */,
-/* 142 */,
-/* 143 */,
-/* 144 */,
-/* 145 */,
-/* 146 */,
-/* 147 */,
-/* 148 */,
-/* 149 */,
-/* 150 */,
-/* 151 */,
-/* 152 */,
-/* 153 */,
-/* 154 */,
-/* 155 */,
-/* 156 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(157);
-__webpack_require__(193);
-__webpack_require__(195);
-module.exports = __webpack_require__(196);
-
-
-/***/ }),
-/* 157 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__store__ = __webpack_require__(158);
-
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
-__webpack_require__(50);
-__webpack_require__(71);
-__webpack_require__(41);
-window.Vue = __webpack_require__(22);
-var util = __webpack_require__(74);
-
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-
-Vue.component('generalsearchwrapper', __webpack_require__(159));
-Vue.component('searchfilterwrapper', __webpack_require__(162));
-Vue.component('searchresultwrapper', __webpack_require__(165));
-
-Vue.component('activefilter', __webpack_require__(168));
-Vue.component('corpusfilter', __webpack_require__(171));
-Vue.component('documentfilter', __webpack_require__(175));
-Vue.component('annotationfilter', __webpack_require__(178));
-
-Vue.component('searchresultheader', __webpack_require__(181));
-Vue.component('corpussearchresult', __webpack_require__(184));
-Vue.component('documentsearchresult', __webpack_require__(187));
-Vue.component('annotationsearchresult', __webpack_require__(190));
-
-window.axios.defaults.headers.post['Content-Type'] = 'application/json';
-
-var app = new Vue({
-    el: '#searchApp',
-    store: __WEBPACK_IMPORTED_MODULE_0__store__["a" /* default */],
-    data: {
-        results: [],
-        corpusresults: [],
-        documentresults: [],
-        annotationresults: [],
-        searches: [],
-        activefilters: [],
-        documentsByCorpus: [],
-        annotationsByCorpus: [],
-        corpusByDocument: [],
-        annotationsByDocument: [],
-        documentsByAnnotation: [],
-        corpusByAnnotation: [],
-        datasearched: false,
-        dataloading: false,
-        documentsearched: false,
-        documentloading: false,
-        annotationsearched: false,
-        corpusCacheString: "",
-        documentCacheString: "",
-        annotationCacheString: "",
-        annotationloading: false,
-        postAnnotationData: {},
-        corpusresultcounter: 0,
-        documentresultcounter: 0,
-        annotationresultcounter: 0,
-        publishedIndexes: window.laudatioApp.publishedIndexes
-    },
-    methods: {
-        askElastic: function askElastic(search) {
-            var _this = this;
-
-            this.dataloading = true;
-            this.corpusresults = [];
-            this.datasearched = false;
-            this.corpusCacheString = "";
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('clearAnnotations', []);
-            this.corpusresults = [];
-            this.documentresults = [];
-            this.annotationresults = [];
-            this.corpusresultcounter = 0;
-            this.documentresultcounter = 0;
-            this.annotationresultcounter = 0;
-            if (search.generalSearchTerm != "") {
-                this.searches = [];
-                var postData = {
-                    searchData: {
-                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code",
-                        //"corpus_publication_publication_date",
-                        "document_title", "document_author_forename", "document_size_type", "document_size_extent", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place",
-                        //"document_publication_publishing_date",
-                        "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name"],
-                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "corpus_size_type", "corpus_size_value", "document_title", "document_author_forename", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "in_documents"],
-                        query: "" + search.generalSearchTerm + "",
-                        indices: this.publishedIndexes.allPublishedIndices.join(",")
-                    }
-                };
-
-                var corpus_ids = [];
-
-                window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
-                    if (res.data.results.length > 0) {
-                        /*
-                        /* @todo: This is far too brittle: corpus/document/annotation could part of someones corpusname
-                        /* Also: when we publish, the new working version shuffles the corpus/doc/anno keyword foirther than place 0
-                         */
-                        for (var ri = 0; ri < res.data.results.length; ri++) {
-                            if (res.data.results[ri]._index.indexOf("corpus_") == 0) {
-                                _this.corpusresults.push(res.data.results[ri]);
-                                _this.corpusresultcounter++;
-                            } else if (res.data.results[ri]._index.indexOf("document_") == 0) {
-                                _this.documentresults.push(res.data.results[ri]);
-                                _this.documentresultcounter++;
-                            } else if (res.data.results[ri]._index.indexOf("annotation_") == 0) {
-                                _this.annotationresults.push(res.data.results[ri]);
-                                _this.annotationresultcounter++;
-                            } ///end which index
-                        } //end for results
-                    } //end if results
-                    _this.dataloading = false;
-                    _this.datasearched = true;
-                    _this.searches.push(search.generalSearchTerm);
-                });
-            } else {
-                this.dataloading = false;
-            }
-        },
-        renderArrayToString: function renderArrayToString(array) {
-            var string = "";
-            if (array) if (array.isArray && array.length == 1) {
-                string = array[0].toString();
-            } else {
-                string = array.toString();
-            }
-            if (string == "NA") {
-                string = "-";
-            }
-            return string;
-        },
-
-        submitCorpusFilter: function submitCorpusFilter(corpusFilterObject) {
-            this.resetCorpusResults();
-            for (var i = 0; i < this.corpusresults.length; i++) {
-                for (var key in this.corpusresults[i]._source) {
-                    if (this.corpusresults[i]._source.hasOwnProperty(key)) {
-                        if (corpusFilterObject.hasOwnProperty(key)) {
-                            if (key == "corpus_size_value") {
-                                if (!this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value, corpusFilterObject.corpusSizeTo)) {
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
-                                }
-                            } else if (key != "corpus_size_value" && key != "corpusSizeTo") {
-                                if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        submitDocumentFilter: function submitDocumentFilter(documentFilterObject) {
-            this.resetDocumentResults();
-            for (var i = 0; i < this.documentresults.length; i++) {
-                for (var key in this.documentresults[i]._source) {
-                    if (this.documentresults[i]._source.hasOwnProperty(key)) {
-                        if (documentFilterObject.hasOwnProperty(key)) {
-                            if (key == "document_size_extent") {
-                                if (!this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent, documentFilterObject.document_size_extent_to)) {
-                                    this.documentresults[i]._source.visibility = 0;
-                                    this.documentresultcounter--;
-                                }
-                            } else if (key != "document_size_extent" && key != "document_size_extent_to") {
-                                if (this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
-                                    this.documentresults[i]._source.visibility = 0;
-                                    this.documentresultcounter--;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        submitAnnotationFilter: function submitAnnotationFilter(annotationFilterObject) {
-            this.resetAnnotationResults();
-            for (var i = 0; i < this.annotationresults.length; i++) {
-                for (var key in this.annotationresults[i]._source) {
-                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
-                        if (annotationFilterObject.hasOwnProperty(key)) {
-                            if (this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
-                                this.annotationresults[i]._source.visibility = 0;
-                                this.annotationresultcounter--;
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        resetCorpusResults: function resetCorpusResults() {
-            for (var i = 0; i < this.corpusresults.length; i++) {
-                if (this.corpusresults[i]._source.visibility == 0) {
-                    this.corpusresults[i]._source.visibility = 1;
-                    this.corpusresultcounter++;
-                }
-            }
-
-            for (var i = 0; i < this.documentresults.length; i++) {
-                if (this.documentresults[i]._source.visibility == 0) {
-                    this.documentresults[i]._source.visibility = 1;
-                    this.documentresultcounter++;
-                }
-            }
-
-            for (var i = 0; i < this.annotationresults.length; i++) {
-                if (this.annotationresults[i]._source.visibility == 0) {
-                    this.annotationresults[i]._source.visibility = 1;
-                    this.annotationresultcounter++;
-                }
-            }
-        },
-        resetDocumentResults: function resetDocumentResults() {
-            for (var i = 0; i < this.documentresults.length; i++) {
-                if (this.documentresults[i]._source.visibility == 0) {
-                    this.documentresults[i]._source.visibility = 1;
-                    this.documentresultcounter++;
-                }
-            }
-        },
-        resetAnnotationResults: function resetAnnotationResults() {
-            for (var i = 0; i < this.annotationresults.length; i++) {
-                if (this.annotationresults[i]._source.visibility == 0) {
-                    this.annotationresults[i]._source.visibility = 1;
-                    this.annotationresultcounter++;
-                }
-            }
-        },
-
-        updateCorpusCounter: function updateCorpusCounter(counter) {
-            this.corpusresultcounter = counter;
-        },
-        updateDocumentCounter: function updateDocumentCounter(counter) {
-            this.documentresultcounter = counter;
-        },
-        updateAnnotationCounter: function updateAnnotationCounter(counter) {
-            this.annotationresultcounter = counter;
-        },
-        isBetween: function isBetween(theNumber, min, max) {
-            if (parseInt(theNumber) >= Math.floor(min) && parseInt(theNumber) <= Math.floor(max)) return true;else return false;
-        }
-    }
-});
-
-/***/ }),
-/* 158 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(13);
-
-
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
-
-var initialState = {
-    "token": null,
-    "user": {}
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
-    state: {
-        documentsByCorpus: [],
-        annotationsByCorpus: [],
-        corpusByDocument: [],
-        annotationsByDocument: [],
-        corpusByAnnotation: [],
-        documentsByAnnotation: [],
-        corpusFilters: [],
-        documentFilters: [],
-        annotationFilters: []
-    },
-
-    actions: {
-        documentByCorpus: function documentByCorpus(_ref, documents) {
-            var commit = _ref.commit;
-
-            commit('PUSH_DOCUMENT_BY_CORPUS', documents);
-        },
-        annotationByCorpus: function annotationByCorpus(_ref2, annotations) {
-            var commit = _ref2.commit;
-
-            commit('PUSH_ANNOTATION_BY_CORPUS', annotations);
-        },
-        annotationByDocument: function annotationByDocument(_ref3, annotations) {
-            var commit = _ref3.commit;
-
-            commit('PUSH_ANNOTATION_BY_DOCUMENT', annotations);
-        },
-        corpusByDocument: function corpusByDocument(_ref4, corpora) {
-            var commit = _ref4.commit;
-
-            commit('PUSH_CORPUS_BY_DOCUMENT', corpora);
-        },
-        documentByAnnotation: function documentByAnnotation(_ref5, documents) {
-            var commit = _ref5.commit;
-
-            commit('PUSH_DOCUMENT_BY_ANNOTATION', documents);
-        },
-        corpusByAnnotation: function corpusByAnnotation(_ref6, corpora) {
-            var commit = _ref6.commit;
-
-            commit('PUSH_CORPUS_BY_ANNOTATION', corpora);
-        },
-        clearCorpus: function clearCorpus(_ref7, corpora) {
-            var commit = _ref7.commit;
-
-            commit('CLEAR_CORPUS_STATE', corpora);
-        },
-        clearDocuments: function clearDocuments(_ref8, documents) {
-            var commit = _ref8.commit;
-
-            commit('CLEAR_DOCUMENT_STATE', documents);
-        },
-        clearAnnotations: function clearAnnotations(_ref9, documents) {
-            var commit = _ref9.commit;
-
-            commit('CLEAR_ANNOTATION_STATE', documents);
-        }
-    },
-    getters: {
-        corpusFilters: function corpusFilters(state) {
-            return state.corpusFilters;
-        },
-        documentFilters: function documentFilters(state) {
-            return state.documentFilters;
-        },
-        annotationFilters: function annotationFilters(state) {
-            return state.annotationFilters;
-        },
-
-        corpusdocuments: function corpusdocuments(state) {
-            return state.documentsByCorpus;
-        },
-        corpusannotations: function corpusannotations(state) {
-            return state.annotationsByCorpus;
-        },
-        documentannotations: function documentannotations(state) {
-            return state.annotationsByDocument;
-        },
-        documentcorpus: function documentcorpus(state) {
-            return state.corpusByDocument;
-        },
-        annotationcorpus: function annotationcorpus(state) {
-            return state.corpusByAnnotation;
-        },
-        annotationdocuments: function annotationdocuments(state) {
-            return state.documentsByAnnotation;
-        }
-
-    },
-    mutations: {
-        PUSH_CORPUS_FILTERS: function PUSH_CORPUS_FILTERS(state, corpusFilter) {
-            state.corpusFilters.push(corpusFilter);
-        },
-        PUSH_DOCUMENT_FILTERS: function PUSH_DOCUMENT_FILTERS(state, documentFilter) {
-            state.documentFilters.push(documentFilter);
-        },
-        PUSH_ANNOTATION_FILTERS: function PUSH_ANNOTATION_FILTERS(state, annotationFilter) {
-            state.annotationFilters.push(annotationFilter);
-        },
-        PUSH_DOCUMENT_BY_CORPUS: function PUSH_DOCUMENT_BY_CORPUS(state, documents) {
-            state.documentsByCorpus.push(documents);
-        },
-        PUSH_ANNOTATION_BY_CORPUS: function PUSH_ANNOTATION_BY_CORPUS(state, annotations) {
-            state.annotationsByCorpus.push(annotations);
-        },
-        PUSH_ANNOTATION_BY_DOCUMENT: function PUSH_ANNOTATION_BY_DOCUMENT(state, annotations) {
-            state.annotationsByDocument.push(annotations);
-        },
-        PUSH_CORPUS_BY_DOCUMENT: function PUSH_CORPUS_BY_DOCUMENT(state, corpora) {
-            state.corpusByDocument.push(corpora);
-        },
-        PUSH_DOCUMENT_BY_ANNOTATION: function PUSH_DOCUMENT_BY_ANNOTATION(state, documents) {
-            state.documentsByAnnotation.push(documents);
-        },
-        PUSH_CORPUS_BY_ANNOTATION: function PUSH_CORPUS_BY_ANNOTATION(state, corpora) {
-            state.corpusByAnnotation.push(corpora);
-        },
-        CLEAR_CORPUS_STATE: function CLEAR_CORPUS_STATE(state, corpora) {
-            while (state.corpusByDocument.length > 0) {
-                state.corpusByDocument.pop();
-            }
-
-            while (state.corpusByAnnotation.length > 0) {
-                state.corpusByAnnotation.pop();
-            }
-        },
-        CLEAR_DOCUMENT_STATE: function CLEAR_DOCUMENT_STATE(state, documents) {
-            while (state.documentsByCorpus.length > 0) {
-                state.documentsByCorpus.pop();
-            }
-
-            while (state.documentsByAnnotation.length > 0) {
-                state.documentsByAnnotation.pop();
-            }
-        },
-        CLEAR_ANNOTATION_STATE: function CLEAR_ANNOTATION_STATE(state, annotations) {
-            while (state.annotationsByCorpus.length > 0) {
-                state.annotationsByCorpus.pop();
-            }
-            while (state.annotationsByDocument.length > 0) {
-                state.annotationsByDocument.pop();
-            }
-        }
-    }
-}));
-
-/***/ }),
-/* 159 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(160)
-/* template */
-var __vue_template__ = __webpack_require__(161)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/GeneralSearchWrapper.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1b5752fa", Component.options)
-  } else {
-    hotAPI.reload("data-v-1b5752fa", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 160 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    data: function data() {
-        return {
-            generalSearchTerm: ''
-        };
-    },
-
-    props: ['results'],
-    methods: {
-        searchGeneral: function searchGeneral() {
-            this.$emit('searchedgeneral', {
-                generalSearchTerm: this.generalSearchTerm,
-                scope: 'general'
-            });
-            this.generalSearchTerm = '';
-        }
-    },
-    mounted: function mounted() {
-        console.log('General SearchComponent mounted.');
-    }
-});
-
-/***/ }),
-/* 161 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass:
-        "col-6 d-flex justify-content-center align-items-center ml-auto mr-auto"
-    },
-    [
-      _c("form", { staticClass: "form-group serviceBarSearch w-100" }, [
-        _c("div", { staticClass: "input-group" }, [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.generalSearchTerm,
-                expression: "generalSearchTerm"
-              }
-            ],
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              placeholder: "Search metadata (German or English)",
-              "aria-label": "search metadata",
-              "aria-describedby": "basic-addon2"
-            },
-            domProps: { value: _vm.generalSearchTerm },
-            on: {
-              keyup: function($event) {
-                if (
-                  !("button" in $event) &&
-                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                ) {
-                  return null
-                }
-                return _vm.searchGeneral($event)
-              },
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.generalSearchTerm = $event.target.value
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "input-group-append" }, [
-            _vm._m(0),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "btn btn-outline-corpus-dark pl-4 pr-4",
-                attrs: { type: "button" },
-                on: { click: _vm.searchGeneral }
-              },
-              [
-                _c("i", {
-                  staticClass: "text-primary fa fa-fw fa-search fa-lg "
-                })
-              ]
-            )
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("i", {
-        staticClass: "btn p-0 fa fa-info-circle fa-fw fa-lg ml-3",
-        attrs: {
-          "data-toggle": "tooltip",
-          role: "button",
-          "data-placement": "bottom",
-          title: "Get help how to search"
-        }
-      })
-    ]
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "clear-search close",
-        attrs: { type: "button", "aria-label": "Close" }
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-1b5752fa", module.exports)
-  }
-}
-
-/***/ }),
-/* 162 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(163)
-/* template */
-var __vue_template__ = __webpack_require__(164)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/SearchFilterWrapper.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5d977368", Component.options)
-  } else {
-    hotAPI.reload("data-v-5d977368", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 163 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
-    methods: {
-        applyFilters: function applyFilters() {
-            this.$refs.corpusFilter.emitCorpusFilter();
-            this.$refs.documentFilter.emitDocumentFilter();
-            this.$refs.annotationFilter.emitAnnotationFilter();
-        },
-        emitCorpusFilter: function emitCorpusFilter(corpusFilterEmitData) {
-            this.$emit('corpus-filter', corpusFilterEmitData);
-        },
-        emitDocumentFilter: function emitDocumentFilter(documentFilterEmitData) {
-            this.$emit('document-filter', documentFilterEmitData);
-        },
-        emitAnnotationFilter: function emitAnnotationFilter(annotationFilterEmitData) {
-            this.$emit('annotation-filter', annotationFilterEmitData);
-        },
-        emitCorpusResultCounter: function emitCorpusResultCounter(emittedCorpusResultCounter) {
-            this.$emit('corpus-resultcounter', emittedCorpusResultCounter);
-        },
-        emitDocumentResultCounter: function emitDocumentResultCounter(emittedDocumentResultCounter) {
-            this.$emit('document-resultcounter', emittedDocumentResultCounter);
-        },
-        emitAnnotationResultCounter: function emitAnnotationResultCounter(emittedAnnotationResultCounter) {
-            this.$emit('annotation-resultcounter', emittedAnnotationResultCounter);
-        }
-    },
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    mounted: function mounted() {
-        console.log('CorpusResultComponent mounted.');
-    }
-});
-
-/***/ }),
-/* 164 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", [
-    _c(
-      "a",
-      {
-        staticClass:
-          "text-uppercase btn-outline-corpus-dark align-self-end text-uppercase text-dark text-12 p-2",
-        attrs: { href: "javascript:" },
-        on: { click: _vm.applyFilters }
-      },
-      [_vm._v("\n        Apply Filters\n    ")]
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "mb-4" },
-      [
-        _c("activefilter", {
-          attrs: {
-            corpusresults: _vm.corpusresults,
-            documentresults: _vm.documentresults,
-            annotationresults: _vm.annotationresults,
-            corpusresultcounter: _vm.corpusresultcounter,
-            documentresultcounter: _vm.documentresultcounter,
-            annotationresultcounter: _vm.annotationresultcounter,
-            activefilters: _vm.activefilters
-          },
-          on: {
-            "corpus-resultcounter": _vm.emitCorpusResultCounter,
-            "document-resultcounter": _vm.emitDocumentResultCounter,
-            "annotation-resultcounter": _vm.emitAnnotationResultCounter
-          }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "mb-4" },
-      [
-        _c("corpusfilter", {
-          ref: "corpusFilter",
-          attrs: {
-            corpusresults: _vm.corpusresults,
-            documentresults: _vm.documentresults,
-            annotationresults: _vm.annotationresults
-          },
-          on: { "corpus-filter": _vm.emitCorpusFilter }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "mb-4" },
-      [
-        _c("documentfilter", {
-          ref: "documentFilter",
-          attrs: {
-            corpusresults: _vm.corpusresults,
-            documentresults: _vm.documentresults,
-            annotationresults: _vm.annotationresults
-          },
-          on: { "document-filter": _vm.emitDocumentFilter }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "mb-4" },
-      [
-        _c("annotationfilter", {
-          ref: "annotationFilter",
-          attrs: {
-            corpusresults: _vm.corpusresults,
-            documentresults: _vm.documentresults,
-            annotationresults: _vm.annotationresults
-          },
-          on: { "annotation-filter": _vm.emitAnnotationFilter }
-        })
-      ],
-      1
-    )
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-5d977368", module.exports)
-  }
-}
-
-/***/ }),
-/* 165 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(166)
-/* template */
-var __vue_template__ = __webpack_require__(167)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/SearchResultWrapper.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-028d3ef2", Component.options)
-  } else {
-    hotAPI.reload("data-v-028d3ef2", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 166 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched', 'dataloading', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
-    methods: {
-        guid: function guid(key) {
-            return key + ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
-                return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
-            });
-        }
-    },
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    mounted: function mounted() {
-        console.log('CorpusResultComponent mounted.');
-    }
-});
-
-/***/ }),
-/* 167 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "col" },
-    [
-      _c("i", {
-        directives: [
-          {
-            name: "show",
-            rawName: "v-show",
-            value: _vm.dataloading,
-            expression: "dataloading"
-          }
-        ],
-        staticClass: "fa fa-circle-o-notch fa-spin fa-3x fa-fw"
-      }),
-      _vm._v(" "),
-      _c(
-        "span",
-        {
-          directives: [
-            {
-              name: "show",
-              rawName: "v-show",
-              value: _vm.dataloading,
-              expression: "dataloading"
-            }
-          ],
-          staticClass: "sr-only"
-        },
-        [_vm._v("Loading...")]
-      ),
-      _vm._v(" "),
-      (_vm.searches != "undefined" &&
-        _vm.searches.length >= 1 &&
-        _vm.datasearched &&
-        !_vm.dataloading &&
-        (_vm.corpusresults != "undefined" && _vm.corpusresults.length >= 1)) ||
-      (_vm.documentresults != "undefined" && _vm.documentresults.length >= 1) ||
-      (_vm.annotationresults != "undefined" &&
-        _vm.annotationresults.length >= 1)
-        ? _c("h3", { staticClass: "h3 font-weight-normal mb-4" }, [
-            _vm._v(
-              '\n        Results for the search "' +
-                _vm._s(_vm.searches.join(" ")) +
-                '"'
-            )
-          ])
-        : _vm.corpusresults != "undefined" &&
-          _vm.corpusresults.length < 1 &&
-          _vm.documentresults != "undefined" &&
-          _vm.documentresults.length < 1 &&
-          _vm.annotationresults != "undefined" &&
-          _vm.annotationresults.length < 1 &&
-          _vm.datasearched &&
-          !_vm.dataloading &&
-          _vm.searches != "undefined" &&
-          _vm.searches.length >= 1
-          ? _c(
-              "div",
-              {
-                staticClass: "alert alert-info alert-dismissible fade show",
-                attrs: { role: "alert" }
-              },
-              [
-                _c("strong", [
-                  _vm._v("The search "),
-                  _c("i", [_vm._v('"' + _vm._s(_vm.searches.join(" ")) + '"')]),
-                  _vm._v(" returned no results!")
-                ]),
-                _vm._v(" "),
-                _vm._m(0)
-              ]
-            )
-          : _vm._e(),
-      _vm._v(" "),
-      _c("searchresultheader", {
-        attrs: {
-          corpusresults: _vm.corpusresults,
-          documentresults: _vm.documentresults,
-          annotationresults: _vm.annotationresults,
-          corpusresultcounter: _vm.corpusresultcounter,
-          documentresultcounter: _vm.documentresultcounter,
-          annotationresultcounter: _vm.annotationresultcounter
-        }
-      }),
-      _vm._v(" "),
-      _c("div", { staticClass: "tab-content" }, [
-        _c(
-          "div",
-          {
-            staticClass: "tab-pane active",
-            attrs: {
-              id: "searchtab-corpora",
-              role: "tabpanel",
-              "aria-labelledby": "searchtab-corpora"
-            }
-          },
-          _vm._l(_vm.corpusresults, function(corpusresult, index) {
-            return _vm.corpusresults != "undefined" &&
-              _vm.corpusresults.length >= 1
-              ? _c("corpussearchresult", {
-                  key: _vm.guid(index),
-                  attrs: { corpusresult: corpusresult }
-                })
-              : _vm._e()
-          })
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "tab-pane",
-            attrs: {
-              id: "searchtab-documents",
-              role: "tabpanel",
-              "aria-labelledby": "searchtab-documents"
-            }
-          },
-          _vm._l(_vm.documentresults, function(documentresult, documentindex) {
-            return _vm.documentresults != "undefined" &&
-              _vm.documentresults.length >= 1
-              ? _c("documentsearchresult", {
-                  key: _vm.guid(documentindex),
-                  attrs: { documentresult: documentresult }
-                })
-              : _vm._e()
-          })
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "tab-pane",
-            attrs: {
-              id: "searchtab-annotations",
-              role: "tabpanel",
-              "aria-labelledby": "searchtab-annotations"
-            }
-          },
-          _vm._l(_vm.annotationresults, function(
-            annotationresult,
-            annotationindex
-          ) {
-            return _vm.annotationresults != "undefined" &&
-              _vm.annotationresults.length >= 1
-              ? _c("annotationsearchresult", {
-                  key: _vm.guid(annotationindex),
-                  attrs: { annotationresult: annotationresult }
-                })
-              : _vm._e()
-          })
-        )
-      ]),
-      _vm._v(" "),
-      (_vm.corpusresults != "undefined" && _vm.corpusresults.length > 0) ||
-      (_vm.documentresults != "undefined" && _vm.documentresults.length > 0) ||
-      (_vm.annotationresults != "undefined" && _vm.annotationresults.length > 0)
-        ? _c(
-            "div",
-            {
-              staticClass:
-                "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
-            },
-            [_vm._m(1), _vm._v(" "), _vm._m(2)]
-          )
-        : _vm._e()
-    ],
-    1
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "close",
-        attrs: {
-          type: "button",
-          "data-dismiss": "alert",
-          "aria-label": "Close"
-        }
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
-      _c("ul", { staticClass: "pagination" }, [
-        _c("li", { staticClass: "page-item" }, [
-          _c(
-            "a",
-            {
-              staticClass: "page-link",
-              attrs: { href: "#", "aria-label": "Previous" }
-            },
-            [
-              _c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("«")]),
-              _vm._v(" "),
-              _c("span", { staticClass: "sr-only" }, [_vm._v("Previous")])
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", { staticClass: "page-item font-weight-bold active" }, [
-          _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-            _vm._v("1")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("li", { staticClass: "page-item font-weight-bold" }, [
-          _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-            _vm._v("2")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("li", { staticClass: "page-item font-weight-bold" }, [
-          _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-            _vm._v("3")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("li", { staticClass: "page-item" }, [
-          _c(
-            "a",
-            {
-              staticClass: "page-link",
-              attrs: { href: "#", "aria-label": "Next" }
-            },
-            [
-              _c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("»")]),
-              _vm._v(" "),
-              _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
-            ]
-          )
-        ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-row" }, [
-      _c("div", { staticClass: "col-auto" }, [
-        _c(
-          "select",
-          {
-            staticClass:
-              "custom-select custom-select-sm font-weight-bold text-uppercase"
-          },
-          [
-            _c("option", { attrs: { selected: "" } }, [
-              _vm._v("6 results / page")
-            ]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
-          ]
-        )
-      ])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-028d3ef2", module.exports)
-  }
-}
-
-/***/ }),
-/* 168 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(169)
-/* template */
-var __vue_template__ = __webpack_require__(170)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/ActiveFilter.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-62a9a656", Component.options)
-  } else {
-    hotAPI.reload("data-v-62a9a656", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 169 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
-    data: function data() {
-        return {
-            localcorpusresultcounter: this.corpusresultcounter,
-            localdocumentresultcounter: this.documentresultcounter,
-            localannotationresultcounter: this.annotationresultcounter
-        };
-    },
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    methods: {
-        getClass: function getClass() {
-            var classes = "collapse";
-            if (this.corpusresults.length >= 1) {
-                classes += " show";
-            }
-            return classes;
-        },
-        resetFilters: function resetFilters() {
-            this.localcorpusresultcounter = this.corpusresultcounter;
-            for (var i = 0; i < this.corpusresults.length; i++) {
-                this.corpusresults[i]._source.visibility = 1;
-                if (this.corpusresults[i]._source.visibility == 0) {
-                    this.corpusresults[i]._source.visibility = 1;
-                    this.localcorpusresultcounter++;
-                }
-            }
-            this.$emit('corpus-resultcounter', this.localcorpusresultcounter);
-
-            this.localdocumentresultcounter = this.documentresultcounter;
-            for (var i = 0; i < this.documentresults.length; i++) {
-                if (this.documentresults[i]._source.visibility == 0) {
-                    this.documentresults[i]._source.visibility = 1;
-                    this.localdocumentresultcounter++;
-                }
-            }
-            this.$emit('document-resultcounter', this.localdocumentresultcounter);
-
-            this.localannotationresultcounter = this.annotationresultcounter;
-            for (var i = 0; i < this.annotationresults.length; i++) {
-                if (this.annotationresults[i]._source.visibility == 0) {
-                    this.annotationresults[i]._source.visibility = 1;
-                    this.localannotationresultcounter++;
-                }
-            }
-            this.$emit('annotation-resultcounter', this.localannotationresultcounter);
-        }
-    },
-    mounted: function mounted() {
-        console.log('CorpusActiveFilterComponent mounted.');
-    }
-});
-
-/***/ }),
-/* 170 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "card" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelActives" } }, [
-      _c("div", { staticClass: "card-body p-1" }, [
-        _c(
-          "form",
-          { attrs: { action: "" } },
-          [
-            _vm._l(_vm.activefilters, function(activefilter, index) {
-              return _vm.activefilters != "undefined" &&
-                _vm.activefilters.length >= 1
-                ? _c(
-                    "div",
-                    {
-                      key: index,
-                      staticClass: "d-flex flex-wrap py-2",
-                      attrs: { activefilter: activefilter }
-                    },
-                    [
-                      _c("div", { staticClass: "m-1" }, [
-                        _c(
-                          "a",
-                          {
-                            staticClass:
-                              "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                            attrs: { href: "#" }
-                          },
-                          [
-                            _c("i", { staticClass: "fa fa-close fa-fw" }),
-                            _vm._v(
-                              "\n                            " +
-                                _vm._s(activefilter.name) +
-                                "\n                        "
-                            )
-                          ]
-                        )
-                      ])
-                    ]
-                  )
-                : _vm._e()
-            }),
-            _vm._v(" "),
-            _c("div", { staticClass: "d-flex flex-column" }, [
-              _c(
-                "a",
-                {
-                  staticClass:
-                    "align-self-end text-uppercase text-dark text-12 p-2",
-                  attrs: { href: "javascript:", role: "button" },
-                  on: {
-                    click: function($event) {
-                      _vm.resetFilters()
-                    }
-                  }
-                },
-                [
-                  _vm._v(
-                    "\n                        Clear all Filter\n                    "
-                  )
-                ]
-              )
-            ])
-          ],
-          2
-        )
-      ])
-    ])
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
-        attrs: {
-          "data-toggle": "collapse",
-          "data-target": "#formPanelActives",
-          "aria-expanded": "true",
-          "aria-controls": "formPanelActives"
-        }
-      },
-      [
-        _c("span", [_vm._v("Active Filter (x)")]),
-        _vm._v(" "),
-        _c("i", {
-          staticClass:
-            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
-        })
-      ]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-62a9a656", module.exports)
-  }
-}
-
-/***/ }),
-/* 171 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(172)
-/* template */
-var __vue_template__ = __webpack_require__(174)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/CorpusFilter.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-b27cc1d2", Component.options)
-  } else {
-    hotAPI.reload("data-v-b27cc1d2", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 172 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults'],
-    data: function data() {
-        return {
-            corpusFilterData: {
-                corpus_title: '',
-                corpus_publication_publisher: '',
-                corpus_publication_publication_date: '',
-                corpusYearTo: '',
-                corpusyeartype: 'exact',
-                corpussizetype: 'exact',
-                corpus_size_value: '',
-                corpusSizeTo: '',
-                corpus_merged_languages: '',
-                corpus_merged_formats: [],
-                corpus_publication_license: ''
-            },
-            scope: 'corpus'
-        };
-    },
-    methods: {
-        emitCorpusFilter: function emitCorpusFilter() {
-            this.$emit('corpus-filter', this.corpusFilterData);
-        },
-
-        getClass: function getClass() {
-            var classes = "collapse";
-            if (this.corpusresults.length >= 1 || this.documentresults.length >= 1 || this.annotationresults.length >= 1) {
-                classes += " show";
-            }
-            return classes;
-        }
-    },
-    mounted: function mounted() {
-        var myvue = this;
-
-        var rangeSliderList = ['corpusSize'];
-
-        var _loop = function _loop() {
-            var i = h;
-
-            var el = document.getElementById(rangeSliderList[i]);
-
-            if (el) {
-                //console.log("el: "+el)
-                el.style.height = '8px';
-                el.style.margin = '0 auto 8px';
-
-                noUiSlider.create(el, {
-                    animate: true,
-                    start: [1, 999999], // 4 handles, starting at...
-                    margin: 1, // Handles must be at least 300 apart
-                    limit: 999998, // ... but no more than 600
-                    connect: true, // Display a colored bar between the handles
-                    orientation: 'horizontal', // Orient the slider vertically
-                    behaviour: 'tap-drag', // Move handle on tap, bar is draggable
-                    step: 1,
-
-                    range: {
-                        'min': 1,
-                        'max': 999999
-                    }
-                });
-
-                var paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
-                    paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
-
-                el.noUiSlider.on('update', function (values, handle) {
-
-                    if (handle) {
-                        //this.corpusFilterData
-                        //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
-                        myvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
-                        paddingMax.innerHTML = Math.round(values[handle]);
-                    } else {
-                        //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                        myvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
-                        paddingMin.innerHTML = Math.round(values[handle]);
-                    }
-                });
-
-                el.noUiSlider.on('change', function () {
-                    // Validate corresponding form
-                    var parentForm = $(el).closest('form');
-                    $(parentForm).find('*[type=submit]').removeClass('disabled');
-                });
-            }
-        };
-
-        for (var h = 0; h < rangeSliderList.length; h++) {
-            _loop();
-        } //end for
-
-        $('input.flexdatalist').on('select:flexdatalist', function (event, set, options) {
-            console.log(set.value);
-            if (myvue != 'undefined') {
-                myvue.corpusFilterData.corpus_merged_formats.push(set.value);
-            }
-            console.log("PPOP" + JSON.stringify(myvue.corpusFilterData));
-        });
-    }
-});
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(173)))
-
-/***/ }),
-/* 173 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! nouislider - 12.0.0 - 9/14/2018 */
@@ -28384,6 +26429,1958 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
+/* 96 */,
+/* 97 */,
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */,
+/* 102 */,
+/* 103 */,
+/* 104 */,
+/* 105 */,
+/* 106 */,
+/* 107 */,
+/* 108 */,
+/* 109 */,
+/* 110 */,
+/* 111 */,
+/* 112 */,
+/* 113 */,
+/* 114 */,
+/* 115 */,
+/* 116 */,
+/* 117 */,
+/* 118 */,
+/* 119 */,
+/* 120 */,
+/* 121 */,
+/* 122 */,
+/* 123 */,
+/* 124 */,
+/* 125 */,
+/* 126 */,
+/* 127 */,
+/* 128 */,
+/* 129 */,
+/* 130 */,
+/* 131 */,
+/* 132 */,
+/* 133 */,
+/* 134 */,
+/* 135 */,
+/* 136 */,
+/* 137 */,
+/* 138 */,
+/* 139 */,
+/* 140 */,
+/* 141 */,
+/* 142 */,
+/* 143 */,
+/* 144 */,
+/* 145 */,
+/* 146 */,
+/* 147 */,
+/* 148 */,
+/* 149 */,
+/* 150 */,
+/* 151 */,
+/* 152 */,
+/* 153 */,
+/* 154 */,
+/* 155 */,
+/* 156 */,
+/* 157 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(158);
+__webpack_require__(193);
+__webpack_require__(195);
+module.exports = __webpack_require__(196);
+
+
+/***/ }),
+/* 158 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__store__ = __webpack_require__(159);
+
+/**
+ * First we will load all of this project's JavaScript dependencies which
+ * includes Vue and other libraries. It is a great starting point when
+ * building robust, powerful web applications using Vue and Laravel.
+ */
+
+__webpack_require__(50);
+__webpack_require__(71);
+__webpack_require__(41);
+window.Vue = __webpack_require__(22);
+var util = __webpack_require__(74);
+
+
+/**
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
+ */
+
+Vue.component('generalsearchwrapper', __webpack_require__(160));
+Vue.component('searchfilterwrapper', __webpack_require__(163));
+Vue.component('searchresultwrapper', __webpack_require__(166));
+
+Vue.component('activefilter', __webpack_require__(169));
+Vue.component('corpusfilter', __webpack_require__(172));
+Vue.component('documentfilter', __webpack_require__(175));
+Vue.component('annotationfilter', __webpack_require__(178));
+
+Vue.component('searchresultheader', __webpack_require__(181));
+Vue.component('corpussearchresult', __webpack_require__(184));
+Vue.component('documentsearchresult', __webpack_require__(187));
+Vue.component('annotationsearchresult', __webpack_require__(190));
+
+window.axios.defaults.headers.post['Content-Type'] = 'application/json';
+
+var app = new Vue({
+    el: '#searchApp',
+    store: __WEBPACK_IMPORTED_MODULE_0__store__["a" /* default */],
+    data: {
+        results: [],
+        corpusresults: [],
+        documentresults: [],
+        annotationresults: [],
+        searches: [],
+        activefilters: [],
+        documentsByCorpus: [],
+        annotationsByCorpus: [],
+        corpusByDocument: [],
+        annotationsByDocument: [],
+        documentsByAnnotation: [],
+        corpusByAnnotation: [],
+        datasearched: false,
+        dataloading: false,
+        documentsearched: false,
+        documentloading: false,
+        annotationsearched: false,
+        corpusCacheString: "",
+        documentCacheString: "",
+        annotationCacheString: "",
+        annotationloading: false,
+        postAnnotationData: {},
+        corpusresultcounter: 0,
+        documentresultcounter: 0,
+        annotationresultcounter: 0,
+        publishedIndexes: window.laudatioApp.publishedIndexes
+    },
+    methods: {
+        renderArrayToString: function renderArrayToString(array) {
+            var string = "";
+            if (array) {
+                if (array.isArray && array.length == 1) {
+                    string = array[0].toString();
+                } else {
+                    string = array.toString();
+                }
+            }
+
+            return string;
+        },
+
+        askElastic: function askElastic(search) {
+            var _this = this;
+
+            this.dataloading = true;
+            this.corpusresults = [];
+            this.datasearched = false;
+            this.corpusCacheString = "";
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+            this.corpusresults = [];
+            this.documentresults = [];
+            this.annotationresults = [];
+            this.corpusresultcounter = 0;
+            this.documentresultcounter = 0;
+            this.annotationresultcounter = 0;
+            if (search.generalSearchTerm != "") {
+                this.searches = [];
+                var postData = {
+                    searchData: {
+                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code",
+                        //"corpus_publication_publication_date",
+                        "document_title", "document_author_forename", "document_size_type", "document_size_extent", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_merged_authors",
+                        //"document_publication_publishing_date",
+                        "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name"],
+                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "corpus_size_type", "corpus_size_value", "document_title", "document_author_forename", "document_author_surname", "document_merged_authors", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "in_documents"],
+                        query: "" + search.generalSearchTerm + "",
+                        indices: this.publishedIndexes.allPublishedIndices.join(",")
+                    }
+                };
+
+                var corpus_ids = [];
+
+                window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
+                    if (res.data.results.length > 0) {
+                        /*
+                        /* @todo: This is far too brittle: corpus/document/annotation could part of someones corpusname
+                        /* Also: when we publish, the new working version shuffles the corpus/doc/anno keyword foirther than place 0
+                         */
+                        for (var ri = 0; ri < res.data.results.length; ri++) {
+                            if (res.data.results[ri]._index.indexOf("corpus_") == 0) {
+                                _this.corpusresults.push(res.data.results[ri]);
+                                _this.corpusresultcounter++;
+                            } else if (res.data.results[ri]._index.indexOf("document_") == 0) {
+                                _this.documentresults.push(res.data.results[ri]);
+                                _this.documentresultcounter++;
+                            } else if (res.data.results[ri]._index.indexOf("annotation_") == 0) {
+                                _this.annotationresults.push(res.data.results[ri]);
+                                _this.annotationresultcounter++;
+                            } ///end which index
+                        } //end for results
+                    } //end if results
+                    _this.dataloading = false;
+                    _this.datasearched = true;
+                    _this.searches.push(search.generalSearchTerm);
+                });
+            } else {
+                this.dataloading = false;
+            }
+        },
+        submitCorpusFilter: function submitCorpusFilter(corpusFilterObject) {
+            this.resetCorpusResults();
+            for (var i = 0; i < this.corpusresults.length; i++) {
+                for (var key in this.corpusresults[i]._source) {
+                    if (this.corpusresults[i]._source.hasOwnProperty(key)) {
+                        if (corpusFilterObject.hasOwnProperty(key) && key != "") {
+                            if (key == "corpus_size_value" && corpusFilterObject.corpus_size_value != "" && corpusFilterObject.corpusSizeTo != "") {
+                                if (!this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value, corpusFilterObject.corpusSizeTo)) {
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
+                            } else if (key == "corpus_publication_license" && corpusFilterObject[key].toLowerCase() != "") {
+                                if (!this.hasLicense(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase(), corpusFilterObject[key].toLowerCase())) {
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
+                            } else {
+                                if (corpusFilterObject[key].toLowerCase() != "") {
+                                    if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        submitDocumentFilter: function submitDocumentFilter(documentFilterObject) {
+            this.resetDocumentResults();
+            for (var i = 0; i < this.documentresults.length; i++) {
+                for (var key in this.documentresults[i]._source) {
+                    if (this.documentresults[i]._source.hasOwnProperty(key)) {
+                        if (documentFilterObject.hasOwnProperty(key)) {
+                            if (key == "document_size_extent") {
+                                if (!this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent, documentFilterObject.document_size_extent_to)) {
+                                    this.documentresults[i]._source.visibility = 0;
+                                    this.documentresultcounter--;
+                                }
+                            } else {
+                                if (this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
+                                    this.documentresults[i]._source.visibility = 0;
+                                    this.documentresultcounter--;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        submitAnnotationFilter: function submitAnnotationFilter(annotationFilterObject) {
+            this.resetAnnotationResults();
+            for (var i = 0; i < this.annotationresults.length; i++) {
+                for (var key in this.annotationresults[i]._source) {
+                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
+                        if (annotationFilterObject.hasOwnProperty(key)) {
+                            if (this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
+                                this.annotationresults[i]._source.visibility = 0;
+                                this.annotationresultcounter--;
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        resetCorpusResults: function resetCorpusResults() {
+            for (var i = 0; i < this.corpusresults.length; i++) {
+                if (this.corpusresults[i]._source.visibility == 0) {
+                    this.corpusresults[i]._source.visibility = 1;
+                    this.corpusresultcounter++;
+                }
+            }
+        },
+        resetDocumentResults: function resetDocumentResults() {
+            for (var i = 0; i < this.documentresults.length; i++) {
+                if (this.documentresults[i]._source.visibility == 0) {
+                    this.documentresults[i]._source.visibility = 1;
+                    this.documentresultcounter++;
+                }
+            }
+        },
+        resetAnnotationResults: function resetAnnotationResults() {
+            for (var i = 0; i < this.annotationresults.length; i++) {
+                if (this.annotationresults[i]._source.visibility == 0) {
+                    this.annotationresults[i]._source.visibility = 1;
+                    this.annotationresultcounter++;
+                }
+            }
+        },
+
+        updateCorpusCounter: function updateCorpusCounter(counter) {
+            this.corpusresultcounter = counter;
+        },
+        updateDocumentCounter: function updateDocumentCounter(counter) {
+            this.documentresultcounter = counter;
+        },
+        updateAnnotationCounter: function updateAnnotationCounter(counter) {
+            this.annotationresultcounter = counter;
+        },
+        isBetween: function isBetween(theNumber, min, max) {
+            if (parseInt(theNumber) >= Math.floor(min) && parseInt(theNumber) <= Math.floor(max)) return true;else return false;
+        },
+        hasLicense: function hasLicense(license, filter) {
+            var licenseArray = license.split("/");
+            var ccLicense = licenseArray[4];
+            return ccLicense == filter;
+        }
+    }
+});
+
+/***/ }),
+/* 159 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(13);
+
+
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
+
+var initialState = {
+    "token": null,
+    "user": {}
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
+    state: {
+        documentsByCorpus: [],
+        annotationsByCorpus: [],
+        corpusByDocument: [],
+        annotationsByDocument: [],
+        corpusByAnnotation: [],
+        documentsByAnnotation: [],
+        corpusFilters: [],
+        documentFilters: [],
+        annotationFilters: []
+    },
+
+    actions: {
+        documentByCorpus: function documentByCorpus(_ref, documents) {
+            var commit = _ref.commit;
+
+            commit('PUSH_DOCUMENT_BY_CORPUS', documents);
+        },
+        annotationByCorpus: function annotationByCorpus(_ref2, annotations) {
+            var commit = _ref2.commit;
+
+            commit('PUSH_ANNOTATION_BY_CORPUS', annotations);
+        },
+        annotationByDocument: function annotationByDocument(_ref3, annotations) {
+            var commit = _ref3.commit;
+
+            commit('PUSH_ANNOTATION_BY_DOCUMENT', annotations);
+        },
+        corpusByDocument: function corpusByDocument(_ref4, corpora) {
+            var commit = _ref4.commit;
+
+            commit('PUSH_CORPUS_BY_DOCUMENT', corpora);
+        },
+        documentByAnnotation: function documentByAnnotation(_ref5, documents) {
+            var commit = _ref5.commit;
+
+            commit('PUSH_DOCUMENT_BY_ANNOTATION', documents);
+        },
+        corpusByAnnotation: function corpusByAnnotation(_ref6, corpora) {
+            var commit = _ref6.commit;
+
+            commit('PUSH_CORPUS_BY_ANNOTATION', corpora);
+        },
+        clearCorpus: function clearCorpus(_ref7, corpora) {
+            var commit = _ref7.commit;
+
+            commit('CLEAR_CORPUS_STATE', corpora);
+        },
+        clearDocuments: function clearDocuments(_ref8, documents) {
+            var commit = _ref8.commit;
+
+            commit('CLEAR_DOCUMENT_STATE', documents);
+        },
+        clearAnnotations: function clearAnnotations(_ref9, documents) {
+            var commit = _ref9.commit;
+
+            commit('CLEAR_ANNOTATION_STATE', documents);
+        }
+    },
+    getters: {
+        corpusFilters: function corpusFilters(state) {
+            return state.corpusFilters;
+        },
+        documentFilters: function documentFilters(state) {
+            return state.documentFilters;
+        },
+        annotationFilters: function annotationFilters(state) {
+            return state.annotationFilters;
+        },
+
+        corpusdocuments: function corpusdocuments(state) {
+            return state.documentsByCorpus;
+        },
+        corpusannotations: function corpusannotations(state) {
+            return state.annotationsByCorpus;
+        },
+        documentannotations: function documentannotations(state) {
+            return state.annotationsByDocument;
+        },
+        documentcorpus: function documentcorpus(state) {
+            return state.corpusByDocument;
+        },
+        annotationcorpus: function annotationcorpus(state) {
+            return state.corpusByAnnotation;
+        },
+        annotationdocuments: function annotationdocuments(state) {
+            return state.documentsByAnnotation;
+        }
+
+    },
+    mutations: {
+        PUSH_CORPUS_FILTERS: function PUSH_CORPUS_FILTERS(state, corpusFilter) {
+            state.corpusFilters.push(corpusFilter);
+        },
+        PUSH_DOCUMENT_FILTERS: function PUSH_DOCUMENT_FILTERS(state, documentFilter) {
+            state.documentFilters.push(documentFilter);
+        },
+        PUSH_ANNOTATION_FILTERS: function PUSH_ANNOTATION_FILTERS(state, annotationFilter) {
+            state.annotationFilters.push(annotationFilter);
+        },
+        PUSH_DOCUMENT_BY_CORPUS: function PUSH_DOCUMENT_BY_CORPUS(state, documents) {
+            state.documentsByCorpus.push(documents);
+        },
+        PUSH_ANNOTATION_BY_CORPUS: function PUSH_ANNOTATION_BY_CORPUS(state, annotations) {
+            state.annotationsByCorpus.push(annotations);
+        },
+        PUSH_ANNOTATION_BY_DOCUMENT: function PUSH_ANNOTATION_BY_DOCUMENT(state, annotations) {
+            state.annotationsByDocument.push(annotations);
+        },
+        PUSH_CORPUS_BY_DOCUMENT: function PUSH_CORPUS_BY_DOCUMENT(state, corpora) {
+            state.corpusByDocument.push(corpora);
+        },
+        PUSH_DOCUMENT_BY_ANNOTATION: function PUSH_DOCUMENT_BY_ANNOTATION(state, documents) {
+            state.documentsByAnnotation.push(documents);
+        },
+        PUSH_CORPUS_BY_ANNOTATION: function PUSH_CORPUS_BY_ANNOTATION(state, corpora) {
+            state.corpusByAnnotation.push(corpora);
+        },
+        CLEAR_CORPUS_STATE: function CLEAR_CORPUS_STATE(state, corpora) {
+            while (state.corpusByDocument.length > 0) {
+                state.corpusByDocument.pop();
+            }
+
+            while (state.corpusByAnnotation.length > 0) {
+                state.corpusByAnnotation.pop();
+            }
+        },
+        CLEAR_DOCUMENT_STATE: function CLEAR_DOCUMENT_STATE(state, documents) {
+            while (state.documentsByCorpus.length > 0) {
+                state.documentsByCorpus.pop();
+            }
+
+            while (state.documentsByAnnotation.length > 0) {
+                state.documentsByAnnotation.pop();
+            }
+        },
+        CLEAR_ANNOTATION_STATE: function CLEAR_ANNOTATION_STATE(state, annotations) {
+            while (state.annotationsByCorpus.length > 0) {
+                state.annotationsByCorpus.pop();
+            }
+            while (state.annotationsByDocument.length > 0) {
+                state.annotationsByDocument.pop();
+            }
+        }
+    }
+}));
+
+/***/ }),
+/* 160 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(161)
+/* template */
+var __vue_template__ = __webpack_require__(162)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/GeneralSearchWrapper.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1b5752fa", Component.options)
+  } else {
+    hotAPI.reload("data-v-1b5752fa", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 161 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            generalSearchTerm: ''
+        };
+    },
+
+    props: ['results'],
+    methods: {
+        searchGeneral: function searchGeneral() {
+            this.$emit('searchedgeneral', {
+                generalSearchTerm: this.generalSearchTerm,
+                scope: 'general'
+            });
+            this.generalSearchTerm = '';
+        }
+    },
+    mounted: function mounted() {
+        console.log('General SearchComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 162 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass:
+        "col-6 d-flex justify-content-center align-items-center ml-auto mr-auto"
+    },
+    [
+      _c("form", { staticClass: "form-group serviceBarSearch w-100" }, [
+        _c("div", { staticClass: "input-group" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.generalSearchTerm,
+                expression: "generalSearchTerm"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              placeholder: "Search metadata (German or English)",
+              "aria-label": "search metadata",
+              "aria-describedby": "basic-addon2"
+            },
+            domProps: { value: _vm.generalSearchTerm },
+            on: {
+              keyup: function($event) {
+                if (
+                  !("button" in $event) &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.searchGeneral($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.generalSearchTerm = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group-append" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-corpus-dark pl-4 pr-4",
+                attrs: { type: "button" },
+                on: { click: _vm.searchGeneral }
+              },
+              [
+                _c("i", {
+                  staticClass: "text-primary fa fa-fw fa-search fa-lg "
+                })
+              ]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("i", {
+        staticClass: "btn p-0 fa fa-info-circle fa-fw fa-lg ml-3",
+        attrs: {
+          "data-toggle": "tooltip",
+          role: "button",
+          "data-placement": "bottom",
+          title: "Get help how to search"
+        }
+      })
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "clear-search close",
+        attrs: { type: "button", "aria-label": "Close" }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1b5752fa", module.exports)
+  }
+}
+
+/***/ }),
+/* 163 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(164)
+/* template */
+var __vue_template__ = __webpack_require__(165)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/SearchFilterWrapper.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5d977368", Component.options)
+  } else {
+    hotAPI.reload("data-v-5d977368", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 164 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    methods: {
+        applyFilters: function applyFilters() {
+            this.$refs.corpusFilter.emitCorpusFilter();
+            this.$refs.documentFilter.emitDocumentFilter();
+            this.$refs.annotationFilter.emitAnnotationFilter();
+        },
+        emitCorpusFilter: function emitCorpusFilter(corpusFilterEmitData) {
+            this.$emit('corpus-filter', corpusFilterEmitData);
+        },
+        emitDocumentFilter: function emitDocumentFilter(documentFilterEmitData) {
+            this.$emit('document-filter', documentFilterEmitData);
+        },
+        emitAnnotationFilter: function emitAnnotationFilter(annotationFilterEmitData) {
+            this.$emit('annotation-filter', annotationFilterEmitData);
+        },
+        emitCorpusResultCounter: function emitCorpusResultCounter(emittedCorpusResultCounter) {
+            this.$emit('corpus-resultcounter', emittedCorpusResultCounter);
+        },
+        emitDocumentResultCounter: function emitDocumentResultCounter(emittedDocumentResultCounter) {
+            this.$emit('document-resultcounter', emittedDocumentResultCounter);
+        },
+        emitAnnotationResultCounter: function emitAnnotationResultCounter(emittedAnnotationResultCounter) {
+            this.$emit('annotation-resultcounter', emittedAnnotationResultCounter);
+        }
+    },
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    mounted: function mounted() {
+        console.log('CorpusResultComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 165 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c(
+      "a",
+      {
+        staticClass:
+          "text-uppercase btn-outline-corpus-dark align-self-end text-uppercase text-dark text-12 p-2",
+        attrs: { href: "javascript:" },
+        on: { click: _vm.applyFilters }
+      },
+      [_vm._v("\n        Apply Filters\n    ")]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [
+        _c("activefilter", {
+          attrs: {
+            corpusresults: _vm.corpusresults,
+            documentresults: _vm.documentresults,
+            annotationresults: _vm.annotationresults,
+            corpusresultcounter: _vm.corpusresultcounter,
+            documentresultcounter: _vm.documentresultcounter,
+            annotationresultcounter: _vm.annotationresultcounter,
+            activefilters: _vm.activefilters
+          },
+          on: {
+            "corpus-resultcounter": _vm.emitCorpusResultCounter,
+            "document-resultcounter": _vm.emitDocumentResultCounter,
+            "annotation-resultcounter": _vm.emitAnnotationResultCounter
+          }
+        })
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [
+        _c("corpusfilter", {
+          ref: "corpusFilter",
+          attrs: {
+            corpusresults: _vm.corpusresults,
+            documentresults: _vm.documentresults,
+            annotationresults: _vm.annotationresults
+          },
+          on: { "corpus-filter": _vm.emitCorpusFilter }
+        })
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [
+        _c("documentfilter", {
+          ref: "documentFilter",
+          attrs: {
+            corpusresults: _vm.corpusresults,
+            documentresults: _vm.documentresults,
+            annotationresults: _vm.annotationresults
+          },
+          on: { "document-filter": _vm.emitDocumentFilter }
+        })
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [
+        _c("annotationfilter", {
+          ref: "annotationFilter",
+          attrs: {
+            corpusresults: _vm.corpusresults,
+            documentresults: _vm.documentresults,
+            annotationresults: _vm.annotationresults
+          },
+          on: { "annotation-filter": _vm.emitAnnotationFilter }
+        })
+      ],
+      1
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-5d977368", module.exports)
+  }
+}
+
+/***/ }),
+/* 166 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(167)
+/* template */
+var __vue_template__ = __webpack_require__(168)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/SearchResultWrapper.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-028d3ef2", Component.options)
+  } else {
+    hotAPI.reload("data-v-028d3ef2", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 167 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched', 'dataloading', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    methods: {
+        guid: function guid(key) {
+            return key + ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
+                return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
+            });
+        }
+    },
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    mounted: function mounted() {
+        console.log('CorpusResultComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 168 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "col" },
+    [
+      _c("i", {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.dataloading,
+            expression: "dataloading"
+          }
+        ],
+        staticClass: "fa fa-circle-o-notch fa-spin fa-3x fa-fw"
+      }),
+      _vm._v(" "),
+      _c(
+        "span",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.dataloading,
+              expression: "dataloading"
+            }
+          ],
+          staticClass: "sr-only"
+        },
+        [_vm._v("Loading...")]
+      ),
+      _vm._v(" "),
+      (_vm.searches != "undefined" &&
+        _vm.searches.length >= 1 &&
+        _vm.datasearched &&
+        !_vm.dataloading &&
+        (_vm.corpusresults != "undefined" && _vm.corpusresults.length >= 1)) ||
+      (_vm.documentresults != "undefined" && _vm.documentresults.length >= 1) ||
+      (_vm.annotationresults != "undefined" &&
+        _vm.annotationresults.length >= 1)
+        ? _c("h3", { staticClass: "h3 font-weight-normal mb-4" }, [
+            _vm._v(
+              '\n        Results for the search "' +
+                _vm._s(_vm.searches.join(" ")) +
+                '"'
+            )
+          ])
+        : _vm.corpusresults != "undefined" &&
+          _vm.corpusresults.length < 1 &&
+          _vm.documentresults != "undefined" &&
+          _vm.documentresults.length < 1 &&
+          _vm.annotationresults != "undefined" &&
+          _vm.annotationresults.length < 1 &&
+          _vm.datasearched &&
+          !_vm.dataloading &&
+          _vm.searches != "undefined" &&
+          _vm.searches.length >= 1
+          ? _c(
+              "div",
+              {
+                staticClass: "alert alert-info alert-dismissible fade show",
+                attrs: { role: "alert" }
+              },
+              [
+                _c("strong", [
+                  _vm._v("The search "),
+                  _c("i", [_vm._v('"' + _vm._s(_vm.searches.join(" ")) + '"')]),
+                  _vm._v(" returned no results!")
+                ]),
+                _vm._v(" "),
+                _vm._m(0)
+              ]
+            )
+          : _vm._e(),
+      _vm._v(" "),
+      _c("searchresultheader", {
+        attrs: {
+          corpusresults: _vm.corpusresults,
+          documentresults: _vm.documentresults,
+          annotationresults: _vm.annotationresults,
+          corpusresultcounter: _vm.corpusresultcounter,
+          documentresultcounter: _vm.documentresultcounter,
+          annotationresultcounter: _vm.annotationresultcounter
+        }
+      }),
+      _vm._v(" "),
+      _c("div", { staticClass: "tab-content" }, [
+        _c(
+          "div",
+          {
+            staticClass: "tab-pane active",
+            attrs: {
+              id: "searchtab-corpora",
+              role: "tabpanel",
+              "aria-labelledby": "searchtab-corpora"
+            }
+          },
+          _vm._l(_vm.corpusresults, function(corpusresult, index) {
+            return _vm.corpusresults != "undefined" &&
+              _vm.corpusresults.length >= 1
+              ? _c("corpussearchresult", {
+                  key: _vm.guid(index),
+                  attrs: { corpusresult: corpusresult }
+                })
+              : _vm._e()
+          })
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "tab-pane",
+            attrs: {
+              id: "searchtab-documents",
+              role: "tabpanel",
+              "aria-labelledby": "searchtab-documents"
+            }
+          },
+          _vm._l(_vm.documentresults, function(documentresult, documentindex) {
+            return _vm.documentresults != "undefined" &&
+              _vm.documentresults.length >= 1
+              ? _c("documentsearchresult", {
+                  key: _vm.guid(documentindex),
+                  attrs: { documentresult: documentresult }
+                })
+              : _vm._e()
+          })
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "tab-pane",
+            attrs: {
+              id: "searchtab-annotations",
+              role: "tabpanel",
+              "aria-labelledby": "searchtab-annotations"
+            }
+          },
+          _vm._l(_vm.annotationresults, function(
+            annotationresult,
+            annotationindex
+          ) {
+            return _vm.annotationresults != "undefined" &&
+              _vm.annotationresults.length >= 1
+              ? _c("annotationsearchresult", {
+                  key: _vm.guid(annotationindex),
+                  attrs: { annotationresult: annotationresult }
+                })
+              : _vm._e()
+          })
+        )
+      ]),
+      _vm._v(" "),
+      (_vm.corpusresults != "undefined" && _vm.corpusresults.length > 0) ||
+      (_vm.documentresults != "undefined" && _vm.documentresults.length > 0) ||
+      (_vm.annotationresults != "undefined" && _vm.annotationresults.length > 0)
+        ? _c(
+            "div",
+            {
+              staticClass:
+                "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
+            },
+            [_vm._m(1), _vm._v(" "), _vm._m(2)]
+          )
+        : _vm._e()
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "alert",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
+      _c("ul", { staticClass: "pagination" }, [
+        _c("li", { staticClass: "page-item" }, [
+          _c(
+            "a",
+            {
+              staticClass: "page-link",
+              attrs: { href: "#", "aria-label": "Previous" }
+            },
+            [
+              _c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("«")]),
+              _vm._v(" "),
+              _c("span", { staticClass: "sr-only" }, [_vm._v("Previous")])
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c("li", { staticClass: "page-item font-weight-bold active" }, [
+          _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+            _vm._v("1")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("li", { staticClass: "page-item font-weight-bold" }, [
+          _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+            _vm._v("2")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("li", { staticClass: "page-item font-weight-bold" }, [
+          _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+            _vm._v("3")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("li", { staticClass: "page-item" }, [
+          _c(
+            "a",
+            {
+              staticClass: "page-link",
+              attrs: { href: "#", "aria-label": "Next" }
+            },
+            [
+              _c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("»")]),
+              _vm._v(" "),
+              _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
+            ]
+          )
+        ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-row" }, [
+      _c("div", { staticClass: "col-auto" }, [
+        _c(
+          "select",
+          {
+            staticClass:
+              "custom-select custom-select-sm font-weight-bold text-uppercase"
+          },
+          [
+            _c("option", { attrs: { selected: "" } }, [
+              _vm._v("6 results / page")
+            ]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
+            _vm._v(" "),
+            _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
+          ]
+        )
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-028d3ef2", module.exports)
+  }
+}
+
+/***/ }),
+/* 169 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(170)
+/* template */
+var __vue_template__ = __webpack_require__(171)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ActiveFilter.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-62a9a656", Component.options)
+  } else {
+    hotAPI.reload("data-v-62a9a656", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 170 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    data: function data() {
+        return {
+            localcorpusresultcounter: this.corpusresultcounter,
+            localdocumentresultcounter: this.documentresultcounter,
+            localannotationresultcounter: this.annotationresultcounter
+        };
+    },
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    methods: {
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        },
+        resetFilters: function resetFilters() {
+            this.localcorpusresultcounter = this.corpusresultcounter;
+            for (var i = 0; i < this.corpusresults.length; i++) {
+                if (this.corpusresults[i]._source.visibility == 0) {
+                    this.corpusresults[i]._source.visibility = 1;
+                    this.localcorpusresultcounter++;
+                }
+            }
+            this.$emit('corpus-resultcounter', this.localcorpusresultcounter);
+
+            this.localdocumentresultcounter = this.documentresultcounter;
+            for (var i = 0; i < this.documentresults.length; i++) {
+                if (this.documentresults[i]._source.visibility == 0) {
+                    this.documentresults[i]._source.visibility = 1;
+                    this.localdocumentresultcounter++;
+                }
+            }
+            this.$emit('document-resultcounter', this.localdocumentresultcounter);
+
+            this.localannotationresultcounter = this.annotationresultcounter;
+            for (var i = 0; i < this.annotationresults.length; i++) {
+                if (this.annotationresults[i]._source.visibility == 0) {
+                    this.annotationresults[i]._source.visibility = 1;
+                    this.localannotationresultcounter++;
+                }
+            }
+            this.$emit('annotation-resultcounter', this.localannotationresultcounter);
+        }
+    },
+    mounted: function mounted() {
+        console.log('CorpusActiveFilterComponent mounted.');
+    }
+});
+
+/***/ }),
+/* 171 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelActives" } }, [
+      _c("div", { staticClass: "card-body p-1" }, [
+        _c(
+          "form",
+          { attrs: { action: "" } },
+          [
+            _vm._l(_vm.activefilters, function(activefilter, index) {
+              return _vm.activefilters != "undefined" &&
+                _vm.activefilters.length >= 1
+                ? _c(
+                    "div",
+                    {
+                      key: index,
+                      staticClass: "d-flex flex-wrap py-2",
+                      attrs: { activefilter: activefilter }
+                    },
+                    [
+                      _c("div", { staticClass: "m-1" }, [
+                        _c(
+                          "a",
+                          {
+                            staticClass:
+                              "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                            attrs: { href: "#" }
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-close fa-fw" }),
+                            _vm._v(
+                              "\n                            " +
+                                _vm._s(activefilter.name) +
+                                "\n                        "
+                            )
+                          ]
+                        )
+                      ])
+                    ]
+                  )
+                : _vm._e()
+            }),
+            _vm._v(" "),
+            _c("div", { staticClass: "d-flex flex-column" }, [
+              _c(
+                "a",
+                {
+                  staticClass:
+                    "align-self-end text-uppercase text-dark text-12 p-2",
+                  attrs: { href: "javascript:", role: "button" },
+                  on: {
+                    click: function($event) {
+                      _vm.resetFilters()
+                    }
+                  }
+                },
+                [
+                  _vm._v(
+                    "\n                        Clear all Filter\n                    "
+                  )
+                ]
+              )
+            ])
+          ],
+          2
+        )
+      ])
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
+        attrs: {
+          "data-toggle": "collapse",
+          "data-target": "#formPanelActives",
+          "aria-expanded": "true",
+          "aria-controls": "formPanelActives"
+        }
+      },
+      [
+        _c("span", [_vm._v("Active Filter (x)")]),
+        _vm._v(" "),
+        _c("i", {
+          staticClass:
+            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+        })
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-62a9a656", module.exports)
+  }
+}
+
+/***/ }),
+/* 172 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(173)
+/* template */
+var __vue_template__ = __webpack_require__(174)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/CorpusFilter.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-b27cc1d2", Component.options)
+  } else {
+    hotAPI.reload("data-v-b27cc1d2", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 173 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults'],
+    data: function data() {
+        return {
+            corpusFilterData: {
+                corpus_title: '',
+                corpus_publication_publisher: '',
+                corpus_publication_publication_date: '',
+                corpusYearTo: '',
+                corpusyeartype: 'exact',
+                corpussizetype: 'exact',
+                corpus_size_value: '',
+                corpusSizeTo: '',
+                corpus_merged_languages: '',
+                corpus_merged_formats: [],
+                corpus_publication_license: ''
+            },
+            scope: 'corpus'
+        };
+    },
+    methods: {
+        emitCorpusFilter: function emitCorpusFilter() {
+            this.$emit('corpus-filter', this.corpusFilterData);
+        },
+
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1 || this.documentresults.length >= 1 || this.annotationresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        }
+    },
+    mounted: function mounted() {
+        var myvue = this;
+
+        var rangeSliderList = ['corpusSize'];
+
+        var _loop = function _loop() {
+            var i = h;
+
+            var el = document.getElementById(rangeSliderList[i]);
+
+            if (el) {
+                //console.log("el: "+el)
+                el.style.height = '8px';
+                el.style.margin = '0 auto 8px';
+
+                noUiSlider.create(el, {
+                    animate: true,
+                    start: [1, 999999], // 4 handles, starting at...
+                    margin: 1, // Handles must be at least 300 apart
+                    limit: 999998, // ... but no more than 600
+                    connect: true, // Display a colored bar between the handles
+                    orientation: 'horizontal', // Orient the slider vertically
+                    behaviour: 'tap-drag', // Move handle on tap, bar is draggable
+                    step: 1,
+
+                    range: {
+                        'min': 1,
+                        'max': 999999
+                    }
+                });
+
+                var paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
+                    paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
+
+                el.noUiSlider.on('update', function (values, handle) {
+
+                    if (handle) {
+                        //this.corpusFilterData
+                        //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
+                        myvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
+                        paddingMax.innerHTML = Math.round(values[handle]);
+                    } else {
+                        //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
+                        myvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
+                        paddingMin.innerHTML = Math.round(values[handle]);
+                    }
+                });
+
+                el.noUiSlider.on('change', function () {
+                    // Validate corresponding form
+                    var parentForm = $(el).closest('form');
+                    $(parentForm).find('*[type=submit]').removeClass('disabled');
+                });
+            }
+        };
+
+        for (var h = 0; h < rangeSliderList.length; h++) {
+            _loop();
+        } //end for
+
+        $('input.flexdatalist').on('select:flexdatalist', function (event, set, options) {
+            console.log(set.value);
+            if (myvue != 'undefined') {
+                myvue.corpusFilterData.corpus_merged_formats.push(set.value);
+            }
+            console.log("PPOP" + JSON.stringify(myvue.corpusFilterData));
+        });
+    }
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(95)))
+
+/***/ }),
 /* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -28607,7 +28604,7 @@ var render = function() {
                     type: "text",
                     id: "formCorpusLicenses",
                     "aria-describedby": "inputLicenses",
-                    placeholder: '"cc-by"'
+                    placeholder: '"by-sa"'
                   },
                   domProps: {
                     value: _vm.corpusFilterData.corpus_publication_license
@@ -29143,7 +29140,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         } //end for
     }
 });
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(173)))
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(95)))
 
 /***/ }),
 /* 177 */
@@ -29269,8 +29266,9 @@ var render = function() {
                     {
                       name: "model",
                       rawName: "v-model",
-                      value: _vm.documentFilterData.document_merged_languages,
-                      expression: "documentFilterData.document_merged_languages"
+                      value: _vm.documentFilterData.document_languages_language,
+                      expression:
+                        "documentFilterData.document_languages_language"
                     }
                   ],
                   staticClass: "form-control",
@@ -29281,7 +29279,7 @@ var render = function() {
                     placeholder: '"German"'
                   },
                   domProps: {
-                    value: _vm.documentFilterData.document_merged_languages
+                    value: _vm.documentFilterData.document_languages_language
                   },
                   on: {
                     input: function($event) {
@@ -29290,7 +29288,7 @@ var render = function() {
                       }
                       _vm.$set(
                         _vm.documentFilterData,
-                        "document_merged_languages",
+                        "document_languages_language",
                         $event.target.value
                       )
                     }
@@ -31074,6 +31072,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -31207,7 +31209,30 @@ var render = function() {
                           )
                         ])
                       ]
-                    )
+                    ),
+                    _vm._v(" "),
+                    _vm.documentresult._source.document_languages_language !=
+                    "undefined"
+                      ? _c(
+                          "div",
+                          {
+                            staticClass:
+                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
+                            _vm._v(" "),
+                            _c("span", [
+                              _vm._v(
+                                _vm._s(
+                                  _vm.documentresult._source
+                                    .document_languages_language[0]
+                                )
+                              )
+                            ])
+                          ]
+                        )
+                      : _vm._e()
                   ]
                 )
               ])

@@ -55,7 +55,6 @@
             resetFilters() {
                 this.localcorpusresultcounter = this.corpusresultcounter;
                 for(var i = 0; i < this.corpusresults.length; i++) {
-                    this.corpusresults[i]._source.visibility = 1;
                     if(this.corpusresults[i]._source.visibility == 0) {
                         this.corpusresults[i]._source.visibility = 1;
                         this.localcorpusresultcounter++;

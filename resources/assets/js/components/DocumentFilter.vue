@@ -31,7 +31,7 @@
 
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formDocumentsLanguage">Language</label>
-                            <input type="text" class="form-control" id="formDocumentsLanguage" aria-describedby="inputLanguage" placeholder='"German"'  v-model="documentFilterData.document_merged_languages">
+                            <input type="text" class="form-control" id="formDocumentsLanguage" aria-describedby="inputLanguage" placeholder='"German"'  v-model="documentFilterData.document_languages_language">
                         </div>
 
                         <div class="form-group mb-3">
