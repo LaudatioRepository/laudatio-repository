@@ -15,13 +15,16 @@
                 :activefilters="activefilters"
                 v-on:corpus-resultcounter="emitCorpusResultCounter"
                 v-on:document-resultcounter="emitDocumentResultCounter"
-                v-on:annotation-resultcounter="emitAnnotationResultCounter"></activefilter>
+                v-on:annotation-resultcounter="emitAnnotationResultCounter"
+                v-on:clear-all-filters="clearAllFilters"
+                ></activefilter>
         </div>
         <div class="mb-4">
             <corpusfilter
                 :corpusresults="corpusresults"
                 :documentresults="documentresults"
                 :annotationresults="annotationresults"
+                :corpusformats="corpusformats"
                 ref="corpusFilter"
                 v-on:corpus-filter="emitCorpusFilter"
                 ></corpusfilter>
@@ -42,6 +45,7 @@
                 :annotationresults="annotationresults"
                 ref="annotationFilter"
                 v-on:annotation-filter="emitAnnotationFilter"
+                :annotationformats="annotationformats"
                 ></annotationfilter>
         </div>
     </div>
@@ -49,12 +53,17 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults','documentresults', 'annotationresults', 'activefilters','corpusresultcounter','documentresultcounter','annotationresultcounter'],
+        props: ['corpusresults','documentresults', 'annotationresults', 'activefilters','corpusresultcounter','documentresultcounter','annotationresultcounter','corpusformats','annotationformats'],
         methods: {
             applyFilters: function (){
                 this.$refs.corpusFilter.emitCorpusFilter();
                 this.$refs.documentFilter.emitDocumentFilter();
                 this.$refs.annotationFilter.emitAnnotationFilter();
+            },
+            clearAllFilters: function(){
+                this.$refs.corpusFilter.clearCorpusFilter();
+                this.$refs.documentFilter.clearDocumentFilter();
+                this.$refs.annotationFilter.clearAnnotationFilter();
             },
             emitCorpusFilter: function (corpusFilterEmitData) {
                 this.$emit('corpus-filter',corpusFilterEmitData);

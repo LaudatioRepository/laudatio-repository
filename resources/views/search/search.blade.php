@@ -32,7 +32,9 @@
                                 v-on:annotation-resultcounter="updateAnnotationCounter"
                                 :corpusresultcounter="corpusresultcounter"
                                 :documentresultcounter="documentresultcounter"
-                                :annotationresultcounter="annotationresultcounter"></searchfilterwrapper>
+                                :annotationresultcounter="annotationresultcounter"
+                                :corpusformats="corpusformats"
+                                :annotationformats="annotationformats"></searchfilterwrapper>
                     </div>
                     <searchresultwrapper
                             :corpusresults="corpusresults"

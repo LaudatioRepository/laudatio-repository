@@ -21,15 +21,11 @@
 
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formAnnotationsFormats">Formats</label>
-                        <input type="text" name="formatslist" multiple="multiple" list="formatsList-Annotations" class="flexdatalist form-control"
+                        <input type="text" name="formatslist" multiple="multiple" list="formatsList-Annotations" class="flexdatalist annotationformatslist form-control"
                                data-min-length="0" id="formAnnotationsFormats" v-model="annotationFilterData.preparation_encoding_annotation_group">
                         <datalist id="formatsList-Annotations">
                             <!--[if IE 9]><select disabled style="display:none" class="ie9_fix"><![endif]-->
-                            <option value="ANNIS">ANNIS</option>
-                            <option value="EXEL">EXEL</option>
-                            <option value="PAULA">PAULA</option>
-                            <option value="Negra">Negra</option>
-                            <option value="TEI-Header">TEI-Header</option>
+                            <option v-for="annotationformat in this.uniqueArray(annotationformats)" v-bind:annotationformat="annotationformat">{{annotationformat}}</option>
                             <!--[if IE 9]></select><![endif]-->
                         </datalist>
                     </div>
@@ -41,7 +37,7 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults','documentresults','annotationresults'],
+        props: ['corpusresults','documentresults','annotationresults','annotationformats'],
         data: function() {
             return {
                 annotationFilterData : {
@@ -71,17 +67,26 @@
             },
             emitAnnotationFilter: function () {
                 this.$emit('annotation-filter',this.annotationFilterData);
-            }
+            },
+            uniqueArray: function (a) {
+                return [ ...new Set(a) ]
+            },
+            clearAnnotationFilter: function () {
+                this.annotationFilterData = {
+                    preparation_title: '',
+                    annotation_merged_formats: [],
+                    preparation_encoding_annotation_group: '',
+                }
+                //There is some strange bug somewhere that makes it impossible to add a filter twice after the following purge:
+                $('#formPanelAnnotations').find("ul.flexdatalist-multiple li.value").remove();
+            },
         },
         mounted() {
-            console.log('AnnotationFilterComponent mounted.')
-            let myvue = this;
+            let myannotationvue = this;
             $('input.flexdatalist').on('select:flexdatalist', function(event, set, options) {
-                console.log(set.value);
-                if(myvue != 'undefined'){
-                    myvue.annotationFilterData.annotation_merged_formats.push(set.value)
+                if(myannotationvue != 'undefined' && $(this).hasClass('annotationformatslist')){
+                    myannotationvue.annotationFilterData.annotation_merged_formats.push(set.value)
                 }
-                console.log("PPOP"+JSON.stringify(myvue.annotationFilterData));
             });
         }
     }

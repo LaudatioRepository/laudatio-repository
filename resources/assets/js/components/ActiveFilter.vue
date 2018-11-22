@@ -80,6 +80,8 @@
                     }
                 }
                 this.$emit('annotation-resultcounter',this.localannotationresultcounter);
+
+                this.$emit('clear-all-filters');
             }
         },
         mounted() {

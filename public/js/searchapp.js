@@ -26558,6 +26558,8 @@ var app = new Vue({
         annotationsByDocument: [],
         documentsByAnnotation: [],
         corpusByAnnotation: [],
+        corpusformats: [],
+        annotationformats: [],
         datasearched: false,
         dataloading: false,
         documentsearched: false,
@@ -26607,12 +26609,12 @@ var app = new Vue({
                 this.searches = [];
                 var postData = {
                     searchData: {
-                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code",
+                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_merged_formats", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code",
                         //"corpus_publication_publication_date",
                         "document_title", "document_author_forename", "document_size_type", "document_size_extent", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_merged_authors",
                         //"document_publication_publishing_date",
-                        "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name"],
-                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_encoding_format", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "corpus_size_type", "corpus_size_value", "document_title", "document_author_forename", "document_author_surname", "document_merged_authors", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "in_documents"],
+                        "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats"],
+                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_merged_formats", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "corpus_size_type", "corpus_size_value", "document_title", "document_author_forename", "document_author_surname", "document_merged_authors", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats", "in_documents"],
                         query: "" + search.generalSearchTerm + "",
                         indices: this.publishedIndexes.allPublishedIndices.join(",")
                     }
@@ -26630,12 +26632,22 @@ var app = new Vue({
                             if (res.data.results[ri]._index.indexOf("corpus_") == 0) {
                                 _this.corpusresults.push(res.data.results[ri]);
                                 _this.corpusresultcounter++;
+
+                                var formatsarray = res.data.results[ri]._source.corpus_merged_formats.split(",");
+                                for (var key in formatsarray) {
+                                    _this.corpusformats.push(formatsarray[key]);
+                                }
                             } else if (res.data.results[ri]._index.indexOf("document_") == 0) {
                                 _this.documentresults.push(res.data.results[ri]);
                                 _this.documentresultcounter++;
                             } else if (res.data.results[ri]._index.indexOf("annotation_") == 0) {
                                 _this.annotationresults.push(res.data.results[ri]);
                                 _this.annotationresultcounter++;
+
+                                var annotationformatsarray = res.data.results[ri]._source.annotation_merged_formats.split(",");
+                                for (var key in annotationformatsarray) {
+                                    _this.annotationformats.push(annotationformatsarray[key]);
+                                }
                             } ///end which index
                         } //end for results
                     } //end if results
@@ -26652,9 +26664,15 @@ var app = new Vue({
             for (var i = 0; i < this.corpusresults.length; i++) {
                 for (var key in this.corpusresults[i]._source) {
                     if (this.corpusresults[i]._source.hasOwnProperty(key)) {
-                        if (corpusFilterObject.hasOwnProperty(key) && key != "") {
+                        if (key != "" && corpusFilterObject.hasOwnProperty(key) && corpusFilterObject[key] != 'undefined' && corpusFilterObject[key].length > 0) {
+
                             if (key == "corpus_size_value" && corpusFilterObject.corpus_size_value != "" && corpusFilterObject.corpusSizeTo != "") {
                                 if (!this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value, corpusFilterObject.corpusSizeTo)) {
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
+                            } else if (key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != "") {
+                                if (!this.hasFormats(this.corpusresults[i]._source[key], corpusFilterObject[key])) {
                                     this.corpusresults[i]._source.visibility = 0;
                                     this.corpusresultcounter--;
                                 }
@@ -26664,7 +26682,7 @@ var app = new Vue({
                                     this.corpusresultcounter--;
                                 }
                             } else {
-                                if (corpusFilterObject[key].toLowerCase() != "") {
+                                if (corpusFilterObject[key] != 'undefined') {
                                     if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
                                         this.corpusresults[i]._source.visibility = 0;
                                         this.corpusresultcounter--;
@@ -26703,10 +26721,18 @@ var app = new Vue({
             for (var i = 0; i < this.annotationresults.length; i++) {
                 for (var key in this.annotationresults[i]._source) {
                     if (this.annotationresults[i]._source.hasOwnProperty(key)) {
-                        if (annotationFilterObject.hasOwnProperty(key)) {
-                            if (this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
-                                this.annotationresults[i]._source.visibility = 0;
-                                this.annotationresultcounter--;
+                        if (key != "" && annotationFilterObject.hasOwnProperty(key) && annotationFilterObject[key] != 'undefined' && annotationFilterObject[key].length > 0) {
+
+                            if (key == "annotation_merged_formats" && annotationFilterObject.annotation_merged_formats != "") {
+                                if (!this.hasFormats(this.annotationresults[i]._source[key], annotationFilterObject[key])) {
+                                    this.annotationresults[i]._source.visibility = 0;
+                                    this.annotationresultcounter--;
+                                }
+                            } else {
+                                if (this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
+                                    this.annotationresults[i]._source.visibility = 0;
+                                    this.annotationresultcounter--;
+                                }
                             }
                         }
                     }
@@ -26754,6 +26780,32 @@ var app = new Vue({
             var licenseArray = license.split("/");
             var ccLicense = licenseArray[4];
             return ccLicense == filter;
+        },
+        hasFormats: function hasFormats(merged_formats, filter_formats) {
+            var hasFormat = true;
+            var merged_formats_array = merged_formats.split(',');
+            //console.log("filter_formats type: "+filter_formats+" "+typeof filter_formats+" LENGTH: "+filter_formats.length+" ARRAY?: "+Array.isArray(filter_formats));
+            //var filter_formats_array = filter_formats.split(',');
+
+            //console.log("merged_formats: "+merged_formats_array+" TYPE: "+typeof merged_formats_array);
+            //console.log("filter_formats_array: "+filter_formats_array+" TYPE: "+typeof filter_formats_array);
+            if (Array.isArray(filter_formats) && filter_formats.length > 1) {
+                for (var key in filter_formats) {
+                    if (filter_formats.hasOwnProperty(key)) {
+                        console.log(key + " -> " + filter_formats[key]);
+                        if (!merged_formats_array.includes(filter_formats[key])) {
+                            hasFormat = false;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                if (!merged_formats_array.includes(filter_formats)) {
+                    hasFormat = false;
+                }
+            }
+
+            return hasFormat;
         }
     }
 });
@@ -27232,15 +27284,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter', 'corpusformats', 'annotationformats'],
     methods: {
         applyFilters: function applyFilters() {
             this.$refs.corpusFilter.emitCorpusFilter();
             this.$refs.documentFilter.emitDocumentFilter();
             this.$refs.annotationFilter.emitAnnotationFilter();
+        },
+        clearAllFilters: function clearAllFilters() {
+            this.$refs.corpusFilter.clearCorpusFilter();
+            this.$refs.documentFilter.clearDocumentFilter();
+            this.$refs.annotationFilter.clearAnnotationFilter();
         },
         emitCorpusFilter: function emitCorpusFilter(corpusFilterEmitData) {
             this.$emit('corpus-filter', corpusFilterEmitData);
@@ -27307,7 +27368,8 @@ var render = function() {
           on: {
             "corpus-resultcounter": _vm.emitCorpusResultCounter,
             "document-resultcounter": _vm.emitDocumentResultCounter,
-            "annotation-resultcounter": _vm.emitAnnotationResultCounter
+            "annotation-resultcounter": _vm.emitAnnotationResultCounter,
+            "clear-all-filters": _vm.clearAllFilters
           }
         })
       ],
@@ -27323,7 +27385,8 @@ var render = function() {
           attrs: {
             corpusresults: _vm.corpusresults,
             documentresults: _vm.documentresults,
-            annotationresults: _vm.annotationresults
+            annotationresults: _vm.annotationresults,
+            corpusformats: _vm.corpusformats
           },
           on: { "corpus-filter": _vm.emitCorpusFilter }
         })
@@ -27357,7 +27420,8 @@ var render = function() {
           attrs: {
             corpusresults: _vm.corpusresults,
             documentresults: _vm.documentresults,
-            annotationresults: _vm.annotationresults
+            annotationresults: _vm.annotationresults,
+            annotationformats: _vm.annotationformats
           },
           on: { "annotation-filter": _vm.emitAnnotationFilter }
         })
@@ -27993,6 +28057,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 }
             }
             this.$emit('annotation-resultcounter', this.localannotationresultcounter);
+
+            this.$emit('clear-all-filters');
         }
     },
     mounted: function mounted() {
@@ -28169,11 +28235,8 @@ module.exports = Component.exports
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-//
-//
-//
-//
-//
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 //
 //
 //
@@ -28277,7 +28340,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'corpusformats'],
     data: function data() {
         return {
             corpusFilterData: {
@@ -28285,8 +28348,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 corpus_publication_publisher: '',
                 corpus_publication_publication_date: '',
                 corpusYearTo: '',
-                corpusyeartype: 'exact',
-                corpussizetype: 'exact',
                 corpus_size_value: '',
                 corpusSizeTo: '',
                 corpus_merged_languages: '',
@@ -28301,16 +28362,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$emit('corpus-filter', this.corpusFilterData);
         },
 
+        clearCorpusFilter: function clearCorpusFilter() {
+            this.corpusFilterData = {
+                corpus_title: '',
+                corpus_publication_publisher: '',
+                corpus_publication_publication_date: '',
+                corpusYearTo: '',
+                corpus_size_value: '',
+                corpusSizeTo: '',
+                corpus_merged_languages: '',
+                corpus_merged_formats: [],
+                corpus_publication_license: ''
+                //There is some strange bug somewhere that makes it impossible to add a filter twice after the following purge:
+            };$('#formPanelCorpus').find("ul.flexdatalist-multiple li.value").remove();
+        },
         getClass: function getClass() {
             var classes = "collapse";
             if (this.corpusresults.length >= 1 || this.documentresults.length >= 1 || this.annotationresults.length >= 1) {
                 classes += " show";
             }
             return classes;
+        },
+        uniqueArray: function uniqueArray(a) {
+            return [].concat(_toConsumableArray(new Set(a)));
         }
     },
     mounted: function mounted() {
-        var myvue = this;
+        var mycorpusvue = this;
 
         var rangeSliderList = ['corpusSize'];
 
@@ -28348,11 +28426,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     if (handle) {
                         //this.corpusFilterData
                         //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
-                        myvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
+                        mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
                         paddingMax.innerHTML = Math.round(values[handle]);
                     } else {
                         //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                        myvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
+                        mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
                         paddingMin.innerHTML = Math.round(values[handle]);
                     }
                 });
@@ -28370,11 +28448,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         } //end for
 
         $('input.flexdatalist').on('select:flexdatalist', function (event, set, options) {
-            console.log(set.value);
-            if (myvue != 'undefined') {
-                myvue.corpusFilterData.corpus_merged_formats.push(set.value);
+            if (mycorpusvue != 'undefined' && $(this).hasClass('corpusformatslist')) {
+                mycorpusvue.corpusFilterData.corpus_merged_formats.push(set.value);
             }
-            console.log("PPOP" + JSON.stringify(myvue.corpusFilterData));
         });
     }
 });
@@ -28551,7 +28627,7 @@ var render = function() {
                       expression: "corpusFilterData.corpus_merged_formats"
                     }
                   ],
-                  staticClass: "flexdatalist form-control",
+                  staticClass: "flexdatalist corpusformatslist form-control",
                   attrs: {
                     type: "text",
                     name: "formatslist",
@@ -28577,7 +28653,19 @@ var render = function() {
                   }
                 }),
                 _vm._v(" "),
-                _vm._m(2)
+                _c(
+                  "datalist",
+                  { attrs: { id: "formatsList-Corpus" } },
+                  _vm._l(this.uniqueArray(_vm.corpusformats), function(
+                    corpusformat
+                  ) {
+                    return _c(
+                      "option",
+                      { attrs: { corpusformat: corpusformat } },
+                      [_vm._v(_vm._s(corpusformat))]
+                    )
+                  })
+                )
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "form-group mb-3" }, [
@@ -28634,7 +28722,7 @@ var render = function() {
             attrs: { id: "formPanelCorpus-all2" }
           },
           [
-            _vm._m(3),
+            _vm._m(2),
             _vm._v(" "),
             _c("form", { attrs: { action: "" } }, [
               _c("div", { staticClass: "form-group mb-3" }, [
@@ -28745,7 +28833,7 @@ var render = function() {
                     })
                   ]),
                   _vm._v(" "),
-                  _vm._m(4)
+                  _vm._m(3)
                 ])
               ])
             ])
@@ -28807,24 +28895,6 @@ var staticRenderFns = [
           )
         ]
       )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("datalist", { attrs: { id: "formatsList-Corpus" } }, [
-      _c("option", { attrs: { value: "ANNIS" } }, [_vm._v("ANNIS")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "EXEL" } }, [_vm._v("EXEL")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "PAULA" } }, [_vm._v("PAULA")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "Negra" } }, [_vm._v("Negra")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "TEI-Header" } }, [_vm._v("TEI-Header")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "txt" } }, [_vm._v("txt")])
     ])
   },
   function() {
@@ -29076,6 +29146,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         emitDocumentFilter: function emitDocumentFilter() {
             this.$emit('document-filter', this.documentFilterData);
+        },
+
+        clearDocumentFilter: function clearDocumentFilter() {
+            this.documentFilterData = {
+                document_title: '',
+                document_author_forename: '',
+                document_author_surname: '',
+                document_merged_authors: '',
+                document_publication_place: '',
+                document_publication_publishing_date: '',
+                document_publication_publishing_date_to: '',
+                documentyeartype: 'exact',
+                documentsizetype: 'exact',
+                document_size_extent: '',
+                document_size_extent_to: '',
+                document_languages_language: '',
+                document_merged_languages: ''
+            };
         }
     },
     mounted: function mounted() {
@@ -29651,10 +29739,8 @@ module.exports = Component.exports
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-//
-//
-//
-//
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 //
 //
 //
@@ -29694,7 +29780,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'annotationformats'],
     data: function data() {
         return {
             annotationFilterData: {
@@ -29719,17 +29805,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         emitAnnotationFilter: function emitAnnotationFilter() {
             this.$emit('annotation-filter', this.annotationFilterData);
+        },
+        uniqueArray: function uniqueArray(a) {
+            return [].concat(_toConsumableArray(new Set(a)));
+        },
+        clearAnnotationFilter: function clearAnnotationFilter() {
+            this.annotationFilterData = {
+                preparation_title: '',
+                annotation_merged_formats: [],
+                preparation_encoding_annotation_group: ''
+                //There is some strange bug somewhere that makes it impossible to add a filter twice after the following purge:
+            };$('#formPanelAnnotations').find("ul.flexdatalist-multiple li.value").remove();
         }
     },
     mounted: function mounted() {
-        console.log('AnnotationFilterComponent mounted.');
-        var myvue = this;
+        var myannotationvue = this;
         $('input.flexdatalist').on('select:flexdatalist', function (event, set, options) {
-            console.log(set.value);
-            if (myvue != 'undefined') {
-                myvue.annotationFilterData.annotation_merged_formats.push(set.value);
+            if (myannotationvue != 'undefined' && $(this).hasClass('annotationformatslist')) {
+                myannotationvue.annotationFilterData.annotation_merged_formats.push(set.value);
             }
-            console.log("PPOP" + JSON.stringify(myvue.annotationFilterData));
         });
     }
 });
@@ -29864,7 +29958,7 @@ var render = function() {
                       "annotationFilterData.preparation_encoding_annotation_group"
                   }
                 ],
-                staticClass: "flexdatalist form-control",
+                staticClass: "flexdatalist annotationformatslist form-control",
                 attrs: {
                   type: "text",
                   name: "formatslist",
@@ -29892,7 +29986,19 @@ var render = function() {
                 }
               }),
               _vm._v(" "),
-              _vm._m(1)
+              _c(
+                "datalist",
+                { attrs: { id: "formatsList-Annotations" } },
+                _vm._l(this.uniqueArray(_vm.annotationformats), function(
+                  annotationformat
+                ) {
+                  return _c(
+                    "option",
+                    { attrs: { annotationformat: annotationformat } },
+                    [_vm._v(_vm._s(annotationformat))]
+                  )
+                })
+              )
             ])
           ])
         ])
@@ -29926,22 +30032,6 @@ var staticRenderFns = [
         })
       ]
     )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("datalist", { attrs: { id: "formatsList-Annotations" } }, [
-      _c("option", { attrs: { value: "ANNIS" } }, [_vm._v("ANNIS")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "EXEL" } }, [_vm._v("EXEL")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "PAULA" } }, [_vm._v("PAULA")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "Negra" } }, [_vm._v("Negra")]),
-      _vm._v(" "),
-      _c("option", { attrs: { value: "TEI-Header" } }, [_vm._v("TEI-Header")])
-    ])
   }
 ]
 render._withStripped = true

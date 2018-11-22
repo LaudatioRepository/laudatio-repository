@@ -52,6 +52,8 @@ const app = new Vue({
         annotationsByDocument: [],
         documentsByAnnotation: [],
         corpusByAnnotation: [],
+        corpusformats: [],
+        annotationformats: [],
         datasearched: false,
         dataloading: false,
         documentsearched: false,
@@ -105,7 +107,7 @@ const app = new Vue({
                             "corpus_editor_surname",
                             "corpus_publication_publisher",
                             "corpus_documents",
-                            "corpus_encoding_format",
+                            "corpus_merged_formats",
                             "corpus_encoding_tool",
                             "corpus_encoding_project_description",
                             "corpus_annotator_forename",
@@ -130,7 +132,8 @@ const app = new Vue({
                             "preparation_annotation_id",
                             "preparation_encoding_annotation_group",
                             "preparation_encoding_annotation_sub_group",
-                            "preparation_encoding_full_name"
+                            "preparation_encoding_full_name",
+                            "annotation_merged_formats"
                         ],
                         source: [
                             "corpus_title",
@@ -139,7 +142,7 @@ const app = new Vue({
                             "corpus_editor_surname",
                             "corpus_publication_publisher",
                             "corpus_documents",
-                            "corpus_encoding_format",
+                            "corpus_merged_formats",
                             "corpus_encoding_tool",
                             "corpus_encoding_project_description",
                             "corpus_annotator_forename",
@@ -168,6 +171,7 @@ const app = new Vue({
                             "preparation_encoding_annotation_group",
                             "preparation_encoding_annotation_sub_group",
                             "preparation_encoding_full_name",
+                            "annotation_merged_formats",
                             "in_documents"
                         ],
                         query: "" + search.generalSearchTerm + "",
@@ -187,6 +191,12 @@ const app = new Vue({
                             if(res.data.results[ri]._index.indexOf("corpus_") == 0){
                                 this.corpusresults.push(res.data.results[ri]);
                                 this.corpusresultcounter++;
+
+                                var formatsarray = res.data.results[ri]._source.corpus_merged_formats.split(",");
+                                for (var key in formatsarray) {
+                                    this.corpusformats.push(formatsarray[key])
+                                }
+
                             }
                             else if(res.data.results[ri]._index.indexOf("document_") == 0){
                                 this.documentresults.push(res.data.results[ri]);
@@ -195,6 +205,11 @@ const app = new Vue({
                             else if(res.data.results[ri]._index.indexOf("annotation_") == 0){
                                 this.annotationresults.push(res.data.results[ri]);
                                 this.annotationresultcounter ++;
+
+                                var annotationformatsarray = res.data.results[ri]._source.annotation_merged_formats.split(",");
+                                for (var key in annotationformatsarray) {
+                                    this.annotationformats.push(annotationformatsarray[key])
+                                }
                             }///end which index
                         }//end for results
                     }//end if results
@@ -215,9 +230,16 @@ const app = new Vue({
             for(var i = 0; i < this.corpusresults.length; i++) {
                 for (var key in this.corpusresults[i]._source) {
                     if (this.corpusresults[i]._source.hasOwnProperty(key)) {
-                        if(corpusFilterObject.hasOwnProperty(key) && key != "") {
+                        if(key != "" && corpusFilterObject.hasOwnProperty(key) && (corpusFilterObject[key] != 'undefined' && corpusFilterObject[key].length > 0)) {
+
                             if(key == "corpus_size_value" && corpusFilterObject.corpus_size_value != ""  && corpusFilterObject.corpusSizeTo != "") {
                                 if(! this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value,corpusFilterObject.corpusSizeTo)){
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
+                            }
+                            else if(key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != ""){
+                                if(!this.hasFormats(this.corpusresults[i]._source[key],corpusFilterObject[key])){
                                     this.corpusresults[i]._source.visibility = 0;
                                     this.corpusresultcounter--;
                                 }
@@ -229,7 +251,7 @@ const app = new Vue({
                                 }
                             }
                             else{
-                                if(corpusFilterObject[key].toLowerCase() != ""){
+                                if(corpusFilterObject[key] != 'undefined'){
                                     if(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
                                         this.corpusresults[i]._source.visibility = 0;
                                         this.corpusresultcounter--;
@@ -270,10 +292,19 @@ const app = new Vue({
             for(var i = 0; i < this.annotationresults.length; i++) {
                 for (var key in this.annotationresults[i]._source) {
                     if (this.annotationresults[i]._source.hasOwnProperty(key)) {
-                        if(annotationFilterObject.hasOwnProperty(key)) {
-                            if(this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
-                                this.annotationresults[i]._source.visibility = 0;
-                                this.annotationresultcounter--;
+                        if(key != "" && annotationFilterObject.hasOwnProperty(key) && (annotationFilterObject[key] != 'undefined' && annotationFilterObject[key].length > 0)) {
+                            
+                            if(key == "annotation_merged_formats" && annotationFilterObject.annotation_merged_formats != ""){
+                                if(!this.hasFormats(this.annotationresults[i]._source[key],annotationFilterObject[key])){
+                                    this.annotationresults[i]._source.visibility = 0;
+                                    this.annotationresultcounter--;
+                                }
+                            }
+                            else{
+                                if(this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
+                                    this.annotationresults[i]._source.visibility = 0;
+                                    this.annotationresultcounter--;
+                                }
                             }
                         }
                     }
@@ -321,6 +352,33 @@ const app = new Vue({
             var licenseArray = license.split("/");
             var ccLicense = licenseArray[4];
             return ccLicense == filter;
+        },
+        hasFormats: function(merged_formats,filter_formats) {
+            var hasFormat = true;
+            var merged_formats_array = merged_formats.split(',');
+            //console.log("filter_formats type: "+filter_formats+" "+typeof filter_formats+" LENGTH: "+filter_formats.length+" ARRAY?: "+Array.isArray(filter_formats));
+            //var filter_formats_array = filter_formats.split(',');
+
+            //console.log("merged_formats: "+merged_formats_array+" TYPE: "+typeof merged_formats_array);
+            //console.log("filter_formats_array: "+filter_formats_array+" TYPE: "+typeof filter_formats_array);
+            if(Array.isArray(filter_formats) && filter_formats.length > 1) {
+                for (var key in filter_formats) {
+                    if (filter_formats.hasOwnProperty(key)) {
+                        console.log(key + " -> " + filter_formats[key]);
+                        if(!merged_formats_array.includes(filter_formats[key])){
+                            hasFormat = false;
+                            break;
+                        }
+                    }
+                }
+            }
+            else{
+                if(!merged_formats_array.includes(filter_formats)){
+                    hasFormat = false;
+                }
+            }
+
+            return hasFormat;
         }
     }
 });

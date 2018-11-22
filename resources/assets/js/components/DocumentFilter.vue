@@ -134,7 +134,24 @@
             },
             emitDocumentFilter(){
                 this.$emit('document-filter',this.documentFilterData);
-            }
+            },
+            clearDocumentFilter: function () {
+                this.documentFilterData = {
+                    document_title: '',
+                    document_author_forename: '',
+                    document_author_surname: '',
+                    document_merged_authors: '',
+                    document_publication_place: '',
+                    document_publication_publishing_date: '',
+                    document_publication_publishing_date_to: '',
+                    documentyeartype: 'exact',
+                    documentsizetype: 'exact',
+                    document_size_extent: '',
+                    document_size_extent_to: '',
+                    document_languages_language: '',
+                    document_merged_languages: ''
+                }
+            },
         },
         mounted() {
             console.log('DocumentFilterComponent mounted.')

@@ -34,16 +34,11 @@
 
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formCorpusFormats">Formats</label>
-                            <input type="text" name="formatslist" multiple="multiple" list="formatsList-Corpus" class="flexdatalist form-control"
+                            <input type="text" name="formatslist" multiple="multiple" list="formatsList-Corpus" class="flexdatalist corpusformatslist form-control"
                                    data-min-length="0" id="formCorpusFormats" v-model="corpusFilterData.corpus_merged_formats" >
                             <datalist id="formatsList-Corpus">
                                 <!--[if IE 9]><select disabled style="display:none" class="ie9_fix"><![endif]-->
-                                <option value="ANNIS">ANNIS</option>
-                                <option value="EXEL">EXEL</option>
-                                <option value="PAULA">PAULA</option>
-                                <option value="Negra">Negra</option>
-                                <option value="TEI-Header">TEI-Header</option>
-                                <option value="txt">txt</option>
+                                <option v-for="corpusformat in this.uniqueArray(corpusformats)" v-bind:corpusformat="corpusformat">{{corpusformat}}</option>
                                 <!--[if IE 9]></select><![endif]-->
                             </datalist>
                         </div>
@@ -106,7 +101,7 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults','documentresults','annotationresults'],
+        props: ['corpusresults','documentresults','annotationresults','corpusformats'],
         data: function(){
             return {
                 corpusFilterData : {
@@ -114,8 +109,6 @@
                     corpus_publication_publisher: '',
                     corpus_publication_publication_date: '',
                     corpusYearTo: '',
-                    corpusyeartype: 'exact',
-                    corpussizetype: 'exact',
                     corpus_size_value: '',
                     corpusSizeTo: '',
                     corpus_merged_languages: '',
@@ -129,6 +122,21 @@
             emitCorpusFilter(){
                 this.$emit('corpus-filter',this.corpusFilterData);
             },
+            clearCorpusFilter: function () {
+                this.corpusFilterData = {
+                    corpus_title: '',
+                        corpus_publication_publisher: '',
+                        corpus_publication_publication_date: '',
+                        corpusYearTo: '',
+                        corpus_size_value: '',
+                        corpusSizeTo: '',
+                        corpus_merged_languages: '',
+                        corpus_merged_formats: [],
+                        corpus_publication_license: ''
+                }
+                //There is some strange bug somewhere that makes it impossible to add a filter twice after the following purge:
+                $('#formPanelCorpus').find("ul.flexdatalist-multiple li.value").remove();
+            },
             getClass: function () {
                 var classes = "collapse";
                 if(
@@ -139,10 +147,13 @@
                     classes += " show"
                 }
                 return classes;
+            },
+            uniqueArray: function (a) {
+                return [ ...new Set(a) ]
             }
         },
         mounted() {
-            let myvue = this;
+            let mycorpusvue = this;
 
             var rangeSliderList = ['corpusSize']
 
@@ -180,12 +191,12 @@
                         if ( handle ) {
                             //this.corpusFilterData
                             //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
-                            myvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
+                            mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
                             paddingMax.innerHTML = Math.round(values[handle]);
 
                         } else {
                             //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                            myvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
+                            mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
                             paddingMin.innerHTML = Math.round(values[handle]);
                         }
                     });
@@ -199,11 +210,9 @@
             }//end for
 
             $('input.flexdatalist').on('select:flexdatalist', function(event, set, options) {
-                console.log(set.value);
-                if(myvue != 'undefined'){
-                    myvue.corpusFilterData.corpus_merged_formats.push(set.value)
+                if(mycorpusvue != 'undefined' && $(this).hasClass('corpusformatslist')){
+                    mycorpusvue.corpusFilterData.corpus_merged_formats.push(set.value)
                 }
-                console.log("PPOP"+JSON.stringify(myvue.corpusFilterData));
             });
 
         }
