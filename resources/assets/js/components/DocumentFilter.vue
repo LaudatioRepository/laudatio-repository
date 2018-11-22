@@ -58,9 +58,9 @@
                                         </span>
                                     </div>
                                 </div>
-                                <button type="submit" class="disabled btn btn-sm btn-corpus-dark p-0">
+                                <!--button type="submit" class="disabled btn btn-sm btn-corpus-dark p-0">
                                     <i class="fa fa-angle-right fa-fw fa-2x py-1"></i>
-                                </button>
+                                </button-->
                             </div>
                         </div>
                     </form>
@@ -79,9 +79,9 @@
                                     <input class="toBeValidated form-control" placeholder="J J J J" type="number" min="1" max="9999" step="1"
                                            name="yearTo" id="formDocumentsYearTo" v-model="documentFilterData.document_publication_publishing_date_to" />
                                 </div>
-                                <button type="submit" class="toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end">
+                                <!--button type="submit" class="toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end">
                                     <i class="fa fa-angle-right fa-fw fa-2x py-1"></i>
-                                </button>
+                                </button-->
                             </div>
                         </div>
                     </form>
@@ -105,8 +105,6 @@
                     document_publication_place: '',
                     document_publication_publishing_date: '',
                     document_publication_publishing_date_to: '',
-                    documentyeartype: 'exact',
-                    documentsizetype: 'exact',
                     document_size_extent: '',
                     document_size_extent_to: '',
                     document_languages_language: '',
@@ -144,8 +142,6 @@
                     document_publication_place: '',
                     document_publication_publishing_date: '',
                     document_publication_publishing_date_to: '',
-                    documentyeartype: 'exact',
-                    documentsizetype: 'exact',
                     document_size_extent: '',
                     document_size_extent_to: '',
                     document_languages_language: '',

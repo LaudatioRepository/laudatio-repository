@@ -26681,6 +26681,14 @@ var app = new Vue({
                                     this.corpusresults[i]._source.visibility = 0;
                                     this.corpusresultcounter--;
                                 }
+                            } else if (key == "corpus_publication_publication_date" && corpusFilterObject.corpus_publication_publication_date != '' && corpusFilterObject.corpusYearTo != '') {
+                                var newest_datum = this.corpusresults[i]._source[key][this.corpusresults[i]._source[key].length - 1];
+                                var dateArray = newest_datum.split("-");
+                                var newest_date = dateArray[0];
+                                if (!this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date, corpusFilterObject.corpusYearTo)) {
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
                             } else {
                                 if (corpusFilterObject[key] != 'undefined') {
                                     if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
@@ -26700,8 +26708,16 @@ var app = new Vue({
                 for (var key in this.documentresults[i]._source) {
                     if (this.documentresults[i]._source.hasOwnProperty(key)) {
                         if (documentFilterObject.hasOwnProperty(key)) {
-                            if (key == "document_size_extent") {
+                            if (key == "document_size_extent" && documentFilterObject.document_size_extent != "" && documentFilterObject.document_size_extent_to != "") {
                                 if (!this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent, documentFilterObject.document_size_extent_to)) {
+                                    this.documentresults[i]._source.visibility = 0;
+                                    this.documentresultcounter--;
+                                }
+                            } else if (key == "document_publication_publishing_date" && documentFilterObject.document_publication_publishing_date != '' && documentFilterObject.document_publication_publishing_date_to != '') {
+                                var newest_datum = this.documentresults[i]._source[key][this.documentresults[i]._source[key].length - 1];
+                                var dateArray = newest_datum.split("-");
+                                var newest_date = dateArray[0];
+                                if (!this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date, documentFilterObject.document_publication_publishing_date_to)) {
                                     this.documentresults[i]._source.visibility = 0;
                                     this.documentresultcounter--;
                                 }
@@ -26774,7 +26790,13 @@ var app = new Vue({
             this.annotationresultcounter = counter;
         },
         isBetween: function isBetween(theNumber, min, max) {
-            if (parseInt(theNumber) >= Math.floor(min) && parseInt(theNumber) <= Math.floor(max)) return true;else return false;
+            if (parseInt(theNumber) >= Math.floor(min) && parseInt(theNumber) <= Math.floor(max)) {
+                return true;
+            } else if (parseInt(theNumber) >= parseInt(min) && parseInt(theNumber) <= parseInt(max)) {
+                return true;
+            } else {
+                return false;
+            }
         },
         hasLicense: function hasLicense(license, filter) {
             var licenseArray = license.split("/");
@@ -26784,11 +26806,7 @@ var app = new Vue({
         hasFormats: function hasFormats(merged_formats, filter_formats) {
             var hasFormat = true;
             var merged_formats_array = merged_formats.split(',');
-            //console.log("filter_formats type: "+filter_formats+" "+typeof filter_formats+" LENGTH: "+filter_formats.length+" ARRAY?: "+Array.isArray(filter_formats));
-            //var filter_formats_array = filter_formats.split(',');
 
-            //console.log("merged_formats: "+merged_formats_array+" TYPE: "+typeof merged_formats_array);
-            //console.log("filter_formats_array: "+filter_formats_array+" TYPE: "+typeof filter_formats_array);
             if (Array.isArray(filter_formats) && filter_formats.length > 1) {
                 for (var key in filter_formats) {
                     if (filter_formats.hasOwnProperty(key)) {
@@ -28831,9 +28849,7 @@ var render = function() {
                         }
                       }
                     })
-                  ]),
-                  _vm._v(" "),
-                  _vm._m(3)
+                  ])
                 ])
               ])
             ])
@@ -28923,33 +28939,10 @@ var staticRenderFns = [
                 _c("span", { attrs: { id: "corpusSize-maxVal" } })
               ]
             )
-          ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "disabled btn btn-sm btn-corpus-dark p-0",
-              attrs: { type: "submit" }
-            },
-            [_c("i", { staticClass: "fa fa-angle-right fa-fw fa-2x py-1" })]
-          )
+          ])
         ])
       ])
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass:
-          "toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end",
-        attrs: { type: "submit" }
-      },
-      [_c("i", { staticClass: "fa fa-angle-right fa-fw fa-2x py-1" })]
-    )
   }
 ]
 render._withStripped = true
@@ -29122,8 +29115,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 document_publication_place: '',
                 document_publication_publishing_date: '',
                 document_publication_publishing_date_to: '',
-                documentyeartype: 'exact',
-                documentsizetype: 'exact',
                 document_size_extent: '',
                 document_size_extent_to: '',
                 document_languages_language: '',
@@ -29157,8 +29148,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 document_publication_place: '',
                 document_publication_publishing_date: '',
                 document_publication_publishing_date_to: '',
-                documentyeartype: 'exact',
-                documentsizetype: 'exact',
                 document_size_extent: '',
                 document_size_extent_to: '',
                 document_languages_language: '',
@@ -29555,9 +29544,7 @@ var render = function() {
                         }
                       }
                     })
-                  ]),
-                  _vm._v(" "),
-                  _vm._m(3)
+                  ])
                 ])
               ])
             ])
@@ -29647,33 +29634,10 @@ var staticRenderFns = [
                 _c("span", { attrs: { id: "documentSize-maxVal" } })
               ]
             )
-          ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "disabled btn btn-sm btn-corpus-dark p-0",
-              attrs: { type: "submit" }
-            },
-            [_c("i", { staticClass: "fa fa-angle-right fa-fw fa-2x py-1" })]
-          )
+          ])
         ])
       ])
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass:
-          "toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end",
-        attrs: { type: "submit" }
-      },
-      [_c("i", { staticClass: "fa fa-angle-right fa-fw fa-2x py-1" })]
-    )
   }
 ]
 render._withStripped = true
