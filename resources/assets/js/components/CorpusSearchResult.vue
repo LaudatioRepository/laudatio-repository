@@ -177,7 +177,6 @@
             }
         },
         mounted() {
-            console.log('CorpusResultComponent mounted.')
         }
     }
 </script>

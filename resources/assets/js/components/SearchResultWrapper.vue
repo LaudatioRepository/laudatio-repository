@@ -49,71 +49,58 @@
         <div class="tab-content">
             <div class="tab-pane active" id="searchtab-corpora" role="tabpanel" aria-labelledby="searchtab-corpora">
             <corpussearchresult
-                    v-if="corpusresults != 'undefined' && corpusresults.length >= 1"
+                    v-if="corpusresults != 'undefined' && corpusresults.length >= 1 && index >= ((currentCorpusPage*corpusPerPage) - corpusPerPage) && index < (currentCorpusPage*corpusPerPage)"
                     v-for="(corpusresult, index) in corpusresults"
                     v-bind:corpusresult="corpusresult"
                     :key="guid(index)"
                     ></corpussearchresult>
+                <pagination
+                        v-if="corpusresults != 'undefined' && corpusresults.length >= 1 && corpusresults.length >= corpusPerPage"
+                        :totalPages="(corpusresults.length / corpusPerPage)"
+                        :total="corpusresults.length"
+                        :currentPage="currentCorpusPage"
+                        :perPage="corpusPerPage"
+                        :headerType="'corpus'"
+                        v-on:corpus_pagechanged="corpusCurrentPageChange"
+                        v-on:corpus_resultsperpage="corpusPerPageChange"
+                ></pagination>
             </div>
             <div class="tab-pane" id="searchtab-documents" role="tabpanel" aria-labelledby="searchtab-documents">
                 <documentsearchresult
-                        v-if="documentresults != 'undefined' && documentresults.length >= 1"
+                        v-if="documentresults != 'undefined' && documentresults.length >= 1 && documentindex >= ((currentDocumentPage*documentPerPage) - documentPerPage) && documentindex < (currentDocumentPage*documentPerPage)"
                         v-for="(documentresult, documentindex) in documentresults"
                         v-bind:documentresult="documentresult"
                         :key="guid(documentindex)"
                         ></documentsearchresult>
+                <pagination
+                        v-if="documentresults != 'undefined' && documentresults.length >= 1 && documentresults.length >= documentPerPage"
+                        :totalPages="(documentresults.length / documentPerPage)"
+                        :total="documentresults.length"
+                        :currentPage="currentDocumentPage"
+                        :perPage="documentPerPage"
+                        :headerType="'document'"
+                        v-on:document_pagechanged="documentCurrentPageChange"
+                        v-on:document_resultsperpage="documentPerPageChange"
+                ></pagination>
             </div>
 
             <div class="tab-pane" id="searchtab-annotations" role="tabpanel" aria-labelledby="searchtab-annotations">
                 <annotationsearchresult
-                        v-if="annotationresults != 'undefined' && annotationresults.length >= 1"
+                        v-if="annotationresults != 'undefined' && annotationresults.length >= 1 && annotationindex >= ((currentAnnotationPage*annotationPerPage) - annotationPerPage) && annotationindex < (currentAnnotationPage*annotationPerPage)"
                         v-for="(annotationresult, annotationindex) in annotationresults"
                         v-bind:annotationresult="annotationresult"
                         :key="guid(annotationindex)"
                         ></annotationsearchresult>
-            </div>
-        </div>
-
-        <div class="container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
-             v-if="
-                    (corpusresults != 'undefined' && corpusresults.length > 0) ||
-                    (documentresults != 'undefined' && documentresults.length > 0) ||
-                    (annotationresults != 'undefined' && annotationresults.length > 0)">
-            <nav aria-label="Page navigation">
-                <ul class="pagination">
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                    </li>
-                    <li class="page-item font-weight-bold active">
-                        <a class="page-link" href="#">1</a>
-                    </li>
-                    <li class="page-item font-weight-bold">
-                        <a class="page-link" href="#">2</a>
-                    </li>
-                    <li class="page-item font-weight-bold">
-                        <a class="page-link" href="#">3</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            <div class="form-row">
-                <div class="col-auto">
-
-                    <select class="custom-select custom-select-sm font-weight-bold text-uppercase">
-                        <option selected>6 results / page</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                    </select>
-                </div>
+                <pagination
+                        v-if="annotationresults != 'undefined' && annotationresults.length >= 1 && annotationresults.length >= annotationPerPage"
+                        :totalPages="(annotationresults.length / annotationPerPage)"
+                        :total="annotationresults.length"
+                        :currentPage="currentAnnotationPage"
+                        :perPage="annotationPerPage"
+                        :headerType="'annotation'"
+                        v-on:annotation_pagechanged="annotationCurrentPageChange"
+                        v-on:annotation_resultsperpage="annotationPerPageChange"
+                ></pagination>
             </div>
         </div>
     </div>
@@ -122,10 +109,38 @@
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
         props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched','dataloading', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter'],
+        data: function (){
+            return{
+                currentCorpusPage: 1,
+                currentDocumentPage: 1,
+                currentAnnotationPage: 1,
+                corpusPerPage: 5,
+                documentPerPage: 5,
+                annotationPerPage: 5,
+            }
+        },
         methods: {
             guid: function(key) {
                 return key + ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
                     (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16))
+            },
+            corpusCurrentPageChange: function(page) {
+                this.currentCorpusPage = page;
+            },
+            documentCurrentPageChange: function(page) {
+                this.currentDocumentPage = page;
+            },
+            annotationCurrentPageChange: function(page) {
+                this.currentAnnotationPage = page;
+            },
+            corpusPerPageChange: function(perpage) {
+                this.corpusPerPage = perpage;
+            },
+            documentPerPageChange: function(perpage) {
+                this.documentPerPage = perpage;
+            },
+            annotationPerPageChange: function(perpage) {
+                this.annotationPerPage = perpage;
             }
         },
         computed:

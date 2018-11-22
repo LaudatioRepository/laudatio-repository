@@ -12,6 +12,7 @@ window.Vue = require('vue');
 const util = require('util')
 import store from './store'
 
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -31,7 +32,7 @@ Vue.component('searchresultheader', require('./components/SearchResultHeader.vue
 Vue.component('corpussearchresult', require('./components/CorpusSearchResult.vue'));
 Vue.component('documentsearchresult', require('./components/DocumentSearchResult.vue'));
 Vue.component('annotationsearchresult', require('./components/AnnotationSearchResult.vue'));
-
+Vue.component('pagination', require('./components/Pagination.vue'));
 
 window.axios.defaults.headers.post['Content-Type'] = 'application/json';
 

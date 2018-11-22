@@ -63,464 +63,9 @@
 /******/ 	return __webpack_require__(__webpack_require__.s = 157);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */,
-/* 1 */,
-/* 2 */,
-/* 3 */,
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
+/******/ ({
 
-"use strict";
-
-
-var bind = __webpack_require__(26);
-var isBuffer = __webpack_require__(54);
-
-/*global toString:true*/
-
-// utils is a library of generic helper functions non-specific to axios
-
-var toString = Object.prototype.toString;
-
-/**
- * Determine if a value is an Array
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an Array, otherwise false
- */
-function isArray(val) {
-  return toString.call(val) === '[object Array]';
-}
-
-/**
- * Determine if a value is an ArrayBuffer
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an ArrayBuffer, otherwise false
- */
-function isArrayBuffer(val) {
-  return toString.call(val) === '[object ArrayBuffer]';
-}
-
-/**
- * Determine if a value is a FormData
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an FormData, otherwise false
- */
-function isFormData(val) {
-  return (typeof FormData !== 'undefined') && (val instanceof FormData);
-}
-
-/**
- * Determine if a value is a view on an ArrayBuffer
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
- */
-function isArrayBufferView(val) {
-  var result;
-  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
-    result = ArrayBuffer.isView(val);
-  } else {
-    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
-  }
-  return result;
-}
-
-/**
- * Determine if a value is a String
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a String, otherwise false
- */
-function isString(val) {
-  return typeof val === 'string';
-}
-
-/**
- * Determine if a value is a Number
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Number, otherwise false
- */
-function isNumber(val) {
-  return typeof val === 'number';
-}
-
-/**
- * Determine if a value is undefined
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if the value is undefined, otherwise false
- */
-function isUndefined(val) {
-  return typeof val === 'undefined';
-}
-
-/**
- * Determine if a value is an Object
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is an Object, otherwise false
- */
-function isObject(val) {
-  return val !== null && typeof val === 'object';
-}
-
-/**
- * Determine if a value is a Date
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Date, otherwise false
- */
-function isDate(val) {
-  return toString.call(val) === '[object Date]';
-}
-
-/**
- * Determine if a value is a File
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a File, otherwise false
- */
-function isFile(val) {
-  return toString.call(val) === '[object File]';
-}
-
-/**
- * Determine if a value is a Blob
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Blob, otherwise false
- */
-function isBlob(val) {
-  return toString.call(val) === '[object Blob]';
-}
-
-/**
- * Determine if a value is a Function
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Function, otherwise false
- */
-function isFunction(val) {
-  return toString.call(val) === '[object Function]';
-}
-
-/**
- * Determine if a value is a Stream
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a Stream, otherwise false
- */
-function isStream(val) {
-  return isObject(val) && isFunction(val.pipe);
-}
-
-/**
- * Determine if a value is a URLSearchParams object
- *
- * @param {Object} val The value to test
- * @returns {boolean} True if value is a URLSearchParams object, otherwise false
- */
-function isURLSearchParams(val) {
-  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
-}
-
-/**
- * Trim excess whitespace off the beginning and end of a string
- *
- * @param {String} str The String to trim
- * @returns {String} The String freed of excess whitespace
- */
-function trim(str) {
-  return str.replace(/^\s*/, '').replace(/\s*$/, '');
-}
-
-/**
- * Determine if we're running in a standard browser environment
- *
- * This allows axios to run in a web worker, and react-native.
- * Both environments support XMLHttpRequest, but not fully standard globals.
- *
- * web workers:
- *  typeof window -> undefined
- *  typeof document -> undefined
- *
- * react-native:
- *  navigator.product -> 'ReactNative'
- */
-function isStandardBrowserEnv() {
-  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
-    return false;
-  }
-  return (
-    typeof window !== 'undefined' &&
-    typeof document !== 'undefined'
-  );
-}
-
-/**
- * Iterate over an Array or an Object invoking a function for each item.
- *
- * If `obj` is an Array callback will be called passing
- * the value, index, and complete array for each item.
- *
- * If 'obj' is an Object callback will be called passing
- * the value, key, and complete object for each property.
- *
- * @param {Object|Array} obj The object to iterate
- * @param {Function} fn The callback to invoke for each item
- */
-function forEach(obj, fn) {
-  // Don't bother if no value provided
-  if (obj === null || typeof obj === 'undefined') {
-    return;
-  }
-
-  // Force an array if not already something iterable
-  if (typeof obj !== 'object' && !isArray(obj)) {
-    /*eslint no-param-reassign:0*/
-    obj = [obj];
-  }
-
-  if (isArray(obj)) {
-    // Iterate over array values
-    for (var i = 0, l = obj.length; i < l; i++) {
-      fn.call(null, obj[i], i, obj);
-    }
-  } else {
-    // Iterate over object keys
-    for (var key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        fn.call(null, obj[key], key, obj);
-      }
-    }
-  }
-}
-
-/**
- * Accepts varargs expecting each argument to be an object, then
- * immutably merges the properties of each object and returns result.
- *
- * When multiple objects contain the same key the later object in
- * the arguments list will take precedence.
- *
- * Example:
- *
- * ```js
- * var result = merge({foo: 123}, {foo: 456});
- * console.log(result.foo); // outputs 456
- * ```
- *
- * @param {Object} obj1 Object to merge
- * @returns {Object} Result of all merge properties
- */
-function merge(/* obj1, obj2, obj3, ... */) {
-  var result = {};
-  function assignValue(val, key) {
-    if (typeof result[key] === 'object' && typeof val === 'object') {
-      result[key] = merge(result[key], val);
-    } else {
-      result[key] = val;
-    }
-  }
-
-  for (var i = 0, l = arguments.length; i < l; i++) {
-    forEach(arguments[i], assignValue);
-  }
-  return result;
-}
-
-/**
- * Extends object a by mutably adding to it the properties of object b.
- *
- * @param {Object} a The object to be extended
- * @param {Object} b The object to copy properties from
- * @param {Object} thisArg The object to bind function to
- * @return {Object} The resulting value of object a
- */
-function extend(a, b, thisArg) {
-  forEach(b, function assignValue(val, key) {
-    if (thisArg && typeof val === 'function') {
-      a[key] = bind(val, thisArg);
-    } else {
-      a[key] = val;
-    }
-  });
-  return a;
-}
-
-module.exports = {
-  isArray: isArray,
-  isArrayBuffer: isArrayBuffer,
-  isBuffer: isBuffer,
-  isFormData: isFormData,
-  isArrayBufferView: isArrayBufferView,
-  isString: isString,
-  isNumber: isNumber,
-  isObject: isObject,
-  isUndefined: isUndefined,
-  isDate: isDate,
-  isFile: isFile,
-  isBlob: isBlob,
-  isFunction: isFunction,
-  isStream: isStream,
-  isURLSearchParams: isURLSearchParams,
-  isStandardBrowserEnv: isStandardBrowserEnv,
-  forEach: forEach,
-  merge: merge,
-  extend: extend,
-  trim: trim
-};
-
-
-/***/ }),
-/* 5 */,
-/* 6 */
-/***/ (function(module, exports) {
-
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
-
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
-
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */,
-/* 13 */
+/***/ 13:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1465,9 +1010,516 @@ var index_esm = {
 
 
 /***/ }),
-/* 14 */,
-/* 15 */,
-/* 16 */
+
+/***/ 157:
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(158);
+__webpack_require__(193);
+__webpack_require__(195);
+module.exports = __webpack_require__(196);
+
+
+/***/ }),
+
+/***/ 158:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__store__ = __webpack_require__(159);
+
+/**
+ * First we will load all of this project's JavaScript dependencies which
+ * includes Vue and other libraries. It is a great starting point when
+ * building robust, powerful web applications using Vue and Laravel.
+ */
+
+__webpack_require__(50);
+__webpack_require__(71);
+__webpack_require__(41);
+window.Vue = __webpack_require__(22);
+var util = __webpack_require__(74);
+
+
+/**
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
+ */
+
+Vue.component('generalsearchwrapper', __webpack_require__(160));
+Vue.component('searchfilterwrapper', __webpack_require__(163));
+Vue.component('searchresultwrapper', __webpack_require__(166));
+
+Vue.component('activefilter', __webpack_require__(169));
+Vue.component('corpusfilter', __webpack_require__(172));
+Vue.component('documentfilter', __webpack_require__(175));
+Vue.component('annotationfilter', __webpack_require__(178));
+
+Vue.component('searchresultheader', __webpack_require__(181));
+Vue.component('corpussearchresult', __webpack_require__(184));
+Vue.component('documentsearchresult', __webpack_require__(187));
+Vue.component('annotationsearchresult', __webpack_require__(190));
+Vue.component('pagination', __webpack_require__(467));
+
+window.axios.defaults.headers.post['Content-Type'] = 'application/json';
+
+var app = new Vue({
+    el: '#searchApp',
+    store: __WEBPACK_IMPORTED_MODULE_0__store__["a" /* default */],
+    data: {
+        results: [],
+        corpusresults: [],
+        documentresults: [],
+        annotationresults: [],
+        searches: [],
+        activefilters: [],
+        documentsByCorpus: [],
+        annotationsByCorpus: [],
+        corpusByDocument: [],
+        annotationsByDocument: [],
+        documentsByAnnotation: [],
+        corpusByAnnotation: [],
+        corpusformats: [],
+        annotationformats: [],
+        datasearched: false,
+        dataloading: false,
+        documentsearched: false,
+        documentloading: false,
+        annotationsearched: false,
+        corpusCacheString: "",
+        documentCacheString: "",
+        annotationCacheString: "",
+        annotationloading: false,
+        postAnnotationData: {},
+        corpusresultcounter: 0,
+        documentresultcounter: 0,
+        annotationresultcounter: 0,
+        publishedIndexes: window.laudatioApp.publishedIndexes
+    },
+    methods: {
+        renderArrayToString: function renderArrayToString(array) {
+            var string = "";
+            if (array) {
+                if (array.isArray && array.length == 1) {
+                    string = array[0].toString();
+                } else {
+                    string = array.toString();
+                }
+            }
+
+            return string;
+        },
+
+        askElastic: function askElastic(search) {
+            var _this = this;
+
+            this.dataloading = true;
+            this.corpusresults = [];
+            this.datasearched = false;
+            this.corpusCacheString = "";
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+            this.corpusresults = [];
+            this.documentresults = [];
+            this.annotationresults = [];
+            this.corpusresultcounter = 0;
+            this.documentresultcounter = 0;
+            this.annotationresultcounter = 0;
+            if (search.generalSearchTerm != "") {
+                this.searches = [];
+                var postData = {
+                    searchData: {
+                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_merged_formats", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code",
+                        //"corpus_publication_publication_date",
+                        "document_title", "document_author_forename", "document_size_type", "document_size_extent", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_merged_authors",
+                        //"document_publication_publishing_date",
+                        "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats"],
+                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_merged_formats", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "corpus_size_type", "corpus_size_value", "document_title", "document_author_forename", "document_author_surname", "document_merged_authors", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats", "in_documents"],
+                        query: "" + search.generalSearchTerm + "",
+                        indices: this.publishedIndexes.allPublishedIndices.join(",")
+                    }
+                };
+
+                var corpus_ids = [];
+
+                window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
+                    if (res.data.results.length > 0) {
+                        /*
+                        /* @todo: This is far too brittle: corpus/document/annotation could part of someones corpusname
+                        /* Also: when we publish, the new working version shuffles the corpus/doc/anno keyword foirther than place 0
+                         */
+                        for (var ri = 0; ri < res.data.results.length; ri++) {
+                            if (res.data.results[ri]._index.indexOf("corpus_") == 0) {
+                                _this.corpusresults.push(res.data.results[ri]);
+                                _this.corpusresultcounter++;
+
+                                var formatsarray = res.data.results[ri]._source.corpus_merged_formats.split(",");
+                                for (var key in formatsarray) {
+                                    _this.corpusformats.push(formatsarray[key]);
+                                }
+                            } else if (res.data.results[ri]._index.indexOf("document_") == 0) {
+                                _this.documentresults.push(res.data.results[ri]);
+                                _this.documentresultcounter++;
+                            } else if (res.data.results[ri]._index.indexOf("annotation_") == 0) {
+                                _this.annotationresults.push(res.data.results[ri]);
+                                _this.annotationresultcounter++;
+
+                                var annotationformatsarray = res.data.results[ri]._source.annotation_merged_formats.split(",");
+                                for (var key in annotationformatsarray) {
+                                    _this.annotationformats.push(annotationformatsarray[key]);
+                                }
+                            } ///end which index
+                        } //end for results
+                    } //end if results
+                    _this.dataloading = false;
+                    _this.datasearched = true;
+                    _this.searches.push(search.generalSearchTerm);
+                });
+            } else {
+                this.dataloading = false;
+            }
+        },
+        submitCorpusFilter: function submitCorpusFilter(corpusFilterObject) {
+            this.resetCorpusResults();
+            for (var i = 0; i < this.corpusresults.length; i++) {
+                for (var key in this.corpusresults[i]._source) {
+                    if (this.corpusresults[i]._source.hasOwnProperty(key)) {
+                        if (key != "" && corpusFilterObject.hasOwnProperty(key) && corpusFilterObject[key] != 'undefined' && corpusFilterObject[key].length > 0) {
+
+                            if (key == "corpus_size_value" && corpusFilterObject.corpus_size_value != "" && corpusFilterObject.corpusSizeTo != "") {
+                                if (!this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value, corpusFilterObject.corpusSizeTo)) {
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
+                            } else if (key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != "") {
+                                if (!this.hasFormats(this.corpusresults[i]._source[key], corpusFilterObject[key])) {
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
+                            } else if (key == "corpus_publication_license" && corpusFilterObject[key].toLowerCase() != "") {
+                                if (!this.hasLicense(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase(), corpusFilterObject[key].toLowerCase())) {
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
+                            } else if (key == "corpus_publication_publication_date" && corpusFilterObject.corpus_publication_publication_date != '' && corpusFilterObject.corpusYearTo != '') {
+                                var newest_datum = this.corpusresults[i]._source[key][this.corpusresults[i]._source[key].length - 1];
+                                var dateArray = newest_datum.split("-");
+                                var newest_date = dateArray[0];
+                                if (!this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date, corpusFilterObject.corpusYearTo)) {
+                                    this.corpusresults[i]._source.visibility = 0;
+                                    this.corpusresultcounter--;
+                                }
+                            } else {
+                                if (corpusFilterObject[key] != 'undefined') {
+                                    if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        submitDocumentFilter: function submitDocumentFilter(documentFilterObject) {
+            this.resetDocumentResults();
+            for (var i = 0; i < this.documentresults.length; i++) {
+                for (var key in this.documentresults[i]._source) {
+                    if (this.documentresults[i]._source.hasOwnProperty(key)) {
+                        if (documentFilterObject.hasOwnProperty(key)) {
+                            if (key == "document_size_extent" && documentFilterObject.document_size_extent != "" && documentFilterObject.document_size_extent_to != "") {
+                                if (!this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent, documentFilterObject.document_size_extent_to)) {
+                                    this.documentresults[i]._source.visibility = 0;
+                                    this.documentresultcounter--;
+                                }
+                            } else if (key == "document_publication_publishing_date" && documentFilterObject.document_publication_publishing_date != '' && documentFilterObject.document_publication_publishing_date_to != '') {
+                                var newest_datum = this.documentresults[i]._source[key][this.documentresults[i]._source[key].length - 1];
+                                var dateArray = newest_datum.split("-");
+                                var newest_date = dateArray[0];
+                                if (!this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date, documentFilterObject.document_publication_publishing_date_to)) {
+                                    this.documentresults[i]._source.visibility = 0;
+                                    this.documentresultcounter--;
+                                }
+                            } else {
+                                if (this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
+                                    this.documentresults[i]._source.visibility = 0;
+                                    this.documentresultcounter--;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        submitAnnotationFilter: function submitAnnotationFilter(annotationFilterObject) {
+            this.resetAnnotationResults();
+            for (var i = 0; i < this.annotationresults.length; i++) {
+                for (var key in this.annotationresults[i]._source) {
+                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
+                        if (key != "" && annotationFilterObject.hasOwnProperty(key) && annotationFilterObject[key] != 'undefined' && annotationFilterObject[key].length > 0) {
+
+                            if (key == "annotation_merged_formats" && annotationFilterObject.annotation_merged_formats != "") {
+                                if (!this.hasFormats(this.annotationresults[i]._source[key], annotationFilterObject[key])) {
+                                    this.annotationresults[i]._source.visibility = 0;
+                                    this.annotationresultcounter--;
+                                }
+                            } else {
+                                if (this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
+                                    this.annotationresults[i]._source.visibility = 0;
+                                    this.annotationresultcounter--;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        resetCorpusResults: function resetCorpusResults() {
+            for (var i = 0; i < this.corpusresults.length; i++) {
+                if (this.corpusresults[i]._source.visibility == 0) {
+                    this.corpusresults[i]._source.visibility = 1;
+                    this.corpusresultcounter++;
+                }
+            }
+        },
+        resetDocumentResults: function resetDocumentResults() {
+            for (var i = 0; i < this.documentresults.length; i++) {
+                if (this.documentresults[i]._source.visibility == 0) {
+                    this.documentresults[i]._source.visibility = 1;
+                    this.documentresultcounter++;
+                }
+            }
+        },
+        resetAnnotationResults: function resetAnnotationResults() {
+            for (var i = 0; i < this.annotationresults.length; i++) {
+                if (this.annotationresults[i]._source.visibility == 0) {
+                    this.annotationresults[i]._source.visibility = 1;
+                    this.annotationresultcounter++;
+                }
+            }
+        },
+
+        updateCorpusCounter: function updateCorpusCounter(counter) {
+            this.corpusresultcounter = counter;
+        },
+        updateDocumentCounter: function updateDocumentCounter(counter) {
+            this.documentresultcounter = counter;
+        },
+        updateAnnotationCounter: function updateAnnotationCounter(counter) {
+            this.annotationresultcounter = counter;
+        },
+        isBetween: function isBetween(theNumber, min, max) {
+            if (parseInt(theNumber) >= Math.floor(min) && parseInt(theNumber) <= Math.floor(max)) {
+                return true;
+            } else if (parseInt(theNumber) >= parseInt(min) && parseInt(theNumber) <= parseInt(max)) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        hasLicense: function hasLicense(license, filter) {
+            var licenseArray = license.split("/");
+            var ccLicense = licenseArray[4];
+            return ccLicense == filter;
+        },
+        hasFormats: function hasFormats(merged_formats, filter_formats) {
+            var hasFormat = true;
+            var merged_formats_array = merged_formats.split(',');
+
+            if (Array.isArray(filter_formats) && filter_formats.length > 1) {
+                for (var key in filter_formats) {
+                    if (filter_formats.hasOwnProperty(key)) {
+                        console.log(key + " -> " + filter_formats[key]);
+                        if (!merged_formats_array.includes(filter_formats[key])) {
+                            hasFormat = false;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                if (!merged_formats_array.includes(filter_formats)) {
+                    hasFormat = false;
+                }
+            }
+
+            return hasFormat;
+        }
+    }
+});
+
+/***/ }),
+
+/***/ 159:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(13);
+
+
+__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
+
+var initialState = {
+    "token": null,
+    "user": {}
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
+    state: {
+        documentsByCorpus: [],
+        annotationsByCorpus: [],
+        corpusByDocument: [],
+        annotationsByDocument: [],
+        corpusByAnnotation: [],
+        documentsByAnnotation: [],
+        corpusFilters: [],
+        documentFilters: [],
+        annotationFilters: []
+    },
+
+    actions: {
+        documentByCorpus: function documentByCorpus(_ref, documents) {
+            var commit = _ref.commit;
+
+            commit('PUSH_DOCUMENT_BY_CORPUS', documents);
+        },
+        annotationByCorpus: function annotationByCorpus(_ref2, annotations) {
+            var commit = _ref2.commit;
+
+            commit('PUSH_ANNOTATION_BY_CORPUS', annotations);
+        },
+        annotationByDocument: function annotationByDocument(_ref3, annotations) {
+            var commit = _ref3.commit;
+
+            commit('PUSH_ANNOTATION_BY_DOCUMENT', annotations);
+        },
+        corpusByDocument: function corpusByDocument(_ref4, corpora) {
+            var commit = _ref4.commit;
+
+            commit('PUSH_CORPUS_BY_DOCUMENT', corpora);
+        },
+        documentByAnnotation: function documentByAnnotation(_ref5, documents) {
+            var commit = _ref5.commit;
+
+            commit('PUSH_DOCUMENT_BY_ANNOTATION', documents);
+        },
+        corpusByAnnotation: function corpusByAnnotation(_ref6, corpora) {
+            var commit = _ref6.commit;
+
+            commit('PUSH_CORPUS_BY_ANNOTATION', corpora);
+        },
+        clearCorpus: function clearCorpus(_ref7, corpora) {
+            var commit = _ref7.commit;
+
+            commit('CLEAR_CORPUS_STATE', corpora);
+        },
+        clearDocuments: function clearDocuments(_ref8, documents) {
+            var commit = _ref8.commit;
+
+            commit('CLEAR_DOCUMENT_STATE', documents);
+        },
+        clearAnnotations: function clearAnnotations(_ref9, documents) {
+            var commit = _ref9.commit;
+
+            commit('CLEAR_ANNOTATION_STATE', documents);
+        }
+    },
+    getters: {
+        corpusFilters: function corpusFilters(state) {
+            return state.corpusFilters;
+        },
+        documentFilters: function documentFilters(state) {
+            return state.documentFilters;
+        },
+        annotationFilters: function annotationFilters(state) {
+            return state.annotationFilters;
+        },
+
+        corpusdocuments: function corpusdocuments(state) {
+            return state.documentsByCorpus;
+        },
+        corpusannotations: function corpusannotations(state) {
+            return state.annotationsByCorpus;
+        },
+        documentannotations: function documentannotations(state) {
+            return state.annotationsByDocument;
+        },
+        documentcorpus: function documentcorpus(state) {
+            return state.corpusByDocument;
+        },
+        annotationcorpus: function annotationcorpus(state) {
+            return state.corpusByAnnotation;
+        },
+        annotationdocuments: function annotationdocuments(state) {
+            return state.documentsByAnnotation;
+        }
+
+    },
+    mutations: {
+        PUSH_CORPUS_FILTERS: function PUSH_CORPUS_FILTERS(state, corpusFilter) {
+            state.corpusFilters.push(corpusFilter);
+        },
+        PUSH_DOCUMENT_FILTERS: function PUSH_DOCUMENT_FILTERS(state, documentFilter) {
+            state.documentFilters.push(documentFilter);
+        },
+        PUSH_ANNOTATION_FILTERS: function PUSH_ANNOTATION_FILTERS(state, annotationFilter) {
+            state.annotationFilters.push(annotationFilter);
+        },
+        PUSH_DOCUMENT_BY_CORPUS: function PUSH_DOCUMENT_BY_CORPUS(state, documents) {
+            state.documentsByCorpus.push(documents);
+        },
+        PUSH_ANNOTATION_BY_CORPUS: function PUSH_ANNOTATION_BY_CORPUS(state, annotations) {
+            state.annotationsByCorpus.push(annotations);
+        },
+        PUSH_ANNOTATION_BY_DOCUMENT: function PUSH_ANNOTATION_BY_DOCUMENT(state, annotations) {
+            state.annotationsByDocument.push(annotations);
+        },
+        PUSH_CORPUS_BY_DOCUMENT: function PUSH_CORPUS_BY_DOCUMENT(state, corpora) {
+            state.corpusByDocument.push(corpora);
+        },
+        PUSH_DOCUMENT_BY_ANNOTATION: function PUSH_DOCUMENT_BY_ANNOTATION(state, documents) {
+            state.documentsByAnnotation.push(documents);
+        },
+        PUSH_CORPUS_BY_ANNOTATION: function PUSH_CORPUS_BY_ANNOTATION(state, corpora) {
+            state.corpusByAnnotation.push(corpora);
+        },
+        CLEAR_CORPUS_STATE: function CLEAR_CORPUS_STATE(state, corpora) {
+            while (state.corpusByDocument.length > 0) {
+                state.corpusByDocument.pop();
+            }
+
+            while (state.corpusByAnnotation.length > 0) {
+                state.corpusByAnnotation.pop();
+            }
+        },
+        CLEAR_DOCUMENT_STATE: function CLEAR_DOCUMENT_STATE(state, documents) {
+            while (state.documentsByCorpus.length > 0) {
+                state.documentsByCorpus.pop();
+            }
+
+            while (state.documentsByAnnotation.length > 0) {
+                state.documentsByAnnotation.pop();
+            }
+        },
+        CLEAR_ANNOTATION_STATE: function CLEAR_ANNOTATION_STATE(state, annotations) {
+            while (state.annotationsByCorpus.length > 0) {
+                state.annotationsByCorpus.pop();
+            }
+            while (state.annotationsByDocument.length > 0) {
+                state.annotationsByDocument.pop();
+            }
+        }
+    }
+}));
+
+/***/ }),
+
+/***/ 16:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1567,7 +1619,1013 @@ module.exports = defaults;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
 
 /***/ }),
-/* 17 */
+
+/***/ 160:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(161)
+/* template */
+var __vue_template__ = __webpack_require__(162)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/GeneralSearchWrapper.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1b5752fa", Component.options)
+  } else {
+    hotAPI.reload("data-v-1b5752fa", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 161:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            generalSearchTerm: ''
+        };
+    },
+
+    props: ['results'],
+    methods: {
+        searchGeneral: function searchGeneral() {
+            this.$emit('searchedgeneral', {
+                generalSearchTerm: this.generalSearchTerm,
+                scope: 'general'
+            });
+            this.generalSearchTerm = '';
+        }
+    },
+    mounted: function mounted() {
+        console.log('General SearchComponent mounted.');
+    }
+});
+
+/***/ }),
+
+/***/ 162:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass:
+        "col-6 d-flex justify-content-center align-items-center ml-auto mr-auto"
+    },
+    [
+      _c("form", { staticClass: "form-group serviceBarSearch w-100" }, [
+        _c("div", { staticClass: "input-group" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.generalSearchTerm,
+                expression: "generalSearchTerm"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              placeholder: "Search metadata (German or English)",
+              "aria-label": "search metadata",
+              "aria-describedby": "basic-addon2"
+            },
+            domProps: { value: _vm.generalSearchTerm },
+            on: {
+              keyup: function($event) {
+                if (
+                  !("button" in $event) &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.searchGeneral($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.generalSearchTerm = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("div", { staticClass: "input-group-append" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-outline-corpus-dark pl-4 pr-4",
+                attrs: { type: "button" },
+                on: { click: _vm.searchGeneral }
+              },
+              [
+                _c("i", {
+                  staticClass: "text-primary fa fa-fw fa-search fa-lg "
+                })
+              ]
+            )
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("i", {
+        staticClass: "btn p-0 fa fa-info-circle fa-fw fa-lg ml-3",
+        attrs: {
+          "data-toggle": "tooltip",
+          role: "button",
+          "data-placement": "bottom",
+          title: "Get help how to search"
+        }
+      })
+    ]
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "clear-search close",
+        attrs: { type: "button", "aria-label": "Close" }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1b5752fa", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ 163:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(164)
+/* template */
+var __vue_template__ = __webpack_require__(165)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/SearchFilterWrapper.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5d977368", Component.options)
+  } else {
+    hotAPI.reload("data-v-5d977368", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 164:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter', 'corpusformats', 'annotationformats'],
+    methods: {
+        applyFilters: function applyFilters() {
+            this.$refs.corpusFilter.emitCorpusFilter();
+            this.$refs.documentFilter.emitDocumentFilter();
+            this.$refs.annotationFilter.emitAnnotationFilter();
+        },
+        clearAllFilters: function clearAllFilters() {
+            this.$refs.corpusFilter.clearCorpusFilter();
+            this.$refs.documentFilter.clearDocumentFilter();
+            this.$refs.annotationFilter.clearAnnotationFilter();
+        },
+        emitCorpusFilter: function emitCorpusFilter(corpusFilterEmitData) {
+            this.$emit('corpus-filter', corpusFilterEmitData);
+        },
+        emitDocumentFilter: function emitDocumentFilter(documentFilterEmitData) {
+            this.$emit('document-filter', documentFilterEmitData);
+        },
+        emitAnnotationFilter: function emitAnnotationFilter(annotationFilterEmitData) {
+            this.$emit('annotation-filter', annotationFilterEmitData);
+        },
+        emitCorpusResultCounter: function emitCorpusResultCounter(emittedCorpusResultCounter) {
+            this.$emit('corpus-resultcounter', emittedCorpusResultCounter);
+        },
+        emitDocumentResultCounter: function emitDocumentResultCounter(emittedDocumentResultCounter) {
+            this.$emit('document-resultcounter', emittedDocumentResultCounter);
+        },
+        emitAnnotationResultCounter: function emitAnnotationResultCounter(emittedAnnotationResultCounter) {
+            this.$emit('annotation-resultcounter', emittedAnnotationResultCounter);
+        }
+    },
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    mounted: function mounted() {
+        console.log('CorpusResultComponent mounted.');
+    }
+});
+
+/***/ }),
+
+/***/ 165:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c(
+      "a",
+      {
+        staticClass:
+          "text-uppercase btn-outline-corpus-dark align-self-end text-uppercase text-dark text-12 p-2",
+        attrs: { href: "javascript:" },
+        on: { click: _vm.applyFilters }
+      },
+      [_vm._v("\n        Apply Filters\n    ")]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [
+        _c("activefilter", {
+          attrs: {
+            corpusresults: _vm.corpusresults,
+            documentresults: _vm.documentresults,
+            annotationresults: _vm.annotationresults,
+            corpusresultcounter: _vm.corpusresultcounter,
+            documentresultcounter: _vm.documentresultcounter,
+            annotationresultcounter: _vm.annotationresultcounter,
+            activefilters: _vm.activefilters
+          },
+          on: {
+            "corpus-resultcounter": _vm.emitCorpusResultCounter,
+            "document-resultcounter": _vm.emitDocumentResultCounter,
+            "annotation-resultcounter": _vm.emitAnnotationResultCounter,
+            "clear-all-filters": _vm.clearAllFilters
+          }
+        })
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [
+        _c("corpusfilter", {
+          ref: "corpusFilter",
+          attrs: {
+            corpusresults: _vm.corpusresults,
+            documentresults: _vm.documentresults,
+            annotationresults: _vm.annotationresults,
+            corpusformats: _vm.corpusformats
+          },
+          on: { "corpus-filter": _vm.emitCorpusFilter }
+        })
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [
+        _c("documentfilter", {
+          ref: "documentFilter",
+          attrs: {
+            corpusresults: _vm.corpusresults,
+            documentresults: _vm.documentresults,
+            annotationresults: _vm.annotationresults
+          },
+          on: { "document-filter": _vm.emitDocumentFilter }
+        })
+      ],
+      1
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "mb-4" },
+      [
+        _c("annotationfilter", {
+          ref: "annotationFilter",
+          attrs: {
+            corpusresults: _vm.corpusresults,
+            documentresults: _vm.documentresults,
+            annotationresults: _vm.annotationresults,
+            annotationformats: _vm.annotationformats
+          },
+          on: { "annotation-filter": _vm.emitAnnotationFilter }
+        })
+      ],
+      1
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-5d977368", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ 166:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(167)
+/* template */
+var __vue_template__ = __webpack_require__(168)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/SearchResultWrapper.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-028d3ef2", Component.options)
+  } else {
+    hotAPI.reload("data-v-028d3ef2", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 167:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched', 'dataloading', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    data: function data() {
+        return {
+            currentCorpusPage: 1,
+            currentDocumentPage: 1,
+            currentAnnotationPage: 1,
+            corpusPerPage: 5,
+            documentPerPage: 5,
+            annotationPerPage: 5
+        };
+    },
+    methods: {
+        guid: function guid(key) {
+            return key + ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
+                return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
+            });
+        },
+        corpusCurrentPageChange: function corpusCurrentPageChange(page) {
+            this.currentCorpusPage = page;
+        },
+        documentCurrentPageChange: function documentCurrentPageChange(page) {
+            this.currentDocumentPage = page;
+        },
+        annotationCurrentPageChange: function annotationCurrentPageChange(page) {
+            this.currentAnnotationPage = page;
+        },
+        corpusPerPageChange: function corpusPerPageChange(perpage) {
+            this.corpusPerPage = perpage;
+        },
+        documentPerPageChange: function documentPerPageChange(perpage) {
+            this.documentPerPage = perpage;
+        },
+        annotationPerPageChange: function annotationPerPageChange(perpage) {
+            this.annotationPerPage = perpage;
+        }
+    },
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    mounted: function mounted() {
+        console.log('CorpusResultComponent mounted.');
+    }
+});
+
+/***/ }),
+
+/***/ 168:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "col" },
+    [
+      _c("i", {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.dataloading,
+            expression: "dataloading"
+          }
+        ],
+        staticClass: "fa fa-circle-o-notch fa-spin fa-3x fa-fw"
+      }),
+      _vm._v(" "),
+      _c(
+        "span",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.dataloading,
+              expression: "dataloading"
+            }
+          ],
+          staticClass: "sr-only"
+        },
+        [_vm._v("Loading...")]
+      ),
+      _vm._v(" "),
+      (_vm.searches != "undefined" &&
+        _vm.searches.length >= 1 &&
+        _vm.datasearched &&
+        !_vm.dataloading &&
+        (_vm.corpusresults != "undefined" && _vm.corpusresults.length >= 1)) ||
+      (_vm.documentresults != "undefined" && _vm.documentresults.length >= 1) ||
+      (_vm.annotationresults != "undefined" &&
+        _vm.annotationresults.length >= 1)
+        ? _c("h3", { staticClass: "h3 font-weight-normal mb-4" }, [
+            _vm._v(
+              '\n        Results for the search "' +
+                _vm._s(_vm.searches.join(" ")) +
+                '"'
+            )
+          ])
+        : _vm.corpusresults != "undefined" &&
+          _vm.corpusresults.length < 1 &&
+          _vm.documentresults != "undefined" &&
+          _vm.documentresults.length < 1 &&
+          _vm.annotationresults != "undefined" &&
+          _vm.annotationresults.length < 1 &&
+          _vm.datasearched &&
+          !_vm.dataloading &&
+          _vm.searches != "undefined" &&
+          _vm.searches.length >= 1
+          ? _c(
+              "div",
+              {
+                staticClass: "alert alert-info alert-dismissible fade show",
+                attrs: { role: "alert" }
+              },
+              [
+                _c("strong", [
+                  _vm._v("The search "),
+                  _c("i", [_vm._v('"' + _vm._s(_vm.searches.join(" ")) + '"')]),
+                  _vm._v(" returned no results!")
+                ]),
+                _vm._v(" "),
+                _vm._m(0)
+              ]
+            )
+          : _vm._e(),
+      _vm._v(" "),
+      _c("searchresultheader", {
+        attrs: {
+          corpusresults: _vm.corpusresults,
+          documentresults: _vm.documentresults,
+          annotationresults: _vm.annotationresults,
+          corpusresultcounter: _vm.corpusresultcounter,
+          documentresultcounter: _vm.documentresultcounter,
+          annotationresultcounter: _vm.annotationresultcounter
+        }
+      }),
+      _vm._v(" "),
+      _c("div", { staticClass: "tab-content" }, [
+        _c(
+          "div",
+          {
+            staticClass: "tab-pane active",
+            attrs: {
+              id: "searchtab-corpora",
+              role: "tabpanel",
+              "aria-labelledby": "searchtab-corpora"
+            }
+          },
+          [
+            _vm._l(_vm.corpusresults, function(corpusresult, index) {
+              return _vm.corpusresults != "undefined" &&
+                _vm.corpusresults.length >= 1 &&
+                index >=
+                  _vm.currentCorpusPage * _vm.corpusPerPage -
+                    _vm.corpusPerPage &&
+                index < _vm.currentCorpusPage * _vm.corpusPerPage
+                ? _c("corpussearchresult", {
+                    key: _vm.guid(index),
+                    attrs: { corpusresult: corpusresult }
+                  })
+                : _vm._e()
+            }),
+            _vm._v(" "),
+            _vm.corpusresults != "undefined" &&
+            _vm.corpusresults.length >= 1 &&
+            _vm.corpusresults.length >= _vm.corpusPerPage
+              ? _c("pagination", {
+                  attrs: {
+                    totalPages: _vm.corpusresults.length / _vm.corpusPerPage,
+                    total: _vm.corpusresults.length,
+                    currentPage: _vm.currentCorpusPage,
+                    perPage: _vm.corpusPerPage,
+                    headerType: "corpus"
+                  },
+                  on: {
+                    corpus_pagechanged: _vm.corpusCurrentPageChange,
+                    corpus_resultsperpage: _vm.corpusPerPageChange
+                  }
+                })
+              : _vm._e()
+          ],
+          2
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "tab-pane",
+            attrs: {
+              id: "searchtab-documents",
+              role: "tabpanel",
+              "aria-labelledby": "searchtab-documents"
+            }
+          },
+          [
+            _vm._l(_vm.documentresults, function(
+              documentresult,
+              documentindex
+            ) {
+              return _vm.documentresults != "undefined" &&
+                _vm.documentresults.length >= 1 &&
+                documentindex >=
+                  _vm.currentDocumentPage * _vm.documentPerPage -
+                    _vm.documentPerPage &&
+                documentindex < _vm.currentDocumentPage * _vm.documentPerPage
+                ? _c("documentsearchresult", {
+                    key: _vm.guid(documentindex),
+                    attrs: { documentresult: documentresult }
+                  })
+                : _vm._e()
+            }),
+            _vm._v(" "),
+            _vm.documentresults != "undefined" &&
+            _vm.documentresults.length >= 1 &&
+            _vm.documentresults.length >= _vm.documentPerPage
+              ? _c("pagination", {
+                  attrs: {
+                    totalPages:
+                      _vm.documentresults.length / _vm.documentPerPage,
+                    total: _vm.documentresults.length,
+                    currentPage: _vm.currentDocumentPage,
+                    perPage: _vm.documentPerPage,
+                    headerType: "document"
+                  },
+                  on: {
+                    document_pagechanged: _vm.documentCurrentPageChange,
+                    document_resultsperpage: _vm.documentPerPageChange
+                  }
+                })
+              : _vm._e()
+          ],
+          2
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "tab-pane",
+            attrs: {
+              id: "searchtab-annotations",
+              role: "tabpanel",
+              "aria-labelledby": "searchtab-annotations"
+            }
+          },
+          [
+            _vm._l(_vm.annotationresults, function(
+              annotationresult,
+              annotationindex
+            ) {
+              return _vm.annotationresults != "undefined" &&
+                _vm.annotationresults.length >= 1 &&
+                annotationindex >=
+                  _vm.currentAnnotationPage * _vm.annotationPerPage -
+                    _vm.annotationPerPage &&
+                annotationindex <
+                  _vm.currentAnnotationPage * _vm.annotationPerPage
+                ? _c("annotationsearchresult", {
+                    key: _vm.guid(annotationindex),
+                    attrs: { annotationresult: annotationresult }
+                  })
+                : _vm._e()
+            }),
+            _vm._v(" "),
+            _vm.annotationresults != "undefined" &&
+            _vm.annotationresults.length >= 1 &&
+            _vm.annotationresults.length >= _vm.annotationPerPage
+              ? _c("pagination", {
+                  attrs: {
+                    totalPages:
+                      _vm.annotationresults.length / _vm.annotationPerPage,
+                    total: _vm.annotationresults.length,
+                    currentPage: _vm.currentAnnotationPage,
+                    perPage: _vm.annotationPerPage,
+                    headerType: "annotation"
+                  },
+                  on: {
+                    annotation_pagechanged: _vm.annotationCurrentPageChange,
+                    annotation_resultsperpage: _vm.annotationPerPageChange
+                  }
+                })
+              : _vm._e()
+          ],
+          2
+        )
+      ])
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "alert",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-028d3ef2", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ 169:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(170)
+/* template */
+var __vue_template__ = __webpack_require__(171)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ActiveFilter.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-62a9a656", Component.options)
+  } else {
+    hotAPI.reload("data-v-62a9a656", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 17:
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -1757,10 +2815,3710 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 18 */,
-/* 19 */,
-/* 20 */,
-/* 21 */
+
+/***/ 170:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    data: function data() {
+        return {
+            localcorpusresultcounter: this.corpusresultcounter,
+            localdocumentresultcounter: this.documentresultcounter,
+            localannotationresultcounter: this.annotationresultcounter
+        };
+    },
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    methods: {
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        },
+        resetFilters: function resetFilters() {
+            this.localcorpusresultcounter = this.corpusresultcounter;
+            for (var i = 0; i < this.corpusresults.length; i++) {
+                if (this.corpusresults[i]._source.visibility == 0) {
+                    this.corpusresults[i]._source.visibility = 1;
+                    this.localcorpusresultcounter++;
+                }
+            }
+            this.$emit('corpus-resultcounter', this.localcorpusresultcounter);
+
+            this.localdocumentresultcounter = this.documentresultcounter;
+            for (var i = 0; i < this.documentresults.length; i++) {
+                if (this.documentresults[i]._source.visibility == 0) {
+                    this.documentresults[i]._source.visibility = 1;
+                    this.localdocumentresultcounter++;
+                }
+            }
+            this.$emit('document-resultcounter', this.localdocumentresultcounter);
+
+            this.localannotationresultcounter = this.annotationresultcounter;
+            for (var i = 0; i < this.annotationresults.length; i++) {
+                if (this.annotationresults[i]._source.visibility == 0) {
+                    this.annotationresults[i]._source.visibility = 1;
+                    this.localannotationresultcounter++;
+                }
+            }
+            this.$emit('annotation-resultcounter', this.localannotationresultcounter);
+
+            this.$emit('clear-all-filters');
+        }
+    },
+    mounted: function mounted() {
+        console.log('CorpusActiveFilterComponent mounted.');
+    }
+});
+
+/***/ }),
+
+/***/ 171:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelActives" } }, [
+      _c("div", { staticClass: "card-body p-1" }, [
+        _c(
+          "form",
+          { attrs: { action: "" } },
+          [
+            _vm._l(_vm.activefilters, function(activefilter, index) {
+              return _vm.activefilters != "undefined" &&
+                _vm.activefilters.length >= 1
+                ? _c(
+                    "div",
+                    {
+                      key: index,
+                      staticClass: "d-flex flex-wrap py-2",
+                      attrs: { activefilter: activefilter }
+                    },
+                    [
+                      _c("div", { staticClass: "m-1" }, [
+                        _c(
+                          "a",
+                          {
+                            staticClass:
+                              "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                            attrs: { href: "#" }
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-close fa-fw" }),
+                            _vm._v(
+                              "\n                            " +
+                                _vm._s(activefilter.name) +
+                                "\n                        "
+                            )
+                          ]
+                        )
+                      ])
+                    ]
+                  )
+                : _vm._e()
+            }),
+            _vm._v(" "),
+            _c("div", { staticClass: "d-flex flex-column" }, [
+              _c(
+                "a",
+                {
+                  staticClass:
+                    "align-self-end text-uppercase text-dark text-12 p-2",
+                  attrs: { href: "javascript:", role: "button" },
+                  on: {
+                    click: function($event) {
+                      _vm.resetFilters()
+                    }
+                  }
+                },
+                [
+                  _vm._v(
+                    "\n                        Clear all Filter\n                    "
+                  )
+                ]
+              )
+            ])
+          ],
+          2
+        )
+      ])
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
+        attrs: {
+          "data-toggle": "collapse",
+          "data-target": "#formPanelActives",
+          "aria-expanded": "true",
+          "aria-controls": "formPanelActives"
+        }
+      },
+      [
+        _c("span", [_vm._v("Active Filter (x)")]),
+        _vm._v(" "),
+        _c("i", {
+          staticClass:
+            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+        })
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-62a9a656", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ 172:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(173)
+/* template */
+var __vue_template__ = __webpack_require__(174)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/CorpusFilter.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-b27cc1d2", Component.options)
+  } else {
+    hotAPI.reload("data-v-b27cc1d2", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 173:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'corpusformats'],
+    data: function data() {
+        return {
+            corpusFilterData: {
+                corpus_title: '',
+                corpus_publication_publisher: '',
+                corpus_publication_publication_date: '',
+                corpusYearTo: '',
+                corpus_size_value: '',
+                corpusSizeTo: '',
+                corpus_merged_languages: '',
+                corpus_merged_formats: [],
+                corpus_publication_license: ''
+            },
+            scope: 'corpus'
+        };
+    },
+    methods: {
+        emitCorpusFilter: function emitCorpusFilter() {
+            this.$emit('corpus-filter', this.corpusFilterData);
+        },
+
+        clearCorpusFilter: function clearCorpusFilter() {
+            this.corpusFilterData = {
+                corpus_title: '',
+                corpus_publication_publisher: '',
+                corpus_publication_publication_date: '',
+                corpusYearTo: '',
+                corpus_size_value: '',
+                corpusSizeTo: '',
+                corpus_merged_languages: '',
+                corpus_merged_formats: [],
+                corpus_publication_license: ''
+                //There is some strange bug somewhere that makes it impossible to add a filter twice after the following purge:
+            };$('#formPanelCorpus').find("ul.flexdatalist-multiple li.value").remove();
+        },
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1 || this.documentresults.length >= 1 || this.annotationresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        },
+        uniqueArray: function uniqueArray(a) {
+            return [].concat(_toConsumableArray(new Set(a)));
+        }
+    },
+    mounted: function mounted() {
+        var mycorpusvue = this;
+
+        var rangeSliderList = ['corpusSize'];
+
+        var _loop = function _loop() {
+            var i = h;
+
+            var el = document.getElementById(rangeSliderList[i]);
+
+            if (el) {
+                //console.log("el: "+el)
+                el.style.height = '8px';
+                el.style.margin = '0 auto 8px';
+
+                noUiSlider.create(el, {
+                    animate: true,
+                    start: [1, 999999], // 4 handles, starting at...
+                    margin: 1, // Handles must be at least 300 apart
+                    limit: 999998, // ... but no more than 600
+                    connect: true, // Display a colored bar between the handles
+                    orientation: 'horizontal', // Orient the slider vertically
+                    behaviour: 'tap-drag', // Move handle on tap, bar is draggable
+                    step: 1,
+
+                    range: {
+                        'min': 1,
+                        'max': 999999
+                    }
+                });
+
+                var paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
+                    paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
+
+                el.noUiSlider.on('update', function (values, handle) {
+
+                    if (handle) {
+                        //this.corpusFilterData
+                        //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
+                        mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
+                        paddingMax.innerHTML = Math.round(values[handle]);
+                    } else {
+                        //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
+                        mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
+                        paddingMin.innerHTML = Math.round(values[handle]);
+                    }
+                });
+
+                el.noUiSlider.on('change', function () {
+                    // Validate corresponding form
+                    var parentForm = $(el).closest('form');
+                    $(parentForm).find('*[type=submit]').removeClass('disabled');
+                });
+            }
+        };
+
+        for (var h = 0; h < rangeSliderList.length; h++) {
+            _loop();
+        } //end for
+
+        $('input.flexdatalist').on('select:flexdatalist', function (event, set, options) {
+            if (mycorpusvue != 'undefined' && $(this).hasClass('corpusformatslist')) {
+                mycorpusvue.corpusFilterData.corpus_merged_formats.push(set.value);
+            }
+        });
+    }
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(95)))
+
+/***/ }),
+
+/***/ 174:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelCorpus" } }, [
+      _c("div", { staticClass: "card-body px-2" }, [
+        _c("form", { attrs: { action: "" } }, [
+          _c("div", { staticClass: "form-group mb-3" }, [
+            _c(
+              "label",
+              {
+                staticClass: "mb-0 text-14 ",
+                attrs: { for: "formCorpusTitle" }
+              },
+              [_vm._v("Title")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.corpusFilterData.corpus_title,
+                  expression: "corpusFilterData.corpus_title"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                type: "text",
+                id: "formCorpusTitle",
+                "aria-describedby": "inputTitle",
+                placeholder: '"Ridges herbology"'
+              },
+              domProps: { value: _vm.corpusFilterData.corpus_title },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(
+                    _vm.corpusFilterData,
+                    "corpus_title",
+                    $event.target.value
+                  )
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-group mb-3" }, [
+            _c(
+              "label",
+              {
+                staticClass: "mb-0 text-14 ",
+                attrs: { for: "formCorpusLanguage" }
+              },
+              [_vm._v("Language")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.corpusFilterData.corpus_merged_languages,
+                  expression: "corpusFilterData.corpus_merged_languages"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                type: "text",
+                id: "formCorpusLanguage",
+                "aria-describedby": "inputLanguage",
+                placeholder: '"German"'
+              },
+              domProps: { value: _vm.corpusFilterData.corpus_merged_languages },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(
+                    _vm.corpusFilterData,
+                    "corpus_merged_languages",
+                    $event.target.value
+                  )
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _vm._m(1),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "collapse formPanelCorpus-all",
+              attrs: { id: "formPanelCorpus-all1" }
+            },
+            [
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusPublisher" }
+                  },
+                  [_vm._v("Publisher")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.corpusFilterData.corpus_publication_publisher,
+                      expression:
+                        "corpusFilterData.corpus_publication_publisher"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    id: "formCorpusPublisher",
+                    "aria-describedby": "inputPublisher",
+                    placeholder: '"Humboldt Universität"'
+                  },
+                  domProps: {
+                    value: _vm.corpusFilterData.corpus_publication_publisher
+                  },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.corpusFilterData,
+                        "corpus_publication_publisher",
+                        $event.target.value
+                      )
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusFormats" }
+                  },
+                  [_vm._v("Formats")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.corpusFilterData.corpus_merged_formats,
+                      expression: "corpusFilterData.corpus_merged_formats"
+                    }
+                  ],
+                  staticClass: "flexdatalist corpusformatslist form-control",
+                  attrs: {
+                    type: "text",
+                    name: "formatslist",
+                    multiple: "multiple",
+                    list: "formatsList-Corpus",
+                    "data-min-length": "0",
+                    id: "formCorpusFormats"
+                  },
+                  domProps: {
+                    value: _vm.corpusFilterData.corpus_merged_formats
+                  },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.corpusFilterData,
+                        "corpus_merged_formats",
+                        $event.target.value
+                      )
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "datalist",
+                  { attrs: { id: "formatsList-Corpus" } },
+                  _vm._l(this.uniqueArray(_vm.corpusformats), function(
+                    corpusformat
+                  ) {
+                    return _c(
+                      "option",
+                      { attrs: { corpusformat: corpusformat } },
+                      [_vm._v(_vm._s(corpusformat))]
+                    )
+                  })
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusLicenses" }
+                  },
+                  [_vm._v("License")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.corpusFilterData.corpus_publication_license,
+                      expression: "corpusFilterData.corpus_publication_license"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    id: "formCorpusLicenses",
+                    "aria-describedby": "inputLicenses",
+                    placeholder: '"by-sa"'
+                  },
+                  domProps: {
+                    value: _vm.corpusFilterData.corpus_publication_license
+                  },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.corpusFilterData,
+                        "corpus_publication_license",
+                        $event.target.value
+                      )
+                    }
+                  }
+                })
+              ])
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "collapse formPanelCorpus-all",
+            attrs: { id: "formPanelCorpus-all2" }
+          },
+          [
+            _vm._m(2),
+            _vm._v(" "),
+            _c("form", { attrs: { action: "" } }, [
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusYear" }
+                  },
+                  [_vm._v("Year of Publication")]
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "d-flex justify-content-between" }, [
+                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                    _c(
+                      "small",
+                      {
+                        staticClass: "form-text text-muted",
+                        attrs: { id: "yearFromHelp" }
+                      },
+                      [_vm._v("from")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value:
+                            _vm.corpusFilterData
+                              .corpus_publication_publication_date,
+                          expression:
+                            "corpusFilterData.corpus_publication_publication_date"
+                        }
+                      ],
+                      staticClass: "toBeValidated form-control",
+                      attrs: {
+                        placeholder: "J J J J",
+                        type: "number",
+                        min: "1",
+                        max: "9999",
+                        step: "1",
+                        name: "yearFrom",
+                        id: "formCorpusYearFrom"
+                      },
+                      domProps: {
+                        value:
+                          _vm.corpusFilterData
+                            .corpus_publication_publication_date
+                      },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.corpusFilterData,
+                            "corpus_publication_publication_date",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                    _c(
+                      "small",
+                      {
+                        staticClass: "form-text text-muted",
+                        attrs: { id: "yearToHelp" }
+                      },
+                      [_vm._v("to")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.corpusFilterData.corpusYearTo,
+                          expression: "corpusFilterData.corpusYearTo"
+                        }
+                      ],
+                      staticClass: "toBeValidated form-control",
+                      attrs: {
+                        placeholder: "J J J J",
+                        type: "number",
+                        min: "1",
+                        max: "9999",
+                        step: "1",
+                        name: "yearTo",
+                        id: "formCorpusYearTo"
+                      },
+                      domProps: { value: _vm.corpusFilterData.corpusYearTo },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.corpusFilterData,
+                            "corpusYearTo",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ])
+                ])
+              ])
+            ])
+          ]
+        )
+      ])
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
+        attrs: {
+          "data-toggle": "collapse",
+          "data-target": "#formPanelCorpus",
+          "aria-expanded": "true",
+          "aria-controls": "formPanelCorpus"
+        }
+      },
+      [
+        _c("span", [_vm._v("Corpus")]),
+        _vm._v(" "),
+        _c("i", {
+          staticClass:
+            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "d-flex flex-column" }, [
+      _c(
+        "a",
+        {
+          staticClass:
+            "align-self-end text-uppercase text-dark text-14 filter-expander",
+          attrs: {
+            "data-toggle": "collapse",
+            href: "#",
+            "data-target": ".formPanelCorpus-all",
+            role: "button",
+            "aria-expanded": "false",
+            "aria-controls": "#formPanelCorpus-all1 #formPanelCorpus-all2"
+          }
+        },
+        [
+          _vm._v(
+            "\n                        + Show all Corpusfilter\n                    "
+          )
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("form", { attrs: { action: "" } }, [
+      _c("div", { staticClass: "form-group mb-3" }, [
+        _c("label", { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } }, [
+          _vm._v("Corpus size (Tokens, Words)")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "d-flex justify-content-between" }, [
+          _c("div", { staticClass: "w-75" }, [
+            _c("div", { attrs: { id: "corpusSize" } }),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass:
+                  "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
+              },
+              [
+                _c("span", { attrs: { id: "corpusSize-minVal" } }),
+                _vm._v(" "),
+                _c("span", { attrs: { id: "corpusSize-maxVal" } })
+              ]
+            )
+          ])
+        ])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-b27cc1d2", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ 175:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(176)
+/* template */
+var __vue_template__ = __webpack_require__(177)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/DocumentFilter.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-717d462c", Component.options)
+  } else {
+    hotAPI.reload("data-v-717d462c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 176:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults'],
+    data: function data() {
+        return {
+            documentFilterData: {
+                document_title: '',
+                document_author_forename: '',
+                document_author_surname: '',
+                document_merged_authors: '',
+                document_publication_place: '',
+                document_publication_publishing_date: '',
+                document_publication_publishing_date_to: '',
+                document_size_extent: '',
+                document_size_extent_to: '',
+                document_languages_language: '',
+                document_merged_languages: ''
+            },
+            scope: 'document'
+        };
+    },
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    methods: {
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1 || this.documentresults.length >= 1 || this.annotationresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        },
+        emitDocumentFilter: function emitDocumentFilter() {
+            this.$emit('document-filter', this.documentFilterData);
+        },
+
+        clearDocumentFilter: function clearDocumentFilter() {
+            this.documentFilterData = {
+                document_title: '',
+                document_author_forename: '',
+                document_author_surname: '',
+                document_merged_authors: '',
+                document_publication_place: '',
+                document_publication_publishing_date: '',
+                document_publication_publishing_date_to: '',
+                document_size_extent: '',
+                document_size_extent_to: '',
+                document_languages_language: '',
+                document_merged_languages: ''
+            };
+        }
+    },
+    mounted: function mounted() {
+        console.log('DocumentFilterComponent mounted.');
+        var myvue = this;
+
+        var rangeSliderList = ['documentSize'];
+
+        var _loop = function _loop() {
+            var i = h;
+
+            var el = document.getElementById(rangeSliderList[i]);
+
+            if (el) {
+                //console.log("el: "+el)
+                el.style.height = '8px';
+                el.style.margin = '0 auto 8px';
+
+                noUiSlider.create(el, {
+                    animate: true,
+                    start: [1, 999999], // 4 handles, starting at...
+                    margin: 1, // Handles must be at least 300 apart
+                    limit: 999998, // ... but no more than 600
+                    connect: true, // Display a colored bar between the handles
+                    orientation: 'horizontal', // Orient the slider vertically
+                    behaviour: 'tap-drag', // Move handle on tap, bar is draggable
+                    step: 1,
+
+                    range: {
+                        'min': 1,
+                        'max': 999999
+                    }
+                });
+
+                var paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
+                    paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
+
+                el.noUiSlider.on('update', function (values, handle) {
+
+                    if (handle) {
+                        //this.corpusFilterData
+                        //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
+                        myvue.documentFilterData.document_size_extent_to = values[handle];
+                        paddingMax.innerHTML = Math.round(values[handle]);
+                    } else {
+                        //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
+                        myvue.documentFilterData.document_size_extent = values[handle];
+                        paddingMin.innerHTML = Math.round(values[handle]);
+                    }
+                });
+
+                el.noUiSlider.on('change', function () {
+                    // Validate corresponding form
+                    var parentForm = $(el).closest('form');
+                    $(parentForm).find('*[type=submit]').removeClass('disabled');
+                });
+            }
+        };
+
+        for (var h = 0; h < rangeSliderList.length; h++) {
+            _loop();
+        } //end for
+    }
+});
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(95)))
+
+/***/ }),
+
+/***/ 177:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelDocuments" } }, [
+      _c("div", { staticClass: "card-body px-2" }, [
+        _c("form", { attrs: { action: "" } }, [
+          _c("div", { staticClass: "form-group mb-3" }, [
+            _c(
+              "label",
+              {
+                staticClass: "mb-0 text-14 ",
+                attrs: { for: "formDocumentsTitle" }
+              },
+              [_vm._v("Title")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.documentFilterData.document_title,
+                  expression: "documentFilterData.document_title"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                type: "text",
+                id: "formDocumentsTitle",
+                "aria-describedby": "inputTitle",
+                placeholder: '"Document title"'
+              },
+              domProps: { value: _vm.documentFilterData.document_title },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(
+                    _vm.documentFilterData,
+                    "document_title",
+                    $event.target.value
+                  )
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-group mb-3" }, [
+            _c(
+              "label",
+              {
+                staticClass: "mb-0 text-14 ",
+                attrs: { for: "formDocumentsAuthor" }
+              },
+              [_vm._v("Author")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.documentFilterData.document_merged_authors,
+                  expression: "documentFilterData.document_merged_authors"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                type: "text",
+                id: "formDocumentsAuthor",
+                "aria-describedby": "inputAuthor",
+                placeholder: '"Frank Mann"'
+              },
+              domProps: {
+                value: _vm.documentFilterData.document_merged_authors
+              },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(
+                    _vm.documentFilterData,
+                    "document_merged_authors",
+                    $event.target.value
+                  )
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _vm._m(1),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "collapse formPanelDocuments-all",
+              attrs: { id: "formPanelDocuments-all1" }
+            },
+            [
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formDocumentsLanguage" }
+                  },
+                  [_vm._v("Language")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.documentFilterData.document_languages_language,
+                      expression:
+                        "documentFilterData.document_languages_language"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    id: "formDocumentsLanguage",
+                    "aria-describedby": "inputLanguage",
+                    placeholder: '"German"'
+                  },
+                  domProps: {
+                    value: _vm.documentFilterData.document_languages_language
+                  },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.documentFilterData,
+                        "document_languages_language",
+                        $event.target.value
+                      )
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formDocumentsPlace" }
+                  },
+                  [_vm._v("Place")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.documentFilterData.document_publication_place,
+                      expression:
+                        "documentFilterData.document_publication_place"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "text",
+                    id: "formDocumentsPlace",
+                    "aria-describedby": "inputPlace",
+                    placeholder: '"Mannheim"'
+                  },
+                  domProps: {
+                    value: _vm.documentFilterData.document_publication_place
+                  },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.documentFilterData,
+                        "document_publication_place",
+                        $event.target.value
+                      )
+                    }
+                  }
+                })
+              ])
+            ]
+          )
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "collapse formPanelDocuments-all",
+            attrs: { id: "formPanelDocuments-all2" }
+          },
+          [
+            _vm._m(2),
+            _vm._v(" "),
+            _c("form", { attrs: { action: "" } }, [
+              _c("div", { staticClass: "form-group mb-3" }, [
+                _c(
+                  "label",
+                  {
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formDocumentsYear" }
+                  },
+                  [_vm._v("Year of Publication")]
+                ),
+                _vm._v(" "),
+                _c("div", { staticClass: "d-flex justify-content-between" }, [
+                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                    _c(
+                      "small",
+                      {
+                        staticClass: "form-text text-muted",
+                        attrs: { id: "yearFromHelp" }
+                      },
+                      [_vm._v("from")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value:
+                            _vm.documentFilterData
+                              .document_publication_publishing_date,
+                          expression:
+                            "documentFilterData.document_publication_publishing_date"
+                        }
+                      ],
+                      staticClass: "toBeValidated form-control",
+                      attrs: {
+                        placeholder: "J J J J",
+                        type: "number",
+                        min: "1",
+                        max: "9999",
+                        step: "1",
+                        name: "yearFrom",
+                        id: "formDocumentsYearFrom"
+                      },
+                      domProps: {
+                        value:
+                          _vm.documentFilterData
+                            .document_publication_publishing_date
+                      },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.documentFilterData,
+                            "document_publication_publishing_date",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                    _c(
+                      "small",
+                      {
+                        staticClass: "form-text text-muted",
+                        attrs: { id: "yearToHelp" }
+                      },
+                      [_vm._v("to")]
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value:
+                            _vm.documentFilterData
+                              .document_publication_publishing_date_to,
+                          expression:
+                            "documentFilterData.document_publication_publishing_date_to"
+                        }
+                      ],
+                      staticClass: "toBeValidated form-control",
+                      attrs: {
+                        placeholder: "J J J J",
+                        type: "number",
+                        min: "1",
+                        max: "9999",
+                        step: "1",
+                        name: "yearTo",
+                        id: "formDocumentsYearTo"
+                      },
+                      domProps: {
+                        value:
+                          _vm.documentFilterData
+                            .document_publication_publishing_date_to
+                      },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.documentFilterData,
+                            "document_publication_publishing_date_to",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ])
+                ])
+              ])
+            ])
+          ]
+        )
+      ])
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
+        attrs: {
+          "data-toggle": "collapse",
+          "data-target": "#formPanelDocuments",
+          "aria-expanded": "true",
+          "aria-controls": "formPanelDocuments"
+        }
+      },
+      [
+        _c("span", [_vm._v("Documents")]),
+        _vm._v(" "),
+        _c("i", {
+          staticClass:
+            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+        })
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "d-flex flex-column" }, [
+      _c(
+        "a",
+        {
+          staticClass:
+            "align-self-end text-uppercase text-dark text-14 filter-expander",
+          attrs: {
+            "data-toggle": "collapse",
+            href: "#",
+            "data-target": ".formPanelDocuments-all",
+            role: "button",
+            "aria-expanded": "false",
+            "aria-controls": "#formPanelDocuments-all1 #formPanelDocuments-all2"
+          }
+        },
+        [
+          _vm._v(
+            "\n                        + Show all Documentsfilter\n                    "
+          )
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("form", { attrs: { action: "" } }, [
+      _c("div", { staticClass: "form-group mb-3" }, [
+        _c("label", { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } }, [
+          _vm._v("Documents size (Tokens, Words)")
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "d-flex justify-content-between" }, [
+          _c("div", { staticClass: "w-75" }, [
+            _c("div", { attrs: { id: "documentSize" } }),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass:
+                  "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
+              },
+              [
+                _c("span", { attrs: { id: "documentSize-minVal" } }),
+                _vm._v(" "),
+                _c("span", { attrs: { id: "documentSize-maxVal" } })
+              ]
+            )
+          ])
+        ])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-717d462c", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ 178:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(179)
+/* template */
+var __vue_template__ = __webpack_require__(180)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/AnnotationFilter.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-147adb84", Component.options)
+  } else {
+    hotAPI.reload("data-v-147adb84", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 179:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'annotationformats'],
+    data: function data() {
+        return {
+            annotationFilterData: {
+                preparation_title: '',
+                annotation_merged_formats: [],
+                preparation_encoding_annotation_group: ''
+            },
+            scope: 'annotation'
+        };
+    },
+    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
+        stateDocumentCorpusresults: 'documentcorpus',
+        stateAnnotationCorpusresults: 'annotationcorpus'
+    }),
+    methods: {
+        getClass: function getClass() {
+            var classes = "collapse";
+            if (this.corpusresults.length >= 1 || this.documentresults.length >= 1 || this.annotationresults.length >= 1) {
+                classes += " show";
+            }
+            return classes;
+        },
+        emitAnnotationFilter: function emitAnnotationFilter() {
+            this.$emit('annotation-filter', this.annotationFilterData);
+        },
+        uniqueArray: function uniqueArray(a) {
+            return [].concat(_toConsumableArray(new Set(a)));
+        },
+        clearAnnotationFilter: function clearAnnotationFilter() {
+            this.annotationFilterData = {
+                preparation_title: '',
+                annotation_merged_formats: [],
+                preparation_encoding_annotation_group: ''
+                //There is some strange bug somewhere that makes it impossible to add a filter twice after the following purge:
+            };$('#formPanelAnnotations').find("ul.flexdatalist-multiple li.value").remove();
+        }
+    },
+    mounted: function mounted() {
+        var myannotationvue = this;
+        $('input.flexdatalist').on('select:flexdatalist', function (event, set, options) {
+            if (myannotationvue != 'undefined' && $(this).hasClass('annotationformatslist')) {
+                myannotationvue.annotationFilterData.annotation_merged_formats.push(set.value);
+            }
+        });
+    }
+});
+
+/***/ }),
+
+/***/ 180:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "card" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c(
+      "div",
+      { class: _vm.getClass(), attrs: { id: "formPanelAnnotations" } },
+      [
+        _c("div", { staticClass: "card-body px-2" }, [
+          _c("form", { attrs: { action: "" } }, [
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formAnnotationsTitle" }
+                },
+                [_vm._v("Name")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.annotationFilterData.preparation_title,
+                    expression: "annotationFilterData.preparation_title"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: {
+                  type: "text",
+                  id: "formAnnotationsTitle",
+                  "aria-describedby": "inputName",
+                  placeholder: '"norm"'
+                },
+                domProps: { value: _vm.annotationFilterData.preparation_title },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(
+                      _vm.annotationFilterData,
+                      "preparation_title",
+                      $event.target.value
+                    )
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formAnnotationsLanguage" }
+                },
+                [_vm._v("Category")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value:
+                      _vm.annotationFilterData
+                        .preparation_encoding_annotation_group,
+                    expression:
+                      "annotationFilterData.preparation_encoding_annotation_group"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: {
+                  type: "text",
+                  id: "formAnnotationsLanguage",
+                  "aria-describedby": "inputCategory",
+                  placeholder: '"Lexical"'
+                },
+                domProps: {
+                  value:
+                    _vm.annotationFilterData
+                      .preparation_encoding_annotation_group
+                },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(
+                      _vm.annotationFilterData,
+                      "preparation_encoding_annotation_group",
+                      $event.target.value
+                    )
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formAnnotationsFormats" }
+                },
+                [_vm._v("Formats")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value:
+                      _vm.annotationFilterData
+                        .preparation_encoding_annotation_group,
+                    expression:
+                      "annotationFilterData.preparation_encoding_annotation_group"
+                  }
+                ],
+                staticClass: "flexdatalist annotationformatslist form-control",
+                attrs: {
+                  type: "text",
+                  name: "formatslist",
+                  multiple: "multiple",
+                  list: "formatsList-Annotations",
+                  "data-min-length": "0",
+                  id: "formAnnotationsFormats"
+                },
+                domProps: {
+                  value:
+                    _vm.annotationFilterData
+                      .preparation_encoding_annotation_group
+                },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(
+                      _vm.annotationFilterData,
+                      "preparation_encoding_annotation_group",
+                      $event.target.value
+                    )
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "datalist",
+                { attrs: { id: "formatsList-Annotations" } },
+                _vm._l(this.uniqueArray(_vm.annotationformats), function(
+                  annotationformat
+                ) {
+                  return _c(
+                    "option",
+                    { attrs: { annotationformat: annotationformat } },
+                    [_vm._v(_vm._s(annotationformat))]
+                  )
+                })
+              )
+            ])
+          ])
+        ])
+      ]
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass:
+          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
+        attrs: {
+          "data-toggle": "collapse",
+          "data-target": "#formPanelAnnotations",
+          "aria-expanded": "true",
+          "aria-controls": "formPanelAnnotations"
+        }
+      },
+      [
+        _c("span", [_vm._v("Annotations")]),
+        _vm._v(" "),
+        _c("i", {
+          staticClass:
+            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
+        })
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-147adb84", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ 181:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(182)
+/* template */
+var __vue_template__ = __webpack_require__(183)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/SearchResultHeader.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-69ab1049", Component.options)
+  } else {
+    hotAPI.reload("data-v-69ab1049", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 182:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    mounted: function mounted() {
+        console.log('CorpusResultHeaderComponent mounted.');
+    }
+});
+
+/***/ }),
+
+/***/ 183:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { attrs: { id: "resultheader" } }, [
+    _c("div", { staticClass: "d-flex justify-content-between my-1" }, [
+      _c(
+        "ul",
+        {
+          staticClass: "nav nav-tabs",
+          attrs: { id: "searchtabs", role: "tablist" }
+        },
+        [
+          _c("li", { staticClass: "nav-item" }, [
+            _c(
+              "a",
+              {
+                staticClass: "nav-link active",
+                attrs: {
+                  id: "tab-corpora",
+                  "data-toggle": "tab",
+                  href: "#searchtab-corpora",
+                  role: "tab",
+                  "aria-controls": "searchtab-corpora",
+                  "aria-selected": "true"
+                }
+              },
+              [_vm._v("Corpora (" + _vm._s(_vm.corpusresultcounter) + ")")]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { staticClass: "nav-item" }, [
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "tab-documents",
+                  "data-toggle": "tab",
+                  href: "#searchtab-documents",
+                  role: "tab",
+                  "aria-controls": "searchtab-documents",
+                  "aria-selected": "false"
+                }
+              },
+              [_vm._v("Documents (" + _vm._s(_vm.documentresultcounter) + ")")]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { staticClass: "nav-item" }, [
+            _c(
+              "a",
+              {
+                staticClass: "nav-link",
+                attrs: {
+                  id: "tab-annotations",
+                  "data-toggle": "tab",
+                  href: "#searchtab-annotations",
+                  role: "tab",
+                  "aria-controls": "searchtab-annotations",
+                  "aria-selected": "false"
+                }
+              },
+              [
+                _vm._v(
+                  "Annotations (" + _vm._s(_vm.annotationresultcounter) + ")"
+                )
+              ]
+            )
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _vm._m(0)
+    ]),
+    _vm._v(" "),
+    _vm._m(1)
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-row " }, [
+      _c("div", { staticClass: "col-auto" }, [
+        _c("div", { staticClass: "dropdown" }, [
+          _c(
+            "button",
+            {
+              staticClass:
+                "btn btn-outline-corpus-dark rounded dropdown-toggle font-weight-bold text-uppercase ",
+              attrs: {
+                type: "button",
+                id: "searchSorting",
+                "data-toggle": "dropdown",
+                "aria-haspopup": "true",
+                "aria-expanded": "false"
+              }
+            },
+            [
+              _vm._v(
+                "\n                        Title - Alphabetical\n                    "
+              )
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass: "dropdown-menu",
+              attrs: { "aria-labelledby": "searchSort" }
+            },
+            [
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Title - alphabetical")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Tokens - ascending")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Tokens - descending")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Corpus release - oldest")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Corpus release - newest")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Date Document - oldest")]
+              ),
+              _vm._v(" "),
+              _c(
+                "a",
+                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
+                [_vm._v("Date Document - newest")]
+              )
+            ]
+          )
+        ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "w-100 py-3 px-6 mb-1 bg-corpus-light d-flex flex-column"
+      },
+      [
+        _c(
+          "div",
+          {
+            staticClass:
+              "btn btn-sm font-weight-bold text-uppercase btn-outline-corpus-dark align-self-end disabled"
+          },
+          [_vm._v("\n            Apply Filter\n        ")]
+        )
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-69ab1049", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ 184:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(185)
+/* template */
+var __vue_template__ = __webpack_require__(186)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/CorpusSearchResult.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-28722078", Component.options)
+  } else {
+    hotAPI.reload("data-v-28722078", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 185:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['corpusresult', 'corpuspaths'],
+    methods: {
+        browseUri: function browseUri(id) {
+            return '/browse/corpus/'.concat(id);
+        },
+        corpusAuthors: function corpusAuthors(forenames, surnames) {
+            var authorString = "";
+            for (var i = 0; i < forenames.length; i++) {
+                authorString += forenames[i].concat(' ').concat(surnames[i]).concat(', ');
+            }
+            authorString = authorString.substring(0, authorString.lastIndexOf(","));
+            return authorString;
+        },
+        getLicenseMarkup: function getLicenseMarkup(licenseUri) {
+            var uriSplits = licenseUri.split("/");
+            var license = uriSplits[4];
+            var licenseSplits = license.split("-");
+            var licenses = [];
+
+            for (var i = 0; i < licenseSplits.length; i++) {
+                var license = {};
+                license.uri = '/images/license-' + licenseSplits[i] + '.svg';
+                license.altText = licenseSplits[i];
+                licenses.push(license);
+            }
+            return licenses;
+        },
+        emitCorpusRelations: function emitCorpusRelations(corpusId) {
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+            this.$store.dispatch('documentByCorpus', this.documentsbycorpus[corpusId]);
+            this.$store.dispatch('annotationByCorpus', this.annotationsbycorpus[corpusId]);
+        }
+    },
+    mounted: function mounted() {}
+});
+
+/***/ }),
+
+/***/ 186:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm.corpusresult._source.visibility == 1
+    ? _c(
+        "div",
+        { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
+        [
+          _c("div", { staticClass: "row" }, [
+            _vm.corpusresult._source.corpuslogo == ""
+              ? _c("div", { staticClass: "col-2" }, [
+                  _c("img", {
+                    staticClass: "w-100",
+                    attrs: {
+                      src: "/images/placeholder_circle.svg",
+                      alt: "circle-image"
+                    }
+                  })
+                ])
+              : _c("div", { staticClass: "col-2" }, [
+                  _c("img", {
+                    staticClass: "rounded-circle bg-white w-100",
+                    attrs: {
+                      src: "/images/corpuslogos/"
+                        .concat(_vm.corpusresult._source.projectpath)
+                        .concat("_")
+                        .concat(_vm.corpusresult._source.corpuspath)
+                        .concat("_")
+                        .concat(_vm.corpusresult._source.corpuslogo),
+                      alt: "corpus-logo"
+                    }
+                  })
+                ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "col" }, [
+              _c("h4", { staticClass: "h4 font-weight-bold" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "text-dark",
+                    attrs: { href: _vm.browseUri(_vm.corpusresult._id) }
+                  },
+                  [
+                    _vm._v(
+                      "\n                        " +
+                        _vm._s(
+                          _vm._f("arrayToString")(
+                            _vm.corpusresult._source.corpus_title
+                          )
+                        ) +
+                        "\n                    "
+                    )
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _vm.corpusresult._source.corpus_editor_forename != "undefined" &&
+              _vm.corpusresult._source.corpus_editor_surname != "undefined"
+                ? _c("span", { staticClass: "text-grey text-14" }, [
+                    _vm._v(
+                      _vm._s(
+                        _vm.corpusAuthors(
+                          _vm.corpusresult._source.corpus_editor_forename,
+                          _vm.corpusresult._source.corpus_editor_surname
+                        )
+                      )
+                    )
+                  ])
+                : _vm._e(),
+              _vm._v(" "),
+              _c("div", { staticClass: "row mt-1 " }, [
+                _c("div", { staticClass: "col col-auto mr-1" }, [
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                    },
+                    [
+                      _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
+                      _vm._v(" "),
+                      _c("span", [
+                        _vm._v(
+                          "D. from " +
+                            _vm._s(_vm.corpusresult._source.documentrange)
+                        )
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                    },
+                    [
+                      _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
+                      _vm._v(" "),
+                      _c("span", [
+                        _vm._v(_vm._s(_vm.corpusresult._source.documentgenre))
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "mt-2" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "text-dark text-uppercase search-description-expander",
+                        attrs: {
+                          "data-toggle": "collapse",
+                          href: "#corpusSearchItem_".concat(
+                            _vm.corpusresult._id
+                          ),
+                          role: "button",
+                          "aria-expanded": "false",
+                          "aria-controls": "#corpusSearchItem_".concat(
+                            _vm.corpusresult._id
+                          )
+                        }
+                      },
+                      [
+                        _c("i", {
+                          staticClass:
+                            "fa fa-angle-down fa-fw text-primary font-weight-bold"
+                        }),
+                        _vm._v(
+                          "\n                                Description\n                            "
+                        )
+                      ]
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "col col-auto mr-1" }, [
+                  _vm.corpusresult._source.corpus_languages_language !=
+                  "undefined"
+                    ? _c(
+                        "div",
+                        {
+                          staticClass:
+                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                        },
+                        [
+                          _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
+                          _vm._v(" "),
+                          _c("span", [
+                            _vm._v(
+                              _vm._s(
+                                _vm._f("truncatelist")(
+                                  _vm.corpusresult._source
+                                    .corpus_languages_language[0]
+                                )
+                              )
+                            )
+                          ])
+                        ]
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                    },
+                    [
+                      _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
+                      _vm._v(" "),
+                      _c("span", [
+                        _vm._v(
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              _vm.corpusresult._source.corpus_size_value
+                            )
+                          ) +
+                            " " +
+                            _vm._s(
+                              _vm._f("arrayToString")(
+                                _vm.corpusresult._source.corpus_size_type
+                              )
+                            )
+                        )
+                      ])
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "mt-2" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass:
+                          "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                        attrs: { href: "#" }
+                      },
+                      [
+                        _c("i", {
+                          staticClass:
+                            "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
+                        }),
+                        _vm._v(" "),
+                        typeof _vm.corpusresult._source.corpus_documents !=
+                        "undefined"
+                          ? _c(
+                              "span",
+                              {
+                                staticClass:
+                                  "text-primary text-14 font-weight-bold"
+                              },
+                              [
+                                _vm._v(
+                                  _vm._s(
+                                    _vm.corpusresult._source.corpus_documents
+                                      .length
+                                  )
+                                )
+                              ]
+                            )
+                          : _vm._e()
+                      ]
+                    )
+                  ])
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "col col-auto mr-1" },
+                  [
+                    _vm._l(
+                      _vm.getLicenseMarkup(
+                        _vm.corpusresult._source.corpus_publication_license[0]
+                      ),
+                      function(licenseObject) {
+                        return _vm.corpusresult._source
+                          .corpus_publication_license != "undefined"
+                          ? _c(
+                              "div",
+                              {
+                                staticClass:
+                                  "d-flex justify-content-start align-items-center"
+                              },
+                              [
+                                _c("img", {
+                                  staticClass: "py-1",
+                                  attrs: {
+                                    src: licenseObject.uri,
+                                    alt: "license".concat(licenseObject.altText)
+                                  }
+                                })
+                              ]
+                            )
+                          : _vm._e()
+                      }
+                    ),
+                    _vm._v(" "),
+                    _vm.corpusresult._source
+                      .corpus_publication_publication_date != "undefined"
+                      ? _c(
+                          "div",
+                          {
+                            staticClass:
+                              "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 flex-nowrap"
+                          },
+                          [
+                            _c("i", {
+                              staticClass:
+                                "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
+                            }),
+                            _vm._v(" "),
+                            _c("span", [
+                              _vm._v(
+                                _vm._s(
+                                  _vm._f("lastElement")(
+                                    _vm.corpusresult._source
+                                      .corpus_publication_publication_date
+                                  )
+                                )
+                              )
+                            ])
+                          ]
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "mt-2" }, [
+                      typeof _vm.corpusresult._source.annotation_id !=
+                      "undefined"
+                        ? _c(
+                            "a",
+                            {
+                              staticClass:
+                                "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1",
+                              attrs: { href: "# " }
+                            },
+                            [
+                              _c("i", {
+                                staticClass:
+                                  "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                              }),
+                              _vm._v(" "),
+                              _c(
+                                "span",
+                                { staticClass: "text-14 font-weight-bold" },
+                                [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm.corpusresult._source.annotation_id
+                                        .length
+                                    )
+                                  )
+                                ]
+                              )
+                            ]
+                          )
+                        : _vm._e()
+                    ])
+                  ],
+                  2
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-2 mr-3" }, [
+              _c("div", { staticClass: "dropdown" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass:
+                      "btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4",
+                    attrs: {
+                      type: "button",
+                      "data-toggle": "dropdown",
+                      "aria-haspopup": "true",
+                      "aria-expanded": "false"
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                        Download\n                    "
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticClass: "dropdown-menu",
+                    attrs: { "aria-labelledby": "dropdownMenuButton" }
+                  },
+                  [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "dropdown-item text-14",
+                        attrs: {
+                          href: "/download/tei/".concat(
+                            _vm.corpusresult._source.corpuspath
+                          )
+                        }
+                      },
+                      [_vm._v("TEI-Header")]
+                    )
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "custom-control custom-checkbox" }, [
+                _c("input", {
+                  staticClass: "custom-control-input",
+                  attrs: {
+                    type: "checkbox",
+                    id: "filtercheck-corpusSearchItem".concat(
+                      _vm.corpusresult._id
+                    )
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "label",
+                  {
+                    staticClass: "custom-control-label text-14",
+                    attrs: {
+                      for: "filtercheck-corpusSearchItem".concat(
+                        _vm.corpusresult._id
+                      )
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n                        Set as Filter\n                    "
+                    )
+                  ]
+                )
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col-2" }),
+            _vm._v(" "),
+            _c("div", { staticClass: "col" }, [
+              _c(
+                "div",
+                {
+                  staticClass: "collapse row pl-0 pr-3 pb-0",
+                  attrs: {
+                    id: "corpusSearchItem_".concat(_vm.corpusresult._id)
+                  }
+                },
+                [
+                  _c("hr"),
+                  _vm._v(" "),
+                  _c("p", [
+                    _vm._v(
+                      "\n                        " +
+                        _vm._s(
+                          _vm._f("lastElement")(
+                            _vm.corpusresult._source
+                              .corpus_encoding_project_description
+                          )
+                        ) +
+                        "\n                        "
+                    ),
+                    _c("a", { attrs: { href: "#" } }, [_vm._v("MORE")])
+                  ])
+                ]
+              )
+            ])
+          ])
+        ]
+      )
+    : _vm._e()
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-28722078", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ 187:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(188)
+/* template */
+var __vue_template__ = __webpack_require__(189)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/DocumentSearchResult.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-0487c357", Component.options)
+  } else {
+    hotAPI.reload("data-v-0487c357", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 188:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['documentresult'],
+    methods: {
+        browseUri: function browseUri(id) {
+            return '/browse/document/'.concat(id);
+        },
+        emitDocumentRelations: function emitDocumentRelations(documentId) {
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearAnnotations', []);
+            this.$store.dispatch('corpusByDocument', this.corpusbydocument[documentId]);
+            this.$store.dispatch('annotationByDocument', this.annotationsbydocument[documentId]);
+        }
+    },
+    mounted: function mounted() {}
+});
+
+/***/ }),
+
+/***/ 189:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm.documentresult._source.visibility == 1
+    ? _c(
+        "div",
+        { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
+        [
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col" }, [
+              _c("h4", { staticClass: "h4 font-weight-bold" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "text-dark",
+                    attrs: { href: _vm.browseUri(_vm.documentresult._id) }
+                  },
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(
+                          _vm._f("arrayToString")(
+                            _vm.documentresult._source.document_title
+                          )
+                        ) +
+                        "\n                "
+                    )
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("span", { staticClass: "text-grey text-14" }, [
+                _vm._v(
+                  "\n                Corpus: " +
+                    _vm._s(_vm.documentresult._source.corpus_name) +
+                    "\n                "
+                ),
+                _c("br"),
+                _vm._v(
+                  " " +
+                    _vm._s(
+                      _vm._f("arrayToString")(
+                        _vm.documentresult._source.document_author_surname
+                      )
+                    ) +
+                    ", " +
+                    _vm._s(
+                      _vm._f("arrayToString")(
+                        _vm.documentresult._source.document_author_forename
+                      )
+                    )
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "row mt-2" }, [
+                _c(
+                  "div",
+                  { staticClass: "col d-flex flex-wrap justify-content-start" },
+                  [
+                    _c("div", { staticClass: "mr-7" }, [
+                      _c(
+                        "div",
+                        {
+                          staticClass:
+                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                        },
+                        [
+                          _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
+                          _vm._v(" "),
+                          _c("span", [
+                            _vm._v(
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  _vm.documentresult._source
+                                    .document_publication_publishing_date
+                                )
+                              )
+                            )
+                          ])
+                        ]
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      {
+                        staticClass:
+                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                      },
+                      [
+                        _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
+                        _vm._v(" "),
+                        _c("span", [
+                          _vm._v(
+                            " " +
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  _vm.documentresult._source
+                                    .document_size_extent
+                                )
+                              ) +
+                              " " +
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  _vm.documentresult._source.document_size_type
+                                )
+                              )
+                          )
+                        ])
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _vm.documentresult._source.document_languages_language !=
+                    "undefined"
+                      ? _c(
+                          "div",
+                          {
+                            staticClass:
+                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                          },
+                          [
+                            _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
+                            _vm._v(" "),
+                            _c("span", [
+                              _vm._v(
+                                _vm._s(
+                                  _vm.documentresult._source
+                                    .document_languages_language[0]
+                                )
+                              )
+                            ])
+                          ]
+                        )
+                      : _vm._e()
+                  ]
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass:
+                  "col-4 mr-3 d-flex justify-content-between align-items-start"
+              },
+              [
+                _c(
+                  "a",
+                  {
+                    staticClass:
+                      "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                    attrs: { href: "#" }
+                  },
+                  [
+                    _c("i", {
+                      staticClass:
+                        "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
+                    }),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "text-14 font-weight-bold" }, [
+                      _vm._v(
+                        _vm._s(
+                          _vm.documentresult._source
+                            .document_list_of_annotations_id.length
+                        )
+                      )
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
+                _vm._m(0)
+              ]
+            )
+          ])
+        ]
+      )
+    : _vm._e()
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "custom-control custom-checkbox" }, [
+      _c("input", {
+        staticClass: "custom-control-input",
+        attrs: { type: "checkbox", id: "filtercheck-documentSearchItem0001" }
+      }),
+      _vm._v(" "),
+      _c(
+        "label",
+        {
+          staticClass: "custom-control-label text-14",
+          attrs: { for: "filtercheck-documentSearchItem0001" }
+        },
+        [_vm._v("\n                    Set as Filter\n                ")]
+      )
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-0487c357", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ 190:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(191)
+/* template */
+var __vue_template__ = __webpack_require__(192)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/AnnotationSearchResult.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-d7ceacaa", Component.options)
+  } else {
+    hotAPI.reload("data-v-d7ceacaa", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 191:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: ['annotationresult'],
+    methods: {
+        browseUri: function browseUri(id, type) {
+            return '/browse/annotation/'.concat(id);
+        },
+        emitAnnotationRelations: function emitAnnotationRelations(annotationId) {
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('corpusByAnnotation', this.corpusbyannotation[annotationId]);
+            this.$store.dispatch('documentByAnnotation', this.documentsbyannotation[annotationId]);
+        },
+        unique: function unique(array) {
+            return [].concat(_toConsumableArray(new Set(array)));
+        }
+    },
+    mounted: function mounted() {}
+});
+
+/***/ }),
+
+/***/ 192:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm.annotationresult._source.visibility == 1
+    ? _c(
+        "div",
+        { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
+        [
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col" }, [
+              _c("h4", { staticClass: "h4 font-weight-bold" }, [
+                _c(
+                  "a",
+                  {
+                    staticClass: "text-dark",
+                    attrs: { href: _vm.browseUri(_vm.annotationresult._id) }
+                  },
+                  [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(
+                          _vm._f("arrayToString")(
+                            _vm.annotationresult._source.preparation_title
+                          )
+                        ) +
+                        "\n                "
+                    )
+                  ]
+                )
+              ]),
+              _vm._v(" "),
+              _c("span", { staticClass: "text-grey text-14" }, [
+                _vm._v(
+                  "\n                Corpus: " +
+                    _vm._s(_vm.annotationresult._source.corpus_name) +
+                    "\n              "
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "col-2" },
+              _vm._l(
+                _vm.unique(
+                  _vm.annotationresult._source
+                    .preparation_encoding_annotation_group
+                ),
+                function(group, groupindex) {
+                  return _c(
+                    "div",
+                    {
+                      key: groupindex,
+                      staticClass: "text-grey text-14",
+                      attrs: { group: group }
+                    },
+                    [_vm._v(_vm._s(group))]
+                  )
+                }
+              )
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass:
+                  "col-4 d-flex justify-content-between align-items-start"
+              },
+              [
+                _c(
+                  "a",
+                  {
+                    staticClass:
+                      "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                    attrs: { href: "#" }
+                  },
+                  [
+                    _c("i", {
+                      staticClass:
+                        "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "span",
+                      { staticClass: "text-primary text-14 font-weight-bold" },
+                      [
+                        _vm._v(
+                          _vm._s(
+                            _vm.annotationresult._source.in_documents.length
+                          )
+                        )
+                      ]
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _vm._m(0)
+              ]
+            )
+          ])
+        ]
+      )
+    : _vm._e()
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "custom-control custom-checkbox" }, [
+      _c("input", {
+        staticClass: "custom-control-input",
+        attrs: { type: "checkbox", id: "filtercheck-annotationSearchItem0001" }
+      }),
+      _vm._v(" "),
+      _c(
+        "label",
+        {
+          staticClass: "custom-control-label text-14",
+          attrs: { for: "filtercheck-annotationSearchItem0001" }
+        },
+        [_vm._v("\n                    Set as Filter\n                ")]
+      )
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-d7ceacaa", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ 193:
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ 195:
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ 196:
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ 21:
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -1788,7 +6546,8 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 22 */
+
+/***/ 22:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12754,10 +17513,8 @@ module.exports = Vue;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(72).setImmediate))
 
 /***/ }),
-/* 23 */,
-/* 24 */,
-/* 25 */,
-/* 26 */
+
+/***/ 26:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12775,7 +17532,8 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 27 */
+
+/***/ 27:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12962,7 +17720,8 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 28 */
+
+/***/ 28:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12987,7 +17746,8 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 29 */
+
+/***/ 29:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12999,7 +17759,8 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 30 */
+
+/***/ 30:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13025,17 +17786,319 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 31 */,
-/* 32 */,
-/* 33 */,
-/* 34 */,
-/* 35 */,
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */
+
+/***/ 4:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var bind = __webpack_require__(26);
+var isBuffer = __webpack_require__(54);
+
+/*global toString:true*/
+
+// utils is a library of generic helper functions non-specific to axios
+
+var toString = Object.prototype.toString;
+
+/**
+ * Determine if a value is an Array
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Array, otherwise false
+ */
+function isArray(val) {
+  return toString.call(val) === '[object Array]';
+}
+
+/**
+ * Determine if a value is an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an ArrayBuffer, otherwise false
+ */
+function isArrayBuffer(val) {
+  return toString.call(val) === '[object ArrayBuffer]';
+}
+
+/**
+ * Determine if a value is a FormData
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an FormData, otherwise false
+ */
+function isFormData(val) {
+  return (typeof FormData !== 'undefined') && (val instanceof FormData);
+}
+
+/**
+ * Determine if a value is a view on an ArrayBuffer
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a view on an ArrayBuffer, otherwise false
+ */
+function isArrayBufferView(val) {
+  var result;
+  if ((typeof ArrayBuffer !== 'undefined') && (ArrayBuffer.isView)) {
+    result = ArrayBuffer.isView(val);
+  } else {
+    result = (val) && (val.buffer) && (val.buffer instanceof ArrayBuffer);
+  }
+  return result;
+}
+
+/**
+ * Determine if a value is a String
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a String, otherwise false
+ */
+function isString(val) {
+  return typeof val === 'string';
+}
+
+/**
+ * Determine if a value is a Number
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Number, otherwise false
+ */
+function isNumber(val) {
+  return typeof val === 'number';
+}
+
+/**
+ * Determine if a value is undefined
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if the value is undefined, otherwise false
+ */
+function isUndefined(val) {
+  return typeof val === 'undefined';
+}
+
+/**
+ * Determine if a value is an Object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is an Object, otherwise false
+ */
+function isObject(val) {
+  return val !== null && typeof val === 'object';
+}
+
+/**
+ * Determine if a value is a Date
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Date, otherwise false
+ */
+function isDate(val) {
+  return toString.call(val) === '[object Date]';
+}
+
+/**
+ * Determine if a value is a File
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a File, otherwise false
+ */
+function isFile(val) {
+  return toString.call(val) === '[object File]';
+}
+
+/**
+ * Determine if a value is a Blob
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Blob, otherwise false
+ */
+function isBlob(val) {
+  return toString.call(val) === '[object Blob]';
+}
+
+/**
+ * Determine if a value is a Function
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Function, otherwise false
+ */
+function isFunction(val) {
+  return toString.call(val) === '[object Function]';
+}
+
+/**
+ * Determine if a value is a Stream
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a Stream, otherwise false
+ */
+function isStream(val) {
+  return isObject(val) && isFunction(val.pipe);
+}
+
+/**
+ * Determine if a value is a URLSearchParams object
+ *
+ * @param {Object} val The value to test
+ * @returns {boolean} True if value is a URLSearchParams object, otherwise false
+ */
+function isURLSearchParams(val) {
+  return typeof URLSearchParams !== 'undefined' && val instanceof URLSearchParams;
+}
+
+/**
+ * Trim excess whitespace off the beginning and end of a string
+ *
+ * @param {String} str The String to trim
+ * @returns {String} The String freed of excess whitespace
+ */
+function trim(str) {
+  return str.replace(/^\s*/, '').replace(/\s*$/, '');
+}
+
+/**
+ * Determine if we're running in a standard browser environment
+ *
+ * This allows axios to run in a web worker, and react-native.
+ * Both environments support XMLHttpRequest, but not fully standard globals.
+ *
+ * web workers:
+ *  typeof window -> undefined
+ *  typeof document -> undefined
+ *
+ * react-native:
+ *  navigator.product -> 'ReactNative'
+ */
+function isStandardBrowserEnv() {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+    return false;
+  }
+  return (
+    typeof window !== 'undefined' &&
+    typeof document !== 'undefined'
+  );
+}
+
+/**
+ * Iterate over an Array or an Object invoking a function for each item.
+ *
+ * If `obj` is an Array callback will be called passing
+ * the value, index, and complete array for each item.
+ *
+ * If 'obj' is an Object callback will be called passing
+ * the value, key, and complete object for each property.
+ *
+ * @param {Object|Array} obj The object to iterate
+ * @param {Function} fn The callback to invoke for each item
+ */
+function forEach(obj, fn) {
+  // Don't bother if no value provided
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  // Force an array if not already something iterable
+  if (typeof obj !== 'object' && !isArray(obj)) {
+    /*eslint no-param-reassign:0*/
+    obj = [obj];
+  }
+
+  if (isArray(obj)) {
+    // Iterate over array values
+    for (var i = 0, l = obj.length; i < l; i++) {
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    // Iterate over object keys
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+}
+
+/**
+ * Accepts varargs expecting each argument to be an object, then
+ * immutably merges the properties of each object and returns result.
+ *
+ * When multiple objects contain the same key the later object in
+ * the arguments list will take precedence.
+ *
+ * Example:
+ *
+ * ```js
+ * var result = merge({foo: 123}, {foo: 456});
+ * console.log(result.foo); // outputs 456
+ * ```
+ *
+ * @param {Object} obj1 Object to merge
+ * @returns {Object} Result of all merge properties
+ */
+function merge(/* obj1, obj2, obj3, ... */) {
+  var result = {};
+  function assignValue(val, key) {
+    if (typeof result[key] === 'object' && typeof val === 'object') {
+      result[key] = merge(result[key], val);
+    } else {
+      result[key] = val;
+    }
+  }
+
+  for (var i = 0, l = arguments.length; i < l; i++) {
+    forEach(arguments[i], assignValue);
+  }
+  return result;
+}
+
+/**
+ * Extends object a by mutably adding to it the properties of object b.
+ *
+ * @param {Object} a The object to be extended
+ * @param {Object} b The object to copy properties from
+ * @param {Object} thisArg The object to bind function to
+ * @return {Object} The resulting value of object a
+ */
+function extend(a, b, thisArg) {
+  forEach(b, function assignValue(val, key) {
+    if (thisArg && typeof val === 'function') {
+      a[key] = bind(val, thisArg);
+    } else {
+      a[key] = val;
+    }
+  });
+  return a;
+}
+
+module.exports = {
+  isArray: isArray,
+  isArrayBuffer: isArrayBuffer,
+  isBuffer: isBuffer,
+  isFormData: isFormData,
+  isArrayBufferView: isArrayBufferView,
+  isString: isString,
+  isNumber: isNumber,
+  isObject: isObject,
+  isUndefined: isUndefined,
+  isDate: isDate,
+  isFile: isFile,
+  isBlob: isBlob,
+  isFunction: isFunction,
+  isStream: isStream,
+  isURLSearchParams: isURLSearchParams,
+  isStandardBrowserEnv: isStandardBrowserEnv,
+  forEach: forEach,
+  merge: merge,
+  extend: extend,
+  trim: trim
+};
+
+
+/***/ }),
+
+/***/ 41:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module, global) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -19829,15 +24892,383 @@ module.exports = Cancel;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(21)(module), __webpack_require__(7)))
 
 /***/ }),
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */
+
+/***/ 467:
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(6)
+/* script */
+var __vue_script__ = __webpack_require__(468)
+/* template */
+var __vue_template__ = __webpack_require__(469)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/Pagination.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-3895afde", Component.options)
+  } else {
+    hotAPI.reload("data-v-3895afde", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ 468:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: {
+        maxVisibleButtons: {
+            type: Number,
+            required: false,
+            default: 3
+        },
+        totalPages: {
+            type: Number,
+            required: true
+        },
+        total: {
+            type: Number,
+            required: true
+        },
+        currentPage: {
+            type: Number,
+            required: true
+        },
+        headerType: {
+            type: String,
+            required: true
+        },
+        perPage: {
+            type: Number,
+            required: true
+        }
+    },
+    computed: {
+        startPage: function startPage() {
+            if (this.currentPage === 1) {
+                return 1;
+            }
+
+            if (this.currentPage === this.totalPages) {
+                return this.totalPages - this.maxVisibleButtons + 1;
+            }
+
+            return this.currentPage - 1;
+        },
+        endPage: function endPage() {
+
+            return Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages);
+        },
+        pages: function pages() {
+            var range = [];
+
+            for (var i = this.startPage; i <= this.endPage; i += 1) {
+                range.push({
+                    name: i,
+                    isDisabled: i === this.currentPage
+                });
+            }
+
+            return range;
+        },
+        isInFirstPage: function isInFirstPage() {
+            return this.currentPage === 1;
+        },
+        isInLastPage: function isInLastPage() {
+            return this.currentPage === this.totalPages;
+        }
+    },
+    methods: {
+        onClickFirstPage: function onClickFirstPage() {
+            this.$emit(this.headerType + '_pagechanged', 1);
+        },
+        onClickPreviousPage: function onClickPreviousPage() {
+            this.$emit(this.headerType + '_pagechanged', this.currentPage - 1);
+        },
+        onClickPage: function onClickPage(page) {
+            this.$emit(this.headerType + '_pagechanged', page);
+        },
+        onClickNextPage: function onClickNextPage() {
+            this.$emit(this.headerType + '_pagechanged', this.currentPage + 1);
+        },
+        onClickLastPage: function onClickLastPage() {
+            this.$emit(this.headerType + '_pagechanged', this.totalPages);
+        },
+        isPageActive: function isPageActive(page) {
+            return this.currentPage === page;
+        },
+        setResultsPerPage: function setResultsPerPage(results) {
+            this.$emit(this.headerType + '_resultsperpage', parseInt(results.target.value));
+        }
+    }
+});
+
+/***/ }),
+
+/***/ 469:
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass:
+        "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
+    },
+    [
+      _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
+        _c(
+          "ul",
+          { staticClass: "pagination" },
+          [
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "First" }
+                },
+                [
+                  _c(
+                    "span",
+                    {
+                      attrs: {
+                        "aria-hidden": "true",
+                        disabled: _vm.isInFirstPage
+                      },
+                      on: { click: _vm.onClickFirstPage }
+                    },
+                    [_vm._v("«")]
+                  )
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Previous" }
+                },
+                [
+                  _c(
+                    "span",
+                    {
+                      attrs: { disabled: _vm.isInFirstPage },
+                      on: { click: _vm.onClickPreviousPage }
+                    },
+                    [_vm._v("Previous")]
+                  )
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _vm._l(_vm.pages, function(page) {
+              return _c(
+                "li",
+                {
+                  staticClass: "page-item font-weight-bold",
+                  class: { active: _vm.isPageActive(page.name) }
+                },
+                [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "page-link",
+                      attrs: {
+                        type: "button",
+                        href: "#",
+                        disabled: page.isDisabled,
+                        "aria-label": "Go to page number " + page.name
+                      },
+                      on: {
+                        click: function($event) {
+                          _vm.onClickPage(page.name)
+                        }
+                      }
+                    },
+                    [_vm._v(_vm._s(page.name))]
+                  )
+                ]
+              )
+            }),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Next" }
+                },
+                [
+                  _c(
+                    "span",
+                    {
+                      attrs: { disabled: _vm.isInLastPage },
+                      on: { click: _vm.onClickNextPage }
+                    },
+                    [_vm._v("Next")]
+                  )
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", "aria-label": "Last" }
+                },
+                [
+                  _c(
+                    "span",
+                    {
+                      attrs: {
+                        "aria-hidden": "true",
+                        disabled: _vm.isInLastPage
+                      },
+                      on: { click: _vm.onClickLastPage }
+                    },
+                    [_vm._v("»")]
+                  )
+                ]
+              )
+            ])
+          ],
+          2
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "form-row" }, [
+        _c("div", { staticClass: "col-auto" }, [
+          _c(
+            "select",
+            {
+              staticClass:
+                "custom-select custom-select-sm font-weight-bold text-uppercase",
+              on: { change: _vm.setResultsPerPage }
+            },
+            [
+              _c("option", { attrs: { selected: "" } }, [
+                _vm._v("5 results / page")
+              ]),
+              _vm._v(" "),
+              _c("option", { attrs: { value: "10" } }, [_vm._v("Ten")]),
+              _vm._v(" "),
+              _c("option", { attrs: { value: "20" } }, [_vm._v("Twenty")]),
+              _vm._v(" "),
+              _c("option", { attrs: { value: "50" } }, [_vm._v("Fifty")])
+            ]
+          )
+        ])
+      ])
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-3895afde", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ 50:
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -19894,7 +25325,8 @@ if (token) {
 // });
 
 /***/ }),
-/* 51 */
+
+/***/ 51:
 /***/ (function(module, exports) {
 
 /*!
@@ -22277,13 +27709,15 @@ if (typeof jQuery === 'undefined') {
 
 
 /***/ }),
-/* 52 */
+
+/***/ 52:
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(53);
 
 /***/ }),
-/* 53 */
+
+/***/ 53:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22342,7 +27776,8 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 54 */
+
+/***/ 54:
 /***/ (function(module, exports) {
 
 /*!
@@ -22369,7 +27804,8 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 55 */
+
+/***/ 55:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22462,7 +27898,8 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 56 */
+
+/***/ 56:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22481,7 +27918,8 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 57 */
+
+/***/ 57:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22514,7 +27952,8 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 58 */
+
+/***/ 58:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22542,7 +27981,8 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 59 */
+
+/***/ 59:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22617,7 +28057,118 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 60 */
+
+/***/ 6:
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+
+/***/ 60:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22661,7 +28212,8 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 61 */
+
+/***/ 61:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22736,7 +28288,8 @@ module.exports = (
 
 
 /***/ }),
-/* 62 */
+
+/***/ 62:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22779,7 +28332,8 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 63 */
+
+/***/ 63:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22839,7 +28393,8 @@ module.exports = (
 
 
 /***/ }),
-/* 64 */
+
+/***/ 64:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22898,7 +28453,8 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 65 */
+
+/***/ 65:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -22984,7 +28540,8 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 66 */
+
+/***/ 66:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23011,7 +28568,8 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 67 */
+
+/***/ 67:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23032,7 +28590,8 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 68 */
+
+/***/ 68:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23053,7 +28612,8 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 69 */
+
+/***/ 69:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23117,7 +28677,36 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 70 */
+
+/***/ 7:
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+
+/***/ 70:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23151,7 +28740,8 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 71 */
+
+/***/ 71:
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -23227,7 +28817,8 @@ Vue.filter('truncatelist', function (string) {
 });
 
 /***/ }),
-/* 72 */
+
+/***/ 72:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -23297,7 +28888,8 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
-/* 73 */
+
+/***/ 73:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -23490,7 +29082,8 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(17)))
 
 /***/ }),
-/* 74 */
+
+/***/ 74:
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -24083,7 +29676,8 @@ function hasOwnProperty(obj, prop) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(17)))
 
 /***/ }),
-/* 75 */
+
+/***/ 75:
 /***/ (function(module, exports) {
 
 module.exports = function isBuffer(arg) {
@@ -24094,7 +29688,8 @@ module.exports = function isBuffer(arg) {
 }
 
 /***/ }),
-/* 76 */
+
+/***/ 76:
 /***/ (function(module, exports) {
 
 if (typeof Object.create === 'function') {
@@ -24123,25 +29718,8 @@ if (typeof Object.create === 'function') {
 
 
 /***/ }),
-/* 77 */,
-/* 78 */,
-/* 79 */,
-/* 80 */,
-/* 81 */,
-/* 82 */,
-/* 83 */,
-/* 84 */,
-/* 85 */,
-/* 86 */,
-/* 87 */,
-/* 88 */,
-/* 89 */,
-/* 90 */,
-/* 91 */,
-/* 92 */,
-/* 93 */,
-/* 94 */,
-/* 95 */
+
+/***/ 95:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! nouislider - 12.0.0 - 9/14/2018 */
@@ -26428,5244 +32006,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 });
 
 
-/***/ }),
-/* 96 */,
-/* 97 */,
-/* 98 */,
-/* 99 */,
-/* 100 */,
-/* 101 */,
-/* 102 */,
-/* 103 */,
-/* 104 */,
-/* 105 */,
-/* 106 */,
-/* 107 */,
-/* 108 */,
-/* 109 */,
-/* 110 */,
-/* 111 */,
-/* 112 */,
-/* 113 */,
-/* 114 */,
-/* 115 */,
-/* 116 */,
-/* 117 */,
-/* 118 */,
-/* 119 */,
-/* 120 */,
-/* 121 */,
-/* 122 */,
-/* 123 */,
-/* 124 */,
-/* 125 */,
-/* 126 */,
-/* 127 */,
-/* 128 */,
-/* 129 */,
-/* 130 */,
-/* 131 */,
-/* 132 */,
-/* 133 */,
-/* 134 */,
-/* 135 */,
-/* 136 */,
-/* 137 */,
-/* 138 */,
-/* 139 */,
-/* 140 */,
-/* 141 */,
-/* 142 */,
-/* 143 */,
-/* 144 */,
-/* 145 */,
-/* 146 */,
-/* 147 */,
-/* 148 */,
-/* 149 */,
-/* 150 */,
-/* 151 */,
-/* 152 */,
-/* 153 */,
-/* 154 */,
-/* 155 */,
-/* 156 */,
-/* 157 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(158);
-__webpack_require__(193);
-__webpack_require__(195);
-module.exports = __webpack_require__(196);
-
-
-/***/ }),
-/* 158 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__store__ = __webpack_require__(159);
-
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
-__webpack_require__(50);
-__webpack_require__(71);
-__webpack_require__(41);
-window.Vue = __webpack_require__(22);
-var util = __webpack_require__(74);
-
-
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
-
-Vue.component('generalsearchwrapper', __webpack_require__(160));
-Vue.component('searchfilterwrapper', __webpack_require__(163));
-Vue.component('searchresultwrapper', __webpack_require__(166));
-
-Vue.component('activefilter', __webpack_require__(169));
-Vue.component('corpusfilter', __webpack_require__(172));
-Vue.component('documentfilter', __webpack_require__(175));
-Vue.component('annotationfilter', __webpack_require__(178));
-
-Vue.component('searchresultheader', __webpack_require__(181));
-Vue.component('corpussearchresult', __webpack_require__(184));
-Vue.component('documentsearchresult', __webpack_require__(187));
-Vue.component('annotationsearchresult', __webpack_require__(190));
-
-window.axios.defaults.headers.post['Content-Type'] = 'application/json';
-
-var app = new Vue({
-    el: '#searchApp',
-    store: __WEBPACK_IMPORTED_MODULE_0__store__["a" /* default */],
-    data: {
-        results: [],
-        corpusresults: [],
-        documentresults: [],
-        annotationresults: [],
-        searches: [],
-        activefilters: [],
-        documentsByCorpus: [],
-        annotationsByCorpus: [],
-        corpusByDocument: [],
-        annotationsByDocument: [],
-        documentsByAnnotation: [],
-        corpusByAnnotation: [],
-        corpusformats: [],
-        annotationformats: [],
-        datasearched: false,
-        dataloading: false,
-        documentsearched: false,
-        documentloading: false,
-        annotationsearched: false,
-        corpusCacheString: "",
-        documentCacheString: "",
-        annotationCacheString: "",
-        annotationloading: false,
-        postAnnotationData: {},
-        corpusresultcounter: 0,
-        documentresultcounter: 0,
-        annotationresultcounter: 0,
-        publishedIndexes: window.laudatioApp.publishedIndexes
-    },
-    methods: {
-        renderArrayToString: function renderArrayToString(array) {
-            var string = "";
-            if (array) {
-                if (array.isArray && array.length == 1) {
-                    string = array[0].toString();
-                } else {
-                    string = array.toString();
-                }
-            }
-
-            return string;
-        },
-
-        askElastic: function askElastic(search) {
-            var _this = this;
-
-            this.dataloading = true;
-            this.corpusresults = [];
-            this.datasearched = false;
-            this.corpusCacheString = "";
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('clearAnnotations', []);
-            this.corpusresults = [];
-            this.documentresults = [];
-            this.annotationresults = [];
-            this.corpusresultcounter = 0;
-            this.documentresultcounter = 0;
-            this.annotationresultcounter = 0;
-            if (search.generalSearchTerm != "") {
-                this.searches = [];
-                var postData = {
-                    searchData: {
-                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_merged_formats", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code",
-                        //"corpus_publication_publication_date",
-                        "document_title", "document_author_forename", "document_size_type", "document_size_extent", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_merged_authors",
-                        //"document_publication_publishing_date",
-                        "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats"],
-                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_merged_formats", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "corpus_size_type", "corpus_size_value", "document_title", "document_author_forename", "document_author_surname", "document_merged_authors", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats", "in_documents"],
-                        query: "" + search.generalSearchTerm + "",
-                        indices: this.publishedIndexes.allPublishedIndices.join(",")
-                    }
-                };
-
-                var corpus_ids = [];
-
-                window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
-                    if (res.data.results.length > 0) {
-                        /*
-                        /* @todo: This is far too brittle: corpus/document/annotation could part of someones corpusname
-                        /* Also: when we publish, the new working version shuffles the corpus/doc/anno keyword foirther than place 0
-                         */
-                        for (var ri = 0; ri < res.data.results.length; ri++) {
-                            if (res.data.results[ri]._index.indexOf("corpus_") == 0) {
-                                _this.corpusresults.push(res.data.results[ri]);
-                                _this.corpusresultcounter++;
-
-                                var formatsarray = res.data.results[ri]._source.corpus_merged_formats.split(",");
-                                for (var key in formatsarray) {
-                                    _this.corpusformats.push(formatsarray[key]);
-                                }
-                            } else if (res.data.results[ri]._index.indexOf("document_") == 0) {
-                                _this.documentresults.push(res.data.results[ri]);
-                                _this.documentresultcounter++;
-                            } else if (res.data.results[ri]._index.indexOf("annotation_") == 0) {
-                                _this.annotationresults.push(res.data.results[ri]);
-                                _this.annotationresultcounter++;
-
-                                var annotationformatsarray = res.data.results[ri]._source.annotation_merged_formats.split(",");
-                                for (var key in annotationformatsarray) {
-                                    _this.annotationformats.push(annotationformatsarray[key]);
-                                }
-                            } ///end which index
-                        } //end for results
-                    } //end if results
-                    _this.dataloading = false;
-                    _this.datasearched = true;
-                    _this.searches.push(search.generalSearchTerm);
-                });
-            } else {
-                this.dataloading = false;
-            }
-        },
-        submitCorpusFilter: function submitCorpusFilter(corpusFilterObject) {
-            this.resetCorpusResults();
-            for (var i = 0; i < this.corpusresults.length; i++) {
-                for (var key in this.corpusresults[i]._source) {
-                    if (this.corpusresults[i]._source.hasOwnProperty(key)) {
-                        if (key != "" && corpusFilterObject.hasOwnProperty(key) && corpusFilterObject[key] != 'undefined' && corpusFilterObject[key].length > 0) {
-
-                            if (key == "corpus_size_value" && corpusFilterObject.corpus_size_value != "" && corpusFilterObject.corpusSizeTo != "") {
-                                if (!this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value, corpusFilterObject.corpusSizeTo)) {
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
-                                }
-                            } else if (key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != "") {
-                                if (!this.hasFormats(this.corpusresults[i]._source[key], corpusFilterObject[key])) {
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
-                                }
-                            } else if (key == "corpus_publication_license" && corpusFilterObject[key].toLowerCase() != "") {
-                                if (!this.hasLicense(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase(), corpusFilterObject[key].toLowerCase())) {
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
-                                }
-                            } else if (key == "corpus_publication_publication_date" && corpusFilterObject.corpus_publication_publication_date != '' && corpusFilterObject.corpusYearTo != '') {
-                                var newest_datum = this.corpusresults[i]._source[key][this.corpusresults[i]._source[key].length - 1];
-                                var dateArray = newest_datum.split("-");
-                                var newest_date = dateArray[0];
-                                if (!this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date, corpusFilterObject.corpusYearTo)) {
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
-                                }
-                            } else {
-                                if (corpusFilterObject[key] != 'undefined') {
-                                    if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
-                                        this.corpusresults[i]._source.visibility = 0;
-                                        this.corpusresultcounter--;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        submitDocumentFilter: function submitDocumentFilter(documentFilterObject) {
-            this.resetDocumentResults();
-            for (var i = 0; i < this.documentresults.length; i++) {
-                for (var key in this.documentresults[i]._source) {
-                    if (this.documentresults[i]._source.hasOwnProperty(key)) {
-                        if (documentFilterObject.hasOwnProperty(key)) {
-                            if (key == "document_size_extent" && documentFilterObject.document_size_extent != "" && documentFilterObject.document_size_extent_to != "") {
-                                if (!this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent, documentFilterObject.document_size_extent_to)) {
-                                    this.documentresults[i]._source.visibility = 0;
-                                    this.documentresultcounter--;
-                                }
-                            } else if (key == "document_publication_publishing_date" && documentFilterObject.document_publication_publishing_date != '' && documentFilterObject.document_publication_publishing_date_to != '') {
-                                var newest_datum = this.documentresults[i]._source[key][this.documentresults[i]._source[key].length - 1];
-                                var dateArray = newest_datum.split("-");
-                                var newest_date = dateArray[0];
-                                if (!this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date, documentFilterObject.document_publication_publishing_date_to)) {
-                                    this.documentresults[i]._source.visibility = 0;
-                                    this.documentresultcounter--;
-                                }
-                            } else {
-                                if (this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
-                                    this.documentresults[i]._source.visibility = 0;
-                                    this.documentresultcounter--;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        submitAnnotationFilter: function submitAnnotationFilter(annotationFilterObject) {
-            this.resetAnnotationResults();
-            for (var i = 0; i < this.annotationresults.length; i++) {
-                for (var key in this.annotationresults[i]._source) {
-                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
-                        if (key != "" && annotationFilterObject.hasOwnProperty(key) && annotationFilterObject[key] != 'undefined' && annotationFilterObject[key].length > 0) {
-
-                            if (key == "annotation_merged_formats" && annotationFilterObject.annotation_merged_formats != "") {
-                                if (!this.hasFormats(this.annotationresults[i]._source[key], annotationFilterObject[key])) {
-                                    this.annotationresults[i]._source.visibility = 0;
-                                    this.annotationresultcounter--;
-                                }
-                            } else {
-                                if (this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
-                                    this.annotationresults[i]._source.visibility = 0;
-                                    this.annotationresultcounter--;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        resetCorpusResults: function resetCorpusResults() {
-            for (var i = 0; i < this.corpusresults.length; i++) {
-                if (this.corpusresults[i]._source.visibility == 0) {
-                    this.corpusresults[i]._source.visibility = 1;
-                    this.corpusresultcounter++;
-                }
-            }
-        },
-        resetDocumentResults: function resetDocumentResults() {
-            for (var i = 0; i < this.documentresults.length; i++) {
-                if (this.documentresults[i]._source.visibility == 0) {
-                    this.documentresults[i]._source.visibility = 1;
-                    this.documentresultcounter++;
-                }
-            }
-        },
-        resetAnnotationResults: function resetAnnotationResults() {
-            for (var i = 0; i < this.annotationresults.length; i++) {
-                if (this.annotationresults[i]._source.visibility == 0) {
-                    this.annotationresults[i]._source.visibility = 1;
-                    this.annotationresultcounter++;
-                }
-            }
-        },
-
-        updateCorpusCounter: function updateCorpusCounter(counter) {
-            this.corpusresultcounter = counter;
-        },
-        updateDocumentCounter: function updateDocumentCounter(counter) {
-            this.documentresultcounter = counter;
-        },
-        updateAnnotationCounter: function updateAnnotationCounter(counter) {
-            this.annotationresultcounter = counter;
-        },
-        isBetween: function isBetween(theNumber, min, max) {
-            if (parseInt(theNumber) >= Math.floor(min) && parseInt(theNumber) <= Math.floor(max)) {
-                return true;
-            } else if (parseInt(theNumber) >= parseInt(min) && parseInt(theNumber) <= parseInt(max)) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        hasLicense: function hasLicense(license, filter) {
-            var licenseArray = license.split("/");
-            var ccLicense = licenseArray[4];
-            return ccLicense == filter;
-        },
-        hasFormats: function hasFormats(merged_formats, filter_formats) {
-            var hasFormat = true;
-            var merged_formats_array = merged_formats.split(',');
-
-            if (Array.isArray(filter_formats) && filter_formats.length > 1) {
-                for (var key in filter_formats) {
-                    if (filter_formats.hasOwnProperty(key)) {
-                        console.log(key + " -> " + filter_formats[key]);
-                        if (!merged_formats_array.includes(filter_formats[key])) {
-                            hasFormat = false;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                if (!merged_formats_array.includes(filter_formats)) {
-                    hasFormat = false;
-                }
-            }
-
-            return hasFormat;
-        }
-    }
-});
-
-/***/ }),
-/* 159 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(13);
-
-
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
-
-var initialState = {
-    "token": null,
-    "user": {}
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
-    state: {
-        documentsByCorpus: [],
-        annotationsByCorpus: [],
-        corpusByDocument: [],
-        annotationsByDocument: [],
-        corpusByAnnotation: [],
-        documentsByAnnotation: [],
-        corpusFilters: [],
-        documentFilters: [],
-        annotationFilters: []
-    },
-
-    actions: {
-        documentByCorpus: function documentByCorpus(_ref, documents) {
-            var commit = _ref.commit;
-
-            commit('PUSH_DOCUMENT_BY_CORPUS', documents);
-        },
-        annotationByCorpus: function annotationByCorpus(_ref2, annotations) {
-            var commit = _ref2.commit;
-
-            commit('PUSH_ANNOTATION_BY_CORPUS', annotations);
-        },
-        annotationByDocument: function annotationByDocument(_ref3, annotations) {
-            var commit = _ref3.commit;
-
-            commit('PUSH_ANNOTATION_BY_DOCUMENT', annotations);
-        },
-        corpusByDocument: function corpusByDocument(_ref4, corpora) {
-            var commit = _ref4.commit;
-
-            commit('PUSH_CORPUS_BY_DOCUMENT', corpora);
-        },
-        documentByAnnotation: function documentByAnnotation(_ref5, documents) {
-            var commit = _ref5.commit;
-
-            commit('PUSH_DOCUMENT_BY_ANNOTATION', documents);
-        },
-        corpusByAnnotation: function corpusByAnnotation(_ref6, corpora) {
-            var commit = _ref6.commit;
-
-            commit('PUSH_CORPUS_BY_ANNOTATION', corpora);
-        },
-        clearCorpus: function clearCorpus(_ref7, corpora) {
-            var commit = _ref7.commit;
-
-            commit('CLEAR_CORPUS_STATE', corpora);
-        },
-        clearDocuments: function clearDocuments(_ref8, documents) {
-            var commit = _ref8.commit;
-
-            commit('CLEAR_DOCUMENT_STATE', documents);
-        },
-        clearAnnotations: function clearAnnotations(_ref9, documents) {
-            var commit = _ref9.commit;
-
-            commit('CLEAR_ANNOTATION_STATE', documents);
-        }
-    },
-    getters: {
-        corpusFilters: function corpusFilters(state) {
-            return state.corpusFilters;
-        },
-        documentFilters: function documentFilters(state) {
-            return state.documentFilters;
-        },
-        annotationFilters: function annotationFilters(state) {
-            return state.annotationFilters;
-        },
-
-        corpusdocuments: function corpusdocuments(state) {
-            return state.documentsByCorpus;
-        },
-        corpusannotations: function corpusannotations(state) {
-            return state.annotationsByCorpus;
-        },
-        documentannotations: function documentannotations(state) {
-            return state.annotationsByDocument;
-        },
-        documentcorpus: function documentcorpus(state) {
-            return state.corpusByDocument;
-        },
-        annotationcorpus: function annotationcorpus(state) {
-            return state.corpusByAnnotation;
-        },
-        annotationdocuments: function annotationdocuments(state) {
-            return state.documentsByAnnotation;
-        }
-
-    },
-    mutations: {
-        PUSH_CORPUS_FILTERS: function PUSH_CORPUS_FILTERS(state, corpusFilter) {
-            state.corpusFilters.push(corpusFilter);
-        },
-        PUSH_DOCUMENT_FILTERS: function PUSH_DOCUMENT_FILTERS(state, documentFilter) {
-            state.documentFilters.push(documentFilter);
-        },
-        PUSH_ANNOTATION_FILTERS: function PUSH_ANNOTATION_FILTERS(state, annotationFilter) {
-            state.annotationFilters.push(annotationFilter);
-        },
-        PUSH_DOCUMENT_BY_CORPUS: function PUSH_DOCUMENT_BY_CORPUS(state, documents) {
-            state.documentsByCorpus.push(documents);
-        },
-        PUSH_ANNOTATION_BY_CORPUS: function PUSH_ANNOTATION_BY_CORPUS(state, annotations) {
-            state.annotationsByCorpus.push(annotations);
-        },
-        PUSH_ANNOTATION_BY_DOCUMENT: function PUSH_ANNOTATION_BY_DOCUMENT(state, annotations) {
-            state.annotationsByDocument.push(annotations);
-        },
-        PUSH_CORPUS_BY_DOCUMENT: function PUSH_CORPUS_BY_DOCUMENT(state, corpora) {
-            state.corpusByDocument.push(corpora);
-        },
-        PUSH_DOCUMENT_BY_ANNOTATION: function PUSH_DOCUMENT_BY_ANNOTATION(state, documents) {
-            state.documentsByAnnotation.push(documents);
-        },
-        PUSH_CORPUS_BY_ANNOTATION: function PUSH_CORPUS_BY_ANNOTATION(state, corpora) {
-            state.corpusByAnnotation.push(corpora);
-        },
-        CLEAR_CORPUS_STATE: function CLEAR_CORPUS_STATE(state, corpora) {
-            while (state.corpusByDocument.length > 0) {
-                state.corpusByDocument.pop();
-            }
-
-            while (state.corpusByAnnotation.length > 0) {
-                state.corpusByAnnotation.pop();
-            }
-        },
-        CLEAR_DOCUMENT_STATE: function CLEAR_DOCUMENT_STATE(state, documents) {
-            while (state.documentsByCorpus.length > 0) {
-                state.documentsByCorpus.pop();
-            }
-
-            while (state.documentsByAnnotation.length > 0) {
-                state.documentsByAnnotation.pop();
-            }
-        },
-        CLEAR_ANNOTATION_STATE: function CLEAR_ANNOTATION_STATE(state, annotations) {
-            while (state.annotationsByCorpus.length > 0) {
-                state.annotationsByCorpus.pop();
-            }
-            while (state.annotationsByDocument.length > 0) {
-                state.annotationsByDocument.pop();
-            }
-        }
-    }
-}));
-
-/***/ }),
-/* 160 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(161)
-/* template */
-var __vue_template__ = __webpack_require__(162)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/GeneralSearchWrapper.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1b5752fa", Component.options)
-  } else {
-    hotAPI.reload("data-v-1b5752fa", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 161 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    data: function data() {
-        return {
-            generalSearchTerm: ''
-        };
-    },
-
-    props: ['results'],
-    methods: {
-        searchGeneral: function searchGeneral() {
-            this.$emit('searchedgeneral', {
-                generalSearchTerm: this.generalSearchTerm,
-                scope: 'general'
-            });
-            this.generalSearchTerm = '';
-        }
-    },
-    mounted: function mounted() {
-        console.log('General SearchComponent mounted.');
-    }
-});
-
-/***/ }),
-/* 162 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      staticClass:
-        "col-6 d-flex justify-content-center align-items-center ml-auto mr-auto"
-    },
-    [
-      _c("form", { staticClass: "form-group serviceBarSearch w-100" }, [
-        _c("div", { staticClass: "input-group" }, [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.generalSearchTerm,
-                expression: "generalSearchTerm"
-              }
-            ],
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              placeholder: "Search metadata (German or English)",
-              "aria-label": "search metadata",
-              "aria-describedby": "basic-addon2"
-            },
-            domProps: { value: _vm.generalSearchTerm },
-            on: {
-              keyup: function($event) {
-                if (
-                  !("button" in $event) &&
-                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                ) {
-                  return null
-                }
-                return _vm.searchGeneral($event)
-              },
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.generalSearchTerm = $event.target.value
-              }
-            }
-          }),
-          _vm._v(" "),
-          _c("div", { staticClass: "input-group-append" }, [
-            _vm._m(0),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "btn btn-outline-corpus-dark pl-4 pr-4",
-                attrs: { type: "button" },
-                on: { click: _vm.searchGeneral }
-              },
-              [
-                _c("i", {
-                  staticClass: "text-primary fa fa-fw fa-search fa-lg "
-                })
-              ]
-            )
-          ])
-        ])
-      ]),
-      _vm._v(" "),
-      _c("i", {
-        staticClass: "btn p-0 fa fa-info-circle fa-fw fa-lg ml-3",
-        attrs: {
-          "data-toggle": "tooltip",
-          role: "button",
-          "data-placement": "bottom",
-          title: "Get help how to search"
-        }
-      })
-    ]
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "clear-search close",
-        attrs: { type: "button", "aria-label": "Close" }
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-1b5752fa", module.exports)
-  }
-}
-
-/***/ }),
-/* 163 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(164)
-/* template */
-var __vue_template__ = __webpack_require__(165)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/SearchFilterWrapper.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5d977368", Component.options)
-  } else {
-    hotAPI.reload("data-v-5d977368", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 164 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter', 'corpusformats', 'annotationformats'],
-    methods: {
-        applyFilters: function applyFilters() {
-            this.$refs.corpusFilter.emitCorpusFilter();
-            this.$refs.documentFilter.emitDocumentFilter();
-            this.$refs.annotationFilter.emitAnnotationFilter();
-        },
-        clearAllFilters: function clearAllFilters() {
-            this.$refs.corpusFilter.clearCorpusFilter();
-            this.$refs.documentFilter.clearDocumentFilter();
-            this.$refs.annotationFilter.clearAnnotationFilter();
-        },
-        emitCorpusFilter: function emitCorpusFilter(corpusFilterEmitData) {
-            this.$emit('corpus-filter', corpusFilterEmitData);
-        },
-        emitDocumentFilter: function emitDocumentFilter(documentFilterEmitData) {
-            this.$emit('document-filter', documentFilterEmitData);
-        },
-        emitAnnotationFilter: function emitAnnotationFilter(annotationFilterEmitData) {
-            this.$emit('annotation-filter', annotationFilterEmitData);
-        },
-        emitCorpusResultCounter: function emitCorpusResultCounter(emittedCorpusResultCounter) {
-            this.$emit('corpus-resultcounter', emittedCorpusResultCounter);
-        },
-        emitDocumentResultCounter: function emitDocumentResultCounter(emittedDocumentResultCounter) {
-            this.$emit('document-resultcounter', emittedDocumentResultCounter);
-        },
-        emitAnnotationResultCounter: function emitAnnotationResultCounter(emittedAnnotationResultCounter) {
-            this.$emit('annotation-resultcounter', emittedAnnotationResultCounter);
-        }
-    },
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    mounted: function mounted() {
-        console.log('CorpusResultComponent mounted.');
-    }
-});
-
-/***/ }),
-/* 165 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", [
-    _c(
-      "a",
-      {
-        staticClass:
-          "text-uppercase btn-outline-corpus-dark align-self-end text-uppercase text-dark text-12 p-2",
-        attrs: { href: "javascript:" },
-        on: { click: _vm.applyFilters }
-      },
-      [_vm._v("\n        Apply Filters\n    ")]
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "mb-4" },
-      [
-        _c("activefilter", {
-          attrs: {
-            corpusresults: _vm.corpusresults,
-            documentresults: _vm.documentresults,
-            annotationresults: _vm.annotationresults,
-            corpusresultcounter: _vm.corpusresultcounter,
-            documentresultcounter: _vm.documentresultcounter,
-            annotationresultcounter: _vm.annotationresultcounter,
-            activefilters: _vm.activefilters
-          },
-          on: {
-            "corpus-resultcounter": _vm.emitCorpusResultCounter,
-            "document-resultcounter": _vm.emitDocumentResultCounter,
-            "annotation-resultcounter": _vm.emitAnnotationResultCounter,
-            "clear-all-filters": _vm.clearAllFilters
-          }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "mb-4" },
-      [
-        _c("corpusfilter", {
-          ref: "corpusFilter",
-          attrs: {
-            corpusresults: _vm.corpusresults,
-            documentresults: _vm.documentresults,
-            annotationresults: _vm.annotationresults,
-            corpusformats: _vm.corpusformats
-          },
-          on: { "corpus-filter": _vm.emitCorpusFilter }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "mb-4" },
-      [
-        _c("documentfilter", {
-          ref: "documentFilter",
-          attrs: {
-            corpusresults: _vm.corpusresults,
-            documentresults: _vm.documentresults,
-            annotationresults: _vm.annotationresults
-          },
-          on: { "document-filter": _vm.emitDocumentFilter }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "mb-4" },
-      [
-        _c("annotationfilter", {
-          ref: "annotationFilter",
-          attrs: {
-            corpusresults: _vm.corpusresults,
-            documentresults: _vm.documentresults,
-            annotationresults: _vm.annotationresults,
-            annotationformats: _vm.annotationformats
-          },
-          on: { "annotation-filter": _vm.emitAnnotationFilter }
-        })
-      ],
-      1
-    )
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-5d977368", module.exports)
-  }
-}
-
-/***/ }),
-/* 166 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(167)
-/* template */
-var __vue_template__ = __webpack_require__(168)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/SearchResultWrapper.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-028d3ef2", Component.options)
-  } else {
-    hotAPI.reload("data-v-028d3ef2", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 167 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched', 'dataloading', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
-    methods: {
-        guid: function guid(key) {
-            return key + ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
-                return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
-            });
-        }
-    },
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    mounted: function mounted() {
-        console.log('CorpusResultComponent mounted.');
-    }
-});
-
-/***/ }),
-/* 168 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "col" },
-    [
-      _c("i", {
-        directives: [
-          {
-            name: "show",
-            rawName: "v-show",
-            value: _vm.dataloading,
-            expression: "dataloading"
-          }
-        ],
-        staticClass: "fa fa-circle-o-notch fa-spin fa-3x fa-fw"
-      }),
-      _vm._v(" "),
-      _c(
-        "span",
-        {
-          directives: [
-            {
-              name: "show",
-              rawName: "v-show",
-              value: _vm.dataloading,
-              expression: "dataloading"
-            }
-          ],
-          staticClass: "sr-only"
-        },
-        [_vm._v("Loading...")]
-      ),
-      _vm._v(" "),
-      (_vm.searches != "undefined" &&
-        _vm.searches.length >= 1 &&
-        _vm.datasearched &&
-        !_vm.dataloading &&
-        (_vm.corpusresults != "undefined" && _vm.corpusresults.length >= 1)) ||
-      (_vm.documentresults != "undefined" && _vm.documentresults.length >= 1) ||
-      (_vm.annotationresults != "undefined" &&
-        _vm.annotationresults.length >= 1)
-        ? _c("h3", { staticClass: "h3 font-weight-normal mb-4" }, [
-            _vm._v(
-              '\n        Results for the search "' +
-                _vm._s(_vm.searches.join(" ")) +
-                '"'
-            )
-          ])
-        : _vm.corpusresults != "undefined" &&
-          _vm.corpusresults.length < 1 &&
-          _vm.documentresults != "undefined" &&
-          _vm.documentresults.length < 1 &&
-          _vm.annotationresults != "undefined" &&
-          _vm.annotationresults.length < 1 &&
-          _vm.datasearched &&
-          !_vm.dataloading &&
-          _vm.searches != "undefined" &&
-          _vm.searches.length >= 1
-          ? _c(
-              "div",
-              {
-                staticClass: "alert alert-info alert-dismissible fade show",
-                attrs: { role: "alert" }
-              },
-              [
-                _c("strong", [
-                  _vm._v("The search "),
-                  _c("i", [_vm._v('"' + _vm._s(_vm.searches.join(" ")) + '"')]),
-                  _vm._v(" returned no results!")
-                ]),
-                _vm._v(" "),
-                _vm._m(0)
-              ]
-            )
-          : _vm._e(),
-      _vm._v(" "),
-      _c("searchresultheader", {
-        attrs: {
-          corpusresults: _vm.corpusresults,
-          documentresults: _vm.documentresults,
-          annotationresults: _vm.annotationresults,
-          corpusresultcounter: _vm.corpusresultcounter,
-          documentresultcounter: _vm.documentresultcounter,
-          annotationresultcounter: _vm.annotationresultcounter
-        }
-      }),
-      _vm._v(" "),
-      _c("div", { staticClass: "tab-content" }, [
-        _c(
-          "div",
-          {
-            staticClass: "tab-pane active",
-            attrs: {
-              id: "searchtab-corpora",
-              role: "tabpanel",
-              "aria-labelledby": "searchtab-corpora"
-            }
-          },
-          _vm._l(_vm.corpusresults, function(corpusresult, index) {
-            return _vm.corpusresults != "undefined" &&
-              _vm.corpusresults.length >= 1
-              ? _c("corpussearchresult", {
-                  key: _vm.guid(index),
-                  attrs: { corpusresult: corpusresult }
-                })
-              : _vm._e()
-          })
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "tab-pane",
-            attrs: {
-              id: "searchtab-documents",
-              role: "tabpanel",
-              "aria-labelledby": "searchtab-documents"
-            }
-          },
-          _vm._l(_vm.documentresults, function(documentresult, documentindex) {
-            return _vm.documentresults != "undefined" &&
-              _vm.documentresults.length >= 1
-              ? _c("documentsearchresult", {
-                  key: _vm.guid(documentindex),
-                  attrs: { documentresult: documentresult }
-                })
-              : _vm._e()
-          })
-        ),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "tab-pane",
-            attrs: {
-              id: "searchtab-annotations",
-              role: "tabpanel",
-              "aria-labelledby": "searchtab-annotations"
-            }
-          },
-          _vm._l(_vm.annotationresults, function(
-            annotationresult,
-            annotationindex
-          ) {
-            return _vm.annotationresults != "undefined" &&
-              _vm.annotationresults.length >= 1
-              ? _c("annotationsearchresult", {
-                  key: _vm.guid(annotationindex),
-                  attrs: { annotationresult: annotationresult }
-                })
-              : _vm._e()
-          })
-        )
-      ]),
-      _vm._v(" "),
-      (_vm.corpusresults != "undefined" && _vm.corpusresults.length > 0) ||
-      (_vm.documentresults != "undefined" && _vm.documentresults.length > 0) ||
-      (_vm.annotationresults != "undefined" && _vm.annotationresults.length > 0)
-        ? _c(
-            "div",
-            {
-              staticClass:
-                "container d-flex flex-column align-items-center justify-content-center mb-5 mt-5"
-            },
-            [_vm._m(1), _vm._v(" "), _vm._m(2)]
-          )
-        : _vm._e()
-    ],
-    1
-  )
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "button",
-      {
-        staticClass: "close",
-        attrs: {
-          type: "button",
-          "data-dismiss": "alert",
-          "aria-label": "Close"
-        }
-      },
-      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("nav", { attrs: { "aria-label": "Page navigation" } }, [
-      _c("ul", { staticClass: "pagination" }, [
-        _c("li", { staticClass: "page-item" }, [
-          _c(
-            "a",
-            {
-              staticClass: "page-link",
-              attrs: { href: "#", "aria-label": "Previous" }
-            },
-            [
-              _c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("«")]),
-              _vm._v(" "),
-              _c("span", { staticClass: "sr-only" }, [_vm._v("Previous")])
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", { staticClass: "page-item font-weight-bold active" }, [
-          _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-            _vm._v("1")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("li", { staticClass: "page-item font-weight-bold" }, [
-          _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-            _vm._v("2")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("li", { staticClass: "page-item font-weight-bold" }, [
-          _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
-            _vm._v("3")
-          ])
-        ]),
-        _vm._v(" "),
-        _c("li", { staticClass: "page-item" }, [
-          _c(
-            "a",
-            {
-              staticClass: "page-link",
-              attrs: { href: "#", "aria-label": "Next" }
-            },
-            [
-              _c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("»")]),
-              _vm._v(" "),
-              _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
-            ]
-          )
-        ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-row" }, [
-      _c("div", { staticClass: "col-auto" }, [
-        _c(
-          "select",
-          {
-            staticClass:
-              "custom-select custom-select-sm font-weight-bold text-uppercase"
-          },
-          [
-            _c("option", { attrs: { selected: "" } }, [
-              _vm._v("6 results / page")
-            ]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "1" } }, [_vm._v("One")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "2" } }, [_vm._v("Two")]),
-            _vm._v(" "),
-            _c("option", { attrs: { value: "3" } }, [_vm._v("Three")])
-          ]
-        )
-      ])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-028d3ef2", module.exports)
-  }
-}
-
-/***/ }),
-/* 169 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(170)
-/* template */
-var __vue_template__ = __webpack_require__(171)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/ActiveFilter.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-62a9a656", Component.options)
-  } else {
-    hotAPI.reload("data-v-62a9a656", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 170 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
-    data: function data() {
-        return {
-            localcorpusresultcounter: this.corpusresultcounter,
-            localdocumentresultcounter: this.documentresultcounter,
-            localannotationresultcounter: this.annotationresultcounter
-        };
-    },
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    methods: {
-        getClass: function getClass() {
-            var classes = "collapse";
-            if (this.corpusresults.length >= 1) {
-                classes += " show";
-            }
-            return classes;
-        },
-        resetFilters: function resetFilters() {
-            this.localcorpusresultcounter = this.corpusresultcounter;
-            for (var i = 0; i < this.corpusresults.length; i++) {
-                if (this.corpusresults[i]._source.visibility == 0) {
-                    this.corpusresults[i]._source.visibility = 1;
-                    this.localcorpusresultcounter++;
-                }
-            }
-            this.$emit('corpus-resultcounter', this.localcorpusresultcounter);
-
-            this.localdocumentresultcounter = this.documentresultcounter;
-            for (var i = 0; i < this.documentresults.length; i++) {
-                if (this.documentresults[i]._source.visibility == 0) {
-                    this.documentresults[i]._source.visibility = 1;
-                    this.localdocumentresultcounter++;
-                }
-            }
-            this.$emit('document-resultcounter', this.localdocumentresultcounter);
-
-            this.localannotationresultcounter = this.annotationresultcounter;
-            for (var i = 0; i < this.annotationresults.length; i++) {
-                if (this.annotationresults[i]._source.visibility == 0) {
-                    this.annotationresults[i]._source.visibility = 1;
-                    this.localannotationresultcounter++;
-                }
-            }
-            this.$emit('annotation-resultcounter', this.localannotationresultcounter);
-
-            this.$emit('clear-all-filters');
-        }
-    },
-    mounted: function mounted() {
-        console.log('CorpusActiveFilterComponent mounted.');
-    }
-});
-
-/***/ }),
-/* 171 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "card" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelActives" } }, [
-      _c("div", { staticClass: "card-body p-1" }, [
-        _c(
-          "form",
-          { attrs: { action: "" } },
-          [
-            _vm._l(_vm.activefilters, function(activefilter, index) {
-              return _vm.activefilters != "undefined" &&
-                _vm.activefilters.length >= 1
-                ? _c(
-                    "div",
-                    {
-                      key: index,
-                      staticClass: "d-flex flex-wrap py-2",
-                      attrs: { activefilter: activefilter }
-                    },
-                    [
-                      _c("div", { staticClass: "m-1" }, [
-                        _c(
-                          "a",
-                          {
-                            staticClass:
-                              "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                            attrs: { href: "#" }
-                          },
-                          [
-                            _c("i", { staticClass: "fa fa-close fa-fw" }),
-                            _vm._v(
-                              "\n                            " +
-                                _vm._s(activefilter.name) +
-                                "\n                        "
-                            )
-                          ]
-                        )
-                      ])
-                    ]
-                  )
-                : _vm._e()
-            }),
-            _vm._v(" "),
-            _c("div", { staticClass: "d-flex flex-column" }, [
-              _c(
-                "a",
-                {
-                  staticClass:
-                    "align-self-end text-uppercase text-dark text-12 p-2",
-                  attrs: { href: "javascript:", role: "button" },
-                  on: {
-                    click: function($event) {
-                      _vm.resetFilters()
-                    }
-                  }
-                },
-                [
-                  _vm._v(
-                    "\n                        Clear all Filter\n                    "
-                  )
-                ]
-              )
-            ])
-          ],
-          2
-        )
-      ])
-    ])
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
-        attrs: {
-          "data-toggle": "collapse",
-          "data-target": "#formPanelActives",
-          "aria-expanded": "true",
-          "aria-controls": "formPanelActives"
-        }
-      },
-      [
-        _c("span", [_vm._v("Active Filter (x)")]),
-        _vm._v(" "),
-        _c("i", {
-          staticClass:
-            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
-        })
-      ]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-62a9a656", module.exports)
-  }
-}
-
-/***/ }),
-/* 172 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(173)
-/* template */
-var __vue_template__ = __webpack_require__(174)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/CorpusFilter.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-b27cc1d2", Component.options)
-  } else {
-    hotAPI.reload("data-v-b27cc1d2", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 173 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'corpusformats'],
-    data: function data() {
-        return {
-            corpusFilterData: {
-                corpus_title: '',
-                corpus_publication_publisher: '',
-                corpus_publication_publication_date: '',
-                corpusYearTo: '',
-                corpus_size_value: '',
-                corpusSizeTo: '',
-                corpus_merged_languages: '',
-                corpus_merged_formats: [],
-                corpus_publication_license: ''
-            },
-            scope: 'corpus'
-        };
-    },
-    methods: {
-        emitCorpusFilter: function emitCorpusFilter() {
-            this.$emit('corpus-filter', this.corpusFilterData);
-        },
-
-        clearCorpusFilter: function clearCorpusFilter() {
-            this.corpusFilterData = {
-                corpus_title: '',
-                corpus_publication_publisher: '',
-                corpus_publication_publication_date: '',
-                corpusYearTo: '',
-                corpus_size_value: '',
-                corpusSizeTo: '',
-                corpus_merged_languages: '',
-                corpus_merged_formats: [],
-                corpus_publication_license: ''
-                //There is some strange bug somewhere that makes it impossible to add a filter twice after the following purge:
-            };$('#formPanelCorpus').find("ul.flexdatalist-multiple li.value").remove();
-        },
-        getClass: function getClass() {
-            var classes = "collapse";
-            if (this.corpusresults.length >= 1 || this.documentresults.length >= 1 || this.annotationresults.length >= 1) {
-                classes += " show";
-            }
-            return classes;
-        },
-        uniqueArray: function uniqueArray(a) {
-            return [].concat(_toConsumableArray(new Set(a)));
-        }
-    },
-    mounted: function mounted() {
-        var mycorpusvue = this;
-
-        var rangeSliderList = ['corpusSize'];
-
-        var _loop = function _loop() {
-            var i = h;
-
-            var el = document.getElementById(rangeSliderList[i]);
-
-            if (el) {
-                //console.log("el: "+el)
-                el.style.height = '8px';
-                el.style.margin = '0 auto 8px';
-
-                noUiSlider.create(el, {
-                    animate: true,
-                    start: [1, 999999], // 4 handles, starting at...
-                    margin: 1, // Handles must be at least 300 apart
-                    limit: 999998, // ... but no more than 600
-                    connect: true, // Display a colored bar between the handles
-                    orientation: 'horizontal', // Orient the slider vertically
-                    behaviour: 'tap-drag', // Move handle on tap, bar is draggable
-                    step: 1,
-
-                    range: {
-                        'min': 1,
-                        'max': 999999
-                    }
-                });
-
-                var paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
-                    paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
-
-                el.noUiSlider.on('update', function (values, handle) {
-
-                    if (handle) {
-                        //this.corpusFilterData
-                        //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
-                        mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
-                        paddingMax.innerHTML = Math.round(values[handle]);
-                    } else {
-                        //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                        mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
-                        paddingMin.innerHTML = Math.round(values[handle]);
-                    }
-                });
-
-                el.noUiSlider.on('change', function () {
-                    // Validate corresponding form
-                    var parentForm = $(el).closest('form');
-                    $(parentForm).find('*[type=submit]').removeClass('disabled');
-                });
-            }
-        };
-
-        for (var h = 0; h < rangeSliderList.length; h++) {
-            _loop();
-        } //end for
-
-        $('input.flexdatalist').on('select:flexdatalist', function (event, set, options) {
-            if (mycorpusvue != 'undefined' && $(this).hasClass('corpusformatslist')) {
-                mycorpusvue.corpusFilterData.corpus_merged_formats.push(set.value);
-            }
-        });
-    }
-});
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(95)))
-
-/***/ }),
-/* 174 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "card" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelCorpus" } }, [
-      _c("div", { staticClass: "card-body px-2" }, [
-        _c("form", { attrs: { action: "" } }, [
-          _c("div", { staticClass: "form-group mb-3" }, [
-            _c(
-              "label",
-              {
-                staticClass: "mb-0 text-14 ",
-                attrs: { for: "formCorpusTitle" }
-              },
-              [_vm._v("Title")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.corpusFilterData.corpus_title,
-                  expression: "corpusFilterData.corpus_title"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                id: "formCorpusTitle",
-                "aria-describedby": "inputTitle",
-                placeholder: '"Ridges herbology"'
-              },
-              domProps: { value: _vm.corpusFilterData.corpus_title },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(
-                    _vm.corpusFilterData,
-                    "corpus_title",
-                    $event.target.value
-                  )
-                }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "form-group mb-3" }, [
-            _c(
-              "label",
-              {
-                staticClass: "mb-0 text-14 ",
-                attrs: { for: "formCorpusLanguage" }
-              },
-              [_vm._v("Language")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.corpusFilterData.corpus_merged_languages,
-                  expression: "corpusFilterData.corpus_merged_languages"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                id: "formCorpusLanguage",
-                "aria-describedby": "inputLanguage",
-                placeholder: '"German"'
-              },
-              domProps: { value: _vm.corpusFilterData.corpus_merged_languages },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(
-                    _vm.corpusFilterData,
-                    "corpus_merged_languages",
-                    $event.target.value
-                  )
-                }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _vm._m(1),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass: "collapse formPanelCorpus-all",
-              attrs: { id: "formPanelCorpus-all1" }
-            },
-            [
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formCorpusPublisher" }
-                  },
-                  [_vm._v("Publisher")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.corpusFilterData.corpus_publication_publisher,
-                      expression:
-                        "corpusFilterData.corpus_publication_publisher"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formCorpusPublisher",
-                    "aria-describedby": "inputPublisher",
-                    placeholder: '"Humboldt Universität"'
-                  },
-                  domProps: {
-                    value: _vm.corpusFilterData.corpus_publication_publisher
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.corpusFilterData,
-                        "corpus_publication_publisher",
-                        $event.target.value
-                      )
-                    }
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formCorpusFormats" }
-                  },
-                  [_vm._v("Formats")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.corpusFilterData.corpus_merged_formats,
-                      expression: "corpusFilterData.corpus_merged_formats"
-                    }
-                  ],
-                  staticClass: "flexdatalist corpusformatslist form-control",
-                  attrs: {
-                    type: "text",
-                    name: "formatslist",
-                    multiple: "multiple",
-                    list: "formatsList-Corpus",
-                    "data-min-length": "0",
-                    id: "formCorpusFormats"
-                  },
-                  domProps: {
-                    value: _vm.corpusFilterData.corpus_merged_formats
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.corpusFilterData,
-                        "corpus_merged_formats",
-                        $event.target.value
-                      )
-                    }
-                  }
-                }),
-                _vm._v(" "),
-                _c(
-                  "datalist",
-                  { attrs: { id: "formatsList-Corpus" } },
-                  _vm._l(this.uniqueArray(_vm.corpusformats), function(
-                    corpusformat
-                  ) {
-                    return _c(
-                      "option",
-                      { attrs: { corpusformat: corpusformat } },
-                      [_vm._v(_vm._s(corpusformat))]
-                    )
-                  })
-                )
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formCorpusLicenses" }
-                  },
-                  [_vm._v("License")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.corpusFilterData.corpus_publication_license,
-                      expression: "corpusFilterData.corpus_publication_license"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formCorpusLicenses",
-                    "aria-describedby": "inputLicenses",
-                    placeholder: '"by-sa"'
-                  },
-                  domProps: {
-                    value: _vm.corpusFilterData.corpus_publication_license
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.corpusFilterData,
-                        "corpus_publication_license",
-                        $event.target.value
-                      )
-                    }
-                  }
-                })
-              ])
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "collapse formPanelCorpus-all",
-            attrs: { id: "formPanelCorpus-all2" }
-          },
-          [
-            _vm._m(2),
-            _vm._v(" "),
-            _c("form", { attrs: { action: "" } }, [
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formCorpusYear" }
-                  },
-                  [_vm._v("Year of Publication")]
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "d-flex justify-content-between" }, [
-                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                    _c(
-                      "small",
-                      {
-                        staticClass: "form-text text-muted",
-                        attrs: { id: "yearFromHelp" }
-                      },
-                      [_vm._v("from")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value:
-                            _vm.corpusFilterData
-                              .corpus_publication_publication_date,
-                          expression:
-                            "corpusFilterData.corpus_publication_publication_date"
-                        }
-                      ],
-                      staticClass: "toBeValidated form-control",
-                      attrs: {
-                        placeholder: "J J J J",
-                        type: "number",
-                        min: "1",
-                        max: "9999",
-                        step: "1",
-                        name: "yearFrom",
-                        id: "formCorpusYearFrom"
-                      },
-                      domProps: {
-                        value:
-                          _vm.corpusFilterData
-                            .corpus_publication_publication_date
-                      },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.corpusFilterData,
-                            "corpus_publication_publication_date",
-                            $event.target.value
-                          )
-                        }
-                      }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                    _c(
-                      "small",
-                      {
-                        staticClass: "form-text text-muted",
-                        attrs: { id: "yearToHelp" }
-                      },
-                      [_vm._v("to")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.corpusFilterData.corpusYearTo,
-                          expression: "corpusFilterData.corpusYearTo"
-                        }
-                      ],
-                      staticClass: "toBeValidated form-control",
-                      attrs: {
-                        placeholder: "J J J J",
-                        type: "number",
-                        min: "1",
-                        max: "9999",
-                        step: "1",
-                        name: "yearTo",
-                        id: "formCorpusYearTo"
-                      },
-                      domProps: { value: _vm.corpusFilterData.corpusYearTo },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.corpusFilterData,
-                            "corpusYearTo",
-                            $event.target.value
-                          )
-                        }
-                      }
-                    })
-                  ])
-                ])
-              ])
-            ])
-          ]
-        )
-      ])
-    ])
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
-        attrs: {
-          "data-toggle": "collapse",
-          "data-target": "#formPanelCorpus",
-          "aria-expanded": "true",
-          "aria-controls": "formPanelCorpus"
-        }
-      },
-      [
-        _c("span", [_vm._v("Corpus")]),
-        _vm._v(" "),
-        _c("i", {
-          staticClass:
-            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
-        })
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "d-flex flex-column" }, [
-      _c(
-        "a",
-        {
-          staticClass:
-            "align-self-end text-uppercase text-dark text-14 filter-expander",
-          attrs: {
-            "data-toggle": "collapse",
-            href: "#",
-            "data-target": ".formPanelCorpus-all",
-            role: "button",
-            "aria-expanded": "false",
-            "aria-controls": "#formPanelCorpus-all1 #formPanelCorpus-all2"
-          }
-        },
-        [
-          _vm._v(
-            "\n                        + Show all Corpusfilter\n                    "
-          )
-        ]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("form", { attrs: { action: "" } }, [
-      _c("div", { staticClass: "form-group mb-3" }, [
-        _c("label", { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } }, [
-          _vm._v("Corpus size (Tokens, Words)")
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "d-flex justify-content-between" }, [
-          _c("div", { staticClass: "w-75" }, [
-            _c("div", { attrs: { id: "corpusSize" } }),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
-              },
-              [
-                _c("span", { attrs: { id: "corpusSize-minVal" } }),
-                _vm._v(" "),
-                _c("span", { attrs: { id: "corpusSize-maxVal" } })
-              ]
-            )
-          ])
-        ])
-      ])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-b27cc1d2", module.exports)
-  }
-}
-
-/***/ }),
-/* 175 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(176)
-/* template */
-var __vue_template__ = __webpack_require__(177)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/DocumentFilter.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-717d462c", Component.options)
-  } else {
-    hotAPI.reload("data-v-717d462c", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 176 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults'],
-    data: function data() {
-        return {
-            documentFilterData: {
-                document_title: '',
-                document_author_forename: '',
-                document_author_surname: '',
-                document_merged_authors: '',
-                document_publication_place: '',
-                document_publication_publishing_date: '',
-                document_publication_publishing_date_to: '',
-                document_size_extent: '',
-                document_size_extent_to: '',
-                document_languages_language: '',
-                document_merged_languages: ''
-            },
-            scope: 'document'
-        };
-    },
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    methods: {
-        getClass: function getClass() {
-            var classes = "collapse";
-            if (this.corpusresults.length >= 1 || this.documentresults.length >= 1 || this.annotationresults.length >= 1) {
-                classes += " show";
-            }
-            return classes;
-        },
-        emitDocumentFilter: function emitDocumentFilter() {
-            this.$emit('document-filter', this.documentFilterData);
-        },
-
-        clearDocumentFilter: function clearDocumentFilter() {
-            this.documentFilterData = {
-                document_title: '',
-                document_author_forename: '',
-                document_author_surname: '',
-                document_merged_authors: '',
-                document_publication_place: '',
-                document_publication_publishing_date: '',
-                document_publication_publishing_date_to: '',
-                document_size_extent: '',
-                document_size_extent_to: '',
-                document_languages_language: '',
-                document_merged_languages: ''
-            };
-        }
-    },
-    mounted: function mounted() {
-        console.log('DocumentFilterComponent mounted.');
-        var myvue = this;
-
-        var rangeSliderList = ['documentSize'];
-
-        var _loop = function _loop() {
-            var i = h;
-
-            var el = document.getElementById(rangeSliderList[i]);
-
-            if (el) {
-                //console.log("el: "+el)
-                el.style.height = '8px';
-                el.style.margin = '0 auto 8px';
-
-                noUiSlider.create(el, {
-                    animate: true,
-                    start: [1, 999999], // 4 handles, starting at...
-                    margin: 1, // Handles must be at least 300 apart
-                    limit: 999998, // ... but no more than 600
-                    connect: true, // Display a colored bar between the handles
-                    orientation: 'horizontal', // Orient the slider vertically
-                    behaviour: 'tap-drag', // Move handle on tap, bar is draggable
-                    step: 1,
-
-                    range: {
-                        'min': 1,
-                        'max': 999999
-                    }
-                });
-
-                var paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
-                    paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
-
-                el.noUiSlider.on('update', function (values, handle) {
-
-                    if (handle) {
-                        //this.corpusFilterData
-                        //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
-                        myvue.documentFilterData.document_size_extent_to = values[handle];
-                        paddingMax.innerHTML = Math.round(values[handle]);
-                    } else {
-                        //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                        myvue.documentFilterData.document_size_extent = values[handle];
-                        paddingMin.innerHTML = Math.round(values[handle]);
-                    }
-                });
-
-                el.noUiSlider.on('change', function () {
-                    // Validate corresponding form
-                    var parentForm = $(el).closest('form');
-                    $(parentForm).find('*[type=submit]').removeClass('disabled');
-                });
-            }
-        };
-
-        for (var h = 0; h < rangeSliderList.length; h++) {
-            _loop();
-        } //end for
-    }
-});
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(95)))
-
-/***/ }),
-/* 177 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "card" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelDocuments" } }, [
-      _c("div", { staticClass: "card-body px-2" }, [
-        _c("form", { attrs: { action: "" } }, [
-          _c("div", { staticClass: "form-group mb-3" }, [
-            _c(
-              "label",
-              {
-                staticClass: "mb-0 text-14 ",
-                attrs: { for: "formDocumentsTitle" }
-              },
-              [_vm._v("Title")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.documentFilterData.document_title,
-                  expression: "documentFilterData.document_title"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                id: "formDocumentsTitle",
-                "aria-describedby": "inputTitle",
-                placeholder: '"Document title"'
-              },
-              domProps: { value: _vm.documentFilterData.document_title },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(
-                    _vm.documentFilterData,
-                    "document_title",
-                    $event.target.value
-                  )
-                }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "form-group mb-3" }, [
-            _c(
-              "label",
-              {
-                staticClass: "mb-0 text-14 ",
-                attrs: { for: "formDocumentsAuthor" }
-              },
-              [_vm._v("Author")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.documentFilterData.document_merged_authors,
-                  expression: "documentFilterData.document_merged_authors"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                id: "formDocumentsAuthor",
-                "aria-describedby": "inputAuthor",
-                placeholder: '"Frank Mann"'
-              },
-              domProps: {
-                value: _vm.documentFilterData.document_merged_authors
-              },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(
-                    _vm.documentFilterData,
-                    "document_merged_authors",
-                    $event.target.value
-                  )
-                }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _vm._m(1),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass: "collapse formPanelDocuments-all",
-              attrs: { id: "formPanelDocuments-all1" }
-            },
-            [
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formDocumentsLanguage" }
-                  },
-                  [_vm._v("Language")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.documentFilterData.document_languages_language,
-                      expression:
-                        "documentFilterData.document_languages_language"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formDocumentsLanguage",
-                    "aria-describedby": "inputLanguage",
-                    placeholder: '"German"'
-                  },
-                  domProps: {
-                    value: _vm.documentFilterData.document_languages_language
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.documentFilterData,
-                        "document_languages_language",
-                        $event.target.value
-                      )
-                    }
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formDocumentsPlace" }
-                  },
-                  [_vm._v("Place")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.documentFilterData.document_publication_place,
-                      expression:
-                        "documentFilterData.document_publication_place"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formDocumentsPlace",
-                    "aria-describedby": "inputPlace",
-                    placeholder: '"Mannheim"'
-                  },
-                  domProps: {
-                    value: _vm.documentFilterData.document_publication_place
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.documentFilterData,
-                        "document_publication_place",
-                        $event.target.value
-                      )
-                    }
-                  }
-                })
-              ])
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c(
-          "div",
-          {
-            staticClass: "collapse formPanelDocuments-all",
-            attrs: { id: "formPanelDocuments-all2" }
-          },
-          [
-            _vm._m(2),
-            _vm._v(" "),
-            _c("form", { attrs: { action: "" } }, [
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formDocumentsYear" }
-                  },
-                  [_vm._v("Year of Publication")]
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "d-flex justify-content-between" }, [
-                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                    _c(
-                      "small",
-                      {
-                        staticClass: "form-text text-muted",
-                        attrs: { id: "yearFromHelp" }
-                      },
-                      [_vm._v("from")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value:
-                            _vm.documentFilterData
-                              .document_publication_publishing_date,
-                          expression:
-                            "documentFilterData.document_publication_publishing_date"
-                        }
-                      ],
-                      staticClass: "toBeValidated form-control",
-                      attrs: {
-                        placeholder: "J J J J",
-                        type: "number",
-                        min: "1",
-                        max: "9999",
-                        step: "1",
-                        name: "yearFrom",
-                        id: "formDocumentsYearFrom"
-                      },
-                      domProps: {
-                        value:
-                          _vm.documentFilterData
-                            .document_publication_publishing_date
-                      },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.documentFilterData,
-                            "document_publication_publishing_date",
-                            $event.target.value
-                          )
-                        }
-                      }
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                    _c(
-                      "small",
-                      {
-                        staticClass: "form-text text-muted",
-                        attrs: { id: "yearToHelp" }
-                      },
-                      [_vm._v("to")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value:
-                            _vm.documentFilterData
-                              .document_publication_publishing_date_to,
-                          expression:
-                            "documentFilterData.document_publication_publishing_date_to"
-                        }
-                      ],
-                      staticClass: "toBeValidated form-control",
-                      attrs: {
-                        placeholder: "J J J J",
-                        type: "number",
-                        min: "1",
-                        max: "9999",
-                        step: "1",
-                        name: "yearTo",
-                        id: "formDocumentsYearTo"
-                      },
-                      domProps: {
-                        value:
-                          _vm.documentFilterData
-                            .document_publication_publishing_date_to
-                      },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.documentFilterData,
-                            "document_publication_publishing_date_to",
-                            $event.target.value
-                          )
-                        }
-                      }
-                    })
-                  ])
-                ])
-              ])
-            ])
-          ]
-        )
-      ])
-    ])
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
-        attrs: {
-          "data-toggle": "collapse",
-          "data-target": "#formPanelDocuments",
-          "aria-expanded": "true",
-          "aria-controls": "formPanelDocuments"
-        }
-      },
-      [
-        _c("span", [_vm._v("Documents")]),
-        _vm._v(" "),
-        _c("i", {
-          staticClass:
-            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
-        })
-      ]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "d-flex flex-column" }, [
-      _c(
-        "a",
-        {
-          staticClass:
-            "align-self-end text-uppercase text-dark text-14 filter-expander",
-          attrs: {
-            "data-toggle": "collapse",
-            href: "#",
-            "data-target": ".formPanelDocuments-all",
-            role: "button",
-            "aria-expanded": "false",
-            "aria-controls": "#formPanelDocuments-all1 #formPanelDocuments-all2"
-          }
-        },
-        [
-          _vm._v(
-            "\n                        + Show all Documentsfilter\n                    "
-          )
-        ]
-      )
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("form", { attrs: { action: "" } }, [
-      _c("div", { staticClass: "form-group mb-3" }, [
-        _c("label", { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } }, [
-          _vm._v("Documents size (Tokens, Words)")
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "d-flex justify-content-between" }, [
-          _c("div", { staticClass: "w-75" }, [
-            _c("div", { attrs: { id: "documentSize" } }),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
-              },
-              [
-                _c("span", { attrs: { id: "documentSize-minVal" } }),
-                _vm._v(" "),
-                _c("span", { attrs: { id: "documentSize-maxVal" } })
-              ]
-            )
-          ])
-        ])
-      ])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-717d462c", module.exports)
-  }
-}
-
-/***/ }),
-/* 178 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(179)
-/* template */
-var __vue_template__ = __webpack_require__(180)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/AnnotationFilter.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-147adb84", Component.options)
-  } else {
-    hotAPI.reload("data-v-147adb84", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 179 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'annotationformats'],
-    data: function data() {
-        return {
-            annotationFilterData: {
-                preparation_title: '',
-                annotation_merged_formats: [],
-                preparation_encoding_annotation_group: ''
-            },
-            scope: 'annotation'
-        };
-    },
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
-    methods: {
-        getClass: function getClass() {
-            var classes = "collapse";
-            if (this.corpusresults.length >= 1 || this.documentresults.length >= 1 || this.annotationresults.length >= 1) {
-                classes += " show";
-            }
-            return classes;
-        },
-        emitAnnotationFilter: function emitAnnotationFilter() {
-            this.$emit('annotation-filter', this.annotationFilterData);
-        },
-        uniqueArray: function uniqueArray(a) {
-            return [].concat(_toConsumableArray(new Set(a)));
-        },
-        clearAnnotationFilter: function clearAnnotationFilter() {
-            this.annotationFilterData = {
-                preparation_title: '',
-                annotation_merged_formats: [],
-                preparation_encoding_annotation_group: ''
-                //There is some strange bug somewhere that makes it impossible to add a filter twice after the following purge:
-            };$('#formPanelAnnotations').find("ul.flexdatalist-multiple li.value").remove();
-        }
-    },
-    mounted: function mounted() {
-        var myannotationvue = this;
-        $('input.flexdatalist').on('select:flexdatalist', function (event, set, options) {
-            if (myannotationvue != 'undefined' && $(this).hasClass('annotationformatslist')) {
-                myannotationvue.annotationFilterData.annotation_merged_formats.push(set.value);
-            }
-        });
-    }
-});
-
-/***/ }),
-/* 180 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "card" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c(
-      "div",
-      { class: _vm.getClass(), attrs: { id: "formPanelAnnotations" } },
-      [
-        _c("div", { staticClass: "card-body px-2" }, [
-          _c("form", { attrs: { action: "" } }, [
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "mb-0 text-14 ",
-                  attrs: { for: "formAnnotationsTitle" }
-                },
-                [_vm._v("Name")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.annotationFilterData.preparation_title,
-                    expression: "annotationFilterData.preparation_title"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  id: "formAnnotationsTitle",
-                  "aria-describedby": "inputName",
-                  placeholder: '"norm"'
-                },
-                domProps: { value: _vm.annotationFilterData.preparation_title },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(
-                      _vm.annotationFilterData,
-                      "preparation_title",
-                      $event.target.value
-                    )
-                  }
-                }
-              })
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "mb-0 text-14 ",
-                  attrs: { for: "formAnnotationsLanguage" }
-                },
-                [_vm._v("Category")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value:
-                      _vm.annotationFilterData
-                        .preparation_encoding_annotation_group,
-                    expression:
-                      "annotationFilterData.preparation_encoding_annotation_group"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  id: "formAnnotationsLanguage",
-                  "aria-describedby": "inputCategory",
-                  placeholder: '"Lexical"'
-                },
-                domProps: {
-                  value:
-                    _vm.annotationFilterData
-                      .preparation_encoding_annotation_group
-                },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(
-                      _vm.annotationFilterData,
-                      "preparation_encoding_annotation_group",
-                      $event.target.value
-                    )
-                  }
-                }
-              })
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "mb-0 text-14 ",
-                  attrs: { for: "formAnnotationsFormats" }
-                },
-                [_vm._v("Formats")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value:
-                      _vm.annotationFilterData
-                        .preparation_encoding_annotation_group,
-                    expression:
-                      "annotationFilterData.preparation_encoding_annotation_group"
-                  }
-                ],
-                staticClass: "flexdatalist annotationformatslist form-control",
-                attrs: {
-                  type: "text",
-                  name: "formatslist",
-                  multiple: "multiple",
-                  list: "formatsList-Annotations",
-                  "data-min-length": "0",
-                  id: "formAnnotationsFormats"
-                },
-                domProps: {
-                  value:
-                    _vm.annotationFilterData
-                      .preparation_encoding_annotation_group
-                },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(
-                      _vm.annotationFilterData,
-                      "preparation_encoding_annotation_group",
-                      $event.target.value
-                    )
-                  }
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "datalist",
-                { attrs: { id: "formatsList-Annotations" } },
-                _vm._l(this.uniqueArray(_vm.annotationformats), function(
-                  annotationformat
-                ) {
-                  return _c(
-                    "option",
-                    { attrs: { annotationformat: annotationformat } },
-                    [_vm._v(_vm._s(annotationformat))]
-                  )
-                })
-              )
-            ])
-          ])
-        ])
-      ]
-    )
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass:
-          "card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center",
-        attrs: {
-          "data-toggle": "collapse",
-          "data-target": "#formPanelAnnotations",
-          "aria-expanded": "true",
-          "aria-controls": "formPanelAnnotations"
-        }
-      },
-      [
-        _c("span", [_vm._v("Annotations")]),
-        _vm._v(" "),
-        _c("i", {
-          staticClass:
-            "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
-        })
-      ]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-147adb84", module.exports)
-  }
-}
-
-/***/ }),
-/* 181 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(182)
-/* template */
-var __vue_template__ = __webpack_require__(183)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/SearchResultHeader.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-69ab1049", Component.options)
-  } else {
-    hotAPI.reload("data-v-69ab1049", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 182 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
-    mounted: function mounted() {
-        console.log('CorpusResultHeaderComponent mounted.');
-    }
-});
-
-/***/ }),
-/* 183 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", { attrs: { id: "resultheader" } }, [
-    _c("div", { staticClass: "d-flex justify-content-between my-1" }, [
-      _c(
-        "ul",
-        {
-          staticClass: "nav nav-tabs",
-          attrs: { id: "searchtabs", role: "tablist" }
-        },
-        [
-          _c("li", { staticClass: "nav-item" }, [
-            _c(
-              "a",
-              {
-                staticClass: "nav-link active",
-                attrs: {
-                  id: "tab-corpora",
-                  "data-toggle": "tab",
-                  href: "#searchtab-corpora",
-                  role: "tab",
-                  "aria-controls": "searchtab-corpora",
-                  "aria-selected": "true"
-                }
-              },
-              [_vm._v("Corpora (" + _vm._s(_vm.corpusresultcounter) + ")")]
-            )
-          ]),
-          _vm._v(" "),
-          _c("li", { staticClass: "nav-item" }, [
-            _c(
-              "a",
-              {
-                staticClass: "nav-link",
-                attrs: {
-                  id: "tab-documents",
-                  "data-toggle": "tab",
-                  href: "#searchtab-documents",
-                  role: "tab",
-                  "aria-controls": "searchtab-documents",
-                  "aria-selected": "false"
-                }
-              },
-              [_vm._v("Documents (" + _vm._s(_vm.documentresultcounter) + ")")]
-            )
-          ]),
-          _vm._v(" "),
-          _c("li", { staticClass: "nav-item" }, [
-            _c(
-              "a",
-              {
-                staticClass: "nav-link",
-                attrs: {
-                  id: "tab-annotations",
-                  "data-toggle": "tab",
-                  href: "#searchtab-annotations",
-                  role: "tab",
-                  "aria-controls": "searchtab-annotations",
-                  "aria-selected": "false"
-                }
-              },
-              [
-                _vm._v(
-                  "Annotations (" + _vm._s(_vm.annotationresultcounter) + ")"
-                )
-              ]
-            )
-          ])
-        ]
-      ),
-      _vm._v(" "),
-      _vm._m(0)
-    ]),
-    _vm._v(" "),
-    _vm._m(1)
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-row " }, [
-      _c("div", { staticClass: "col-auto" }, [
-        _c("div", { staticClass: "dropdown" }, [
-          _c(
-            "button",
-            {
-              staticClass:
-                "btn btn-outline-corpus-dark rounded dropdown-toggle font-weight-bold text-uppercase ",
-              attrs: {
-                type: "button",
-                id: "searchSorting",
-                "data-toggle": "dropdown",
-                "aria-haspopup": "true",
-                "aria-expanded": "false"
-              }
-            },
-            [
-              _vm._v(
-                "\n                        Title - Alphabetical\n                    "
-              )
-            ]
-          ),
-          _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass: "dropdown-menu",
-              attrs: { "aria-labelledby": "searchSort" }
-            },
-            [
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Title - alphabetical")]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Tokens - ascending")]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Tokens - descending")]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Corpus release - oldest")]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Corpus release - newest")]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Date Document - oldest")]
-              ),
-              _vm._v(" "),
-              _c(
-                "a",
-                { staticClass: "dropdown-item text-14", attrs: { href: "#" } },
-                [_vm._v("Date Document - newest")]
-              )
-            ]
-          )
-        ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "div",
-      {
-        staticClass: "w-100 py-3 px-6 mb-1 bg-corpus-light d-flex flex-column"
-      },
-      [
-        _c(
-          "div",
-          {
-            staticClass:
-              "btn btn-sm font-weight-bold text-uppercase btn-outline-corpus-dark align-self-end disabled"
-          },
-          [_vm._v("\n            Apply Filter\n        ")]
-        )
-      ]
-    )
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-69ab1049", module.exports)
-  }
-}
-
-/***/ }),
-/* 184 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(185)
-/* template */
-var __vue_template__ = __webpack_require__(186)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/CorpusSearchResult.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-28722078", Component.options)
-  } else {
-    hotAPI.reload("data-v-28722078", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 185 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresult', 'corpuspaths'],
-    methods: {
-        browseUri: function browseUri(id) {
-            return '/browse/corpus/'.concat(id);
-        },
-        corpusAuthors: function corpusAuthors(forenames, surnames) {
-            var authorString = "";
-            for (var i = 0; i < forenames.length; i++) {
-                authorString += forenames[i].concat(' ').concat(surnames[i]).concat(', ');
-            }
-            authorString = authorString.substring(0, authorString.lastIndexOf(","));
-            return authorString;
-        },
-        getLicenseMarkup: function getLicenseMarkup(licenseUri) {
-            var uriSplits = licenseUri.split("/");
-            var license = uriSplits[4];
-            var licenseSplits = license.split("-");
-            var licenses = [];
-
-            for (var i = 0; i < licenseSplits.length; i++) {
-                var license = {};
-                license.uri = '/images/license-' + licenseSplits[i] + '.svg';
-                license.altText = licenseSplits[i];
-                licenses.push(license);
-            }
-            return licenses;
-        },
-        emitCorpusRelations: function emitCorpusRelations(corpusId) {
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('clearAnnotations', []);
-            this.$store.dispatch('documentByCorpus', this.documentsbycorpus[corpusId]);
-            this.$store.dispatch('annotationByCorpus', this.annotationsbycorpus[corpusId]);
-        }
-    },
-    mounted: function mounted() {
-        console.log('CorpusResultComponent mounted.');
-    }
-});
-
-/***/ }),
-/* 186 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm.corpusresult._source.visibility == 1
-    ? _c(
-        "div",
-        { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-        [
-          _c("div", { staticClass: "row" }, [
-            _vm.corpusresult._source.corpuslogo == ""
-              ? _c("div", { staticClass: "col-2" }, [
-                  _c("img", {
-                    staticClass: "w-100",
-                    attrs: {
-                      src: "/images/placeholder_circle.svg",
-                      alt: "circle-image"
-                    }
-                  })
-                ])
-              : _c("div", { staticClass: "col-2" }, [
-                  _c("img", {
-                    staticClass: "rounded-circle bg-white w-100",
-                    attrs: {
-                      src: "/images/corpuslogos/"
-                        .concat(_vm.corpusresult._source.projectpath)
-                        .concat("_")
-                        .concat(_vm.corpusresult._source.corpuspath)
-                        .concat("_")
-                        .concat(_vm.corpusresult._source.corpuslogo),
-                      alt: "corpus-logo"
-                    }
-                  })
-                ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col" }, [
-              _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "text-dark",
-                    attrs: { href: _vm.browseUri(_vm.corpusresult._id) }
-                  },
-                  [
-                    _vm._v(
-                      "\n                        " +
-                        _vm._s(
-                          _vm._f("arrayToString")(
-                            _vm.corpusresult._source.corpus_title
-                          )
-                        ) +
-                        "\n                    "
-                    )
-                  ]
-                )
-              ]),
-              _vm._v(" "),
-              _vm.corpusresult._source.corpus_editor_forename != "undefined" &&
-              _vm.corpusresult._source.corpus_editor_surname != "undefined"
-                ? _c("span", { staticClass: "text-grey text-14" }, [
-                    _vm._v(
-                      _vm._s(
-                        _vm.corpusAuthors(
-                          _vm.corpusresult._source.corpus_editor_forename,
-                          _vm.corpusresult._source.corpus_editor_surname
-                        )
-                      )
-                    )
-                  ])
-                : _vm._e(),
-              _vm._v(" "),
-              _c("div", { staticClass: "row mt-1 " }, [
-                _c("div", { staticClass: "col col-auto mr-1" }, [
-                  _c(
-                    "div",
-                    {
-                      staticClass:
-                        "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                    },
-                    [
-                      _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
-                      _vm._v(" "),
-                      _c("span", [
-                        _vm._v(
-                          "D. from " +
-                            _vm._s(_vm.corpusresult._source.documentrange)
-                        )
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass:
-                        "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                    },
-                    [
-                      _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
-                      _vm._v(" "),
-                      _c("span", [
-                        _vm._v(_vm._s(_vm.corpusresult._source.documentgenre))
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "mt-2" }, [
-                    _c(
-                      "a",
-                      {
-                        staticClass:
-                          "text-dark text-uppercase search-description-expander",
-                        attrs: {
-                          "data-toggle": "collapse",
-                          href: "#corpusSearchItem_".concat(
-                            _vm.corpusresult._id
-                          ),
-                          role: "button",
-                          "aria-expanded": "false",
-                          "aria-controls": "#corpusSearchItem_".concat(
-                            _vm.corpusresult._id
-                          )
-                        }
-                      },
-                      [
-                        _c("i", {
-                          staticClass:
-                            "fa fa-angle-down fa-fw text-primary font-weight-bold"
-                        }),
-                        _vm._v(
-                          "\n                                Description\n                            "
-                        )
-                      ]
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "col col-auto mr-1" }, [
-                  _vm.corpusresult._source.corpus_languages_language !=
-                  "undefined"
-                    ? _c(
-                        "div",
-                        {
-                          staticClass:
-                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                        },
-                        [
-                          _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
-                          _vm._v(" "),
-                          _c("span", [
-                            _vm._v(
-                              _vm._s(
-                                _vm._f("truncatelist")(
-                                  _vm.corpusresult._source
-                                    .corpus_languages_language[0]
-                                )
-                              )
-                            )
-                          ])
-                        ]
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c(
-                    "div",
-                    {
-                      staticClass:
-                        "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                    },
-                    [
-                      _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                      _vm._v(" "),
-                      _c("span", [
-                        _vm._v(
-                          _vm._s(
-                            _vm._f("arrayToString")(
-                              _vm.corpusresult._source.corpus_size_value
-                            )
-                          ) +
-                            " " +
-                            _vm._s(
-                              _vm._f("arrayToString")(
-                                _vm.corpusresult._source.corpus_size_type
-                              )
-                            )
-                        )
-                      ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("div", { staticClass: "mt-2" }, [
-                    _c(
-                      "a",
-                      {
-                        staticClass:
-                          "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                        attrs: { href: "#" }
-                      },
-                      [
-                        _c("i", {
-                          staticClass:
-                            "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                        }),
-                        _vm._v(" "),
-                        typeof _vm.corpusresult._source.corpus_documents !=
-                        "undefined"
-                          ? _c(
-                              "span",
-                              {
-                                staticClass:
-                                  "text-primary text-14 font-weight-bold"
-                              },
-                              [
-                                _vm._v(
-                                  _vm._s(
-                                    _vm.corpusresult._source.corpus_documents
-                                      .length
-                                  )
-                                )
-                              ]
-                            )
-                          : _vm._e()
-                      ]
-                    )
-                  ])
-                ]),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  { staticClass: "col col-auto mr-1" },
-                  [
-                    _vm._l(
-                      _vm.getLicenseMarkup(
-                        _vm.corpusresult._source.corpus_publication_license[0]
-                      ),
-                      function(licenseObject) {
-                        return _vm.corpusresult._source
-                          .corpus_publication_license != "undefined"
-                          ? _c(
-                              "div",
-                              {
-                                staticClass:
-                                  "d-flex justify-content-start align-items-center"
-                              },
-                              [
-                                _c("img", {
-                                  staticClass: "py-1",
-                                  attrs: {
-                                    src: licenseObject.uri,
-                                    alt: "license".concat(licenseObject.altText)
-                                  }
-                                })
-                              ]
-                            )
-                          : _vm._e()
-                      }
-                    ),
-                    _vm._v(" "),
-                    _vm.corpusresult._source
-                      .corpus_publication_publication_date != "undefined"
-                      ? _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp smaller text-14 d-flex align-items-center align-self-start my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", {
-                              staticClass:
-                                "fa fa-fw fa-arrow-up mr-1 border-top border-dark"
-                            }),
-                            _vm._v(" "),
-                            _c("span", [
-                              _vm._v(
-                                _vm._s(
-                                  _vm._f("lastElement")(
-                                    _vm.corpusresult._source
-                                      .corpus_publication_publication_date
-                                  )
-                                )
-                              )
-                            ])
-                          ]
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _c("div", { staticClass: "mt-2" }, [
-                      typeof _vm.corpusresult._source.annotation_id !=
-                      "undefined"
-                        ? _c(
-                            "a",
-                            {
-                              staticClass:
-                                "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1",
-                              attrs: { href: "# " }
-                            },
-                            [
-                              _c("i", {
-                                staticClass:
-                                  "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                              }),
-                              _vm._v(" "),
-                              _c(
-                                "span",
-                                { staticClass: "text-14 font-weight-bold" },
-                                [
-                                  _vm._v(
-                                    _vm._s(
-                                      _vm.corpusresult._source.annotation_id
-                                        .length
-                                    )
-                                  )
-                                ]
-                              )
-                            ]
-                          )
-                        : _vm._e()
-                    ])
-                  ],
-                  2
-                )
-              ])
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "col-2 mr-3" }, [
-              _c("div", { staticClass: "dropdown" }, [
-                _c(
-                  "button",
-                  {
-                    staticClass:
-                      "btn btn-outline-corpus-dark dropdown-toggle font-weight-bold text-uppercase rounded mb-4",
-                    attrs: {
-                      type: "button",
-                      "data-toggle": "dropdown",
-                      "aria-haspopup": "true",
-                      "aria-expanded": "false"
-                    }
-                  },
-                  [
-                    _vm._v(
-                      "\n                        Download\n                    "
-                    )
-                  ]
-                ),
-                _vm._v(" "),
-                _c(
-                  "div",
-                  {
-                    staticClass: "dropdown-menu",
-                    attrs: { "aria-labelledby": "dropdownMenuButton" }
-                  },
-                  [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "dropdown-item text-14",
-                        attrs: {
-                          href: "/download/tei/".concat(
-                            _vm.corpusresult._source.corpuspath
-                          )
-                        }
-                      },
-                      [_vm._v("TEI-Header")]
-                    )
-                  ]
-                )
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "custom-control custom-checkbox" }, [
-                _c("input", {
-                  staticClass: "custom-control-input",
-                  attrs: {
-                    type: "checkbox",
-                    id: "filtercheck-corpusSearchItem".concat(
-                      _vm.corpusresult._id
-                    )
-                  }
-                }),
-                _vm._v(" "),
-                _c(
-                  "label",
-                  {
-                    staticClass: "custom-control-label text-14",
-                    attrs: {
-                      for: "filtercheck-corpusSearchItem".concat(
-                        _vm.corpusresult._id
-                      )
-                    }
-                  },
-                  [
-                    _vm._v(
-                      "\n                        Set as Filter\n                    "
-                    )
-                  ]
-                )
-              ])
-            ])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "row" }, [
-            _c("div", { staticClass: "col-2" }),
-            _vm._v(" "),
-            _c("div", { staticClass: "col" }, [
-              _c(
-                "div",
-                {
-                  staticClass: "collapse row pl-0 pr-3 pb-0",
-                  attrs: {
-                    id: "corpusSearchItem_".concat(_vm.corpusresult._id)
-                  }
-                },
-                [
-                  _c("hr"),
-                  _vm._v(" "),
-                  _c("p", [
-                    _vm._v(
-                      "\n                        " +
-                        _vm._s(
-                          _vm._f("lastElement")(
-                            _vm.corpusresult._source
-                              .corpus_encoding_project_description
-                          )
-                        ) +
-                        "\n                        "
-                    ),
-                    _c("a", { attrs: { href: "#" } }, [_vm._v("MORE")])
-                  ])
-                ]
-              )
-            ])
-          ])
-        ]
-      )
-    : _vm._e()
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-28722078", module.exports)
-  }
-}
-
-/***/ }),
-/* 187 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(188)
-/* template */
-var __vue_template__ = __webpack_require__(189)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/DocumentSearchResult.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-0487c357", Component.options)
-  } else {
-    hotAPI.reload("data-v-0487c357", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 188 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['documentresult'],
-    methods: {
-        browseUri: function browseUri(id) {
-            return '/browse/document/'.concat(id);
-        },
-        emitDocumentRelations: function emitDocumentRelations(documentId) {
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearAnnotations', []);
-            this.$store.dispatch('corpusByDocument', this.corpusbydocument[documentId]);
-            this.$store.dispatch('annotationByDocument', this.annotationsbydocument[documentId]);
-        }
-    },
-    mounted: function mounted() {}
-});
-
-/***/ }),
-/* 189 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm.documentresult._source.visibility == 1
-    ? _c(
-        "div",
-        { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-        [
-          _c("div", { staticClass: "row" }, [
-            _c("div", { staticClass: "col" }, [
-              _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "text-dark",
-                    attrs: { href: _vm.browseUri(_vm.documentresult._id) }
-                  },
-                  [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(
-                          _vm._f("arrayToString")(
-                            _vm.documentresult._source.document_title
-                          )
-                        ) +
-                        "\n                "
-                    )
-                  ]
-                )
-              ]),
-              _vm._v(" "),
-              _c("span", { staticClass: "text-grey text-14" }, [
-                _vm._v(
-                  "\n                Corpus: " +
-                    _vm._s(_vm.documentresult._source.corpus_name) +
-                    "\n                "
-                ),
-                _c("br"),
-                _vm._v(
-                  " " +
-                    _vm._s(
-                      _vm._f("arrayToString")(
-                        _vm.documentresult._source.document_author_surname
-                      )
-                    ) +
-                    ", " +
-                    _vm._s(
-                      _vm._f("arrayToString")(
-                        _vm.documentresult._source.document_author_forename
-                      )
-                    )
-                )
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "row mt-2" }, [
-                _c(
-                  "div",
-                  { staticClass: "col d-flex flex-wrap justify-content-start" },
-                  [
-                    _c("div", { staticClass: "mr-7" }, [
-                      _c(
-                        "div",
-                        {
-                          staticClass:
-                            "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                        },
-                        [
-                          _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
-                          _vm._v(" "),
-                          _c("span", [
-                            _vm._v(
-                              _vm._s(
-                                _vm._f("arrayToString")(
-                                  _vm.documentresult._source
-                                    .document_publication_publishing_date
-                                )
-                              )
-                            )
-                          ])
-                        ]
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticClass:
-                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                      },
-                      [
-                        _c("i", { staticClass: "fa fa-fw fa-cubes mr-1" }),
-                        _vm._v(" "),
-                        _c("span", [
-                          _vm._v(
-                            " " +
-                              _vm._s(
-                                _vm._f("arrayToString")(
-                                  _vm.documentresult._source
-                                    .document_size_extent
-                                )
-                              ) +
-                              " " +
-                              _vm._s(
-                                _vm._f("arrayToString")(
-                                  _vm.documentresult._source.document_size_type
-                                )
-                              )
-                          )
-                        ])
-                      ]
-                    ),
-                    _vm._v(" "),
-                    _vm.documentresult._source.document_languages_language !=
-                    "undefined"
-                      ? _c(
-                          "div",
-                          {
-                            staticClass:
-                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
-                          },
-                          [
-                            _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
-                            _vm._v(" "),
-                            _c("span", [
-                              _vm._v(
-                                _vm._s(
-                                  _vm.documentresult._source
-                                    .document_languages_language[0]
-                                )
-                              )
-                            ])
-                          ]
-                        )
-                      : _vm._e()
-                  ]
-                )
-              ])
-            ]),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "col-4 mr-3 d-flex justify-content-between align-items-start"
-              },
-              [
-                _c(
-                  "a",
-                  {
-                    staticClass:
-                      "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                    attrs: { href: "#" }
-                  },
-                  [
-                    _c("i", {
-                      staticClass:
-                        "fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"
-                    }),
-                    _vm._v(" "),
-                    _c("span", { staticClass: "text-14 font-weight-bold" }, [
-                      _vm._v(
-                        _vm._s(
-                          _vm.documentresult._source
-                            .document_list_of_annotations_id.length
-                        )
-                      )
-                    ])
-                  ]
-                ),
-                _vm._v(" "),
-                _vm._m(0)
-              ]
-            )
-          ])
-        ]
-      )
-    : _vm._e()
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "custom-control custom-checkbox" }, [
-      _c("input", {
-        staticClass: "custom-control-input",
-        attrs: { type: "checkbox", id: "filtercheck-documentSearchItem0001" }
-      }),
-      _vm._v(" "),
-      _c(
-        "label",
-        {
-          staticClass: "custom-control-label text-14",
-          attrs: { for: "filtercheck-documentSearchItem0001" }
-        },
-        [_vm._v("\n                    Set as Filter\n                ")]
-      )
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-0487c357", module.exports)
-  }
-}
-
-/***/ }),
-/* 190 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(6)
-/* script */
-var __vue_script__ = __webpack_require__(191)
-/* template */
-var __vue_template__ = __webpack_require__(192)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/AnnotationSearchResult.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-d7ceacaa", Component.options)
-  } else {
-    hotAPI.reload("data-v-d7ceacaa", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 191 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['annotationresult'],
-    methods: {
-        browseUri: function browseUri(id, type) {
-            return '/browse/annotation/'.concat(id);
-        },
-        emitAnnotationRelations: function emitAnnotationRelations(annotationId) {
-            this.$store.dispatch('clearCorpus', []);
-            this.$store.dispatch('clearDocuments', []);
-            this.$store.dispatch('corpusByAnnotation', this.corpusbyannotation[annotationId]);
-            this.$store.dispatch('documentByAnnotation', this.documentsbyannotation[annotationId]);
-        },
-        unique: function unique(array) {
-            return [].concat(_toConsumableArray(new Set(array)));
-        }
-    },
-    mounted: function mounted() {}
-});
-
-/***/ }),
-/* 192 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm.annotationresult._source.visibility == 1
-    ? _c(
-        "div",
-        { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
-        [
-          _c("div", { staticClass: "row" }, [
-            _c("div", { staticClass: "col" }, [
-              _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "text-dark",
-                    attrs: { href: _vm.browseUri(_vm.annotationresult._id) }
-                  },
-                  [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(
-                          _vm._f("arrayToString")(
-                            _vm.annotationresult._source.preparation_title
-                          )
-                        ) +
-                        "\n                "
-                    )
-                  ]
-                )
-              ]),
-              _vm._v(" "),
-              _c("span", { staticClass: "text-grey text-14" }, [
-                _vm._v(
-                  "\n                Corpus: " +
-                    _vm._s(_vm.annotationresult._source.corpus_name) +
-                    "\n              "
-                )
-              ])
-            ]),
-            _vm._v(" "),
-            _c(
-              "div",
-              { staticClass: "col-2" },
-              _vm._l(
-                _vm.unique(
-                  _vm.annotationresult._source
-                    .preparation_encoding_annotation_group
-                ),
-                function(group, groupindex) {
-                  return _c(
-                    "div",
-                    {
-                      key: groupindex,
-                      staticClass: "text-grey text-14",
-                      attrs: { group: group }
-                    },
-                    [_vm._v(_vm._s(group))]
-                  )
-                }
-              )
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "col-4 d-flex justify-content-between align-items-start"
-              },
-              [
-                _c(
-                  "a",
-                  {
-                    staticClass:
-                      "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                    attrs: { href: "#" }
-                  },
-                  [
-                    _c("i", {
-                      staticClass:
-                        "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                    }),
-                    _vm._v(" "),
-                    _c(
-                      "span",
-                      { staticClass: "text-primary text-14 font-weight-bold" },
-                      [
-                        _vm._v(
-                          _vm._s(
-                            _vm.annotationresult._source.in_documents.length
-                          )
-                        )
-                      ]
-                    )
-                  ]
-                ),
-                _vm._v(" "),
-                _vm._m(0)
-              ]
-            )
-          ])
-        ]
-      )
-    : _vm._e()
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "custom-control custom-checkbox" }, [
-      _c("input", {
-        staticClass: "custom-control-input",
-        attrs: { type: "checkbox", id: "filtercheck-annotationSearchItem0001" }
-      }),
-      _vm._v(" "),
-      _c(
-        "label",
-        {
-          staticClass: "custom-control-label text-14",
-          attrs: { for: "filtercheck-annotationSearchItem0001" }
-        },
-        [_vm._v("\n                    Set as Filter\n                ")]
-      )
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-d7ceacaa", module.exports)
-  }
-}
-
-/***/ }),
-/* 193 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 194 */,
-/* 195 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 196 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
 /***/ })
-/******/ ]);
+
+/******/ });
