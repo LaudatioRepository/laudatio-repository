@@ -7,15 +7,15 @@
         </div>
         <div v-bind:class="getClass()" id="formPanelCorpus">
             <div class="card-body px-2">
-                <form action="">
+                <!--form action=""-->
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formCorpusTitle">Title</label>
-                        <input type="text" class="form-control" id="formCorpusTitle" aria-describedby="inputTitle" placeholder='"Ridges herbology"' v-model="corpusFilterData.corpus_title">
+                        <input type="text" class="form-control" id="formCorpusTitle" aria-describedby="inputTitle" placeholder='"Ridges herbology"' v-model="corpusFilterData.corpus_title" @keyup.enter="emitApplyFilters">
                     </div>
 
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formCorpusLanguage">Language</label>
-                        <input type="text" class="form-control" id="formCorpusLanguage" aria-describedby="inputLanguage" placeholder='"German"' v-model="corpusFilterData.corpus_merged_languages">
+                        <input type="text" class="form-control" id="formCorpusLanguage" aria-describedby="inputLanguage" placeholder='"German"' v-model="corpusFilterData.corpus_merged_languages" @keyup.enter="emitApplyFilters">
                     </div>
 
                     <div class="d-flex flex-column">
@@ -29,7 +29,7 @@
 
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formCorpusPublisher">Publisher</label>
-                            <input type="text" class="form-control" id="formCorpusPublisher" aria-describedby="inputPublisher" placeholder='"Humboldt Universität"' v-model="corpusFilterData.corpus_publication_publisher">
+                            <input type="text" class="form-control" id="formCorpusPublisher" aria-describedby="inputPublisher" placeholder='"Humboldt Universität"' v-model="corpusFilterData.corpus_publication_publisher" @keyup.enter="emitApplyFilters">
                         </div>
 
                         <div class="form-group mb-3">
@@ -45,15 +45,15 @@
 
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formCorpusLicenses">License</label>
-                            <input type="text" class="form-control" id="formCorpusLicenses" aria-describedby="inputLicenses" placeholder='"by-sa"' v-model="corpusFilterData.corpus_publication_license">
+                            <input type="text" class="form-control" id="formCorpusLicenses" aria-describedby="inputLicenses" placeholder='"by-sa"' v-model="corpusFilterData.corpus_publication_license" @keyup.enter="emitApplyFilters">
                         </div>
                     </div>
-                </form>
+                <!--/form-->
 
                 <div id="formPanelCorpus-all2" class="collapse formPanelCorpus-all">
 
 
-                    <form action="">
+                    <!--form action=""-->
                         <div class="form-group mb-3">
                             <label class="mb-2 text-14 " for="dd">Corpus size (Tokens, Words)</label>
                             <div class="d-flex justify-content-between">
@@ -71,9 +71,9 @@
                                 </button-->
                             </div>
                         </div>
-                    </form>
+                    <!--/form-->
 
-                    <form action="">
+                    <!--form action=""-->
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formCorpusYear">Year of Publication</label>
                             <div class="d-flex justify-content-between">
@@ -92,7 +92,7 @@
                                 </button-->
                             </div>
                         </div>
-                    </form>
+                    <!--/form-->
                 </div>
             </div>
         </div>
@@ -119,6 +119,9 @@
             }
         },
         methods: {
+            emitApplyFilters(){
+                this.$emit('apply-filters');
+            },
             emitCorpusFilter(){
                 this.$emit('corpus-filter',this.corpusFilterData);
             },

@@ -27,6 +27,7 @@
                 :corpusformats="corpusformats"
                 ref="corpusFilter"
                 v-on:corpus-filter="emitCorpusFilter"
+                v-on:apply-filters="applyFilters"
                 ></corpusfilter>
         </div>
         <div class="mb-4">
@@ -36,6 +37,7 @@
                 :annotationresults="annotationresults"
                 ref="documentFilter"
                 v-on:document-filter="emitDocumentFilter"
+                v-on:apply-filters="applyFilters"
                 ></documentfilter>
         </div>
         <div class="mb-4">
@@ -46,6 +48,7 @@
                 ref="annotationFilter"
                 v-on:annotation-filter="emitAnnotationFilter"
                 :annotationformats="annotationformats"
+                v-on:apply-filters="applyFilters"
                 ></annotationfilter>
         </div>
     </div>

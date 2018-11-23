@@ -1115,7 +1115,6 @@ var app = new Vue({
         askElastic: function askElastic(search) {
             var _this = this;
 
-            console.log("HELLO AT ALL ?");
             this.dataloading = true;
             this.corpusresults = [];
             this.datasearched = false;
@@ -1130,7 +1129,6 @@ var app = new Vue({
             this.documentresultcounter = 0;
             this.annotationresultcounter = 0;
             if (search.generalSearchTerm != "") {
-                console.log("TERM IS NOT EMPTY ?");
                 this.searches = [];
                 var postData = {
                     searchData: {
@@ -1146,10 +1144,8 @@ var app = new Vue({
                 };
 
                 var corpus_ids = [];
-                console.log("POSTDATA: " + JSON.stringify(postData));
                 window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
                     if (res.data.results.length > 0) {
-                        console.log("GOT RES: " + JSON.stringify(res.data.results));
                         /*
                         /* @todo: This is far too brittle: corpus/document/annotation could part of someones corpusname
                         /* Also: when we publish, the new working version shuffles the corpus/doc/anno keyword foirther than place 0
@@ -1933,6 +1929,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2034,7 +2033,10 @@ var render = function() {
             annotationresults: _vm.annotationresults,
             corpusformats: _vm.corpusformats
           },
-          on: { "corpus-filter": _vm.emitCorpusFilter }
+          on: {
+            "corpus-filter": _vm.emitCorpusFilter,
+            "apply-filters": _vm.applyFilters
+          }
         })
       ],
       1
@@ -2051,7 +2053,10 @@ var render = function() {
             documentresults: _vm.documentresults,
             annotationresults: _vm.annotationresults
           },
-          on: { "document-filter": _vm.emitDocumentFilter }
+          on: {
+            "document-filter": _vm.emitDocumentFilter,
+            "apply-filters": _vm.applyFilters
+          }
         })
       ],
       1
@@ -2069,7 +2074,10 @@ var render = function() {
             annotationresults: _vm.annotationresults,
             annotationformats: _vm.annotationformats
           },
-          on: { "annotation-filter": _vm.emitAnnotationFilter }
+          on: {
+            "annotation-filter": _vm.emitAnnotationFilter,
+            "apply-filters": _vm.applyFilters
+          }
         })
       ],
       1
@@ -3203,6 +3211,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         };
     },
     methods: {
+        emitApplyFilters: function emitApplyFilters() {
+            this.$emit('apply-filters');
+        },
         emitCorpusFilter: function emitCorpusFilter() {
             this.$emit('corpus-filter', this.corpusFilterData);
         },
@@ -3315,251 +3326,279 @@ var render = function() {
     _vm._v(" "),
     _c("div", { class: _vm.getClass(), attrs: { id: "formPanelCorpus" } }, [
       _c("div", { staticClass: "card-body px-2" }, [
-        _c("form", { attrs: { action: "" } }, [
-          _c("div", { staticClass: "form-group mb-3" }, [
-            _c(
-              "label",
-              {
-                staticClass: "mb-0 text-14 ",
-                attrs: { for: "formCorpusTitle" }
-              },
-              [_vm._v("Title")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.corpusFilterData.corpus_title,
-                  expression: "corpusFilterData.corpus_title"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                id: "formCorpusTitle",
-                "aria-describedby": "inputTitle",
-                placeholder: '"Ridges herbology"'
-              },
-              domProps: { value: _vm.corpusFilterData.corpus_title },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(
-                    _vm.corpusFilterData,
-                    "corpus_title",
-                    $event.target.value
-                  )
-                }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "form-group mb-3" }, [
-            _c(
-              "label",
-              {
-                staticClass: "mb-0 text-14 ",
-                attrs: { for: "formCorpusLanguage" }
-              },
-              [_vm._v("Language")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.corpusFilterData.corpus_merged_languages,
-                  expression: "corpusFilterData.corpus_merged_languages"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                id: "formCorpusLanguage",
-                "aria-describedby": "inputLanguage",
-                placeholder: '"German"'
-              },
-              domProps: { value: _vm.corpusFilterData.corpus_merged_languages },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(
-                    _vm.corpusFilterData,
-                    "corpus_merged_languages",
-                    $event.target.value
-                  )
-                }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _vm._m(1),
-          _vm._v(" "),
+        _c("div", { staticClass: "form-group mb-3" }, [
           _c(
-            "div",
-            {
-              staticClass: "collapse formPanelCorpus-all",
-              attrs: { id: "formPanelCorpus-all1" }
+            "label",
+            { staticClass: "mb-0 text-14 ", attrs: { for: "formCorpusTitle" } },
+            [_vm._v("Title")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.corpusFilterData.corpus_title,
+                expression: "corpusFilterData.corpus_title"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "formCorpusTitle",
+              "aria-describedby": "inputTitle",
+              placeholder: '"Ridges herbology"'
             },
-            [
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formCorpusPublisher" }
-                  },
-                  [_vm._v("Publisher")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.corpusFilterData.corpus_publication_publisher,
-                      expression:
-                        "corpusFilterData.corpus_publication_publisher"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formCorpusPublisher",
-                    "aria-describedby": "inputPublisher",
-                    placeholder: '"Humboldt Universität"'
-                  },
-                  domProps: {
-                    value: _vm.corpusFilterData.corpus_publication_publisher
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.corpusFilterData,
-                        "corpus_publication_publisher",
-                        $event.target.value
-                      )
-                    }
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formCorpusFormats" }
-                  },
-                  [_vm._v("Formats")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.corpusFilterData.corpus_merged_formats,
-                      expression: "corpusFilterData.corpus_merged_formats"
-                    }
-                  ],
-                  staticClass: "flexdatalist corpusformatslist form-control",
-                  attrs: {
-                    type: "text",
-                    name: "formatslist",
-                    multiple: "multiple",
-                    list: "formatsList-Corpus",
-                    "data-min-length": "0",
-                    id: "formCorpusFormats"
-                  },
-                  domProps: {
-                    value: _vm.corpusFilterData.corpus_merged_formats
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.corpusFilterData,
-                        "corpus_merged_formats",
-                        $event.target.value
-                      )
-                    }
-                  }
-                }),
-                _vm._v(" "),
-                _c(
-                  "datalist",
-                  { attrs: { id: "formatsList-Corpus" } },
-                  _vm._l(this.uniqueArray(_vm.corpusformats), function(
-                    corpusformat
-                  ) {
-                    return _c(
-                      "option",
-                      { attrs: { corpusformat: corpusformat } },
-                      [_vm._v(_vm._s(corpusformat))]
-                    )
-                  })
+            domProps: { value: _vm.corpusFilterData.corpus_title },
+            on: {
+              keyup: function($event) {
+                if (
+                  !("button" in $event) &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.emitApplyFilters($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.$set(
+                  _vm.corpusFilterData,
+                  "corpus_title",
+                  $event.target.value
                 )
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formCorpusLicenses" }
-                  },
-                  [_vm._v("License")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.corpusFilterData.corpus_publication_license,
-                      expression: "corpusFilterData.corpus_publication_license"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formCorpusLicenses",
-                    "aria-describedby": "inputLicenses",
-                    placeholder: '"by-sa"'
-                  },
-                  domProps: {
-                    value: _vm.corpusFilterData.corpus_publication_license
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.corpusFilterData,
-                        "corpus_publication_license",
-                        $event.target.value
-                      )
-                    }
-                  }
-                })
-              ])
-            ]
-          )
+              }
+            }
+          })
         ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group mb-3" }, [
+          _c(
+            "label",
+            {
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formCorpusLanguage" }
+            },
+            [_vm._v("Language")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.corpusFilterData.corpus_merged_languages,
+                expression: "corpusFilterData.corpus_merged_languages"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "formCorpusLanguage",
+              "aria-describedby": "inputLanguage",
+              placeholder: '"German"'
+            },
+            domProps: { value: _vm.corpusFilterData.corpus_merged_languages },
+            on: {
+              keyup: function($event) {
+                if (
+                  !("button" in $event) &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.emitApplyFilters($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.$set(
+                  _vm.corpusFilterData,
+                  "corpus_merged_languages",
+                  $event.target.value
+                )
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _vm._m(1),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "collapse formPanelCorpus-all",
+            attrs: { id: "formPanelCorpus-all1" }
+          },
+          [
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formCorpusPublisher" }
+                },
+                [_vm._v("Publisher")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.corpusFilterData.corpus_publication_publisher,
+                    expression: "corpusFilterData.corpus_publication_publisher"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: {
+                  type: "text",
+                  id: "formCorpusPublisher",
+                  "aria-describedby": "inputPublisher",
+                  placeholder: '"Humboldt Universität"'
+                },
+                domProps: {
+                  value: _vm.corpusFilterData.corpus_publication_publisher
+                },
+                on: {
+                  keyup: function($event) {
+                    if (
+                      !("button" in $event) &&
+                      _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                    ) {
+                      return null
+                    }
+                    return _vm.emitApplyFilters($event)
+                  },
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(
+                      _vm.corpusFilterData,
+                      "corpus_publication_publisher",
+                      $event.target.value
+                    )
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formCorpusFormats" }
+                },
+                [_vm._v("Formats")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.corpusFilterData.corpus_merged_formats,
+                    expression: "corpusFilterData.corpus_merged_formats"
+                  }
+                ],
+                staticClass: "flexdatalist corpusformatslist form-control",
+                attrs: {
+                  type: "text",
+                  name: "formatslist",
+                  multiple: "multiple",
+                  list: "formatsList-Corpus",
+                  "data-min-length": "0",
+                  id: "formCorpusFormats"
+                },
+                domProps: { value: _vm.corpusFilterData.corpus_merged_formats },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(
+                      _vm.corpusFilterData,
+                      "corpus_merged_formats",
+                      $event.target.value
+                    )
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c(
+                "datalist",
+                { attrs: { id: "formatsList-Corpus" } },
+                _vm._l(this.uniqueArray(_vm.corpusformats), function(
+                  corpusformat
+                ) {
+                  return _c(
+                    "option",
+                    { attrs: { corpusformat: corpusformat } },
+                    [_vm._v(_vm._s(corpusformat))]
+                  )
+                })
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formCorpusLicenses" }
+                },
+                [_vm._v("License")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.corpusFilterData.corpus_publication_license,
+                    expression: "corpusFilterData.corpus_publication_license"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: {
+                  type: "text",
+                  id: "formCorpusLicenses",
+                  "aria-describedby": "inputLicenses",
+                  placeholder: '"by-sa"'
+                },
+                domProps: {
+                  value: _vm.corpusFilterData.corpus_publication_license
+                },
+                on: {
+                  keyup: function($event) {
+                    if (
+                      !("button" in $event) &&
+                      _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                    ) {
+                      return null
+                    }
+                    return _vm.emitApplyFilters($event)
+                  },
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(
+                      _vm.corpusFilterData,
+                      "corpus_publication_license",
+                      $event.target.value
+                    )
+                  }
+                }
+              })
+            ])
+          ]
+        ),
         _vm._v(" "),
         _c(
           "div",
@@ -3570,114 +3609,111 @@ var render = function() {
           [
             _vm._m(2),
             _vm._v(" "),
-            _c("form", { attrs: { action: "" } }, [
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formCorpusYear" }
-                  },
-                  [_vm._v("Year of Publication")]
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "d-flex justify-content-between" }, [
-                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                    _c(
-                      "small",
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formCorpusYear" }
+                },
+                [_vm._v("Year of Publication")]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex justify-content-between" }, [
+                _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                  _c(
+                    "small",
+                    {
+                      staticClass: "form-text text-muted",
+                      attrs: { id: "yearFromHelp" }
+                    },
+                    [_vm._v("from")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
                       {
-                        staticClass: "form-text text-muted",
-                        attrs: { id: "yearFromHelp" }
-                      },
-                      [_vm._v("from")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value:
-                            _vm.corpusFilterData
-                              .corpus_publication_publication_date,
-                          expression:
-                            "corpusFilterData.corpus_publication_publication_date"
-                        }
-                      ],
-                      staticClass: "toBeValidated form-control",
-                      attrs: {
-                        placeholder: "J J J J",
-                        type: "number",
-                        min: "1",
-                        max: "9999",
-                        step: "1",
-                        name: "yearFrom",
-                        id: "formCorpusYearFrom"
-                      },
-                      domProps: {
+                        name: "model",
+                        rawName: "v-model",
                         value:
                           _vm.corpusFilterData
-                            .corpus_publication_publication_date
-                      },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.corpusFilterData,
-                            "corpus_publication_publication_date",
-                            $event.target.value
-                          )
-                        }
+                            .corpus_publication_publication_date,
+                        expression:
+                          "corpusFilterData.corpus_publication_publication_date"
                       }
-                    })
-                  ]),
+                    ],
+                    staticClass: "toBeValidated form-control",
+                    attrs: {
+                      placeholder: "J J J J",
+                      type: "number",
+                      min: "1",
+                      max: "9999",
+                      step: "1",
+                      name: "yearFrom",
+                      id: "formCorpusYearFrom"
+                    },
+                    domProps: {
+                      value:
+                        _vm.corpusFilterData.corpus_publication_publication_date
+                    },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.corpusFilterData,
+                          "corpus_publication_publication_date",
+                          $event.target.value
+                        )
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                  _c(
+                    "small",
+                    {
+                      staticClass: "form-text text-muted",
+                      attrs: { id: "yearToHelp" }
+                    },
+                    [_vm._v("to")]
+                  ),
                   _vm._v(" "),
-                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                    _c(
-                      "small",
+                  _c("input", {
+                    directives: [
                       {
-                        staticClass: "form-text text-muted",
-                        attrs: { id: "yearToHelp" }
-                      },
-                      [_vm._v("to")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.corpusFilterData.corpusYearTo,
-                          expression: "corpusFilterData.corpusYearTo"
-                        }
-                      ],
-                      staticClass: "toBeValidated form-control",
-                      attrs: {
-                        placeholder: "J J J J",
-                        type: "number",
-                        min: "1",
-                        max: "9999",
-                        step: "1",
-                        name: "yearTo",
-                        id: "formCorpusYearTo"
-                      },
-                      domProps: { value: _vm.corpusFilterData.corpusYearTo },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.corpusFilterData,
-                            "corpusYearTo",
-                            $event.target.value
-                          )
-                        }
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.corpusFilterData.corpusYearTo,
+                        expression: "corpusFilterData.corpusYearTo"
                       }
-                    })
-                  ])
+                    ],
+                    staticClass: "toBeValidated form-control",
+                    attrs: {
+                      placeholder: "J J J J",
+                      type: "number",
+                      min: "1",
+                      max: "9999",
+                      step: "1",
+                      name: "yearTo",
+                      id: "formCorpusYearTo"
+                    },
+                    domProps: { value: _vm.corpusFilterData.corpusYearTo },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.corpusFilterData,
+                          "corpusYearTo",
+                          $event.target.value
+                        )
+                      }
+                    }
+                  })
                 ])
               ])
             ])
@@ -3745,29 +3781,27 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("form", { attrs: { action: "" } }, [
-      _c("div", { staticClass: "form-group mb-3" }, [
-        _c("label", { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } }, [
-          _vm._v("Corpus size (Tokens, Words)")
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "d-flex justify-content-between" }, [
-          _c("div", { staticClass: "w-75" }, [
-            _c("div", { attrs: { id: "corpusSize" } }),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
-              },
-              [
-                _c("span", { attrs: { id: "corpusSize-minVal" } }),
-                _vm._v(" "),
-                _c("span", { attrs: { id: "corpusSize-maxVal" } })
-              ]
-            )
-          ])
+    return _c("div", { staticClass: "form-group mb-3" }, [
+      _c("label", { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } }, [
+        _vm._v("Corpus size (Tokens, Words)")
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "d-flex justify-content-between" }, [
+        _c("div", { staticClass: "w-75" }, [
+          _c("div", { attrs: { id: "corpusSize" } }),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass:
+                "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
+            },
+            [
+              _c("span", { attrs: { id: "corpusSize-minVal" } }),
+              _vm._v(" "),
+              _c("span", { attrs: { id: "corpusSize-maxVal" } })
+            ]
+          )
         ])
       ])
     ])
@@ -3965,6 +3999,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
             return classes;
         },
+        emitApplyFilters: function emitApplyFilters() {
+            this.$emit('apply-filters');
+        },
         emitDocumentFilter: function emitDocumentFilter() {
             this.$emit('document-filter', this.documentFilterData);
         },
@@ -4063,194 +4100,224 @@ var render = function() {
     _vm._v(" "),
     _c("div", { class: _vm.getClass(), attrs: { id: "formPanelDocuments" } }, [
       _c("div", { staticClass: "card-body px-2" }, [
-        _c("form", { attrs: { action: "" } }, [
-          _c("div", { staticClass: "form-group mb-3" }, [
-            _c(
-              "label",
-              {
-                staticClass: "mb-0 text-14 ",
-                attrs: { for: "formDocumentsTitle" }
-              },
-              [_vm._v("Title")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.documentFilterData.document_title,
-                  expression: "documentFilterData.document_title"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                id: "formDocumentsTitle",
-                "aria-describedby": "inputTitle",
-                placeholder: '"Document title"'
-              },
-              domProps: { value: _vm.documentFilterData.document_title },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(
-                    _vm.documentFilterData,
-                    "document_title",
-                    $event.target.value
-                  )
-                }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "form-group mb-3" }, [
-            _c(
-              "label",
-              {
-                staticClass: "mb-0 text-14 ",
-                attrs: { for: "formDocumentsAuthor" }
-              },
-              [_vm._v("Author")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.documentFilterData.document_merged_authors,
-                  expression: "documentFilterData.document_merged_authors"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "text",
-                id: "formDocumentsAuthor",
-                "aria-describedby": "inputAuthor",
-                placeholder: '"Frank Mann"'
-              },
-              domProps: {
-                value: _vm.documentFilterData.document_merged_authors
-              },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.$set(
-                    _vm.documentFilterData,
-                    "document_merged_authors",
-                    $event.target.value
-                  )
-                }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _vm._m(1),
-          _vm._v(" "),
+        _c("div", { staticClass: "form-group mb-3" }, [
           _c(
-            "div",
+            "label",
             {
-              staticClass: "collapse formPanelDocuments-all",
-              attrs: { id: "formPanelDocuments-all1" }
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formDocumentsTitle" }
             },
-            [
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formDocumentsLanguage" }
-                  },
-                  [_vm._v("Language")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.documentFilterData.document_languages_language,
-                      expression:
-                        "documentFilterData.document_languages_language"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formDocumentsLanguage",
-                    "aria-describedby": "inputLanguage",
-                    placeholder: '"German"'
-                  },
-                  domProps: {
-                    value: _vm.documentFilterData.document_languages_language
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.documentFilterData,
-                        "document_languages_language",
-                        $event.target.value
-                      )
-                    }
-                  }
-                })
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formDocumentsPlace" }
-                  },
-                  [_vm._v("Place")]
-                ),
-                _vm._v(" "),
-                _c("input", {
-                  directives: [
-                    {
-                      name: "model",
-                      rawName: "v-model",
-                      value: _vm.documentFilterData.document_publication_place,
-                      expression:
-                        "documentFilterData.document_publication_place"
-                    }
-                  ],
-                  staticClass: "form-control",
-                  attrs: {
-                    type: "text",
-                    id: "formDocumentsPlace",
-                    "aria-describedby": "inputPlace",
-                    placeholder: '"Mannheim"'
-                  },
-                  domProps: {
-                    value: _vm.documentFilterData.document_publication_place
-                  },
-                  on: {
-                    input: function($event) {
-                      if ($event.target.composing) {
-                        return
-                      }
-                      _vm.$set(
-                        _vm.documentFilterData,
-                        "document_publication_place",
-                        $event.target.value
-                      )
-                    }
-                  }
-                })
-              ])
-            ]
-          )
+            [_vm._v("Title")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.documentFilterData.document_title,
+                expression: "documentFilterData.document_title"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "formDocumentsTitle",
+              "aria-describedby": "inputTitle",
+              placeholder: '"Document title"'
+            },
+            domProps: { value: _vm.documentFilterData.document_title },
+            on: {
+              keyup: function($event) {
+                if (
+                  !("button" in $event) &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.emitApplyFilters($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.$set(
+                  _vm.documentFilterData,
+                  "document_title",
+                  $event.target.value
+                )
+              }
+            }
+          })
         ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group mb-3" }, [
+          _c(
+            "label",
+            {
+              staticClass: "mb-0 text-14 ",
+              attrs: { for: "formDocumentsAuthor" }
+            },
+            [_vm._v("Author")]
+          ),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.documentFilterData.document_merged_authors,
+                expression: "documentFilterData.document_merged_authors"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "formDocumentsAuthor",
+              "aria-describedby": "inputAuthor",
+              placeholder: '"Frank Mann"'
+            },
+            domProps: { value: _vm.documentFilterData.document_merged_authors },
+            on: {
+              keyup: function($event) {
+                if (
+                  !("button" in $event) &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                return _vm.emitApplyFilters($event)
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.$set(
+                  _vm.documentFilterData,
+                  "document_merged_authors",
+                  $event.target.value
+                )
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _vm._m(1),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "collapse formPanelDocuments-all",
+            attrs: { id: "formPanelDocuments-all1" }
+          },
+          [
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formDocumentsLanguage" }
+                },
+                [_vm._v("Language")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.documentFilterData.document_languages_language,
+                    expression: "documentFilterData.document_languages_language"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: {
+                  type: "text",
+                  id: "formDocumentsLanguage",
+                  "aria-describedby": "inputLanguage",
+                  placeholder: '"German"'
+                },
+                domProps: {
+                  value: _vm.documentFilterData.document_languages_language
+                },
+                on: {
+                  keyup: function($event) {
+                    if (
+                      !("button" in $event) &&
+                      _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                    ) {
+                      return null
+                    }
+                    return _vm.emitApplyFilters($event)
+                  },
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(
+                      _vm.documentFilterData,
+                      "document_languages_language",
+                      $event.target.value
+                    )
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formDocumentsPlace" }
+                },
+                [_vm._v("Place")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.documentFilterData.document_publication_place,
+                    expression: "documentFilterData.document_publication_place"
+                  }
+                ],
+                staticClass: "form-control",
+                attrs: {
+                  type: "text",
+                  id: "formDocumentsPlace",
+                  "aria-describedby": "inputPlace",
+                  placeholder: '"Mannheim"'
+                },
+                domProps: {
+                  value: _vm.documentFilterData.document_publication_place
+                },
+                on: {
+                  keyup: function($event) {
+                    if (
+                      !("button" in $event) &&
+                      _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                    ) {
+                      return null
+                    }
+                    return _vm.emitApplyFilters($event)
+                  },
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(
+                      _vm.documentFilterData,
+                      "document_publication_place",
+                      $event.target.value
+                    )
+                  }
+                }
+              })
+            ])
+          ]
+        ),
         _vm._v(" "),
         _c(
           "div",
@@ -4261,121 +4328,119 @@ var render = function() {
           [
             _vm._m(2),
             _vm._v(" "),
-            _c("form", { attrs: { action: "" } }, [
-              _c("div", { staticClass: "form-group mb-3" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "mb-0 text-14 ",
-                    attrs: { for: "formDocumentsYear" }
-                  },
-                  [_vm._v("Year of Publication")]
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "d-flex justify-content-between" }, [
-                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                    _c(
-                      "small",
-                      {
-                        staticClass: "form-text text-muted",
-                        attrs: { id: "yearFromHelp" }
-                      },
-                      [_vm._v("from")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value:
-                            _vm.documentFilterData
-                              .document_publication_publishing_date,
-                          expression:
-                            "documentFilterData.document_publication_publishing_date"
-                        }
-                      ],
-                      staticClass: "toBeValidated form-control",
-                      attrs: {
-                        placeholder: "J J J J",
-                        type: "number",
-                        min: "1",
-                        max: "9999",
-                        step: "1",
-                        name: "yearFrom",
-                        id: "formDocumentsYearFrom"
-                      },
-                      domProps: {
-                        value:
-                          _vm.documentFilterData
-                            .document_publication_publishing_date
-                      },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.documentFilterData,
-                            "document_publication_publishing_date",
-                            $event.target.value
-                          )
-                        }
-                      }
-                    })
-                  ]),
+            _c("div", { staticClass: "form-group mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formDocumentsYear" }
+                },
+                [_vm._v("Year of Publication")]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "d-flex justify-content-between" }, [
+                _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                  _c(
+                    "small",
+                    {
+                      staticClass: "form-text text-muted",
+                      attrs: { id: "yearFromHelp" }
+                    },
+                    [_vm._v("from")]
+                  ),
                   _vm._v(" "),
-                  _c("div", { staticClass: "d-flex flex-column w-35" }, [
-                    _c(
-                      "small",
+                  _c("input", {
+                    directives: [
                       {
-                        staticClass: "form-text text-muted",
-                        attrs: { id: "yearToHelp" }
-                      },
-                      [_vm._v("to")]
-                    ),
-                    _vm._v(" "),
-                    _c("input", {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value:
-                            _vm.documentFilterData
-                              .document_publication_publishing_date_to,
-                          expression:
-                            "documentFilterData.document_publication_publishing_date_to"
-                        }
-                      ],
-                      staticClass: "toBeValidated form-control",
-                      attrs: {
-                        placeholder: "J J J J",
-                        type: "number",
-                        min: "1",
-                        max: "9999",
-                        step: "1",
-                        name: "yearTo",
-                        id: "formDocumentsYearTo"
-                      },
-                      domProps: {
+                        name: "model",
+                        rawName: "v-model",
                         value:
                           _vm.documentFilterData
-                            .document_publication_publishing_date_to
-                      },
-                      on: {
-                        input: function($event) {
-                          if ($event.target.composing) {
-                            return
-                          }
-                          _vm.$set(
-                            _vm.documentFilterData,
-                            "document_publication_publishing_date_to",
-                            $event.target.value
-                          )
-                        }
+                            .document_publication_publishing_date,
+                        expression:
+                          "documentFilterData.document_publication_publishing_date"
                       }
-                    })
-                  ])
+                    ],
+                    staticClass: "toBeValidated form-control",
+                    attrs: {
+                      placeholder: "J J J J",
+                      type: "number",
+                      min: "1",
+                      max: "9999",
+                      step: "1",
+                      name: "yearFrom",
+                      id: "formDocumentsYearFrom"
+                    },
+                    domProps: {
+                      value:
+                        _vm.documentFilterData
+                          .document_publication_publishing_date
+                    },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.documentFilterData,
+                          "document_publication_publishing_date",
+                          $event.target.value
+                        )
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "d-flex flex-column w-35" }, [
+                  _c(
+                    "small",
+                    {
+                      staticClass: "form-text text-muted",
+                      attrs: { id: "yearToHelp" }
+                    },
+                    [_vm._v("to")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value:
+                          _vm.documentFilterData
+                            .document_publication_publishing_date_to,
+                        expression:
+                          "documentFilterData.document_publication_publishing_date_to"
+                      }
+                    ],
+                    staticClass: "toBeValidated form-control",
+                    attrs: {
+                      placeholder: "J J J J",
+                      type: "number",
+                      min: "1",
+                      max: "9999",
+                      step: "1",
+                      name: "yearTo",
+                      id: "formDocumentsYearTo"
+                    },
+                    domProps: {
+                      value:
+                        _vm.documentFilterData
+                          .document_publication_publishing_date_to
+                    },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          _vm.documentFilterData,
+                          "document_publication_publishing_date_to",
+                          $event.target.value
+                        )
+                      }
+                    }
+                  })
                 ])
               ])
             ])
@@ -4443,29 +4508,27 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("form", { attrs: { action: "" } }, [
-      _c("div", { staticClass: "form-group mb-3" }, [
-        _c("label", { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } }, [
-          _vm._v("Documents size (Tokens, Words)")
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "d-flex justify-content-between" }, [
-          _c("div", { staticClass: "w-75" }, [
-            _c("div", { attrs: { id: "documentSize" } }),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass:
-                  "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
-              },
-              [
-                _c("span", { attrs: { id: "documentSize-minVal" } }),
-                _vm._v(" "),
-                _c("span", { attrs: { id: "documentSize-maxVal" } })
-              ]
-            )
-          ])
+    return _c("div", { staticClass: "form-group mb-3" }, [
+      _c("label", { staticClass: "mb-2 text-14 ", attrs: { for: "dd" } }, [
+        _vm._v("Documents size (Tokens, Words)")
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "d-flex justify-content-between" }, [
+        _c("div", { staticClass: "w-75" }, [
+          _c("div", { attrs: { id: "documentSize" } }),
+          _vm._v(" "),
+          _c(
+            "div",
+            {
+              staticClass:
+                "d-flex justify-content-between w-100 text-dark font-weight-bold text-14"
+            },
+            [
+              _c("span", { attrs: { id: "documentSize-minVal" } }),
+              _vm._v(" "),
+              _c("span", { attrs: { id: "documentSize-maxVal" } })
+            ]
+          )
         ])
       ])
     ])
@@ -4600,6 +4663,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             }
             return classes;
         },
+        emitApplyFilters: function emitApplyFilters() {
+            this.$emit('apply-filters');
+        },
+
         emitAnnotationFilter: function emitAnnotationFilter() {
             this.$emit('annotation-filter', this.annotationFilterData);
         },
@@ -4642,162 +4709,185 @@ var render = function() {
       { class: _vm.getClass(), attrs: { id: "formPanelAnnotations" } },
       [
         _c("div", { staticClass: "card-body px-2" }, [
-          _c("form", { attrs: { action: "" } }, [
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "mb-0 text-14 ",
-                  attrs: { for: "formAnnotationsTitle" }
-                },
-                [_vm._v("Name")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.annotationFilterData.preparation_title,
-                    expression: "annotationFilterData.preparation_title"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  id: "formAnnotationsTitle",
-                  "aria-describedby": "inputName",
-                  placeholder: '"norm"'
-                },
-                domProps: { value: _vm.annotationFilterData.preparation_title },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(
-                      _vm.annotationFilterData,
-                      "preparation_title",
-                      $event.target.value
-                    )
-                  }
-                }
-              })
-            ]),
+          _c("div", { staticClass: "form-group mb-3" }, [
+            _c(
+              "label",
+              {
+                staticClass: "mb-0 text-14 ",
+                attrs: { for: "formAnnotationsTitle" }
+              },
+              [_vm._v("Name")]
+            ),
             _vm._v(" "),
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
+            _c("input", {
+              directives: [
                 {
-                  staticClass: "mb-0 text-14 ",
-                  attrs: { for: "formAnnotationsLanguage" }
-                },
-                [_vm._v("Category")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value:
-                      _vm.annotationFilterData
-                        .preparation_encoding_annotation_group,
-                    expression:
-                      "annotationFilterData.preparation_encoding_annotation_group"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  id: "formAnnotationsLanguage",
-                  "aria-describedby": "inputCategory",
-                  placeholder: '"Lexical"'
-                },
-                domProps: {
-                  value:
-                    _vm.annotationFilterData
-                      .preparation_encoding_annotation_group
-                },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(
-                      _vm.annotationFilterData,
-                      "preparation_encoding_annotation_group",
-                      $event.target.value
-                    )
-                  }
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.annotationFilterData.preparation_title,
+                  expression: "annotationFilterData.preparation_title"
                 }
-              })
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "mb-0 text-14 ",
-                  attrs: { for: "formAnnotationsFormats" }
-                },
-                [_vm._v("Formats")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value:
-                      _vm.annotationFilterData
-                        .preparation_encoding_annotation_group,
-                    expression:
-                      "annotationFilterData.preparation_encoding_annotation_group"
+              ],
+              staticClass: "form-control",
+              attrs: {
+                type: "text",
+                id: "formAnnotationsTitle",
+                "aria-describedby": "inputName",
+                placeholder: '"norm"'
+              },
+              domProps: { value: _vm.annotationFilterData.preparation_title },
+              on: {
+                keyup: function($event) {
+                  if (
+                    !("button" in $event) &&
+                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                  ) {
+                    return null
                   }
-                ],
-                staticClass: "flexdatalist annotationformatslist form-control",
-                attrs: {
-                  type: "text",
-                  name: "formatslist",
-                  multiple: "multiple",
-                  list: "formatsList-Annotations",
-                  "data-min-length": "0",
-                  id: "formAnnotationsFormats"
+                  return _vm.emitApplyFilters($event)
                 },
-                domProps: {
-                  value:
-                    _vm.annotationFilterData
-                      .preparation_encoding_annotation_group
-                },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.$set(
-                      _vm.annotationFilterData,
-                      "preparation_encoding_annotation_group",
-                      $event.target.value
-                    )
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
                   }
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "datalist",
-                { attrs: { id: "formatsList-Annotations" } },
-                _vm._l(this.uniqueArray(_vm.annotationformats), function(
-                  annotationformat
-                ) {
-                  return _c(
-                    "option",
-                    { attrs: { annotationformat: annotationformat } },
-                    [_vm._v(_vm._s(annotationformat))]
+                  _vm.$set(
+                    _vm.annotationFilterData,
+                    "preparation_title",
+                    $event.target.value
                   )
-                })
-              )
-            ])
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-group mb-3" }, [
+            _c(
+              "label",
+              {
+                staticClass: "mb-0 text-14 ",
+                attrs: { for: "formAnnotationsLanguage" }
+              },
+              [_vm._v("Category")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value:
+                    _vm.annotationFilterData
+                      .preparation_encoding_annotation_group,
+                  expression:
+                    "annotationFilterData.preparation_encoding_annotation_group"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: {
+                type: "text",
+                id: "formAnnotationsLanguage",
+                "aria-describedby": "inputCategory",
+                placeholder: '"Lexical"'
+              },
+              domProps: {
+                value:
+                  _vm.annotationFilterData.preparation_encoding_annotation_group
+              },
+              on: {
+                keyup: function($event) {
+                  if (
+                    !("button" in $event) &&
+                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                  ) {
+                    return null
+                  }
+                  return _vm.emitApplyFilters($event)
+                },
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(
+                    _vm.annotationFilterData,
+                    "preparation_encoding_annotation_group",
+                    $event.target.value
+                  )
+                }
+              }
+            })
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-group mb-3" }, [
+            _c(
+              "label",
+              {
+                staticClass: "mb-0 text-14 ",
+                attrs: { for: "formAnnotationsFormats" }
+              },
+              [_vm._v("Formats")]
+            ),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value:
+                    _vm.annotationFilterData
+                      .preparation_encoding_annotation_group,
+                  expression:
+                    "annotationFilterData.preparation_encoding_annotation_group"
+                }
+              ],
+              staticClass: "flexdatalist annotationformatslist form-control",
+              attrs: {
+                type: "text",
+                name: "formatslist",
+                multiple: "multiple",
+                list: "formatsList-Annotations",
+                "data-min-length": "0",
+                id: "formAnnotationsFormats"
+              },
+              domProps: {
+                value:
+                  _vm.annotationFilterData.preparation_encoding_annotation_group
+              },
+              on: {
+                keyup: function($event) {
+                  if (
+                    !("button" in $event) &&
+                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                  ) {
+                    return null
+                  }
+                  return _vm.emitApplyFilters($event)
+                },
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.$set(
+                    _vm.annotationFilterData,
+                    "preparation_encoding_annotation_group",
+                    $event.target.value
+                  )
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c(
+              "datalist",
+              { attrs: { id: "formatsList-Annotations" } },
+              _vm._l(this.uniqueArray(_vm.annotationformats), function(
+                annotationformat
+              ) {
+                return _c(
+                  "option",
+                  { attrs: { annotationformat: annotationformat } },
+                  [_vm._v(_vm._s(annotationformat))]
+                )
+              })
+            )
           ])
         ])
       ]

@@ -7,29 +7,29 @@
         </div>
         <div v-bind:class="getClass()"  id="formPanelAnnotations">
             <div class="card-body px-2">
-                <form action="">
+                <!--form action=""-->
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formAnnotationsTitle">Name</label>
-                        <input type="text" class="form-control" id="formAnnotationsTitle" aria-describedby="inputName" placeholder='"norm"'  v-model="annotationFilterData.preparation_title">
+                        <input type="text" class="form-control" id="formAnnotationsTitle" aria-describedby="inputName" placeholder='"norm"'  v-model="annotationFilterData.preparation_title" @keyup.enter="emitApplyFilters">
                     </div>
 
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formAnnotationsLanguage">Category</label>
                         <input type="text" class="form-control" id="formAnnotationsLanguage" aria-describedby="inputCategory"
-                               placeholder='"Lexical"' v-model="annotationFilterData.preparation_encoding_annotation_group">
+                               placeholder='"Lexical"' v-model="annotationFilterData.preparation_encoding_annotation_group" @keyup.enter="emitApplyFilters">
                     </div>
 
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formAnnotationsFormats">Formats</label>
                         <input type="text" name="formatslist" multiple="multiple" list="formatsList-Annotations" class="flexdatalist annotationformatslist form-control"
-                               data-min-length="0" id="formAnnotationsFormats" v-model="annotationFilterData.preparation_encoding_annotation_group">
+                               data-min-length="0" id="formAnnotationsFormats" v-model="annotationFilterData.preparation_encoding_annotation_group" @keyup.enter="emitApplyFilters">
                         <datalist id="formatsList-Annotations">
                             <!--[if IE 9]><select disabled style="display:none" class="ie9_fix"><![endif]-->
                             <option v-for="annotationformat in this.uniqueArray(annotationformats)" v-bind:annotationformat="annotationformat">{{annotationformat}}</option>
                             <!--[if IE 9]></select><![endif]-->
                         </datalist>
                     </div>
-                </form>
+                <!--/form-->
             </div>
         </div>
     </div>
@@ -64,6 +64,9 @@
                     classes += " show"
                 }
                 return classes;
+            },
+            emitApplyFilters(){
+                this.$emit('apply-filters');
             },
             emitAnnotationFilter: function () {
                 this.$emit('annotation-filter',this.annotationFilterData);

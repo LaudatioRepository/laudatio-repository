@@ -7,15 +7,15 @@
         </div>
         <div v-bind:class="getClass()" id="formPanelDocuments">
             <div class="card-body px-2">
-                <form action="">
+                <!--form action=""-->
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formDocumentsTitle">Title</label>
-                        <input type="text" class="form-control" id="formDocumentsTitle" aria-describedby="inputTitle" placeholder='"Document title"'  v-model="documentFilterData.document_title">
+                        <input type="text" class="form-control" id="formDocumentsTitle" aria-describedby="inputTitle" placeholder='"Document title"'  v-model="documentFilterData.document_title" @keyup.enter="emitApplyFilters">
                     </div>
 
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formDocumentsAuthor">Author</label>
-                        <input type="text" class="form-control" id="formDocumentsAuthor" aria-describedby="inputAuthor" placeholder='"Frank Mann"'  v-model="documentFilterData.document_merged_authors" >
+                        <input type="text" class="form-control" id="formDocumentsAuthor" aria-describedby="inputAuthor" placeholder='"Frank Mann"'  v-model="documentFilterData.document_merged_authors"  @keyup.enter="emitApplyFilters">
                     </div>
 
 
@@ -31,21 +31,21 @@
 
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formDocumentsLanguage">Language</label>
-                            <input type="text" class="form-control" id="formDocumentsLanguage" aria-describedby="inputLanguage" placeholder='"German"'  v-model="documentFilterData.document_languages_language">
+                            <input type="text" class="form-control" id="formDocumentsLanguage" aria-describedby="inputLanguage" placeholder='"German"'  v-model="documentFilterData.document_languages_language" @keyup.enter="emitApplyFilters">
                         </div>
 
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formDocumentsPlace">Place</label>
-                            <input type="text" class="form-control" id="formDocumentsPlace" aria-describedby="inputPlace" placeholder='"Mannheim"'  v-model="documentFilterData.document_publication_place">
+                            <input type="text" class="form-control" id="formDocumentsPlace" aria-describedby="inputPlace" placeholder='"Mannheim"'  v-model="documentFilterData.document_publication_place" @keyup.enter="emitApplyFilters">
                         </div>
 
                     </div>
-                </form>
+                <!--/form-->
 
                 <div id="formPanelDocuments-all2" class="collapse formPanelDocuments-all">
 
 
-                    <form action="">
+                    <!--form action=""-->
                         <div class="form-group mb-3">
                             <label class="mb-2 text-14 " for="dd">Documents size (Tokens, Words)</label>
                             <div class="d-flex justify-content-between">
@@ -63,9 +63,9 @@
                                 </button-->
                             </div>
                         </div>
-                    </form>
+                    <!--/form-->
 
-                    <form action="">
+                    <!--form action=""-->
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formDocumentsYear">Year of Publication</label>
                             <div class="d-flex justify-content-between">
@@ -84,7 +84,7 @@
                                 </button-->
                             </div>
                         </div>
-                    </form>
+                    <!--/form-->
 
                 </div>
             </div>
@@ -129,6 +129,9 @@
                     classes += " show"
                 }
                 return classes;
+            },
+            emitApplyFilters(){
+                this.$emit('apply-filters');
             },
             emitDocumentFilter(){
                 this.$emit('document-filter',this.documentFilterData);
