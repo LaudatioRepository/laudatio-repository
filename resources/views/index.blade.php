@@ -25,15 +25,14 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-sm-10 offset-sm-1 col-md-8 offset-md-2 col-lg-5 ml-auto mr-auto">
-
-
-                            <form class="home-fold-search bsh-2 form-group p-1 rounded bg-white ">
+                            <form role="form" method="POST" action="{{ route('frontpagesearch') }}" class="home-fold-search bsh-2 form-group p-1 rounded bg-white ">
+                                {{ csrf_field() }}
                                 <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search metadata (German or English)" aria-label="search metadata"
+                                    <input type="text" class="form-control" name="search_terms" id="search_terms" placeholder="Search metadata (German or English)" aria-label="search metadata"
                                            aria-describedby="basic-addon2">
                                     <div class="input-group-append">
                                         <span class="text-secondary m-0 h3 font-weight-normal bg-white">|</span>
-                                        <button class="btn btn-outline-secondary pl-3 pr-3" type="button">
+                                        <button class="btn btn-outline-secondary pl-3 pr-3" type="submit">
                                             <i class="text-primary fa fa-fw fa-search "></i>
                                         </button>
                                     </div>

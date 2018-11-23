@@ -68,7 +68,8 @@ const app = new Vue({
         corpusresultcounter: 0,
         documentresultcounter: 0,
         annotationresultcounter: 0,
-        publishedIndexes: window.laudatioApp.publishedIndexes
+        publishedIndexes: window.laudatioApp.publishedIndexes,
+        frontPageResultData: window.laudatioApp.frontPageResultData
     },
     methods: {
         renderArrayToString (array) {
@@ -180,6 +181,55 @@ const app = new Vue({
                 this.datasearched = true;
                 this.searches.push('laudatio_init');
             });
+        },
+        frontpageSearch: function(){
+            this.dataloading = true;
+            this.corpusresults = [];
+            this.datasearched = false;
+            this.corpusCacheString = "";
+            this.$store.dispatch('clearCorpus', [])
+            this.$store.dispatch('clearDocuments', [])
+            this.$store.dispatch('clearAnnotations', [])
+            this.corpusresults = [];
+            this.documentresults = [];
+            this.annotationresults = [];
+            this.corpusresultcounter = 0;
+            this.documentresultcounter = 0;
+            this.annotationresultcounter = 0;
+            let corpus_ids = [];
+
+            if(this.frontPageResultData != "undefined"){
+                for (var ri = 0; ri < this.frontPageResultData.results.length; ri++) {
+                    if(this.frontPageResultData.results[ri]._index.indexOf("corpus_") == 0){
+                        this.corpusresults.push(this.frontPageResultData.results[ri]);
+                        this.corpusresultcounter++;
+
+                        var formatsarray = this.frontPageResultData.results[ri]._source.corpus_merged_formats.split(",");
+                        for (var key in formatsarray) {
+                            this.corpusformats.push(formatsarray[key])
+                        }
+
+                    }
+                    else if(this.frontPageResultData.results[ri]._index.indexOf("document_") == 0){
+                        this.documentresults.push(this.frontPageResultData.results[ri]);
+                        this.documentresultcounter ++;
+                    }
+                    else if(this.frontPageResultData.results[ri]._index.indexOf("annotation_") == 0){
+                        this.annotationresults.push(this.frontPageResultData.results[ri]);
+                        this.annotationresultcounter ++;
+
+                        var annotationformatsarray = this.frontPageResultData.results[ri]._source.annotation_merged_formats.split(",");
+                        for (var key in annotationformatsarray) {
+                            this.annotationformats.push(annotationformatsarray[key])
+                        }
+                    }///end which index
+                }//end for results
+                this.dataloading = false;
+                this.datasearched = true;
+                this.searches.push('laudatio_init');
+            }
+
+
         },
         askElastic: function (search) {
             this.dataloading = true;

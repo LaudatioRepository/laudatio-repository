@@ -44,9 +44,9 @@
             <div class="col-auto">
                 <select class="custom-select custom-select-sm font-weight-bold text-uppercase" @change="setResultsPerPage">
                     <option selected>5 results / page</option>
-                    <option value="10">Ten</option>
-                    <option value="20">Twenty</option>
-                    <option value="50">Fifty</option>
+                    <option value="10">10 results / page</option>
+                    <option value="20">20 results / page</option>
+                    <option value="50">50 results / page</option>
                 </select>
             </div>
         </div>

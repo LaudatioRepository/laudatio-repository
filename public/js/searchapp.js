@@ -26574,7 +26574,8 @@ var app = new Vue({
         corpusresultcounter: 0,
         documentresultcounter: 0,
         annotationresultcounter: 0,
-        publishedIndexes: window.laudatioApp.publishedIndexes
+        publishedIndexes: window.laudatioApp.publishedIndexes,
+        frontPageResultData: window.laudatioApp.frontPageResultData
     },
     methods: {
         renderArrayToString: function renderArrayToString(array) {
@@ -26647,6 +26648,50 @@ var app = new Vue({
                 _this.datasearched = true;
                 _this.searches.push('laudatio_init');
             });
+        },
+        frontpageSearch: function frontpageSearch() {
+            this.dataloading = true;
+            this.corpusresults = [];
+            this.datasearched = false;
+            this.corpusCacheString = "";
+            this.$store.dispatch('clearCorpus', []);
+            this.$store.dispatch('clearDocuments', []);
+            this.$store.dispatch('clearAnnotations', []);
+            this.corpusresults = [];
+            this.documentresults = [];
+            this.annotationresults = [];
+            this.corpusresultcounter = 0;
+            this.documentresultcounter = 0;
+            this.annotationresultcounter = 0;
+            var corpus_ids = [];
+
+            if (this.frontPageResultData != "undefined") {
+                for (var ri = 0; ri < this.frontPageResultData.results.length; ri++) {
+                    if (this.frontPageResultData.results[ri]._index.indexOf("corpus_") == 0) {
+                        this.corpusresults.push(this.frontPageResultData.results[ri]);
+                        this.corpusresultcounter++;
+
+                        var formatsarray = this.frontPageResultData.results[ri]._source.corpus_merged_formats.split(",");
+                        for (var key in formatsarray) {
+                            this.corpusformats.push(formatsarray[key]);
+                        }
+                    } else if (this.frontPageResultData.results[ri]._index.indexOf("document_") == 0) {
+                        this.documentresults.push(this.frontPageResultData.results[ri]);
+                        this.documentresultcounter++;
+                    } else if (this.frontPageResultData.results[ri]._index.indexOf("annotation_") == 0) {
+                        this.annotationresults.push(this.frontPageResultData.results[ri]);
+                        this.annotationresultcounter++;
+
+                        var annotationformatsarray = this.frontPageResultData.results[ri]._source.annotation_merged_formats.split(",");
+                        for (var key in annotationformatsarray) {
+                            this.annotationformats.push(annotationformatsarray[key]);
+                        }
+                    } ///end which index
+                } //end for results
+                this.dataloading = false;
+                this.datasearched = true;
+                this.searches.push('laudatio_init');
+            }
         },
         askElastic: function askElastic(search) {
             var _this2 = this;
@@ -27690,7 +27735,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched', 'dataloading', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched', 'dataloading', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter', 'frontpageresultdata'],
     data: function data() {
         return {
             currentCorpusPage: 1,
@@ -27732,8 +27777,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     }),
     mounted: function mounted() {
         console.log('CorpusResultComponent mounted.');
-        if (!this.datasearched && !this.dataloading && this.searches.length == 0) {
+        if (!this.datasearched && !this.dataloading && this.searches.length == 0 && !this.frontpageresultdata) {
             this.$emit('initial-search');
+        } else if (!this.datasearched && !this.dataloading && this.searches.length == 0 && this.frontpageresultdata) {
+            this.$emit('frontpage-search');
         }
     }
 });
@@ -31975,11 +32022,17 @@ var render = function() {
                 _vm._v("5 results / page")
               ]),
               _vm._v(" "),
-              _c("option", { attrs: { value: "10" } }, [_vm._v("Ten")]),
+              _c("option", { attrs: { value: "10" } }, [
+                _vm._v("10 results / page")
+              ]),
               _vm._v(" "),
-              _c("option", { attrs: { value: "20" } }, [_vm._v("Twenty")]),
+              _c("option", { attrs: { value: "20" } }, [
+                _vm._v("20 results / page")
+              ]),
               _vm._v(" "),
-              _c("option", { attrs: { value: "50" } }, [_vm._v("Fifty")])
+              _c("option", { attrs: { value: "50" } }, [
+                _vm._v("50 results / page")
+              ])
             ]
           )
         ])

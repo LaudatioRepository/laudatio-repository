@@ -112,7 +112,7 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched','dataloading', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter'],
+        props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched','dataloading', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter','frontpageresultdata'],
         data: function (){
             return{
                 currentCorpusPage: 1,
@@ -154,8 +154,11 @@
             }),
         mounted() {
             console.log('CorpusResultComponent mounted.')
-            if(!this.datasearched && !this.dataloading && this.searches.length == 0) {
+            if(!this.datasearched && !this.dataloading && this.searches.length == 0 && !this.frontpageresultdata) {
                 this.$emit('initial-search');
+            }
+            else if(!this.datasearched && !this.dataloading && this.searches.length == 0 && this.frontpageresultdata){
+                this.$emit('frontpage-search');
             }
 
         }

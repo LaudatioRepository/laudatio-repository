@@ -47,6 +47,8 @@
                             :documentresultcounter="documentresultcounter"
                             :annotationresultcounter="annotationresultcounter"
                             v-on:initial-search="initialSearch"
+                            v-on:frontpage-search="frontpageSearch"
+                            :frontpageresultdata="frontPageResultData"
                             ></searchresultwrapper>
                 </div>
             </div>
