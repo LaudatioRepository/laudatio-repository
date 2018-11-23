@@ -27620,7 +27620,6 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
 //
 //
 //
@@ -27732,7 +27731,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched', 'dataloading', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter', 'frontpageresultdata'],
@@ -27771,10 +27769,35 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.annotationPerPage = perpage;
         }
     },
-    computed: Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["b" /* mapGetters */])({
-        stateDocumentCorpusresults: 'documentcorpus',
-        stateAnnotationCorpusresults: 'annotationcorpus'
-    }),
+    computed: {
+        visibleCorpora: function visibleCorpora() {
+            var visibleCorpora = [];
+            for (var i = 0; i < this.corpusresults.length; i++) {
+                if (this.corpusresults[i]._source.visibility == 1) {
+                    visibleCorpora.push(this.corpusresults[i]);
+                }
+            }
+            return visibleCorpora;
+        },
+        visibleDocuments: function visibleDocuments() {
+            var visibleDocuments = [];
+            for (var i = 0; i < this.documentresults.length; i++) {
+                if (this.documentresults[i]._source.visibility == 1) {
+                    visibleDocuments.push(this.documentresults[i]);
+                }
+            }
+            return visibleDocuments;
+        },
+        visibleAnnotations: function visibleAnnotations() {
+            var visibleAnnotations = [];
+            for (var i = 0; i < this.annotationresults.length; i++) {
+                if (this.annotationresults[i]._source.visibility == 1) {
+                    visibleAnnotations.push(this.annotationresults[i]);
+                }
+            }
+            return visibleAnnotations;
+        }
+    },
     mounted: function mounted() {
         console.log('CorpusResultComponent mounted.');
         if (!this.datasearched && !this.dataloading && this.searches.length == 0 && !this.frontpageresultdata) {
@@ -27899,9 +27922,9 @@ var render = function() {
             }
           },
           [
-            _vm._l(_vm.corpusresults, function(corpusresult, index) {
+            _vm._l(_vm.visibleCorpora, function(corpusresult, index) {
               return _vm.corpusresults != "undefined" &&
-                _vm.corpusresults.length >= 1 &&
+                _vm.visibleCorpora.length >= 1 &&
                 index >=
                   _vm.currentCorpusPage * _vm.corpusPerPage -
                     _vm.corpusPerPage &&
@@ -27914,12 +27937,12 @@ var render = function() {
             }),
             _vm._v(" "),
             _vm.corpusresults != "undefined" &&
-            _vm.corpusresults.length >= 1 &&
-            _vm.corpusresults.length >= _vm.corpusPerPage
+            _vm.visibleCorpora.length >= 1 &&
+            _vm.visibleCorpora.length >= _vm.corpusPerPage
               ? _c("pagination", {
                   attrs: {
-                    totalPages: _vm.corpusresults.length / _vm.corpusPerPage,
-                    total: _vm.corpusresults.length,
+                    totalPages: _vm.visibleCorpora.length / _vm.corpusPerPage,
+                    total: _vm.visibleCorpora.length,
                     currentPage: _vm.currentCorpusPage,
                     perPage: _vm.corpusPerPage,
                     headerType: "corpus"
@@ -27945,12 +27968,12 @@ var render = function() {
             }
           },
           [
-            _vm._l(_vm.documentresults, function(
+            _vm._l(_vm.visibleDocuments, function(
               documentresult,
               documentindex
             ) {
               return _vm.documentresults != "undefined" &&
-                _vm.documentresults.length >= 1 &&
+                _vm.visibleDocuments.length >= 1 &&
                 documentindex >=
                   _vm.currentDocumentPage * _vm.documentPerPage -
                     _vm.documentPerPage &&
@@ -27963,13 +27986,13 @@ var render = function() {
             }),
             _vm._v(" "),
             _vm.documentresults != "undefined" &&
-            _vm.documentresults.length >= 1 &&
-            _vm.documentresults.length >= _vm.documentPerPage
+            _vm.visibleDocuments.length >= 1 &&
+            _vm.visibleDocuments.length >= _vm.documentPerPage
               ? _c("pagination", {
                   attrs: {
                     totalPages:
-                      _vm.documentresults.length / _vm.documentPerPage,
-                    total: _vm.documentresults.length,
+                      _vm.visibleDocuments.length / _vm.documentPerPage,
+                    total: _vm.visibleDocuments.length,
                     currentPage: _vm.currentDocumentPage,
                     perPage: _vm.documentPerPage,
                     headerType: "document"
@@ -27995,12 +28018,12 @@ var render = function() {
             }
           },
           [
-            _vm._l(_vm.annotationresults, function(
+            _vm._l(_vm.visibleAnnotations, function(
               annotationresult,
               annotationindex
             ) {
               return _vm.annotationresults != "undefined" &&
-                _vm.annotationresults.length >= 1 &&
+                _vm.visibleAnnotations.length >= 1 &&
                 annotationindex >=
                   _vm.currentAnnotationPage * _vm.annotationPerPage -
                     _vm.annotationPerPage &&
@@ -28014,13 +28037,13 @@ var render = function() {
             }),
             _vm._v(" "),
             _vm.annotationresults != "undefined" &&
-            _vm.annotationresults.length >= 1 &&
-            _vm.annotationresults.length >= _vm.annotationPerPage
+            _vm.visibleAnnotations.length >= 1 &&
+            _vm.visibleAnnotations.length >= _vm.annotationPerPage
               ? _c("pagination", {
                   attrs: {
                     totalPages:
-                      _vm.annotationresults.length / _vm.annotationPerPage,
-                    total: _vm.annotationresults.length,
+                      _vm.visibleAnnotations.length / _vm.annotationPerPage,
+                    total: _vm.visibleAnnotations.length,
                     currentPage: _vm.currentAnnotationPage,
                     perPage: _vm.annotationPerPage,
                     headerType: "annotation"

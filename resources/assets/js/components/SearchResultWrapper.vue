@@ -53,15 +53,15 @@
         <div class="tab-content">
             <div class="tab-pane active" id="searchtab-corpora" role="tabpanel" aria-labelledby="searchtab-corpora">
             <corpussearchresult
-                    v-if="corpusresults != 'undefined' && corpusresults.length >= 1 && index >= ((currentCorpusPage*corpusPerPage) - corpusPerPage) && index < (currentCorpusPage*corpusPerPage)"
-                    v-for="(corpusresult, index) in corpusresults"
+                    v-if="corpusresults != 'undefined' && visibleCorpora.length >= 1 && index >= ((currentCorpusPage*corpusPerPage) - corpusPerPage) && index < (currentCorpusPage*corpusPerPage)"
+                    v-for="(corpusresult, index) in visibleCorpora"
                     v-bind:corpusresult="corpusresult"
                     :key="guid(index)"
                     ></corpussearchresult>
                 <pagination
-                        v-if="corpusresults != 'undefined' && corpusresults.length >= 1 && corpusresults.length >= corpusPerPage"
-                        :totalPages="(corpusresults.length / corpusPerPage)"
-                        :total="corpusresults.length"
+                        v-if="corpusresults != 'undefined' && visibleCorpora.length >= 1 && visibleCorpora.length >= corpusPerPage"
+                        :totalPages="(visibleCorpora.length / corpusPerPage)"
+                        :total="visibleCorpora.length"
                         :currentPage="currentCorpusPage"
                         :perPage="corpusPerPage"
                         :headerType="'corpus'"
@@ -71,15 +71,15 @@
             </div>
             <div class="tab-pane" id="searchtab-documents" role="tabpanel" aria-labelledby="searchtab-documents">
                 <documentsearchresult
-                        v-if="documentresults != 'undefined' && documentresults.length >= 1 && documentindex >= ((currentDocumentPage*documentPerPage) - documentPerPage) && documentindex < (currentDocumentPage*documentPerPage)"
-                        v-for="(documentresult, documentindex) in documentresults"
+                        v-if="documentresults != 'undefined' && visibleDocuments.length >= 1 && documentindex >= ((currentDocumentPage*documentPerPage) - documentPerPage) && documentindex < (currentDocumentPage*documentPerPage)"
+                        v-for="(documentresult, documentindex) in visibleDocuments"
                         v-bind:documentresult="documentresult"
                         :key="guid(documentindex)"
                         ></documentsearchresult>
                 <pagination
-                        v-if="documentresults != 'undefined' && documentresults.length >= 1 && documentresults.length >= documentPerPage"
-                        :totalPages="(documentresults.length / documentPerPage)"
-                        :total="documentresults.length"
+                        v-if="documentresults != 'undefined' && visibleDocuments.length >= 1 && visibleDocuments.length >= documentPerPage"
+                        :totalPages="(visibleDocuments.length / documentPerPage)"
+                        :total="visibleDocuments.length"
                         :currentPage="currentDocumentPage"
                         :perPage="documentPerPage"
                         :headerType="'document'"
@@ -90,15 +90,15 @@
 
             <div class="tab-pane" id="searchtab-annotations" role="tabpanel" aria-labelledby="searchtab-annotations">
                 <annotationsearchresult
-                        v-if="annotationresults != 'undefined' && annotationresults.length >= 1 && annotationindex >= ((currentAnnotationPage*annotationPerPage) - annotationPerPage) && annotationindex < (currentAnnotationPage*annotationPerPage)"
-                        v-for="(annotationresult, annotationindex) in annotationresults"
+                        v-if="annotationresults != 'undefined' && visibleAnnotations.length >= 1 && annotationindex >= ((currentAnnotationPage*annotationPerPage) - annotationPerPage) && annotationindex < (currentAnnotationPage*annotationPerPage)"
+                        v-for="(annotationresult, annotationindex) in visibleAnnotations"
                         v-bind:annotationresult="annotationresult"
                         :key="guid(annotationindex)"
                         ></annotationsearchresult>
                 <pagination
-                        v-if="annotationresults != 'undefined' && annotationresults.length >= 1 && annotationresults.length >= annotationPerPage"
-                        :totalPages="(annotationresults.length / annotationPerPage)"
-                        :total="annotationresults.length"
+                        v-if="annotationresults != 'undefined' && visibleAnnotations.length >= 1 && visibleAnnotations.length >= annotationPerPage"
+                        :totalPages="(visibleAnnotations.length / annotationPerPage)"
+                        :total="visibleAnnotations.length"
                         :currentPage="currentAnnotationPage"
                         :perPage="annotationPerPage"
                         :headerType="'annotation'"
@@ -110,7 +110,6 @@
     </div>
 </template>
 <script>
-    import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
         props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched','dataloading', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter','frontpageresultdata'],
         data: function (){
@@ -147,11 +146,35 @@
                 this.annotationPerPage = perpage;
             }
         },
-        computed:
-            mapGetters({
-                stateDocumentCorpusresults: 'documentcorpus',
-                stateAnnotationCorpusresults: 'annotationcorpus'
-            }),
+        computed: {
+            visibleCorpora(){
+                var visibleCorpora = []
+                for(var i = 0; i < this.corpusresults.length; i++) {
+                    if(this.corpusresults[i]._source.visibility == 1) {
+                        visibleCorpora.push(this.corpusresults[i])
+                    }
+                }
+                return visibleCorpora;
+            },
+            visibleDocuments(){
+                var visibleDocuments = []
+                for(var i = 0; i < this.documentresults.length; i++) {
+                    if(this.documentresults[i]._source.visibility == 1) {
+                        visibleDocuments.push(this.documentresults[i])
+                    }
+                }
+                return visibleDocuments;
+            },
+            visibleAnnotations(){
+                var visibleAnnotations = []
+                for(var i = 0; i < this.annotationresults.length; i++) {
+                    if(this.annotationresults[i]._source.visibility == 1) {
+                        visibleAnnotations.push(this.annotationresults[i])
+                    }
+                }
+                return visibleAnnotations;
+            }
+        },
         mounted() {
             console.log('CorpusResultComponent mounted.')
             if(!this.datasearched && !this.dataloading && this.searches.length == 0 && !this.frontpageresultdata) {

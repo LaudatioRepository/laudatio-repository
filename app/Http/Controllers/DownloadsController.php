@@ -7,7 +7,7 @@ use GrahamCampbell\Flysystem\FlysystemManager;
 use App\Custom\LaudatioUtilsInterface;
 use Log;
 use Response;
-use Zipper;
+use Chumper\Zipper\Zipper;
 
 class DownloadsController extends Controller
 {
@@ -28,9 +28,9 @@ class DownloadsController extends Controller
 
         //$files = glob($this->basePath.'/'.$path.'/TEI-HEADERS');
         $header_filesystem = $this->flysystem->listContents($path.'/TEI-HEADERS');
-        $zipper = new \Chumper\Zipper\Zipper;
+        $zipper = new Zipper();
         $uniqueName = strtr(base64_encode(openssl_random_pseudo_bytes(16)), "+/=", "XXX");
-        $zipper->make('public/'.$uniqueName.'.zip');
+        $zipper->make($uniqueName.'.zip');
 
         for ($i = 0; $i < count($header_filesystem);$i++){
 
@@ -44,7 +44,7 @@ class DownloadsController extends Controller
         }
 
         $zipper->close();
-        return response()->download('public/'.$uniqueName.'.zip');
+        return response()->download($uniqueName.'.zip');
     }
 
     public function citeDownload(Request $request) {

@@ -213,7 +213,7 @@ class SearchController extends Controller
             "query" =>  $request->input('search_terms'),
             "indices" => join(",",$publishedIndexes['allPublishedIndices'])
         );
-        
+
         $result = $this->ElasticService->searchGeneral($searchData);
 
 
