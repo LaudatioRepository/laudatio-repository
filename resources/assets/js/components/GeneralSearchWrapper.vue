@@ -1,7 +1,7 @@
 <template lang="html">
     <div class="col-6 d-flex justify-content-center align-items-center ml-auto mr-auto">
 
-        <form class="form-group serviceBarSearch w-100">
+        <!--form class="form-group serviceBarSearch w-100"-->
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Search metadata (German or English)" aria-label="search metadata"
                        aria-describedby="basic-addon2" v-model="generalSearchTerm" @keyup.enter="searchGeneral">
@@ -14,7 +14,7 @@
                     </button>
                 </div>
             </div>
-        </form>
+        <!--/form-->
 
         <i class="btn p-0 fa fa-info-circle fa-fw fa-lg ml-3" data-toggle="tooltip" role="button" data-placement="bottom"
            title="Get help how to search"></i>
@@ -30,7 +30,6 @@
         props: ['results'],
         methods: {
             searchGeneral() {
-                console.log("@keyup fired")
                 this.$emit('searchedgeneral',
                     {
                         generalSearchTerm: this.generalSearchTerm,

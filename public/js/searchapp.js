@@ -1709,7 +1709,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: ['results'],
     methods: {
         searchGeneral: function searchGeneral() {
-            console.log("@keyup fired");
             this.$emit('searchedgeneral', {
                 generalSearchTerm: this.generalSearchTerm,
                 scope: 'general'
@@ -1738,61 +1737,55 @@ var render = function() {
         "col-6 d-flex justify-content-center align-items-center ml-auto mr-auto"
     },
     [
-      _c("form", { staticClass: "form-group serviceBarSearch w-100" }, [
-        _c("div", { staticClass: "input-group" }, [
-          _c("input", {
-            directives: [
-              {
-                name: "model",
-                rawName: "v-model",
-                value: _vm.generalSearchTerm,
-                expression: "generalSearchTerm"
-              }
-            ],
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              placeholder: "Search metadata (German or English)",
-              "aria-label": "search metadata",
-              "aria-describedby": "basic-addon2"
-            },
-            domProps: { value: _vm.generalSearchTerm },
-            on: {
-              keyup: function($event) {
-                if (
-                  !("button" in $event) &&
-                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                ) {
-                  return null
-                }
-                return _vm.searchGeneral($event)
-              },
-              input: function($event) {
-                if ($event.target.composing) {
-                  return
-                }
-                _vm.generalSearchTerm = $event.target.value
-              }
+      _c("div", { staticClass: "input-group" }, [
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.generalSearchTerm,
+              expression: "generalSearchTerm"
             }
-          }),
+          ],
+          staticClass: "form-control",
+          attrs: {
+            type: "text",
+            placeholder: "Search metadata (German or English)",
+            "aria-label": "search metadata",
+            "aria-describedby": "basic-addon2"
+          },
+          domProps: { value: _vm.generalSearchTerm },
+          on: {
+            keyup: function($event) {
+              if (
+                !("button" in $event) &&
+                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+              ) {
+                return null
+              }
+              return _vm.searchGeneral($event)
+            },
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.generalSearchTerm = $event.target.value
+            }
+          }
+        }),
+        _vm._v(" "),
+        _c("div", { staticClass: "input-group-append" }, [
+          _vm._m(0),
           _vm._v(" "),
-          _c("div", { staticClass: "input-group-append" }, [
-            _vm._m(0),
-            _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "btn btn-outline-corpus-dark pl-4 pr-4",
-                attrs: { type: "button" },
-                on: { click: _vm.searchGeneral }
-              },
-              [
-                _c("i", {
-                  staticClass: "text-primary fa fa-fw fa-search fa-lg "
-                })
-              ]
-            )
-          ])
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-outline-corpus-dark pl-4 pr-4",
+              attrs: { type: "button" },
+              on: { click: _vm.searchGeneral }
+            },
+            [_c("i", { staticClass: "text-primary fa fa-fw fa-search fa-lg " })]
+          )
         ])
       ]),
       _vm._v(" "),
