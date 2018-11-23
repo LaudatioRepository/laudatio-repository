@@ -1709,6 +1709,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     props: ['results'],
     methods: {
         searchGeneral: function searchGeneral() {
+            console.log("@keyup fired");
             this.$emit('searchedgeneral', {
                 generalSearchTerm: this.generalSearchTerm,
                 scope: 'general'

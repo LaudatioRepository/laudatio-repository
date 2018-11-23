@@ -30,6 +30,7 @@
         props: ['results'],
         methods: {
             searchGeneral() {
+                console.log("@keyup fired")
                 this.$emit('searchedgeneral',
                     {
                         generalSearchTerm: this.generalSearchTerm,
