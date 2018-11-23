@@ -85,6 +85,7 @@ const app = new Vue({
             return string;
         },
         askElastic: function (search) {
+            console.log("HELLO AT ALL ?");
             this.dataloading = true;
             this.corpusresults = [];
             this.datasearched = false;
@@ -99,6 +100,7 @@ const app = new Vue({
             this.documentresultcounter = 0;
             this.annotationresultcounter = 0;
             if(search.generalSearchTerm != ""){
+                console.log("TERM IS NOT EMPTY ?");
                 this.searches = [];
                 let postData = {
                     searchData: {
@@ -181,9 +183,10 @@ const app = new Vue({
                 };
 
                 let corpus_ids = [];
-
+                console.log("POSTDATA: "+JSON.stringify(postData));
                 window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(res => {
                     if (res.data.results.length > 0) {
+                        console.log("GOT RES: "+JSON.stringify(res.data.results));
                         /*
                         /* @todo: This is far too brittle: corpus/document/annotation could part of someones corpusname
                         /* Also: when we publish, the new working version shuffles the corpus/doc/anno keyword foirther than place 0
