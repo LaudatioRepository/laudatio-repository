@@ -75,12 +75,12 @@
                             <a class="dropdown-item text-14" href="#">ANNIS</a-->
                         </div>
                     </div>
-                    <div class="custom-control custom-checkbox">
+                    <!--div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" v-bind:id="('filtercheck-corpusSearchItem').concat(corpusresult._id)">
                         <label class="custom-control-label text-14" v-bind:for="('filtercheck-corpusSearchItem').concat(corpusresult._id)">
                             Set as Filter
                         </label>
-                    </div>
+                    </div-->
                 </div>
             </div>
             <div class="row">

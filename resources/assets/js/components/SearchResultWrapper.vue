@@ -2,10 +2,17 @@
     <div class="col">
         <i v-show="dataloading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
         <span v-show="dataloading" class="sr-only">Loading...</span>
-        <h3 class="h3 font-weight-normal mb-4" v-if="
+
+        <div v-if="
             searches != 'undefined' &&
             searches.length >= 1 &&
-            datasearched &&
+            searches[0] == 'laudatio_init'"
+        >&nbsp;</div>
+
+        <h3 class="h3 font-weight-normal mb-4" v-else-if="
+            searches != 'undefined' &&
+            searches.length >= 1 &&
+            !datasearched &&
             !dataloading &&
             (corpusresults != 'undefined' &&
             corpusresults.length >= 1) ||
@@ -15,26 +22,23 @@
             annotationresults.length >= 1)">
             Results for the search &quot;{{searches.join(" ")}}&quot;</h3>
 
-
         <div  v-else-if="
-                        corpusresults != 'undefined' &&
-                        corpusresults.length < 1 &&
-                        documentresults != 'undefined' &&
-                        documentresults.length < 1 &&
-                        annotationresults != 'undefined' &&
-                        annotationresults.length < 1 &&
-                        datasearched &&
-                        !dataloading &&
-                        searches != 'undefined' &&
-                        searches.length >= 1"
-                        class="alert alert-info alert-dismissible fade show" role="alert">
+            corpusresults != 'undefined' &&
+            corpusresults.length < 1 &&
+            documentresults != 'undefined' &&
+            documentresults.length < 1 &&
+            annotationresults != 'undefined' &&
+            annotationresults.length < 1 &&
+            datasearched &&
+            !dataloading &&
+            searches != 'undefined' &&
+            searches.length >= 1"
+              class="alert alert-info alert-dismissible fade show" role="alert">
             <strong>The search <i>&quot;{{searches.join(" ")}}&quot;</i> returned no results!</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-
-
 
         <searchresultheader
                 :corpusresults="corpusresults"
@@ -150,6 +154,10 @@
             }),
         mounted() {
             console.log('CorpusResultComponent mounted.')
+            if(!this.datasearched && !this.dataloading && this.searches.length == 0) {
+                this.$emit('initial-search');
+            }
+
         }
     }
 </script>

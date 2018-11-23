@@ -84,6 +84,103 @@ const app = new Vue({
 
             return string;
         },
+        initialSearch: function(){
+            this.dataloading = true;
+            this.corpusresults = [];
+            this.datasearched = false;
+            this.corpusCacheString = "";
+            this.$store.dispatch('clearCorpus', [])
+            this.$store.dispatch('clearDocuments', [])
+            this.$store.dispatch('clearAnnotations', [])
+            this.corpusresults = [];
+            this.documentresults = [];
+            this.annotationresults = [];
+            this.corpusresultcounter = 0;
+            this.documentresultcounter = 0;
+            this.annotationresultcounter = 0;
+            let postData = {
+                searchData: {
+                    source: [
+                        "corpus_title",
+                        "corpus_id",
+                        "corpus_editor_forename",
+                        "corpus_editor_surname",
+                        "corpus_publication_publisher",
+                        "corpus_documents",
+                        "corpus_merged_formats",
+                        "corpus_encoding_tool",
+                        "corpus_encoding_project_description",
+                        "corpus_annotator_forename",
+                        "corpus_annotator_surname",
+                        "corpus_publication_license",
+                        "corpus_languages_language",
+                        "corpus_languages_iso_code",
+                        "corpus_publication_publication_date",
+                        "corpus_size_type",
+                        "corpus_size_value",
+                        "document_title",
+                        "document_author_forename",
+                        "document_author_surname",
+                        "document_merged_authors",
+                        "document_editor_forename",
+                        "document_editor_surname",
+                        "document_languages_language",
+                        "document_languages_iso_code",
+                        "document_publication_place",
+                        "document_publication_publishing_date",
+                        "document_list_of_annotations_id",
+                        "document_size_type",
+                        "document_size_extent",
+                        "preparation_title",
+                        "preparation_annotation_id",
+                        "preparation_encoding_annotation_group",
+                        "preparation_encoding_annotation_sub_group",
+                        "preparation_encoding_full_name",
+                        "annotation_merged_formats",
+                        "in_documents"
+                    ],
+                    indices: this.publishedIndexes.allPublishedIndices.join(",")
+                }
+            };
+
+            let corpus_ids = [];
+            window.axios.post('api/searchapi/listAllPublished', JSON.stringify(postData)).then(res => {
+                if (res.data.results.length > 0) {
+                    /*
+                     /* @todo: This is far too brittle: corpus/document/annotation could part of someones corpusname
+                     /* Also: when we publish, the new working version shuffles the corpus/doc/anno keyword foirther than place 0
+                     */
+                    for (var ri = 0; ri < res.data.results.length; ri++) {
+                        if(res.data.results[ri]._index.indexOf("corpus_") == 0){
+                            this.corpusresults.push(res.data.results[ri]);
+                            this.corpusresultcounter++;
+
+                            var formatsarray = res.data.results[ri]._source.corpus_merged_formats.split(",");
+                            for (var key in formatsarray) {
+                                this.corpusformats.push(formatsarray[key])
+                            }
+
+                        }
+                        else if(res.data.results[ri]._index.indexOf("document_") == 0){
+                            this.documentresults.push(res.data.results[ri]);
+                            this.documentresultcounter ++;
+                        }
+                        else if(res.data.results[ri]._index.indexOf("annotation_") == 0){
+                            this.annotationresults.push(res.data.results[ri]);
+                            this.annotationresultcounter ++;
+
+                            var annotationformatsarray = res.data.results[ri]._source.annotation_merged_formats.split(",");
+                            for (var key in annotationformatsarray) {
+                                this.annotationformats.push(annotationformatsarray[key])
+                            }
+                        }///end which index
+                    }//end for results
+                }//end if results
+                this.dataloading = false;
+                this.datasearched = true;
+                this.searches.push('laudatio_init');
+            });
+        },
         askElastic: function (search) {
             this.dataloading = true;
             this.corpusresults = [];

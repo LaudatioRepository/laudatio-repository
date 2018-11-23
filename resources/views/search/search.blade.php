@@ -46,6 +46,7 @@
                             :corpusresultcounter="corpusresultcounter"
                             :documentresultcounter="documentresultcounter"
                             :annotationresultcounter="annotationresultcounter"
+                            v-on:initial-search="initialSearch"
                             ></searchresultwrapper>
                 </div>
             </div>

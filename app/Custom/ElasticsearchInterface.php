@@ -24,6 +24,7 @@ interface ElasticsearchInterface {
     public function getFormatsByCorpus($corpusId,$index);
     public function search($index, $field, $term);
     public function searchGeneral($searchData);
+    public function listAllPublished($searchData);
     public function searchCorpusIndex($searchData);
     public function rangeSearch($searchData);
     public function searchDocumentIndex($searchData);

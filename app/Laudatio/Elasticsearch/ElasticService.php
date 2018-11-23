@@ -896,11 +896,38 @@ class ElasticService implements ElasticsearchInterface
     }
 
 
+    /**
+     * searchGeneral
+     * @param $searchData
+     * @return mixed
+     */
     public function searchGeneral($searchData)
     {
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
         $queryBody = $queryBuilder->buildMultiMatchQuery($searchData);
+        $params = [
+            'size' => 1000,
+            'index' => trim($searchData['indices']),
+            'type' => 'doc',
+            'body' => $queryBody,
+            //'_source_exclude' => ['message']
+            '_source' => $searchData['source'],
+        ];
+        $results = Elasticsearch::search($params);
+        return $results;
+    }
+
+    /**
+     * listAllPublished
+     * @param $searchData
+     * @return mixed
+     */
+    public function listAllPublished($searchData)
+    {
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $queryBody = $queryBuilder->buildMatchAllQuery(array());
         $params = [
             'size' => 1000,
             'index' => trim($searchData['indices']),

@@ -15,7 +15,7 @@
                        aria-selected="false">Annotations ({{annotationresultcounter}})</a>
                 </li>
             </ul>
-            <div class="form-row ">
+            <!--div class="form-row ">
                 <div class="col-auto">
                     <div class="dropdown">
                         <button class="btn btn-outline-corpus-dark rounded dropdown-toggle font-weight-bold text-uppercase "
@@ -33,13 +33,13 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div-->
         </div>
-        <div class="w-100 py-3 px-6 mb-1 bg-corpus-light d-flex flex-column">
+        <!--div class="w-100 py-3 px-6 mb-1 bg-corpus-light d-flex flex-column">
             <div class="btn btn-sm font-weight-bold text-uppercase btn-outline-corpus-dark align-self-end disabled">
                 Apply Filter
             </div>
-        </div>
+        </div-->
     </div>
 </template>
 <script>

@@ -34,12 +34,12 @@
                     <i class="fa fa-text-height fa-fw fa-edit align-text-middle fa-lg text-wine"></i>
                     <span class="text-14 font-weight-bold">{{documentresult._source.document_list_of_annotations_id.length}}</span>
                 </a>
-                <div class="custom-control custom-checkbox">
+                <!--div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="filtercheck-documentSearchItem0001">
                     <label class="custom-control-label text-14" for="filtercheck-documentSearchItem0001">
                         Set as Filter
                     </label>
-                </div>
+                </div-->
             </div>
         </div>
 
