@@ -17,6 +17,7 @@
                 v-on:document-resultcounter="emitDocumentResultCounter"
                 v-on:annotation-resultcounter="emitAnnotationResultCounter"
                 v-on:clear-all-filters="clearAllFilters"
+                v-on:reset-activefilter="resetActiveFilter"
                 ></activefilter>
         </div>
         <div class="mb-4">
@@ -67,6 +68,10 @@
                 this.$refs.corpusFilter.clearCorpusFilter();
                 this.$refs.documentFilter.clearDocumentFilter();
                 this.$refs.annotationFilter.clearAnnotationFilter();
+                this.$emit('reset-activefilters');
+            },
+            resetActiveFilter: function(filter){
+                this.$emit('reset-activefilter',filter);
             },
             emitCorpusFilter: function (corpusFilterEmitData) {
                 this.$emit('corpus-filter',corpusFilterEmitData);

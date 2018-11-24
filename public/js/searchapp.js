@@ -520,7 +520,299 @@ module.exports = g;
 /* 10 */,
 /* 11 */,
 /* 12 */,
-/* 13 */
+/* 13 */,
+/* 14 */,
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+var utils = __webpack_require__(4);
+var normalizeHeaderName = __webpack_require__(56);
+
+var DEFAULT_CONTENT_TYPE = {
+  'Content-Type': 'application/x-www-form-urlencoded'
+};
+
+function setContentTypeIfUnset(headers, value) {
+  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
+    headers['Content-Type'] = value;
+  }
+}
+
+function getDefaultAdapter() {
+  var adapter;
+  if (typeof XMLHttpRequest !== 'undefined') {
+    // For browsers use XHR adapter
+    adapter = __webpack_require__(27);
+  } else if (typeof process !== 'undefined') {
+    // For node use HTTP adapter
+    adapter = __webpack_require__(27);
+  }
+  return adapter;
+}
+
+var defaults = {
+  adapter: getDefaultAdapter(),
+
+  transformRequest: [function transformRequest(data, headers) {
+    normalizeHeaderName(headers, 'Content-Type');
+    if (utils.isFormData(data) ||
+      utils.isArrayBuffer(data) ||
+      utils.isBuffer(data) ||
+      utils.isStream(data) ||
+      utils.isFile(data) ||
+      utils.isBlob(data)
+    ) {
+      return data;
+    }
+    if (utils.isArrayBufferView(data)) {
+      return data.buffer;
+    }
+    if (utils.isURLSearchParams(data)) {
+      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
+      return data.toString();
+    }
+    if (utils.isObject(data)) {
+      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
+      return JSON.stringify(data);
+    }
+    return data;
+  }],
+
+  transformResponse: [function transformResponse(data) {
+    /*eslint no-param-reassign:0*/
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data);
+      } catch (e) { /* Ignore */ }
+    }
+    return data;
+  }],
+
+  timeout: 0,
+
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+
+  maxContentLength: -1,
+
+  validateStatus: function validateStatus(status) {
+    return status >= 200 && status < 300;
+  }
+};
+
+defaults.headers = {
+  common: {
+    'Accept': 'application/json, text/plain, */*'
+  }
+};
+
+utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
+  defaults.headers[method] = {};
+});
+
+utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
+  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
+});
+
+module.exports = defaults;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)))
+
+/***/ }),
+/* 16 */
+/***/ (function(module, exports) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ }),
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1462,298 +1754,6 @@ var index_esm = {
 
 
 /* harmony default export */ __webpack_exports__["a"] = (index_esm);
-
-
-/***/ }),
-/* 14 */,
-/* 15 */,
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {
-
-var utils = __webpack_require__(4);
-var normalizeHeaderName = __webpack_require__(56);
-
-var DEFAULT_CONTENT_TYPE = {
-  'Content-Type': 'application/x-www-form-urlencoded'
-};
-
-function setContentTypeIfUnset(headers, value) {
-  if (!utils.isUndefined(headers) && utils.isUndefined(headers['Content-Type'])) {
-    headers['Content-Type'] = value;
-  }
-}
-
-function getDefaultAdapter() {
-  var adapter;
-  if (typeof XMLHttpRequest !== 'undefined') {
-    // For browsers use XHR adapter
-    adapter = __webpack_require__(27);
-  } else if (typeof process !== 'undefined') {
-    // For node use HTTP adapter
-    adapter = __webpack_require__(27);
-  }
-  return adapter;
-}
-
-var defaults = {
-  adapter: getDefaultAdapter(),
-
-  transformRequest: [function transformRequest(data, headers) {
-    normalizeHeaderName(headers, 'Content-Type');
-    if (utils.isFormData(data) ||
-      utils.isArrayBuffer(data) ||
-      utils.isBuffer(data) ||
-      utils.isStream(data) ||
-      utils.isFile(data) ||
-      utils.isBlob(data)
-    ) {
-      return data;
-    }
-    if (utils.isArrayBufferView(data)) {
-      return data.buffer;
-    }
-    if (utils.isURLSearchParams(data)) {
-      setContentTypeIfUnset(headers, 'application/x-www-form-urlencoded;charset=utf-8');
-      return data.toString();
-    }
-    if (utils.isObject(data)) {
-      setContentTypeIfUnset(headers, 'application/json;charset=utf-8');
-      return JSON.stringify(data);
-    }
-    return data;
-  }],
-
-  transformResponse: [function transformResponse(data) {
-    /*eslint no-param-reassign:0*/
-    if (typeof data === 'string') {
-      try {
-        data = JSON.parse(data);
-      } catch (e) { /* Ignore */ }
-    }
-    return data;
-  }],
-
-  timeout: 0,
-
-  xsrfCookieName: 'XSRF-TOKEN',
-  xsrfHeaderName: 'X-XSRF-TOKEN',
-
-  maxContentLength: -1,
-
-  validateStatus: function validateStatus(status) {
-    return status >= 200 && status < 300;
-  }
-};
-
-defaults.headers = {
-  common: {
-    'Accept': 'application/json, text/plain, */*'
-  }
-};
-
-utils.forEach(['delete', 'get', 'head'], function forEachMethodNoData(method) {
-  defaults.headers[method] = {};
-});
-
-utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
-  defaults.headers[method] = utils.merge(DEFAULT_CONTENT_TYPE);
-});
-
-module.exports = defaults;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(17)))
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports) {
-
-// shim for using process in browser
-var process = module.exports = {};
-
-// cached from whatever global is present so that test runners that stub it
-// don't break things.  But we need to wrap it in a try catch in case it is
-// wrapped in strict mode code which doesn't define any globals.  It's inside a
-// function because try/catches deoptimize in certain engines.
-
-var cachedSetTimeout;
-var cachedClearTimeout;
-
-function defaultSetTimout() {
-    throw new Error('setTimeout has not been defined');
-}
-function defaultClearTimeout () {
-    throw new Error('clearTimeout has not been defined');
-}
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
-function runTimeout(fun) {
-    if (cachedSetTimeout === setTimeout) {
-        //normal enviroments in sane situations
-        return setTimeout(fun, 0);
-    }
-    // if setTimeout wasn't available but was latter defined
-    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-        cachedSetTimeout = setTimeout;
-        return setTimeout(fun, 0);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedSetTimeout(fun, 0);
-    } catch(e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-            return cachedSetTimeout.call(null, fun, 0);
-        } catch(e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-            return cachedSetTimeout.call(this, fun, 0);
-        }
-    }
-
-
-}
-function runClearTimeout(marker) {
-    if (cachedClearTimeout === clearTimeout) {
-        //normal enviroments in sane situations
-        return clearTimeout(marker);
-    }
-    // if clearTimeout wasn't available but was latter defined
-    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-        cachedClearTimeout = clearTimeout;
-        return clearTimeout(marker);
-    }
-    try {
-        // when when somebody has screwed with setTimeout but no I.E. maddness
-        return cachedClearTimeout(marker);
-    } catch (e){
-        try {
-            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-            return cachedClearTimeout.call(null, marker);
-        } catch (e){
-            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-            return cachedClearTimeout.call(this, marker);
-        }
-    }
-
-
-
-}
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = runTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    runClearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        runTimeout(drainQueue);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-process.prependListener = noop;
-process.prependOnceListener = noop;
-
-process.listeners = function (name) { return [] }
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
 
 
 /***/ }),
@@ -22292,7 +22292,7 @@ module.exports = __webpack_require__(53);
 var utils = __webpack_require__(4);
 var bind = __webpack_require__(26);
 var Axios = __webpack_require__(55);
-var defaults = __webpack_require__(16);
+var defaults = __webpack_require__(15);
 
 /**
  * Create an instance of Axios
@@ -22375,7 +22375,7 @@ function isSlowBuffer (obj) {
 "use strict";
 
 
-var defaults = __webpack_require__(16);
+var defaults = __webpack_require__(15);
 var utils = __webpack_require__(4);
 var InterceptorManager = __webpack_require__(64);
 var dispatchRequest = __webpack_require__(65);
@@ -22907,7 +22907,7 @@ module.exports = InterceptorManager;
 var utils = __webpack_require__(4);
 var transformData = __webpack_require__(66);
 var isCancel = __webpack_require__(29);
-var defaults = __webpack_require__(16);
+var defaults = __webpack_require__(15);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -23487,7 +23487,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(17)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(16)))
 
 /***/ }),
 /* 74 */
@@ -24080,7 +24080,7 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(17)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(16)))
 
 /***/ }),
 /* 75 */
@@ -26506,6 +26506,7 @@ module.exports = __webpack_require__(199);
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__store__ = __webpack_require__(159);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -26553,6 +26554,7 @@ var app = new Vue({
         annotationresults: [],
         searches: [],
         activefilters: [],
+        activefiltersmap: {},
         documentsByCorpus: [],
         annotationsByCorpus: [],
         corpusByDocument: [],
@@ -26764,33 +26766,144 @@ var app = new Vue({
         },
         submitCorpusFilter: function submitCorpusFilter(corpusFilterObject) {
             this.resetCorpusResults();
+            console.log(corpusFilterObject);
+            for (var key in corpusFilterObject) {
+                if (corpusFilterObject.hasOwnProperty(key)) {
+                    if (corpusFilterObject[key] != 'undefined' && corpusFilterObject[key] != '') {
+                        if (key == "corpus_publication_publication_date" || key == "corpus_publication_license" || key == "corpus_merged_formats" || key == "corpus_size_value") {
+                            for (var i = 0; i < this.corpusresults.length; i++) {
+                                for (var corpuskey in this.corpusresults[i]._source) {
+                                    if (this.corpusresults[i]._source.hasOwnProperty(key)) {
+                                        if (key == "corpus_size_value" && corpusFilterObject.corpus_size_value != "" && corpusFilterObject.corpusSizeTo != "") {
+                                            if (!this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value, corpusFilterObject.corpusSizeTo)) {
+                                                if (!this.activefilters.includes(corpusFilterObject.corpus_size_value + " : " + corpusFilterObject.corpusSizeTo)) {
+                                                    this.corpusresults[i]._source.visibility = 0;
+                                                    this.corpusresultcounter--;
+                                                    this.activefilters.push(corpusFilterObject.corpus_size_value + " : " + corpusFilterObject.corpusSizeTo);
+                                                    this.activefiltersmap[corpusFilterObject.corpus_size_value + " : " + corpusFilterObject.corpusSizeTo] = key;
+                                                }
+                                            }
+                                        }
+
+                                        if (key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != "") {
+                                            console.log("CORPUSStrING: " + this.corpusresults[i]._source[key] + " TYPE: " + _typeof(this.corpusresults[i]._source[key]));
+                                            console.log("TESTING: " + this.hasFormats(this.corpusresults[i]._source[key], corpusFilterObject.corpus_merged_formats));
+                                            for (var formatkey in corpusFilterObject.corpus_merged_formats) {
+                                                console.log("WITH: " + corpusFilterObject.corpus_merged_formats[formatkey] + " TYPE: " + _typeof(corpusFilterObject.corpus_merged_formats[formatkey]));
+                                                if (!this.hasFormats(this.corpusresults[i]._source[key], corpusFilterObject.corpus_merged_formats[formatkey])) {
+                                                    console.log("DOES " + this.activefilters + " INCLUDE " + corpusFilterObject.corpus_merged_formats[formatkey]);
+                                                    //if(!this.activefilters.includes(corpusFilterObject.corpus_merged_formats[formatkey])) {
+                                                    this.corpusresults[i]._source.visibility = 0;
+                                                    //}
+                                                }
+                                                if (!this.activefilters.includes(corpusFilterObject.corpus_merged_formats[formatkey])) {
+                                                    this.corpusresultcounter--;
+                                                    this.activefilters.push(corpusFilterObject.corpus_merged_formats[formatkey]);
+                                                    this.activefiltersmap[corpusFilterObject.corpus_merged_formats[formatkey]] = 'corpus_merged_formats';
+                                                }
+                                            }
+                                        }
+
+                                        if (key == "corpus_publication_license" && corpusFilterObject[key].toLowerCase() != "") {
+                                            if (!this.hasLicense(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase(), corpusFilterObject[key].toLowerCase())) {
+                                                if (!this.activefilters.includes(corpusFilterObject[key])) {
+                                                    this.corpusresults[i]._source.visibility = 0;
+                                                    this.corpusresultcounter--;
+                                                    this.activefilters.push(corpusFilterObject[key]);
+                                                    this.activefiltersmap[corpusFilterObject[key]] = key;
+                                                }
+                                            }
+                                        }
+
+                                        if (key == "corpus_publication_publication_date" && corpusFilterObject.corpus_publication_publication_date != '' && corpusFilterObject.corpusYearTo != '') {
+                                            var newest_datum = this.corpusresults[i]._source[key][this.corpusresults[i]._source[key].length - 1];
+                                            var dateArray = newest_datum.split("-");
+                                            var newest_date = dateArray[0];
+                                            if (!this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date, corpusFilterObject.corpusYearTo)) {
+                                                if (!this.activefilters.includes(corpusFilterObject.corpus_publication_publication_date + " : " + corpusFilterObject.corpusYearTo)) {
+                                                    this.corpusresults[i]._source.visibility = 0;
+                                                    this.corpusresultcounter--;
+                                                    this.activefilters.push(corpusFilterObject.corpus_publication_publication_date + " : " + corpusFilterObject.corpusYearTo);
+                                                    this.activefiltersmap[corpusFilterObject.corpus_publication_publication_date + " : " + corpusFilterObject.corpusYearTo] = key;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            for (var i = 0; i < this.corpusresults.length; i++) {
+                                if (this.corpusresults[i]._source.hasOwnProperty(key)) {
+                                    if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                        if (!this.activefilters.includes(corpusFilterObject[key])) {
+                                            this.activefilters.push(corpusFilterObject[key]);
+                                            this.activefiltersmap[corpusFilterObject[key]] = key;
+                                        }
+                                    }
+                                    //if we want to show active filters, even when they do not apply and filter th results, uncomment
+                                    /*
+                                    if(!this.activefilters.includes(corpusFilterObject[key])) {
+                                        this.activefilters.push(corpusFilterObject[key]);
+                                        this.activefiltersmap[corpusFilterObject[key]] = key;
+                                    }
+                                    */
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        submitCorpusFilter2: function submitCorpusFilter2(corpusFilterObject) {
+            this.resetCorpusResults();
             for (var i = 0; i < this.corpusresults.length; i++) {
                 for (var key in this.corpusresults[i]._source) {
                     if (this.corpusresults[i]._source.hasOwnProperty(key)) {
                         if (key != "" && corpusFilterObject.hasOwnProperty(key) && corpusFilterObject[key] != 'undefined' && corpusFilterObject[key].length > 0) {
 
-                            if (key == "corpus_size_value" && corpusFilterObject.corpus_size_value != "" && corpusFilterObject.corpusSizeTo != "") {
-                                if (!this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value, corpusFilterObject.corpusSizeTo)) {
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
+                            if (key == "corpus_publication_publication_date" || key == "corpus_publication_license" || key == "corpus_merged_formats" || key == "corpus_size_value") {
+                                if (key == "corpus_size_value" && corpusFilterObject.corpus_size_value != "" && corpusFilterObject.corpusSizeTo != "") {
+                                    if (!this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value, corpusFilterObject.corpusSizeTo)) {
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                        this.activefilters.push(corpusFilterObject.corpus_size_value + " : " + corpusFilterObject.corpusSizeTo);
+                                        this.activefiltersmap[corpusFilterObject.corpus_size_value + " : " + corpusFilterObject.corpusSizeTo] = key;
+                                    }
                                 }
-                            } else if (key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != "") {
-                                if (!this.hasFormats(this.corpusresults[i]._source[key], corpusFilterObject[key])) {
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
+
+                                if (key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != "") {
+                                    if (!this.hasFormats(this.corpusresults[i]._source[key], corpusFilterObject[key])) {
+                                        console.log(corpusFilterObject.corpus_merged_formats);
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                        for (var formatkey in corpusFilterObject.corpus_merged_formats) {
+                                            this.activefilters.push(corpusFilterObject[key]);
+                                            this.activefiltersmap[corpusFilterObject[key]] = 'corpus_merged_formats';
+                                        }
+                                    }
                                 }
-                            } else if (key == "corpus_publication_license" && corpusFilterObject[key].toLowerCase() != "") {
-                                if (!this.hasLicense(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase(), corpusFilterObject[key].toLowerCase())) {
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
+
+                                if (key == "corpus_publication_license" && corpusFilterObject[key].toLowerCase() != "") {
+                                    if (!this.hasLicense(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase(), corpusFilterObject[key].toLowerCase())) {
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                        this.activefilters.push(corpusFilterObject[key]);
+                                        this.activefiltersmap[corpusFilterObject[key]] = key;
+                                    }
                                 }
-                            } else if (key == "corpus_publication_publication_date" && corpusFilterObject.corpus_publication_publication_date != '' && corpusFilterObject.corpusYearTo != '') {
-                                var newest_datum = this.corpusresults[i]._source[key][this.corpusresults[i]._source[key].length - 1];
-                                var dateArray = newest_datum.split("-");
-                                var newest_date = dateArray[0];
-                                if (!this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date, corpusFilterObject.corpusYearTo)) {
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
+
+                                if (key == "corpus_publication_publication_date" && corpusFilterObject.corpus_publication_publication_date != '' && corpusFilterObject.corpusYearTo != '') {
+                                    var newest_datum = this.corpusresults[i]._source[key][this.corpusresults[i]._source[key].length - 1];
+                                    var dateArray = newest_datum.split("-");
+                                    var newest_date = dateArray[0];
+                                    if (!this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date, corpusFilterObject.corpusYearTo)) {
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                        this.activefilters.push(corpusFilterObject.corpus_publication_publication_date + " : " + corpusFilterObject.corpusYearTo);
+                                        this.activefiltersmap[corpusFilterObject.corpus_publication_publication_date + " : " + corpusFilterObject.corpusYearTo] = key;
+                                    }
                                 }
                             } else {
                                 if (corpusFilterObject[key] != 'undefined') {
@@ -26798,6 +26911,9 @@ var app = new Vue({
                                         this.corpusresults[i]._source.visibility = 0;
                                         this.corpusresultcounter--;
                                     }
+                                    //if we want to show active filters, even when they do not apply and filter th results, unncomment
+                                    this.activefilters.push(corpusFilterObject[key]);
+                                    this.activefiltersmap[corpusFilterObject[key]] = key;
                                 }
                             }
                         }
@@ -26807,27 +26923,109 @@ var app = new Vue({
         },
         submitDocumentFilter: function submitDocumentFilter(documentFilterObject) {
             this.resetDocumentResults();
-            for (var i = 0; i < this.documentresults.length; i++) {
-                for (var key in this.documentresults[i]._source) {
-                    if (this.documentresults[i]._source.hasOwnProperty(key)) {
-                        if (documentFilterObject.hasOwnProperty(key)) {
-                            if (key == "document_size_extent" && documentFilterObject.document_size_extent != "" && documentFilterObject.document_size_extent_to != "") {
-                                if (!this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent, documentFilterObject.document_size_extent_to)) {
-                                    this.documentresults[i]._source.visibility = 0;
-                                    this.documentresultcounter--;
+            console.log(documentFilterObject);
+            for (var key in documentFilterObject) {
+                if (documentFilterObject.hasOwnProperty(key)) {
+                    if (documentFilterObject[key] != 'undefined' && documentFilterObject[key] != '') {
+                        if (key == "document_size_extent" || key == "document_publication_publishing_date") {
+
+                            for (var i = 0; i < this.documentresults.length; i++) {
+                                for (var documentkey in this.documentresults[i]._source) {
+                                    if (this.documentresults[i]._source.hasOwnProperty(key)) {
+                                        if (key == "document_size_extent" && documentFilterObject.document_size_extent != "" && documentFilterObject.document_size_extent_to != "") {
+                                            if (!this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent, documentFilterObject.document_size_extent_to)) {
+                                                if (!this.activefilters.includes(documentFilterObject.document_size_extent + " : " + documentFilterObject.document_size_extent_to)) {
+                                                    this.documentresults[i]._source.visibility = 0;
+                                                    this.documentresultcounter--;
+                                                    this.activefilters.push(documentFilterObject.document_size_extent + " : " + documentFilterObject.document_size_extent_to);
+                                                    this.activefiltersmap[documentFilterObject.document_size_extent + " : " + documentFilterObject.document_size_extent_to] = key;
+                                                }
+                                            }
+                                        } //end if document_size_extent
+
+                                        if (key == "document_publication_publishing_date" && documentFilterObject.document_publication_publishing_date != '' && documentFilterObject.document_publication_publishing_date_to != '') {
+                                            var newest_datum = this.documentresults[i]._source[key][this.documentresults[i]._source[key].length - 1];
+                                            console.log("newest_datum: " + newest_datum);
+                                            var newest_date = newest_datum;
+                                            if (newest_datum.indexOf("-") > -1) {
+                                                var dateArray = newest_datum.split("-");
+                                                newest_date = dateArray[0];
+                                            }
+
+                                            console.log("newest_date: " + newest_date + " IS BETWEEN: " + documentFilterObject.document_publication_publishing_date + "AND " + documentFilterObject.document_publication_publishing_date_to + " GOT " + this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date, documentFilterObject.document_publication_publishing_date_to));
+                                            if (!this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date, documentFilterObject.document_publication_publishing_date_to)) {
+                                                this.documentresults[i]._source.visibility = 0;
+
+                                                if (!this.activefilters.includes(documentFilterObject.document_publication_publishing_date + " : " + documentFilterObject.document_publication_publishing_date_to)) {
+                                                    this.documentresultcounter--;
+                                                    this.activefilters.push(documentFilterObject.document_publication_publishing_date + " : " + documentFilterObject.document_publication_publishing_date_to);
+                                                    this.activefiltersmap[documentFilterObject.document_publication_publishing_date + " : " + documentFilterObject.document_publication_publishing_date_to] = key;
+                                                }
+                                            }
+                                        } //end if publishing date
+                                    }
                                 }
-                            } else if (key == "document_publication_publishing_date" && documentFilterObject.document_publication_publishing_date != '' && documentFilterObject.document_publication_publishing_date_to != '') {
-                                var newest_datum = this.documentresults[i]._source[key][this.documentresults[i]._source[key].length - 1];
-                                var dateArray = newest_datum.split("-");
-                                var newest_date = dateArray[0];
-                                if (!this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date, documentFilterObject.document_publication_publishing_date_to)) {
-                                    this.documentresults[i]._source.visibility = 0;
-                                    this.documentresultcounter--;
+                            } //end for documents
+                        } else {
+                            for (var i = 0; i < this.documentresults.length; i++) {
+                                if (this.documentresults[i]._source.hasOwnProperty(key)) {
+                                    console.log("TESTING: " + documentFilterObject[key] + " INBIN " + this.documentresults[i]._source[key] + " GOT: " + this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()));
+                                    if (this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
+
+                                        this.documentresults[i]._source.visibility = 0;
+                                        this.documentresultcounter--;
+                                        if (!this.activefilters.includes(documentFilterObject[key])) {
+                                            this.activefilters.push(documentFilterObject[key]);
+                                            this.activefiltersmap[documentFilterObject[key]] = key;
+                                        }
+                                    }
                                 }
-                            } else {
-                                if (this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
-                                    this.documentresults[i]._source.visibility = 0;
-                                    this.documentresultcounter--;
+                            } //end for
+                        } //end if special fields
+                    }
+                }
+            }
+        },
+        submitAnnotationFilter: function submitAnnotationFilter(annotationFilterObject) {
+            this.resetAnnotationResults();
+            console.log(annotationFilterObject);
+            for (var key in annotationFilterObject) {
+                if (annotationFilterObject.hasOwnProperty(key)) {
+                    if (annotationFilterObject[key] != 'undefined' && annotationFilterObject[key] != '') {
+                        if (key == "annotation_merged_formats") {
+
+                            for (var i = 0; i < this.annotationresults.length; i++) {
+                                for (var annotationkey in this.annotationresults[i]._source) {
+                                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
+                                        for (var formatkey in annotationFilterObject.annotation_merged_formats) {
+                                            if (!this.hasFormats(this.annotationresults[i]._source[key], annotationFilterObject.annotation_merged_formats[formatkey])) {
+                                                //if(!this.activefilters.includes(corpusFilterObject.corpus_merged_formats[formatkey])) {
+                                                this.annotationresults[i]._source.visibility = 0;
+                                                //}
+                                            }
+                                            if (!this.activefilters.includes(annotationFilterObject.annotation_merged_formats[formatkey])) {
+                                                this.annotationresultcounter--;
+                                                this.activefilters.push(annotationFilterObject.annotation_merged_formats[formatkey]);
+                                                this.activefiltersmap[annotationFilterObject.annotation_merged_formats[formatkey]] = 'annotation_merged_formats';
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            for (var i = 0; i < this.annotationresults.length; i++) {
+                                for (var annotationkey in this.annotationresults[i]._source) {
+                                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
+                                        if (this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
+                                            this.annotationresults[i]._source.visibility = 0;
+
+                                            if (!this.activefilters.includes(annotationFilterObject[key])) {
+                                                this.annotationresultcounter--;
+                                                this.activefilters.push(annotationFilterObject[key]);
+                                                this.activefiltersmap[annotationFilterObject[key]] = key;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -26835,28 +27033,81 @@ var app = new Vue({
                 }
             }
         },
-        submitAnnotationFilter: function submitAnnotationFilter(annotationFilterObject) {
-            this.resetAnnotationResults();
-            for (var i = 0; i < this.annotationresults.length; i++) {
-                for (var key in this.annotationresults[i]._source) {
-                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
-                        if (key != "" && annotationFilterObject.hasOwnProperty(key) && annotationFilterObject[key] != 'undefined' && annotationFilterObject[key].length > 0) {
+        resetActiveFilter: function resetActiveFilter(filter) {
+            var key = this.activefiltersmap[filter];
+            if (key.indexOf('corpus') > -1) {
+                for (var i = 0; i < this.corpusresults.length; i++) {
+                    if (this.corpusresults[i]._source.hasOwnProperty(key)) {
+                        if (this.corpusresults[i]._source.visibility == 0) {
+                            this.corpusresults[i]._source.visibility = 1;
+                            this.corpusresultcounter++;
 
-                            if (key == "annotation_merged_formats" && annotationFilterObject.annotation_merged_formats != "") {
-                                if (!this.hasFormats(this.annotationresults[i]._source[key], annotationFilterObject[key])) {
-                                    this.annotationresults[i]._source.visibility = 0;
-                                    this.annotationresultcounter--;
-                                }
-                            } else {
-                                if (this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
-                                    this.annotationresults[i]._source.visibility = 0;
-                                    this.annotationresultcounter--;
-                                }
-                            }
+                            this.activefilters.splice(this.activefilters.indexOf(filter), 1);
+                            delete this.activefiltersmap[filter];
                         }
                     }
                 }
+
+                var corpusFilterData = {};
+                if (this.activefilters.length > 0) {
+                    for (var j = 0; j < this.activefilters.length; j++) {
+                        var active_key = this.activefiltersmap[this.activefilters[j]];
+                        if (active_key == 'corpus_merged_formats') {
+                            corpusFilterData[active_key] = [this.activefilters[j]];
+                        } else {
+                            corpusFilterData[active_key] = this.activefilters[j];
+                        }
+                    }
+                }
+                console.log("RESTSTING: " + JSON.stringify(corpusFilterData));
+                this.submitCorpusFilter(corpusFilterData);
+            } else if (key.indexOf('document') > -1) {
+                for (var i = 0; i < this.documentresults.length; i++) {
+                    if (this.documentresults[i]._source.hasOwnProperty(key)) {
+                        if (this.documentresults[i]._source.visibility == 0) {
+                            this.documentresults[i]._source.visibility = 1;
+                            this.documentresultcounter++;
+
+                            this.activefilters.splice(this.activefilters.indexOf(filter), 1);
+                            delete this.activefiltersmap[filter];
+                        }
+                    }
+                } //end for
+
+                var documentFilterData = {};
+                if (this.activefilters.length > 0) {
+                    for (var j = 0; j < this.activefilters.length; j++) {
+                        var active_key = this.activefiltersmap[this.activefilters[j]];
+                        documentFilterData[active_key] = this.activefilters[j];
+                    }
+                }
+                console.log("RETESTTING: " + JSON.stringify(documentFilterData));
+                this.submitDocumentFilter(documentFilterData);
+            } else if (key.indexOf('annotation') > -1 || key.indexOf('preparation') > -1) {
+                for (var i = 0; i < this.annotationresults.length; i++) {
+                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
+                        if (this.annotationresults[i]._source.visibility == 0) {
+                            this.annotationresults[i]._source.visibility = 1;
+                            this.annotationresultcounter++;
+
+                            this.activefilters.splice(this.activefilters.indexOf(filter), 1);
+                            delete this.activefiltersmap[filter];
+                        }
+                    }
+                } //end for
+                var annotationFilterData = {};
+                if (this.activefilters.length > 0) {
+                    for (var j = 0; j < this.activefilters.length; j++) {
+                        var active_key = this.activefiltersmap[this.activefilters[j]];
+                        annotationFilterData[active_key] = this.activefilters[j];
+                    }
+                }
+                console.log("RETESTTING: " + JSON.stringify(annotationFilterData));
+                this.submitAnnotationFilter(annotationFilterData);
             }
+        },
+        resetActiveFilters: function resetActiveFilters() {
+            this.activefilters = [];
         },
         resetCorpusResults: function resetCorpusResults() {
             for (var i = 0; i < this.corpusresults.length; i++) {
@@ -26907,26 +27158,7 @@ var app = new Vue({
             return ccLicense == filter;
         },
         hasFormats: function hasFormats(merged_formats, filter_formats) {
-            var hasFormat = true;
-            var merged_formats_array = merged_formats.split(',');
-
-            if (Array.isArray(filter_formats) && filter_formats.length > 1) {
-                for (var key in filter_formats) {
-                    if (filter_formats.hasOwnProperty(key)) {
-                        console.log(key + " -> " + filter_formats[key]);
-                        if (!merged_formats_array.includes(filter_formats[key])) {
-                            hasFormat = false;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                if (!merged_formats_array.includes(filter_formats)) {
-                    hasFormat = false;
-                }
-            }
-
-            return hasFormat;
+            return merged_formats.indexOf(filter_formats) > -1;
         }
     }
 });
@@ -26938,7 +27170,7 @@ var app = new Vue({
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__(17);
 
 
 __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */]);
@@ -27350,7 +27582,8 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(17);
+//
 //
 //
 //
@@ -27420,6 +27653,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$refs.corpusFilter.clearCorpusFilter();
             this.$refs.documentFilter.clearDocumentFilter();
             this.$refs.annotationFilter.clearAnnotationFilter();
+            this.$emit('reset-activefilters');
+        },
+        resetActiveFilter: function resetActiveFilter(filter) {
+            this.$emit('reset-activefilter', filter);
         },
         emitCorpusFilter: function emitCorpusFilter(corpusFilterEmitData) {
             this.$emit('corpus-filter', corpusFilterEmitData);
@@ -27487,7 +27724,8 @@ var render = function() {
             "corpus-resultcounter": _vm.emitCorpusResultCounter,
             "document-resultcounter": _vm.emitDocumentResultCounter,
             "annotation-resultcounter": _vm.emitAnnotationResultCounter,
-            "clear-all-filters": _vm.clearAllFilters
+            "clear-all-filters": _vm.clearAllFilters,
+            "reset-activefilter": _vm.resetActiveFilter
           }
         })
       ],
@@ -28143,7 +28381,8 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(17);
+//
 //
 //
 //
@@ -28197,6 +28436,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
             return classes;
         },
+        resetFilter: function resetFilter(filter) {
+            this.$emit('reset-activefilter', filter);
+        },
         resetFilters: function resetFilters() {
             this.localcorpusresultcounter = this.corpusresultcounter;
             for (var i = 0; i < this.corpusresults.length; i++) {
@@ -28229,7 +28471,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
-        console.log('CorpusActiveFilterComponent mounted.');
+        $(document).on('click', '.activefilter a i.fa-close', function (e) {
+            $(this).parent().parent().remove();
+        });
     }
 });
 
@@ -28242,81 +28486,7 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "card" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelActives" } }, [
-      _c("div", { staticClass: "card-body p-1" }, [
-        _c(
-          "form",
-          { attrs: { action: "" } },
-          [
-            _vm._l(_vm.activefilters, function(activefilter, index) {
-              return _vm.activefilters != "undefined" &&
-                _vm.activefilters.length >= 1
-                ? _c(
-                    "div",
-                    {
-                      key: index,
-                      staticClass: "d-flex flex-wrap py-2",
-                      attrs: { activefilter: activefilter }
-                    },
-                    [
-                      _c("div", { staticClass: "m-1" }, [
-                        _c(
-                          "a",
-                          {
-                            staticClass:
-                              "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
-                            attrs: { href: "#" }
-                          },
-                          [
-                            _c("i", { staticClass: "fa fa-close fa-fw" }),
-                            _vm._v(
-                              "\n                            " +
-                                _vm._s(activefilter.name) +
-                                "\n                        "
-                            )
-                          ]
-                        )
-                      ])
-                    ]
-                  )
-                : _vm._e()
-            }),
-            _vm._v(" "),
-            _c("div", { staticClass: "d-flex flex-column" }, [
-              _c(
-                "a",
-                {
-                  staticClass:
-                    "align-self-end text-uppercase text-dark text-12 p-2",
-                  attrs: { href: "javascript:", role: "button" },
-                  on: {
-                    click: function($event) {
-                      _vm.resetFilters()
-                    }
-                  }
-                },
-                [
-                  _vm._v(
-                    "\n                        Clear all Filter\n                    "
-                  )
-                ]
-              )
-            ])
-          ],
-          2
-        )
-      ])
-    ])
-  ])
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
+    _c(
       "div",
       {
         staticClass:
@@ -28329,16 +28499,85 @@ var staticRenderFns = [
         }
       },
       [
-        _c("span", [_vm._v("Active Filter (x)")]),
-        _vm._v(" "),
+        _c("span", [
+          _vm._v("Active Filter (" + _vm._s(_vm.activefilters.length) + ")")
+        ]),
+        _vm._v(_vm._s(_vm.activefilters) + "\n        "),
         _c("i", {
           staticClass:
             "collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"
         })
       ]
-    )
-  }
-]
+    ),
+    _vm._v(" "),
+    _c("div", { class: _vm.getClass(), attrs: { id: "formPanelActives" } }, [
+      _c("div", { staticClass: "card-body p-1" }, [
+        _c("form", { attrs: { action: "" } }, [
+          _c(
+            "div",
+            { staticClass: "d-flex flex-wrap py-2" },
+            _vm._l(_vm.activefilters, function(filtervalue) {
+              return _c(
+                "div",
+                {
+                  staticClass: "m-1 activefilter",
+                  attrs: { filtervalue: filtervalue }
+                },
+                [
+                  _c(
+                    "a",
+                    {
+                      staticClass:
+                        "badge badge-corpus-mid p-1 text-14 font-weight-normal rounded",
+                      attrs: { href: "#" }
+                    },
+                    [
+                      _c("i", {
+                        staticClass: "fa fa-close fa-fw",
+                        on: {
+                          click: function($event) {
+                            _vm.resetFilter(filtervalue)
+                          }
+                        }
+                      }),
+                      _vm._v(
+                        "\n                            " +
+                          _vm._s(filtervalue) +
+                          "\n                        "
+                      )
+                    ]
+                  )
+                ]
+              )
+            })
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "d-flex flex-column" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "align-self-end text-uppercase text-dark text-12 p-2",
+                attrs: { href: "javascript:", role: "button" },
+                on: {
+                  click: function($event) {
+                    _vm.resetFilters()
+                  }
+                }
+              },
+              [
+                _vm._v(
+                  "\n                        Clear all Filter\n                    "
+                )
+              ]
+            )
+          ])
+        ])
+      ])
+    ])
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -28401,7 +28640,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(17);
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 //
@@ -28517,7 +28756,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 corpusYearTo: '',
                 corpus_size_value: '',
                 corpusSizeTo: '',
-                corpus_merged_languages: '',
+                corpus_languages_language: '',
                 corpus_merged_formats: [],
                 corpus_publication_license: ''
             },
@@ -28543,8 +28782,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 corpus_merged_languages: '',
                 corpus_merged_formats: [],
                 corpus_publication_license: ''
-                //There is some strange bug somewhere that makes it impossible to add a filter twice after the following purge:
-            };$('#formPanelCorpus').find("ul.flexdatalist-multiple li.value").remove();
+            };
+
+            $('#formPanelCorpus').find("ul.flexdatalist-multiple li.value").remove();
         },
         getClass: function getClass() {
             var classes = "collapse";
@@ -28702,8 +28942,8 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.corpusFilterData.corpus_merged_languages,
-                expression: "corpusFilterData.corpus_merged_languages"
+                value: _vm.corpusFilterData.corpus_languages_language,
+                expression: "corpusFilterData.corpus_languages_language"
               }
             ],
             staticClass: "form-control",
@@ -28713,7 +28953,7 @@ var render = function() {
               "aria-describedby": "inputLanguage",
               placeholder: '"German"'
             },
-            domProps: { value: _vm.corpusFilterData.corpus_merged_languages },
+            domProps: { value: _vm.corpusFilterData.corpus_languages_language },
             on: {
               keyup: function($event) {
                 if (
@@ -28730,7 +28970,7 @@ var render = function() {
                 }
                 _vm.$set(
                   _vm.corpusFilterData,
-                  "corpus_merged_languages",
+                  "corpus_languages_language",
                   $event.target.value
                 )
               }
@@ -29182,7 +29422,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+/* WEBPACK VAR INJECTION */(function(noUiSlider) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(17);
 //
 //
 //
@@ -29906,7 +30146,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(17);
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 //
@@ -30485,7 +30725,7 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__(17);
 //
 //
 //

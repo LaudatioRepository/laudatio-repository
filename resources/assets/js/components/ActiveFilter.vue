@@ -2,20 +2,21 @@
     <div class="card">
         <div class="card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center"
              data-toggle="collapse" data-target="#formPanelActives" aria-expanded="true" aria-controls="formPanelActives">
-            <span>Active Filter (x)</span>
+            <span>Active Filter ({{activefilters.length}})</span>{{activefilters}}
             <i class="collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"></i>
         </div>
         <div v-bind:class="getClass()" id="formPanelActives">
             <div class="card-body p-1">
                 <form action="">
-                    <div class="d-flex flex-wrap py-2" v-if="activefilters != 'undefined' && activefilters.length >= 1" v-for="(activefilter, index) in activefilters"  v-bind:activefilter="activefilter"
-                         :key="index">
-                        <div class="m-1">
+                    <div class="d-flex flex-wrap py-2">
+
+                        <div class="m-1 activefilter" v-for="filtervalue in activefilters" v-bind:filtervalue="filtervalue">
                             <a href="#" class="badge badge-corpus-mid p-1 text-14 font-weight-normal rounded">
-                                <i class="fa fa-close fa-fw"></i>
-                                {{activefilter.name}}
+                                <i class="fa fa-close fa-fw" @click="resetFilter(filtervalue)"></i>
+                                {{filtervalue}}
                             </a>
                         </div>
+
                     </div>
 
                     <div class="d-flex flex-column">
@@ -52,6 +53,9 @@
                 }
                 return classes;
             },
+            resetFilter(filter) {
+                this.$emit('reset-activefilter',filter);
+            },
             resetFilters() {
                 this.localcorpusresultcounter = this.corpusresultcounter;
                 for(var i = 0; i < this.corpusresults.length; i++) {
@@ -85,7 +89,9 @@
             }
         },
         mounted() {
-            console.log('CorpusActiveFilterComponent mounted.')
+            $(document).on('click','.activefilter a i.fa-close',function(e){
+                $(this).parent().parent().remove();
+            });
         }
     }
 </script>

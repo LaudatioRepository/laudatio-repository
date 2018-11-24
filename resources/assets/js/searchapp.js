@@ -47,6 +47,7 @@ const app = new Vue({
         annotationresults: [],
         searches: [],
         activefilters: [],
+        activefiltersmap: {},
         documentsByCorpus: [],
         annotationsByCorpus: [],
         corpusByDocument: [],
@@ -374,38 +375,151 @@ const app = new Vue({
         },
         submitCorpusFilter: function (corpusFilterObject) {
             this.resetCorpusResults();
+            console.log(corpusFilterObject)
+            for(var key in corpusFilterObject){
+                if(corpusFilterObject.hasOwnProperty(key)) {
+                    if(corpusFilterObject[key] != 'undefined' && corpusFilterObject[key] != ''){
+                        if(key == "corpus_publication_publication_date" || key == "corpus_publication_license" || key == "corpus_merged_formats" || key == "corpus_size_value") {
+                            for(var i = 0; i < this.corpusresults.length; i++) {
+                                for (var corpuskey in this.corpusresults[i]._source) {
+                                    if (this.corpusresults[i]._source.hasOwnProperty(key)) {
+                                        if(key == "corpus_size_value" && corpusFilterObject.corpus_size_value != ""  && corpusFilterObject.corpusSizeTo != "") {
+                                            if(! this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value,corpusFilterObject.corpusSizeTo)){
+                                                if(!this.activefilters.includes(corpusFilterObject.corpus_size_value+" : "+corpusFilterObject.corpusSizeTo)) {
+                                                    this.corpusresults[i]._source.visibility = 0;
+                                                    this.corpusresultcounter--;
+                                                    this.activefilters.push(corpusFilterObject.corpus_size_value+" : "+corpusFilterObject.corpusSizeTo);
+                                                    this.activefiltersmap[corpusFilterObject.corpus_size_value+" : "+corpusFilterObject.corpusSizeTo] = key;
+                                                }
+                                            }
+                                        }
+
+                                        if(key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != ""){
+                                           console.log("CORPUSStrING: "+this.corpusresults[i]._source[key]+" TYPE: "+typeof this.corpusresults[i]._source[key])
+                                            console.log("TESTING: "+this.hasFormats(this.corpusresults[i]._source[key],corpusFilterObject.corpus_merged_formats))
+                                            for (var formatkey in corpusFilterObject.corpus_merged_formats) {
+                                                console.log("WITH: "+corpusFilterObject.corpus_merged_formats[formatkey]+" TYPE: "+typeof corpusFilterObject.corpus_merged_formats[formatkey])
+                                                if(!this.hasFormats(this.corpusresults[i]._source[key],corpusFilterObject.corpus_merged_formats[formatkey])){
+                                                    console.log("DOES "+this.activefilters+" INCLUDE "+corpusFilterObject.corpus_merged_formats[formatkey])
+                                                    //if(!this.activefilters.includes(corpusFilterObject.corpus_merged_formats[formatkey])) {
+                                                        this.corpusresults[i]._source.visibility = 0;
+                                                    //}
+                                                }
+                                                if(!this.activefilters.includes(corpusFilterObject.corpus_merged_formats[formatkey])) {
+                                                    this.corpusresultcounter--;
+                                                    this.activefilters.push(corpusFilterObject.corpus_merged_formats[formatkey]);
+                                                    this.activefiltersmap[corpusFilterObject.corpus_merged_formats[formatkey]] = 'corpus_merged_formats';
+                                                }
+
+                                            }
+                                        }
+
+                                        if(key == "corpus_publication_license" && corpusFilterObject[key].toLowerCase() != "") {
+                                            if(!this.hasLicense(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase(), corpusFilterObject[key].toLowerCase())){
+                                                if(!this.activefilters.includes(corpusFilterObject[key])) {
+                                                    this.corpusresults[i]._source.visibility = 0;
+                                                    this.corpusresultcounter--;
+                                                    this.activefilters.push(corpusFilterObject[key]);
+                                                    this.activefiltersmap[corpusFilterObject[key]] = key;
+                                                }
+                                            }
+                                        }
+
+                                        if(key == "corpus_publication_publication_date" && corpusFilterObject.corpus_publication_publication_date != '' && corpusFilterObject.corpusYearTo != '') {
+                                            var newest_datum = this.corpusresults[i]._source[key][(this.corpusresults[i]._source[key].length -1)];
+                                            var dateArray = newest_datum.split("-");
+                                            var newest_date = dateArray[0];
+                                            if(! this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date,corpusFilterObject.corpusYearTo)){
+                                                if(!this.activefilters.includes(corpusFilterObject.corpus_publication_publication_date+" : "+corpusFilterObject.corpusYearTo)) {
+                                                    this.corpusresults[i]._source.visibility = 0;
+                                                    this.corpusresultcounter--;
+                                                    this.activefilters.push(corpusFilterObject.corpus_publication_publication_date + " : " + corpusFilterObject.corpusYearTo);
+                                                    this.activefiltersmap[corpusFilterObject.corpus_publication_publication_date + " : " + corpusFilterObject.corpusYearTo] = key;
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            for(var i = 0; i < this.corpusresults.length; i++) {
+                                if (this.corpusresults[i]._source.hasOwnProperty(key)) {
+                                    if(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                        if(!this.activefilters.includes(corpusFilterObject[key])) {
+                                            this.activefilters.push(corpusFilterObject[key]);
+                                            this.activefiltersmap[corpusFilterObject[key]] = key;
+                                        }
+                                    }
+                                    //if we want to show active filters, even when they do not apply and filter th results, uncomment
+                                    /*
+                                    if(!this.activefilters.includes(corpusFilterObject[key])) {
+                                        this.activefilters.push(corpusFilterObject[key]);
+                                        this.activefiltersmap[corpusFilterObject[key]] = key;
+                                    }
+                                    */
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        },
+        submitCorpusFilter2: function (corpusFilterObject) {
+            this.resetCorpusResults();
             for(var i = 0; i < this.corpusresults.length; i++) {
                 for (var key in this.corpusresults[i]._source) {
                     if (this.corpusresults[i]._source.hasOwnProperty(key)) {
                         if(key != "" && corpusFilterObject.hasOwnProperty(key) && (corpusFilterObject[key] != 'undefined' && corpusFilterObject[key].length > 0)) {
 
-                            if(key == "corpus_size_value" && corpusFilterObject.corpus_size_value != ""  && corpusFilterObject.corpusSizeTo != "") {
-                                if(! this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value,corpusFilterObject.corpusSizeTo)){
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
-                                }
-                            }
-                            else if(key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != ""){
-                                if(!this.hasFormats(this.corpusresults[i]._source[key],corpusFilterObject[key])){
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
-                                }
-                            }
-                            else if(key == "corpus_publication_license" && corpusFilterObject[key].toLowerCase() != "") {
-                                if(!this.hasLicense(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase(), corpusFilterObject[key].toLowerCase())){
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
-                                }
-                            }
-                            else if(key == "corpus_publication_publication_date" && corpusFilterObject.corpus_publication_publication_date != '' && corpusFilterObject.corpusYearTo != '') {
-                                var newest_datum = this.corpusresults[i]._source[key][(this.corpusresults[i]._source[key].length -1)];
-                                var dateArray = newest_datum.split("-");
-                                var newest_date = dateArray[0];
-                                if(! this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date,corpusFilterObject.corpusYearTo)){
-                                    this.corpusresults[i]._source.visibility = 0;
-                                    this.corpusresultcounter--;
+                            if(key == "corpus_publication_publication_date" || key == "corpus_publication_license" || key == "corpus_merged_formats" || key == "corpus_size_value") {
+                                if(key == "corpus_size_value" && corpusFilterObject.corpus_size_value != ""  && corpusFilterObject.corpusSizeTo != "") {
+                                    if(! this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value,corpusFilterObject.corpusSizeTo)){
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                        this.activefilters.push(corpusFilterObject.corpus_size_value+" : "+corpusFilterObject.corpusSizeTo);
+                                        this.activefiltersmap[corpusFilterObject.corpus_size_value+" : "+corpusFilterObject.corpusSizeTo] = key;
+                                    }
                                 }
 
+                                if(key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != ""){
+                                    if(!this.hasFormats(this.corpusresults[i]._source[key],corpusFilterObject[key])){
+                                        console.log(corpusFilterObject.corpus_merged_formats)
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                        for (var formatkey in corpusFilterObject.corpus_merged_formats) {
+                                            this.activefilters.push(corpusFilterObject[key]);
+                                            this.activefiltersmap[corpusFilterObject[key]] = 'corpus_merged_formats';
+                                        }
+
+                                    }
+                                }
+
+                                if(key == "corpus_publication_license" && corpusFilterObject[key].toLowerCase() != "") {
+                                    if(!this.hasLicense(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase(), corpusFilterObject[key].toLowerCase())){
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                        this.activefilters.push(corpusFilterObject[key]);
+                                        this.activefiltersmap[corpusFilterObject[key]] = key;
+                                    }
+                                }
+
+                                if(key == "corpus_publication_publication_date" && corpusFilterObject.corpus_publication_publication_date != '' && corpusFilterObject.corpusYearTo != '') {
+                                    var newest_datum = this.corpusresults[i]._source[key][(this.corpusresults[i]._source[key].length -1)];
+                                    var dateArray = newest_datum.split("-");
+                                    var newest_date = dateArray[0];
+                                    if(! this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date,corpusFilterObject.corpusYearTo)){
+                                        this.corpusresults[i]._source.visibility = 0;
+                                        this.corpusresultcounter--;
+                                        this.activefilters.push(corpusFilterObject.corpus_publication_publication_date+" : "+corpusFilterObject.corpusYearTo);
+                                        this.activefiltersmap[corpusFilterObject.corpus_publication_publication_date+" : "+corpusFilterObject.corpusYearTo] = key;
+                                    }
+
+                                }
                             }
                             else{
                                 if(corpusFilterObject[key] != 'undefined'){
@@ -413,6 +527,9 @@ const app = new Vue({
                                         this.corpusresults[i]._source.visibility = 0;
                                         this.corpusresultcounter--;
                                     }
+                                    //if we want to show active filters, even when they do not apply and filter th results, unncomment
+                                    this.activefilters.push(corpusFilterObject[key]);
+                                    this.activefiltersmap[corpusFilterObject[key]] = key;
                                 }
 
                             }
@@ -423,60 +540,200 @@ const app = new Vue({
         },
         submitDocumentFilter: function (documentFilterObject) {
             this.resetDocumentResults();
-            for(var i = 0; i < this.documentresults.length; i++) {
-                for (var key in this.documentresults[i]._source) {
-                    if (this.documentresults[i]._source.hasOwnProperty(key)) {
-                        if(documentFilterObject.hasOwnProperty(key)) {
-                            if(key == "document_size_extent"  && documentFilterObject.document_size_extent != ""  && documentFilterObject.document_size_extent_to != "") {
-                                if(! this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent,documentFilterObject.document_size_extent_to)){
-                                    this.documentresults[i]._source.visibility = 0;
-                                    this.documentresultcounter--;
-                                }
-                            }
-                            else if(key == "document_publication_publishing_date" && documentFilterObject.document_publication_publishing_date != '' && documentFilterObject.document_publication_publishing_date_to != '') {
-                                var newest_datum = this.documentresults[i]._source[key][(this.documentresults[i]._source[key].length -1)];
-                                var dateArray = newest_datum.split("-");
-                                var newest_date = dateArray[0];
-                                if(! this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date,documentFilterObject.document_publication_publishing_date_to)){
-                                    this.documentresults[i]._source.visibility = 0;
-                                    this.documentresultcounter--;
-                                }
+            console.log(documentFilterObject)
+            for(var key in documentFilterObject) {
+                if (documentFilterObject.hasOwnProperty(key)) {
+                    if (documentFilterObject[key] != 'undefined' && documentFilterObject[key] != '') {
+                        if(key == "document_size_extent" || key == "document_publication_publishing_date") {
 
-                            }
-                            else {
-                                if(this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
-                                    this.documentresults[i]._source.visibility = 0;
-                                    this.documentresultcounter--;
+                            for(var i = 0; i < this.documentresults.length; i++) {
+                                for (var documentkey in this.documentresults[i]._source) {
+                                    if (this.documentresults[i]._source.hasOwnProperty(key)) {
+                                        if(key == "document_size_extent"  && documentFilterObject.document_size_extent != ""  && documentFilterObject.document_size_extent_to != "") {
+                                            if(! this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent,documentFilterObject.document_size_extent_to)){
+                                                if(!this.activefilters.includes(documentFilterObject.document_size_extent+" : "+documentFilterObject.document_size_extent_to)) {
+                                                    this.documentresults[i]._source.visibility = 0;
+                                                    this.documentresultcounter--;
+                                                    this.activefilters.push(documentFilterObject.document_size_extent+" : "+documentFilterObject.document_size_extent_to);
+                                                    this.activefiltersmap[documentFilterObject.document_size_extent+" : "+documentFilterObject.document_size_extent_to] = key;
+                                                }
+
+                                            }
+                                        }//end if document_size_extent
+
+                                        if(key == "document_publication_publishing_date" && documentFilterObject.document_publication_publishing_date != '' && documentFilterObject.document_publication_publishing_date_to != '') {
+                                            var newest_datum = this.documentresults[i]._source[key][(this.documentresults[i]._source[key].length -1)];
+                                            console.log("newest_datum: "+newest_datum)
+                                            var newest_date = newest_datum;
+                                            if(newest_datum.indexOf("-") > -1){
+                                                var dateArray = newest_datum.split("-");
+                                                newest_date = dateArray[0];
+                                            }
+
+                                            console.log("newest_date: "+newest_date+" IS BETWEEN: "+documentFilterObject.document_publication_publishing_date+ "AND "+documentFilterObject.document_publication_publishing_date_to+" GOT "+this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date,documentFilterObject.document_publication_publishing_date_to))
+                                            if(! this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date,documentFilterObject.document_publication_publishing_date_to)){
+                                                this.documentresults[i]._source.visibility = 0;
+
+                                                if(!this.activefilters.includes(documentFilterObject.document_publication_publishing_date+" : "+documentFilterObject.document_publication_publishing_date_to)) {
+                                                    this.documentresultcounter--;
+                                                    this.activefilters.push(documentFilterObject.document_publication_publishing_date+" : "+documentFilterObject.document_publication_publishing_date_to);
+                                                    this.activefiltersmap[documentFilterObject.document_publication_publishing_date+" : "+documentFilterObject.document_publication_publishing_date_to] = key;
+                                                }
+                                            }
+                                        }//end if publishing date
+                                    }
                                 }
-                            }
+                            }//end for documents
                         }
+                        else{
+                            for(var i = 0; i < this.documentresults.length; i++) {
+                                if (this.documentresults[i]._source.hasOwnProperty(key)) {
+                                    console.log("TESTING: "+documentFilterObject[key]+" INBIN "+this.documentresults[i]._source[key]+" GOT: "+this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()))
+                                    if(this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
+
+                                        this.documentresults[i]._source.visibility = 0;
+                                        this.documentresultcounter--;
+                                        if(!this.activefilters.includes(documentFilterObject[key])) {
+                                            this.activefilters.push(documentFilterObject[key]);
+                                            this.activefiltersmap[documentFilterObject[key]] = key;
+                                        }
+                                    }
+                                }
+                            }//end for
+                        }//end if special fields
                     }
                 }
             }
         },
         submitAnnotationFilter: function (annotationFilterObject) {
             this.resetAnnotationResults();
-            for(var i = 0; i < this.annotationresults.length; i++) {
-                for (var key in this.annotationresults[i]._source) {
-                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
-                        if(key != "" && annotationFilterObject.hasOwnProperty(key) && (annotationFilterObject[key] != 'undefined' && annotationFilterObject[key].length > 0)) {
+            console.log(annotationFilterObject)
+            for(var key in annotationFilterObject) {
+                if (annotationFilterObject.hasOwnProperty(key)) {
+                    if (annotationFilterObject[key] != 'undefined' && annotationFilterObject[key] != '') {
+                        if (key == "annotation_merged_formats") {
 
-                            if(key == "annotation_merged_formats" && annotationFilterObject.annotation_merged_formats != ""){
-                                if(!this.hasFormats(this.annotationresults[i]._source[key],annotationFilterObject[key])){
-                                    this.annotationresults[i]._source.visibility = 0;
-                                    this.annotationresultcounter--;
+                            for (var i = 0; i < this.annotationresults.length; i++) {
+                                for (var annotationkey in this.annotationresults[i]._source) {
+                                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
+                                        for (var formatkey in annotationFilterObject.annotation_merged_formats) {
+                                            if(!this.hasFormats(this.annotationresults[i]._source[key],annotationFilterObject.annotation_merged_formats[formatkey])){
+                                                //if(!this.activefilters.includes(corpusFilterObject.corpus_merged_formats[formatkey])) {
+                                                this.annotationresults[i]._source.visibility = 0;
+                                                //}
+                                            }
+                                            if(!this.activefilters.includes(annotationFilterObject.annotation_merged_formats[formatkey])) {
+                                                this.annotationresultcounter--;
+                                                this.activefilters.push(annotationFilterObject.annotation_merged_formats[formatkey]);
+                                                this.activefiltersmap[annotationFilterObject.annotation_merged_formats[formatkey]] = 'annotation_merged_formats';
+                                            }
+
+                                        }
+                                    }
                                 }
                             }
-                            else{
-                                if(this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
-                                    this.annotationresults[i]._source.visibility = 0;
-                                    this.annotationresultcounter--;
+                        }
+                        else{
+                            for (var i = 0; i < this.annotationresults.length; i++) {
+                                for (var annotationkey in this.annotationresults[i]._source) {
+                                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
+                                        if(this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
+                                            this.annotationresults[i]._source.visibility = 0;
+
+                                            if(!this.activefilters.includes(annotationFilterObject[key])) {
+                                                this.annotationresultcounter--;
+                                                this.activefilters.push(annotationFilterObject[key]);
+                                                this.activefiltersmap[annotationFilterObject[key]] = key;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+
+        },
+        resetActiveFilter: function(filter) {
+            var key = this.activefiltersmap[filter];
+            if(key.indexOf('corpus') > -1) {
+                for(var i = 0; i < this.corpusresults.length; i++) {
+                    if (this.corpusresults[i]._source.hasOwnProperty(key)){
+                        if(this.corpusresults[i]._source.visibility == 0) {
+                            this.corpusresults[i]._source.visibility = 1;
+                            this.corpusresultcounter++;
+
+                            this.activefilters.splice(this.activefilters.indexOf(filter),1);
+                            delete this.activefiltersmap[filter];
+                        }
+                    }
+                }
+
+                var corpusFilterData = {}
+                if(this.activefilters.length > 0) {
+                    for(var j = 0; j < this.activefilters.length; j++) {
+                        var active_key = this.activefiltersmap[this.activefilters[j]];
+                        if(active_key == 'corpus_merged_formats') {
+                            corpusFilterData[active_key] = [this.activefilters[j]];
+                        }
+                        else{
+                            corpusFilterData[active_key] = this.activefilters[j];
+                        }
+
+                    }
+                }
+                console.log ("RESTSTING: "+JSON.stringify(corpusFilterData));
+                this.submitCorpusFilter(corpusFilterData);
+            }
+            else if(key.indexOf('document') > -1) {
+                for(var i = 0; i < this.documentresults.length; i++) {
+                    if (this.documentresults[i]._source.hasOwnProperty(key)){
+                        if(this.documentresults[i]._source.visibility == 0) {
+                            this.documentresults[i]._source.visibility = 1;
+                            this.documentresultcounter++;
+
+                            this.activefilters.splice(this.activefilters.indexOf(filter),1);
+                            delete this.activefiltersmap[filter];
+                        }
+                    }
+                }//end for
+
+                var documentFilterData = {}
+                if(this.activefilters.length > 0) {
+                    for(var j = 0; j < this.activefilters.length; j++) {
+                        var active_key = this.activefiltersmap[this.activefilters[j]];
+                        documentFilterData[active_key] = this.activefilters[j];
+                    }
+                }
+                console.log ("RETESTTING: "+JSON.stringify(documentFilterData));
+                this.submitDocumentFilter(documentFilterData);
+            }
+            else if(key.indexOf('annotation') > -1 || key.indexOf('preparation') > -1) {
+                for(var i = 0; i < this.annotationresults.length; i++) {
+                    if (this.annotationresults[i]._source.hasOwnProperty(key)){
+                        if(this.annotationresults[i]._source.visibility == 0) {
+                            this.annotationresults[i]._source.visibility = 1;
+                            this.annotationresultcounter++;
+
+                            this.activefilters.splice(this.activefilters.indexOf(filter),1);
+                            delete this.activefiltersmap[filter];
+                        }
+                    }
+                }//end for
+                var annotationFilterData = {}
+                if(this.activefilters.length > 0) {
+                    for(var j = 0; j < this.activefilters.length; j++) {
+                        var active_key = this.activefiltersmap[this.activefilters[j]];
+                        annotationFilterData[active_key] = this.activefilters[j];
+                    }
+                }
+                console.log ("RETESTTING: "+JSON.stringify(annotationFilterData));
+                this.submitAnnotationFilter(annotationFilterData);
+            }
+        },
+        resetActiveFilters: function () {
+            this.activefilters = []
         },
         resetCorpusResults() {
             for(var i = 0; i < this.corpusresults.length; i++) {
@@ -528,27 +785,7 @@ const app = new Vue({
             return ccLicense == filter;
         },
         hasFormats: function(merged_formats,filter_formats) {
-            var hasFormat = true;
-            var merged_formats_array = merged_formats.split(',');
-
-            if(Array.isArray(filter_formats) && filter_formats.length > 1) {
-                for (var key in filter_formats) {
-                    if (filter_formats.hasOwnProperty(key)) {
-                        console.log(key + " -> " + filter_formats[key]);
-                        if(!merged_formats_array.includes(filter_formats[key])){
-                            hasFormat = false;
-                            break;
-                        }
-                    }
-                }
-            }
-            else{
-                if(!merged_formats_array.includes(filter_formats)){
-                    hasFormat = false;
-                }
-            }
-
-            return hasFormat;
+            return merged_formats.indexOf(filter_formats) > -1;
         }
     }
 });

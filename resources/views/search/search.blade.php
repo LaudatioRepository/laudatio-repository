@@ -30,6 +30,8 @@
                                 v-on:corpus-resultcounter="updateCorpusCounter"
                                 v-on:document-resultcounter="updateDocumentCounter"
                                 v-on:annotation-resultcounter="updateAnnotationCounter"
+                                v-on:reset-activefilter="resetActiveFilter"
+                                v-on:reset-activefilters="resetActiveFilters"
                                 :corpusresultcounter="corpusresultcounter"
                                 :documentresultcounter="documentresultcounter"
                                 :annotationresultcounter="annotationresultcounter"
