@@ -192,17 +192,22 @@
                     el.noUiSlider.on('update', function ( values, handle ) {
 
                         if ( handle ) {
-                            //this.corpusFilterData
-                            //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
-                            mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
                             paddingMax.innerHTML = Math.round(values[handle]);
+                        } else {
+                            paddingMin.innerHTML = Math.round(values[handle]);
+                        }
+                    });
+
+                    el.noUiSlider.on('end', function ( values, handle ) {
+                        if ( handle ) {
+                            mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
 
                         } else {
                             //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
                             mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
-                            paddingMin.innerHTML = Math.round(values[handle]);
                         }
                     });
+
 
                     el.noUiSlider.on('change', function(){
                         // Validate corresponding form

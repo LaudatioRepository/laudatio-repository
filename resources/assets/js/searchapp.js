@@ -375,7 +375,7 @@ const app = new Vue({
         },
         submitCorpusFilter: function (corpusFilterObject) {
             this.resetCorpusResults();
-            console.log(corpusFilterObject)
+            //console.log(corpusFilterObject)
             for(var key in corpusFilterObject){
                 if(corpusFilterObject.hasOwnProperty(key)) {
                     if(corpusFilterObject[key] != 'undefined' && corpusFilterObject[key] != ''){
@@ -385,28 +385,30 @@ const app = new Vue({
                                     if (this.corpusresults[i]._source.hasOwnProperty(key)) {
                                         if(key == "corpus_size_value" && corpusFilterObject.corpus_size_value != ""  && corpusFilterObject.corpusSizeTo != "") {
                                             if(! this.isBetween(this.corpusresults[i]._source[key], corpusFilterObject.corpus_size_value,corpusFilterObject.corpusSizeTo)){
-                                                if(!this.activefilters.includes(corpusFilterObject.corpus_size_value+" : "+corpusFilterObject.corpusSizeTo)) {
-                                                    this.corpusresults[i]._source.visibility = 0;
+
+                                                if(this.corpusresultcounter > 0 && this.corpusresults[i]._source.visibility == 1) {
                                                     this.corpusresultcounter--;
-                                                    this.activefilters.push(corpusFilterObject.corpus_size_value+" : "+corpusFilterObject.corpusSizeTo);
-                                                    this.activefiltersmap[corpusFilterObject.corpus_size_value+" : "+corpusFilterObject.corpusSizeTo] = key;
+                                                    this.corpusresults[i]._source.visibility = 0;
                                                 }
+                                            }
+                                            if(!this.activefilters.includes(corpusFilterObject.corpus_size_value+" : "+corpusFilterObject.corpusSizeTo)) {
+                                                this.activefilters.push(corpusFilterObject.corpus_size_value+" : "+corpusFilterObject.corpusSizeTo);
+                                                this.activefiltersmap[corpusFilterObject.corpus_size_value+" : "+corpusFilterObject.corpusSizeTo] = key;
                                             }
                                         }
 
                                         if(key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != ""){
-                                           console.log("CORPUSStrING: "+this.corpusresults[i]._source[key]+" TYPE: "+typeof this.corpusresults[i]._source[key])
-                                            console.log("TESTING: "+this.hasFormats(this.corpusresults[i]._source[key],corpusFilterObject.corpus_merged_formats))
                                             for (var formatkey in corpusFilterObject.corpus_merged_formats) {
-                                                console.log("WITH: "+corpusFilterObject.corpus_merged_formats[formatkey]+" TYPE: "+typeof corpusFilterObject.corpus_merged_formats[formatkey])
+
                                                 if(!this.hasFormats(this.corpusresults[i]._source[key],corpusFilterObject.corpus_merged_formats[formatkey])){
-                                                    console.log("DOES "+this.activefilters+" INCLUDE "+corpusFilterObject.corpus_merged_formats[formatkey])
-                                                    //if(!this.activefilters.includes(corpusFilterObject.corpus_merged_formats[formatkey])) {
+
+                                                    if(this.corpusresultcounter > 0 && this.corpusresults[i]._source.visibility == 1) {
+                                                        this.corpusresultcounter--;
                                                         this.corpusresults[i]._source.visibility = 0;
-                                                    //}
+                                                    }
                                                 }
+
                                                 if(!this.activefilters.includes(corpusFilterObject.corpus_merged_formats[formatkey])) {
-                                                    this.corpusresultcounter--;
                                                     this.activefilters.push(corpusFilterObject.corpus_merged_formats[formatkey]);
                                                     this.activefiltersmap[corpusFilterObject.corpus_merged_formats[formatkey]] = 'corpus_merged_formats';
                                                 }
@@ -415,13 +417,17 @@ const app = new Vue({
                                         }
 
                                         if(key == "corpus_publication_license" && corpusFilterObject[key].toLowerCase() != "") {
-                                            if(!this.hasLicense(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase(), corpusFilterObject[key].toLowerCase())){
-                                                if(!this.activefilters.includes(corpusFilterObject[key])) {
-                                                    this.corpusresults[i]._source.visibility = 0;
+
+                                            if(! this.hasLicense(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase(), corpusFilterObject[key].toLowerCase())){
+
+                                                if(this.corpusresultcounter > 0 && this.corpusresults[i]._source.visibility == 1) {
                                                     this.corpusresultcounter--;
-                                                    this.activefilters.push(corpusFilterObject[key]);
-                                                    this.activefiltersmap[corpusFilterObject[key]] = key;
+                                                    this.corpusresults[i]._source.visibility = 0;
                                                 }
+                                            }
+                                            if(!this.activefilters.includes(corpusFilterObject[key])) {
+                                                this.activefilters.push(corpusFilterObject[key]);
+                                                this.activefiltersmap[corpusFilterObject[key]] = key;
                                             }
                                         }
 
@@ -430,14 +436,17 @@ const app = new Vue({
                                             var dateArray = newest_datum.split("-");
                                             var newest_date = dateArray[0];
                                             if(! this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date,corpusFilterObject.corpusYearTo)){
-                                                if(!this.activefilters.includes(corpusFilterObject.corpus_publication_publication_date+" : "+corpusFilterObject.corpusYearTo)) {
-                                                    this.corpusresults[i]._source.visibility = 0;
-                                                    this.corpusresultcounter--;
-                                                    this.activefilters.push(corpusFilterObject.corpus_publication_publication_date + " : " + corpusFilterObject.corpusYearTo);
-                                                    this.activefiltersmap[corpusFilterObject.corpus_publication_publication_date + " : " + corpusFilterObject.corpusYearTo] = key;
-                                                }
-                                            }
 
+                                                if(this.corpusresultcounter > 0 && this.corpusresults[i]._source.visibility == 1) {
+                                                    this.corpusresultcounter--;
+                                                    this.corpusresults[i]._source.visibility = 0;
+                                                }
+
+                                            }
+                                            if(!this.activefilters.includes(corpusFilterObject.corpus_publication_publication_date+" : "+corpusFilterObject.corpusYearTo)) {
+                                                this.activefilters.push(corpusFilterObject.corpus_publication_publication_date + " : " + corpusFilterObject.corpusYearTo);
+                                                this.activefiltersmap[corpusFilterObject.corpus_publication_publication_date + " : " + corpusFilterObject.corpusYearTo] = key;
+                                            }
                                         }
                                     }
                                 }
@@ -447,20 +456,16 @@ const app = new Vue({
                             for(var i = 0; i < this.corpusresults.length; i++) {
                                 if (this.corpusresults[i]._source.hasOwnProperty(key)) {
                                     if(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
-                                        this.corpusresults[i]._source.visibility = 0;
-                                        this.corpusresultcounter--;
-                                        if(!this.activefilters.includes(corpusFilterObject[key])) {
-                                            this.activefilters.push(corpusFilterObject[key]);
-                                            this.activefiltersmap[corpusFilterObject[key]] = key;
+
+                                        if(this.corpusresultcounter > 0 && this.corpusresults[i]._source.visibility == 1) {
+                                            this.corpusresultcounter--;
+                                            this.corpusresults[i]._source.visibility = 0;
                                         }
                                     }
-                                    //if we want to show active filters, even when they do not apply and filter th results, uncomment
-                                    /*
                                     if(!this.activefilters.includes(corpusFilterObject[key])) {
                                         this.activefilters.push(corpusFilterObject[key]);
                                         this.activefiltersmap[corpusFilterObject[key]] = key;
                                     }
-                                    */
                                 }
                             }
                         }
@@ -540,7 +545,6 @@ const app = new Vue({
         },
         submitDocumentFilter: function (documentFilterObject) {
             this.resetDocumentResults();
-            console.log(documentFilterObject)
             for(var key in documentFilterObject) {
                 if (documentFilterObject.hasOwnProperty(key)) {
                     if (documentFilterObject[key] != 'undefined' && documentFilterObject[key] != '') {
@@ -550,35 +554,41 @@ const app = new Vue({
                                 for (var documentkey in this.documentresults[i]._source) {
                                     if (this.documentresults[i]._source.hasOwnProperty(key)) {
                                         if(key == "document_size_extent"  && documentFilterObject.document_size_extent != ""  && documentFilterObject.document_size_extent_to != "") {
-                                            if(! this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent,documentFilterObject.document_size_extent_to)){
-                                                if(!this.activefilters.includes(documentFilterObject.document_size_extent+" : "+documentFilterObject.document_size_extent_to)) {
-                                                    this.documentresults[i]._source.visibility = 0;
-                                                    this.documentresultcounter--;
-                                                    this.activefilters.push(documentFilterObject.document_size_extent+" : "+documentFilterObject.document_size_extent_to);
-                                                    this.activefiltersmap[documentFilterObject.document_size_extent+" : "+documentFilterObject.document_size_extent_to] = key;
-                                                }
 
+                                            if(! this.isBetween(this.documentresults[i]._source[key], documentFilterObject.document_size_extent,documentFilterObject.document_size_extent_to)){
+
+                                                if(this.documentresultcounter > 0 && this.documentresults[i]._source.visibility == 1) {
+                                                    this.documentresultcounter--;
+                                                }
+                                                this.documentresults[i]._source.visibility = 0;
+
+                                            }
+
+                                            if(!this.activefilters.includes(Math.floor(documentFilterObject.document_size_extent)+" : "+Math.floor(documentFilterObject.document_size_extent_to))) {
+                                                this.activefilters.push(Math.floor(documentFilterObject.document_size_extent)+" : "+Math.floor(documentFilterObject.document_size_extent_to));
+                                                this.activefiltersmap[Math.floor(documentFilterObject.document_size_extent)+" : "+Math.floor(documentFilterObject.document_size_extent_to)] = key;
                                             }
                                         }//end if document_size_extent
 
                                         if(key == "document_publication_publishing_date" && documentFilterObject.document_publication_publishing_date != '' && documentFilterObject.document_publication_publishing_date_to != '') {
                                             var newest_datum = this.documentresults[i]._source[key][(this.documentresults[i]._source[key].length -1)];
-                                            console.log("newest_datum: "+newest_datum)
                                             var newest_date = newest_datum;
                                             if(newest_datum.indexOf("-") > -1){
                                                 var dateArray = newest_datum.split("-");
                                                 newest_date = dateArray[0];
                                             }
 
-                                            console.log("newest_date: "+newest_date+" IS BETWEEN: "+documentFilterObject.document_publication_publishing_date+ "AND "+documentFilterObject.document_publication_publishing_date_to+" GOT "+this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date,documentFilterObject.document_publication_publishing_date_to))
                                             if(! this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date,documentFilterObject.document_publication_publishing_date_to)){
+
+                                                if(this.documentresultcounter > 0 && this.documentresults[i]._source.visibility == 1) {
+                                                    this.documentresultcounter--;
+                                                }
                                                 this.documentresults[i]._source.visibility = 0;
 
-                                                if(!this.activefilters.includes(documentFilterObject.document_publication_publishing_date+" : "+documentFilterObject.document_publication_publishing_date_to)) {
-                                                    this.documentresultcounter--;
-                                                    this.activefilters.push(documentFilterObject.document_publication_publishing_date+" : "+documentFilterObject.document_publication_publishing_date_to);
-                                                    this.activefiltersmap[documentFilterObject.document_publication_publishing_date+" : "+documentFilterObject.document_publication_publishing_date_to] = key;
-                                                }
+                                            }
+                                            if(!this.activefilters.includes(documentFilterObject.document_publication_publishing_date+" : "+documentFilterObject.document_publication_publishing_date_to)) {
+                                                this.activefilters.push(documentFilterObject.document_publication_publishing_date+" : "+documentFilterObject.document_publication_publishing_date_to);
+                                                this.activefiltersmap[documentFilterObject.document_publication_publishing_date+" : "+documentFilterObject.document_publication_publishing_date_to] = key;
                                             }
                                         }//end if publishing date
                                     }
@@ -588,15 +598,16 @@ const app = new Vue({
                         else{
                             for(var i = 0; i < this.documentresults.length; i++) {
                                 if (this.documentresults[i]._source.hasOwnProperty(key)) {
-                                    console.log("TESTING: "+documentFilterObject[key]+" INBIN "+this.documentresults[i]._source[key]+" GOT: "+this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()))
                                     if(this.renderArrayToString(this.documentresults[i]._source[key]).toLowerCase().indexOf(documentFilterObject[key].toLowerCase()) == -1) {
 
-                                        this.documentresults[i]._source.visibility = 0;
-                                        this.documentresultcounter--;
-                                        if(!this.activefilters.includes(documentFilterObject[key])) {
-                                            this.activefilters.push(documentFilterObject[key]);
-                                            this.activefiltersmap[documentFilterObject[key]] = key;
+                                        if(this.documentresultcounter > 0 && this.documentresults[i]._source.visibility == 1) {
+                                            this.documentresultcounter--;
                                         }
+                                        this.documentresults[i]._source.visibility = 0;
+                                    }
+                                    if(!this.activefilters.includes(documentFilterObject[key])) {
+                                        this.activefilters.push(documentFilterObject[key]);
+                                        this.activefiltersmap[documentFilterObject[key]] = key;
                                     }
                                 }
                             }//end for
@@ -607,7 +618,6 @@ const app = new Vue({
         },
         submitAnnotationFilter: function (annotationFilterObject) {
             this.resetAnnotationResults();
-            console.log(annotationFilterObject)
             for(var key in annotationFilterObject) {
                 if (annotationFilterObject.hasOwnProperty(key)) {
                     if (annotationFilterObject[key] != 'undefined' && annotationFilterObject[key] != '') {
@@ -618,12 +628,13 @@ const app = new Vue({
                                     if (this.annotationresults[i]._source.hasOwnProperty(key)) {
                                         for (var formatkey in annotationFilterObject.annotation_merged_formats) {
                                             if(!this.hasFormats(this.annotationresults[i]._source[key],annotationFilterObject.annotation_merged_formats[formatkey])){
-                                                //if(!this.activefilters.includes(corpusFilterObject.corpus_merged_formats[formatkey])) {
+
+                                                if(this.annotationresultcounter > 0 && this.annotationresults[i]._source.visibility == 1) {
+                                                    this.annotationresultcounter--;
+                                                }
                                                 this.annotationresults[i]._source.visibility = 0;
-                                                //}
                                             }
                                             if(!this.activefilters.includes(annotationFilterObject.annotation_merged_formats[formatkey])) {
-                                                this.annotationresultcounter--;
                                                 this.activefilters.push(annotationFilterObject.annotation_merged_formats[formatkey]);
                                                 this.activefiltersmap[annotationFilterObject.annotation_merged_formats[formatkey]] = 'annotation_merged_formats';
                                             }
@@ -638,10 +649,12 @@ const app = new Vue({
                                 for (var annotationkey in this.annotationresults[i]._source) {
                                     if (this.annotationresults[i]._source.hasOwnProperty(key)) {
                                         if(this.renderArrayToString(this.annotationresults[i]._source[key]).toLowerCase().indexOf(annotationFilterObject[key].toLowerCase()) == -1) {
+                                            if(this.annotationresultcounter > 0 && this.annotationresults[i]._source.visibility == 1) {
+                                                this.annotationresultcounter--;
+                                            }
                                             this.annotationresults[i]._source.visibility = 0;
 
                                             if(!this.activefilters.includes(annotationFilterObject[key])) {
-                                                this.annotationresultcounter--;
                                                 this.activefilters.push(annotationFilterObject[key]);
                                                 this.activefiltersmap[annotationFilterObject[key]] = key;
                                             }
@@ -683,7 +696,6 @@ const app = new Vue({
 
                     }
                 }
-                console.log ("RESTSTING: "+JSON.stringify(corpusFilterData));
                 this.submitCorpusFilter(corpusFilterData);
             }
             else if(key.indexOf('document') > -1) {
@@ -706,7 +718,7 @@ const app = new Vue({
                         documentFilterData[active_key] = this.activefilters[j];
                     }
                 }
-                console.log ("RETESTTING: "+JSON.stringify(documentFilterData));
+
                 this.submitDocumentFilter(documentFilterData);
             }
             else if(key.indexOf('annotation') > -1 || key.indexOf('preparation') > -1) {
@@ -728,7 +740,7 @@ const app = new Vue({
                         annotationFilterData[active_key] = this.activefilters[j];
                     }
                 }
-                console.log ("RETESTTING: "+JSON.stringify(annotationFilterData));
+
                 this.submitAnnotationFilter(annotationFilterData);
             }
         },

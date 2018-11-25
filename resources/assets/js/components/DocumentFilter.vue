@@ -181,7 +181,7 @@
                         range: {
                             'min': 1,
                             'max': 999999
-                        },
+                        }
                     });
 
                     let paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
@@ -190,15 +190,20 @@
                     el.noUiSlider.on('update', function ( values, handle ) {
 
                         if ( handle ) {
-                            //this.corpusFilterData
-                            //console.log($(el).attr("id")+handle+" => "+values+" LAST: "+values[handle])
-                            myvue.documentFilterData.document_size_extent_to = values[handle];
                             paddingMax.innerHTML = Math.round(values[handle]);
+
+                        } else {
+                            paddingMin.innerHTML = Math.round(values[handle]);
+                        }
+                    });
+
+                    el.noUiSlider.on('end', function ( values, handle ) {
+                        if ( handle ) {
+                            myvue.documentFilterData.document_size_extent_to = values[handle];
 
                         } else {
                             //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
                             myvue.documentFilterData.document_size_extent = values[handle];
-                            paddingMin.innerHTML = Math.round(values[handle]);
                         }
                     });
 
