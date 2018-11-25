@@ -2,7 +2,7 @@
     <div class="card">
         <div class="card-header btn bg-corpus-mid font-weight-bold text-uppercase d-flex justify-content-between align-items-center"
              data-toggle="collapse" data-target="#formPanelActives" aria-expanded="true" aria-controls="formPanelActives">
-            <span>Active Filter ({{activefilters.length}})</span>{{activefilters}}
+            <span>Active Filter <span v-if="activefilters.length > 0">({{activefilters.length}})</span></span>
             <i class="collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"></i>
         </div>
         <div v-bind:class="getClass()" id="formPanelActives">
@@ -90,7 +90,7 @@
         },
         mounted() {
             $(document).on('click','.activefilter a i.fa-close',function(e){
-                $(this).parent().parent().remove();
+                //$(this).parent().parent().remove();
             });
         }
     }
