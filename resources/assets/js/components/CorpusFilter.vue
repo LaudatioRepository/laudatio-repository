@@ -160,62 +160,58 @@
 
             var rangeSliderList = ['corpusSize']
 
-            for(var h = 0; h < rangeSliderList.length; h++) {
-                let i = h
 
-                let el = document.getElementById(rangeSliderList[i])
+            let el = document.getElementById('corpusSize')
 
-                if(el) {
-                    //console.log("el: "+el)
-                    el.style.height = '8px';
-                    el.style.margin = '0 auto 8px';
+            if(el) {
+                console.log("el: "+el)
+                el.style.height = '8px';
+                el.style.margin = '0 auto 8px';
 
-                    noUiSlider.create(el, {
-                        animate: true,
-                        start: [ 1, 999999 ], // 4 handles, starting at...
-                        margin: 1, // Handles must be at least 300 apart
-                        limit: 999998, // ... but no more than 600
-                        connect: true, // Display a colored bar between the handles
-                        orientation: 'horizontal', // Orient the slider vertically
-                        behaviour: 'tap-drag', // Move handle on tap, bar is draggable
-                        step: 1,
+                noUiSlider.create(el, {
+                    connect: true,
+                    behaviour: 'tap-drag',
+                    start: [1, 999999],
+                    range: {
+                        // Starting at 500, step the value by 500,
+                        // until 4000 is reached. From there, step by 1000.
+                        'min': [1],
+                        '10%': [100, 10],
+                        '50%': [4000, 100],
+                        'max': [999999]
+                    }
+                });
 
-                        range: {
-                            'min': 1,
-                            'max': 999999
-                        },
-                    });
+                let paddingMin = document.getElementById('corpusSize' + '-minVal'),
+                    paddingMax = document.getElementById('corpusSize' + '-maxVal');
 
-                    let paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
-                        paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
+                el.noUiSlider.on('update', function ( values, handle ) {
 
-                    el.noUiSlider.on('update', function ( values, handle ) {
+                    if ( handle ) {
+                        paddingMax.innerHTML = Math.round(values[handle]);
+                    } else {
+                        paddingMin.innerHTML = Math.round(values[handle]);
+                    }
+                });
 
-                        if ( handle ) {
-                            paddingMax.innerHTML = Math.round(values[handle]);
-                        } else {
-                            paddingMin.innerHTML = Math.round(values[handle]);
-                        }
-                    });
+                el.noUiSlider.on('end', function ( values, handle ) {
+                    if ( handle ) {
+                        mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
 
-                    el.noUiSlider.on('end', function ( values, handle ) {
-                        if ( handle ) {
-                            mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
-
-                        } else {
-                            //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                            mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
-                        }
-                    });
+                    } else {
+                        //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
+                        mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
+                    }
+                });
 
 
-                    el.noUiSlider.on('change', function(){
-                        // Validate corresponding form
-                        let parentForm = $(el).closest('form')
-                        $(parentForm).find('*[type=submit]').removeClass('disabled');
-                    });
-                }
-            }//end for
+                el.noUiSlider.on('change', function(){
+                    // Validate corresponding form
+                    let parentForm = $(el).closest('form')
+                    $(parentForm).find('*[type=submit]').removeClass('disabled');
+                });
+            }
+
 
             $('input.flexdatalist').on('select:flexdatalist', function(event, set, options) {
                 if(mycorpusvue != 'undefined' && $(this).hasClass('corpusformatslist')){

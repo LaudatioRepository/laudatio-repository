@@ -28756,64 +28756,54 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
         var rangeSliderList = ['corpusSize'];
 
-        var _loop = function _loop() {
-            var i = h;
+        var el = document.getElementById('corpusSize');
 
-            var el = document.getElementById(rangeSliderList[i]);
+        if (el) {
+            console.log("el: " + el);
+            el.style.height = '8px';
+            el.style.margin = '0 auto 8px';
 
-            if (el) {
-                //console.log("el: "+el)
-                el.style.height = '8px';
-                el.style.margin = '0 auto 8px';
+            noUiSlider.create(el, {
+                connect: true,
+                behaviour: 'tap-drag',
+                start: [1, 999999],
+                range: {
+                    // Starting at 500, step the value by 500,
+                    // until 4000 is reached. From there, step by 1000.
+                    'min': [1],
+                    '10%': [100, 10],
+                    '50%': [4000, 100],
+                    'max': [999999]
+                }
+            });
 
-                noUiSlider.create(el, {
-                    animate: true,
-                    start: [1, 999999], // 4 handles, starting at...
-                    margin: 1, // Handles must be at least 300 apart
-                    limit: 999998, // ... but no more than 600
-                    connect: true, // Display a colored bar between the handles
-                    orientation: 'horizontal', // Orient the slider vertically
-                    behaviour: 'tap-drag', // Move handle on tap, bar is draggable
-                    step: 1,
+            var paddingMin = document.getElementById('corpusSize' + '-minVal'),
+                paddingMax = document.getElementById('corpusSize' + '-maxVal');
 
-                    range: {
-                        'min': 1,
-                        'max': 999999
-                    }
-                });
+            el.noUiSlider.on('update', function (values, handle) {
 
-                var paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
-                    paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
+                if (handle) {
+                    paddingMax.innerHTML = Math.round(values[handle]);
+                } else {
+                    paddingMin.innerHTML = Math.round(values[handle]);
+                }
+            });
 
-                el.noUiSlider.on('update', function (values, handle) {
+            el.noUiSlider.on('end', function (values, handle) {
+                if (handle) {
+                    mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
+                } else {
+                    //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
+                    mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
+                }
+            });
 
-                    if (handle) {
-                        paddingMax.innerHTML = Math.round(values[handle]);
-                    } else {
-                        paddingMin.innerHTML = Math.round(values[handle]);
-                    }
-                });
-
-                el.noUiSlider.on('end', function (values, handle) {
-                    if (handle) {
-                        mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
-                    } else {
-                        //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                        mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
-                    }
-                });
-
-                el.noUiSlider.on('change', function () {
-                    // Validate corresponding form
-                    var parentForm = $(el).closest('form');
-                    $(parentForm).find('*[type=submit]').removeClass('disabled');
-                });
-            }
-        };
-
-        for (var h = 0; h < rangeSliderList.length; h++) {
-            _loop();
-        } //end for
+            el.noUiSlider.on('change', function () {
+                // Validate corresponding form
+                var parentForm = $(el).closest('form');
+                $(parentForm).find('*[type=submit]').removeClass('disabled');
+            });
+        }
 
         $('input.flexdatalist').on('select:flexdatalist', function (event, set, options) {
             if (mycorpusvue != 'undefined' && $(this).hasClass('corpusformatslist')) {
@@ -29532,69 +29522,57 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
-        console.log('DocumentFilterComponent mounted.');
+
         var myvue = this;
 
-        var rangeSliderList = ['documentSize'];
+        var el = document.getElementById('documentSize');
 
-        var _loop = function _loop() {
-            var i = h;
+        if (el) {
+            //console.log("el: "+el)
+            el.style.height = '8px';
+            el.style.margin = '0 auto 8px';
 
-            var el = document.getElementById(rangeSliderList[i]);
+            noUiSlider.create(el, {
+                connect: true,
+                behaviour: 'tap-drag',
+                start: [1, 999999],
+                range: {
+                    // Starting at 500, step the value by 500,
+                    // until 4000 is reached. From there, step by 1000.
+                    'min': [1],
+                    '10%': [100, 10],
+                    '50%': [4000, 100],
+                    'max': [999999]
+                }
+            });
 
-            if (el) {
-                //console.log("el: "+el)
-                el.style.height = '8px';
-                el.style.margin = '0 auto 8px';
+            var paddingMin = document.getElementById('documentSize' + '-minVal'),
+                paddingMax = document.getElementById('documentSize' + '-maxVal');
 
-                noUiSlider.create(el, {
-                    animate: true,
-                    start: [1, 999999], // 4 handles, starting at...
-                    margin: 1, // Handles must be at least 300 apart
-                    limit: 999998, // ... but no more than 600
-                    connect: true, // Display a colored bar between the handles
-                    orientation: 'horizontal', // Orient the slider vertically
-                    behaviour: 'tap-drag', // Move handle on tap, bar is draggable
-                    step: 1,
+            el.noUiSlider.on('update', function (values, handle) {
 
-                    range: {
-                        'min': 1,
-                        'max': 999999
-                    }
-                });
+                if (handle) {
+                    paddingMax.innerHTML = Math.round(values[handle]);
+                } else {
+                    paddingMin.innerHTML = Math.round(values[handle]);
+                }
+            });
 
-                var paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
-                    paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
+            el.noUiSlider.on('end', function (values, handle) {
+                if (handle) {
+                    myvue.documentFilterData.document_size_extent_to = values[handle];
+                } else {
+                    //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
+                    myvue.documentFilterData.document_size_extent = values[handle];
+                }
+            });
 
-                el.noUiSlider.on('update', function (values, handle) {
-
-                    if (handle) {
-                        paddingMax.innerHTML = Math.round(values[handle]);
-                    } else {
-                        paddingMin.innerHTML = Math.round(values[handle]);
-                    }
-                });
-
-                el.noUiSlider.on('end', function (values, handle) {
-                    if (handle) {
-                        myvue.documentFilterData.document_size_extent_to = values[handle];
-                    } else {
-                        //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                        myvue.documentFilterData.document_size_extent = values[handle];
-                    }
-                });
-
-                el.noUiSlider.on('change', function () {
-                    // Validate corresponding form
-                    var parentForm = $(el).closest('form');
-                    $(parentForm).find('*[type=submit]').removeClass('disabled');
-                });
-            }
-        };
-
-        for (var h = 0; h < rangeSliderList.length; h++) {
-            _loop();
-        } //end for
+            el.noUiSlider.on('change', function () {
+                // Validate corresponding form
+                var parentForm = $(el).closest('form');
+                $(parentForm).find('*[type=submit]').removeClass('disabled');
+            });
+        }
     }
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(95)))

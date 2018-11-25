@@ -153,67 +153,59 @@
             },
         },
         mounted() {
-            console.log('DocumentFilterComponent mounted.')
+
             let myvue = this;
 
-            var rangeSliderList = ['documentSize']
+            let el = document.getElementById('documentSize')
 
-            for(var h = 0; h < rangeSliderList.length; h++) {
-                let i = h
+            if(el) {
+                //console.log("el: "+el)
+                el.style.height = '8px';
+                el.style.margin = '0 auto 8px';
 
-                let el = document.getElementById(rangeSliderList[i])
+                noUiSlider.create(el, {
+                    connect: true,
+                    behaviour: 'tap-drag',
+                    start: [1, 999999],
+                    range: {
+                        // Starting at 500, step the value by 500,
+                        // until 4000 is reached. From there, step by 1000.
+                        'min': [1],
+                        '10%': [100, 10],
+                        '50%': [4000, 100],
+                        'max': [999999]
+                    }
+                });
 
-                if(el) {
-                    //console.log("el: "+el)
-                    el.style.height = '8px';
-                    el.style.margin = '0 auto 8px';
+                let paddingMin = document.getElementById('documentSize' + '-minVal'),
+                    paddingMax = document.getElementById('documentSize' + '-maxVal');
 
-                    noUiSlider.create(el, {
-                        animate: true,
-                        start: [ 1, 999999 ], // 4 handles, starting at...
-                        margin: 1, // Handles must be at least 300 apart
-                        limit: 999998, // ... but no more than 600
-                        connect: true, // Display a colored bar between the handles
-                        orientation: 'horizontal', // Orient the slider vertically
-                        behaviour: 'tap-drag', // Move handle on tap, bar is draggable
-                        step: 1,
+                el.noUiSlider.on('update', function ( values, handle ) {
 
-                        range: {
-                            'min': 1,
-                            'max': 999999
-                        }
-                    });
+                    if ( handle ) {
+                        paddingMax.innerHTML = Math.round(values[handle]);
 
-                    let paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
-                        paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
+                    } else {
+                        paddingMin.innerHTML = Math.round(values[handle]);
+                    }
+                });
 
-                    el.noUiSlider.on('update', function ( values, handle ) {
+                el.noUiSlider.on('end', function ( values, handle ) {
+                    if ( handle ) {
+                        myvue.documentFilterData.document_size_extent_to = values[handle];
 
-                        if ( handle ) {
-                            paddingMax.innerHTML = Math.round(values[handle]);
+                    } else {
+                        //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
+                        myvue.documentFilterData.document_size_extent = values[handle];
+                    }
+                });
 
-                        } else {
-                            paddingMin.innerHTML = Math.round(values[handle]);
-                        }
-                    });
-
-                    el.noUiSlider.on('end', function ( values, handle ) {
-                        if ( handle ) {
-                            myvue.documentFilterData.document_size_extent_to = values[handle];
-
-                        } else {
-                            //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                            myvue.documentFilterData.document_size_extent = values[handle];
-                        }
-                    });
-
-                    el.noUiSlider.on('change', function(){
-                        // Validate corresponding form
-                        let parentForm = $(el).closest('form')
-                        $(parentForm).find('*[type=submit]').removeClass('disabled');
-                    });
-                }
-            }//end for
+                el.noUiSlider.on('change', function(){
+                    // Validate corresponding form
+                    let parentForm = $(el).closest('form')
+                    $(parentForm).find('*[type=submit]').removeClass('disabled');
+                });
+            }
         }
     }
 </script>
