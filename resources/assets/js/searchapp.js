@@ -601,7 +601,10 @@ const app = new Vue({
         },
         resetActiveFilter: function(filter) {
             var key = this.activefiltersmap[filter];
-            
+
+            this.activefilters.splice(this.activefilters.indexOf(filter),1);
+            delete this.activefiltersmap[filter];
+
             if(key.indexOf('corpus') > -1) {
                 for(var i = 0; i < this.corpusresults.length; i++) {
                     if (this.corpusresults[i]._source.hasOwnProperty(key)){
@@ -611,8 +614,7 @@ const app = new Vue({
                         }
                     }
                 }
-                this.activefilters.splice(this.activefilters.indexOf(filter),1);
-                delete this.activefiltersmap[filter];
+
                 var corpusFilterData = {}
                 if(this.activefilters.length > 0) {
                     for(var j = 0; j < this.activefilters.length; j++) {
@@ -626,7 +628,7 @@ const app = new Vue({
 
                     }
                 }
-               // this.submitCorpusFilter(corpusFilterData);
+               this.submitCorpusFilter(corpusFilterData);
             }
             else if(key.indexOf('document') > -1) {
                 for(var i = 0; i < this.documentresults.length; i++) {
@@ -637,8 +639,6 @@ const app = new Vue({
                         }
                     }
                 }//end for
-                this.activefilters.splice(this.activefilters.indexOf(filter),1);
-                delete this.activefiltersmap[filter];
 
                 var documentFilterData = {}
                 if(this.activefilters.length > 0) {
@@ -659,13 +659,18 @@ const app = new Vue({
                         }
                     }
                 }//end for
-                this.activefilters.splice(this.activefilters.indexOf(filter),1);
-                delete this.activefiltersmap[filter];
+
                 var annotationFilterData = {}
                 if(this.activefilters.length > 0) {
                     for(var j = 0; j < this.activefilters.length; j++) {
                         var active_key = this.activefiltersmap[this.activefilters[j]];
-                        annotationFilterData[active_key] = this.activefilters[j];
+                        if(active_key == 'annotation_merged_formats') {
+                            annotationFilterData[active_key] = [this.activefilters[j]];
+                        }
+                        else{
+                            annotationFilterData[active_key] = this.activefilters[j];
+                        }
+
                     }
                 }
 

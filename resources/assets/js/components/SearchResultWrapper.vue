@@ -60,7 +60,7 @@
                     ></corpussearchresult>
                 <pagination
                         v-if="corpusresults != 'undefined' && visibleCorpora.length >= 1 && visibleCorpora.length >= corpusPerPage"
-                        :totalPages="(visibleCorpora.length / corpusPerPage)"
+                        :totalPages="Math.round((visibleCorpora.length / corpusPerPage))"
                         :total="visibleCorpora.length"
                         :currentPage="currentCorpusPage"
                         :perPage="corpusPerPage"
@@ -78,7 +78,7 @@
                         ></documentsearchresult>
                 <pagination
                         v-if="documentresults != 'undefined' && visibleDocuments.length >= 1 && visibleDocuments.length >= documentPerPage"
-                        :totalPages="(visibleDocuments.length / documentPerPage)"
+                        :totalPages="Math.round((visibleDocuments.length / documentPerPage))"
                         :total="visibleDocuments.length"
                         :currentPage="currentDocumentPage"
                         :perPage="documentPerPage"
@@ -96,8 +96,8 @@
                         :key="guid(annotationindex)"
                         ></annotationsearchresult>
                 <pagination
-                        v-if="annotationresults != 'undefined' && visibleAnnotations.length >= 1 && visibleAnnotations.length >= annotationPerPage"
-                        :totalPages="(visibleAnnotations.length / annotationPerPage)"
+                        v-if="annotationresults != 'undefined' && visibleAnnotations.length >= 1"
+                        :totalPages="Math.round((visibleAnnotations.length / annotationPerPage))"
                         :total="visibleAnnotations.length"
                         :currentPage="currentAnnotationPage"
                         :perPage="annotationPerPage"
@@ -138,12 +138,15 @@
             },
             corpusPerPageChange: function(perpage) {
                 this.corpusPerPage = perpage;
+                this.currentCorpusPage = 1;
             },
             documentPerPageChange: function(perpage) {
                 this.documentPerPage = perpage;
+                this.currentDocumentPage = 1;
             },
             annotationPerPageChange: function(perpage) {
                 this.annotationPerPage = perpage;
+                this.currentAnnotationPage = 1;
             }
         },
         computed: {

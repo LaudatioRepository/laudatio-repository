@@ -48,7 +48,7 @@
         methods: {
             getClass: function () {
                 var classes = "collapse";
-                if(this.corpusresults.length >= 1){
+                if(this.activefilters.length >= 1){
                     classes += " show"
                 }
                 return classes;

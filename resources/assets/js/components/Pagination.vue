@@ -2,14 +2,14 @@
     <div class="container d-flex flex-column align-items-center justify-content-center mb-5 mt-5">
         <nav aria-label="Page navigation">
             <ul class="pagination">
-                <li class="page-item">
+                <li class="page-item" v-if="!isInFirstPage">
                     <a class="page-link" href="#" aria-label="First">
                         <span aria-hidden="true"
                               @click="onClickFirstPage"
                               :disabled="isInFirstPage">&laquo;</span>
                     </a>
                 </li>
-                <li class="page-item">
+                <li class="page-item" v-if="!isInFirstPage">
                     <a class="page-link" href="#" aria-label="Previous">
                     <span
                             @click="onClickPreviousPage"
@@ -24,14 +24,14 @@
                        @click="onClickPage(page.name)"
                        :aria-label="`Go to page number ${page.name}`">{{page.name}}</button>
                 </li>
-                <li class="page-item">
+                <li class="page-item" v-if="!isInLastPage">
                     <a class="page-link" href="#" aria-label="Next">
                      <span
                              @click="onClickNextPage"
                              :disabled="isInLastPage">Next</span>
                     </a>
                 </li>
-                <li class="page-item">
+                <li class="page-item" v-if="!isInLastPage">
                     <a class="page-link" href="#" aria-label="Last">
                         <span aria-hidden="true"
                               @click="onClickLastPage"
@@ -103,10 +103,13 @@ export default {
             const range = [];
 
             for (let i = this.startPage; i <= this.endPage; i+= 1 ) {
-                range.push({
-                    name: i,
-                    isDisabled: i === this.currentPage
-                });
+                if(i > 0) {
+                    range.push({
+                        name: i,
+                        isDisabled: i === this.currentPage
+                    });
+                }
+
             }
 
             return range;

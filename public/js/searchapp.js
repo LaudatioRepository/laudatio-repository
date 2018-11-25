@@ -26982,6 +26982,9 @@ var app = new Vue({
         resetActiveFilter: function resetActiveFilter(filter) {
             var key = this.activefiltersmap[filter];
 
+            this.activefilters.splice(this.activefilters.indexOf(filter), 1);
+            delete this.activefiltersmap[filter];
+
             if (key.indexOf('corpus') > -1) {
                 for (var i = 0; i < this.corpusresults.length; i++) {
                     if (this.corpusresults[i]._source.hasOwnProperty(key)) {
@@ -26991,8 +26994,7 @@ var app = new Vue({
                         }
                     }
                 }
-                this.activefilters.splice(this.activefilters.indexOf(filter), 1);
-                delete this.activefiltersmap[filter];
+
                 var corpusFilterData = {};
                 if (this.activefilters.length > 0) {
                     for (var j = 0; j < this.activefilters.length; j++) {
@@ -27004,7 +27006,7 @@ var app = new Vue({
                         }
                     }
                 }
-                // this.submitCorpusFilter(corpusFilterData);
+                this.submitCorpusFilter(corpusFilterData);
             } else if (key.indexOf('document') > -1) {
                 for (var i = 0; i < this.documentresults.length; i++) {
                     if (this.documentresults[i]._source.hasOwnProperty(key)) {
@@ -27014,8 +27016,6 @@ var app = new Vue({
                         }
                     }
                 } //end for
-                this.activefilters.splice(this.activefilters.indexOf(filter), 1);
-                delete this.activefiltersmap[filter];
 
                 var documentFilterData = {};
                 if (this.activefilters.length > 0) {
@@ -27035,13 +27035,16 @@ var app = new Vue({
                         }
                     }
                 } //end for
-                this.activefilters.splice(this.activefilters.indexOf(filter), 1);
-                delete this.activefiltersmap[filter];
+
                 var annotationFilterData = {};
                 if (this.activefilters.length > 0) {
                     for (var j = 0; j < this.activefilters.length; j++) {
                         var active_key = this.activefiltersmap[this.activefilters[j]];
-                        annotationFilterData[active_key] = this.activefilters[j];
+                        if (active_key == 'annotation_merged_formats') {
+                            annotationFilterData[active_key] = [this.activefilters[j]];
+                        } else {
+                            annotationFilterData[active_key] = this.activefilters[j];
+                        }
                     }
                 }
 
@@ -27941,12 +27944,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         corpusPerPageChange: function corpusPerPageChange(perpage) {
             this.corpusPerPage = perpage;
+            this.currentCorpusPage = 1;
         },
         documentPerPageChange: function documentPerPageChange(perpage) {
             this.documentPerPage = perpage;
+            this.currentDocumentPage = 1;
         },
         annotationPerPageChange: function annotationPerPageChange(perpage) {
             this.annotationPerPage = perpage;
+            this.currentAnnotationPage = 1;
         }
     },
     computed: {
@@ -28121,7 +28127,9 @@ var render = function() {
             _vm.visibleCorpora.length >= _vm.corpusPerPage
               ? _c("pagination", {
                   attrs: {
-                    totalPages: _vm.visibleCorpora.length / _vm.corpusPerPage,
+                    totalPages: Math.round(
+                      _vm.visibleCorpora.length / _vm.corpusPerPage
+                    ),
                     total: _vm.visibleCorpora.length,
                     currentPage: _vm.currentCorpusPage,
                     perPage: _vm.corpusPerPage,
@@ -28170,8 +28178,9 @@ var render = function() {
             _vm.visibleDocuments.length >= _vm.documentPerPage
               ? _c("pagination", {
                   attrs: {
-                    totalPages:
-                      _vm.visibleDocuments.length / _vm.documentPerPage,
+                    totalPages: Math.round(
+                      _vm.visibleDocuments.length / _vm.documentPerPage
+                    ),
                     total: _vm.visibleDocuments.length,
                     currentPage: _vm.currentDocumentPage,
                     perPage: _vm.documentPerPage,
@@ -28217,12 +28226,12 @@ var render = function() {
             }),
             _vm._v(" "),
             _vm.annotationresults != "undefined" &&
-            _vm.visibleAnnotations.length >= 1 &&
-            _vm.visibleAnnotations.length >= _vm.annotationPerPage
+            _vm.visibleAnnotations.length >= 1
               ? _c("pagination", {
                   attrs: {
-                    totalPages:
-                      _vm.visibleAnnotations.length / _vm.annotationPerPage,
+                    totalPages: Math.round(
+                      _vm.visibleAnnotations.length / _vm.annotationPerPage
+                    ),
                     total: _vm.visibleAnnotations.length,
                     currentPage: _vm.currentAnnotationPage,
                     perPage: _vm.annotationPerPage,
@@ -28373,7 +28382,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         getClass: function getClass() {
             var classes = "collapse";
-            if (this.corpusresults.length >= 1) {
+            if (this.activefilters.length >= 1) {
                 classes += " show";
             }
             return classes;
@@ -32044,10 +32053,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var range = [];
 
             for (var i = this.startPage; i <= this.endPage; i += 1) {
-                range.push({
-                    name: i,
-                    isDisabled: i === this.currentPage
-                });
+                if (i > 0) {
+                    range.push({
+                        name: i,
+                        isDisabled: i === this.currentPage
+                    });
+                }
             }
 
             return range;
@@ -32104,48 +32115,52 @@ var render = function() {
           "ul",
           { staticClass: "pagination" },
           [
-            _c("li", { staticClass: "page-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "page-link",
-                  attrs: { href: "#", "aria-label": "First" }
-                },
-                [
+            !_vm.isInFirstPage
+              ? _c("li", { staticClass: "page-item" }, [
                   _c(
-                    "span",
+                    "a",
                     {
-                      attrs: {
-                        "aria-hidden": "true",
-                        disabled: _vm.isInFirstPage
-                      },
-                      on: { click: _vm.onClickFirstPage }
+                      staticClass: "page-link",
+                      attrs: { href: "#", "aria-label": "First" }
                     },
-                    [_vm._v("«")]
+                    [
+                      _c(
+                        "span",
+                        {
+                          attrs: {
+                            "aria-hidden": "true",
+                            disabled: _vm.isInFirstPage
+                          },
+                          on: { click: _vm.onClickFirstPage }
+                        },
+                        [_vm._v("«")]
+                      )
+                    ]
                   )
-                ]
-              )
-            ]),
+                ])
+              : _vm._e(),
             _vm._v(" "),
-            _c("li", { staticClass: "page-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "page-link",
-                  attrs: { href: "#", "aria-label": "Previous" }
-                },
-                [
+            !_vm.isInFirstPage
+              ? _c("li", { staticClass: "page-item" }, [
                   _c(
-                    "span",
+                    "a",
                     {
-                      attrs: { disabled: _vm.isInFirstPage },
-                      on: { click: _vm.onClickPreviousPage }
+                      staticClass: "page-link",
+                      attrs: { href: "#", "aria-label": "Previous" }
                     },
-                    [_vm._v("Previous")]
+                    [
+                      _c(
+                        "span",
+                        {
+                          attrs: { disabled: _vm.isInFirstPage },
+                          on: { click: _vm.onClickPreviousPage }
+                        },
+                        [_vm._v("Previous")]
+                      )
+                    ]
                   )
-                ]
-              )
-            ]),
+                ])
+              : _vm._e(),
             _vm._v(" "),
             _vm._l(_vm.pages, function(page) {
               return _c(
@@ -32177,48 +32192,52 @@ var render = function() {
               )
             }),
             _vm._v(" "),
-            _c("li", { staticClass: "page-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "page-link",
-                  attrs: { href: "#", "aria-label": "Next" }
-                },
-                [
+            !_vm.isInLastPage
+              ? _c("li", { staticClass: "page-item" }, [
                   _c(
-                    "span",
+                    "a",
                     {
-                      attrs: { disabled: _vm.isInLastPage },
-                      on: { click: _vm.onClickNextPage }
+                      staticClass: "page-link",
+                      attrs: { href: "#", "aria-label": "Next" }
                     },
-                    [_vm._v("Next")]
+                    [
+                      _c(
+                        "span",
+                        {
+                          attrs: { disabled: _vm.isInLastPage },
+                          on: { click: _vm.onClickNextPage }
+                        },
+                        [_vm._v("Next")]
+                      )
+                    ]
                   )
-                ]
-              )
-            ]),
+                ])
+              : _vm._e(),
             _vm._v(" "),
-            _c("li", { staticClass: "page-item" }, [
-              _c(
-                "a",
-                {
-                  staticClass: "page-link",
-                  attrs: { href: "#", "aria-label": "Last" }
-                },
-                [
+            !_vm.isInLastPage
+              ? _c("li", { staticClass: "page-item" }, [
                   _c(
-                    "span",
+                    "a",
                     {
-                      attrs: {
-                        "aria-hidden": "true",
-                        disabled: _vm.isInLastPage
-                      },
-                      on: { click: _vm.onClickLastPage }
+                      staticClass: "page-link",
+                      attrs: { href: "#", "aria-label": "Last" }
                     },
-                    [_vm._v("»")]
+                    [
+                      _c(
+                        "span",
+                        {
+                          attrs: {
+                            "aria-hidden": "true",
+                            disabled: _vm.isInLastPage
+                          },
+                          on: { click: _vm.onClickLastPage }
+                        },
+                        [_vm._v("»")]
+                      )
+                    ]
                   )
-                ]
-              )
-            ])
+                ])
+              : _vm._e()
           ],
           2
         )
