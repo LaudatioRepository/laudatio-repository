@@ -60,7 +60,7 @@
                     ></corpussearchresult>
                 <pagination
                         v-if="corpusresults != 'undefined' && visibleCorpora.length >= 1 && visibleCorpora.length >= corpusPerPage"
-                        :totalPages="Math.round((visibleCorpora.length / corpusPerPage))"
+                        :totalPages="Math.ceil((visibleCorpora.length / corpusPerPage))"
                         :total="visibleCorpora.length"
                         :currentPage="currentCorpusPage"
                         :perPage="corpusPerPage"
@@ -78,7 +78,7 @@
                         ></documentsearchresult>
                 <pagination
                         v-if="documentresults != 'undefined' && visibleDocuments.length >= 1 && visibleDocuments.length >= documentPerPage"
-                        :totalPages="Math.round((visibleDocuments.length / documentPerPage))"
+                        :totalPages="Math.ceil((visibleDocuments.length / documentPerPage))"
                         :total="visibleDocuments.length"
                         :currentPage="currentDocumentPage"
                         :perPage="documentPerPage"
@@ -97,7 +97,7 @@
                         ></annotationsearchresult>
                 <pagination
                         v-if="annotationresults != 'undefined' && visibleAnnotations.length >= 1"
-                        :totalPages="Math.round((visibleAnnotations.length / annotationPerPage))"
+                        :totalPages="Math.ceil((visibleAnnotations.length / annotationPerPage))"
                         :total="visibleAnnotations.length"
                         :currentPage="currentAnnotationPage"
                         :perPage="annotationPerPage"

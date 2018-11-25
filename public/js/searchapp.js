@@ -28127,7 +28127,7 @@ var render = function() {
             _vm.visibleCorpora.length >= _vm.corpusPerPage
               ? _c("pagination", {
                   attrs: {
-                    totalPages: Math.round(
+                    totalPages: Math.ceil(
                       _vm.visibleCorpora.length / _vm.corpusPerPage
                     ),
                     total: _vm.visibleCorpora.length,
@@ -28178,7 +28178,7 @@ var render = function() {
             _vm.visibleDocuments.length >= _vm.documentPerPage
               ? _c("pagination", {
                   attrs: {
-                    totalPages: Math.round(
+                    totalPages: Math.ceil(
                       _vm.visibleDocuments.length / _vm.documentPerPage
                     ),
                     total: _vm.visibleDocuments.length,
@@ -28229,7 +28229,7 @@ var render = function() {
             _vm.visibleAnnotations.length >= 1
               ? _c("pagination", {
                   attrs: {
-                    totalPages: Math.round(
+                    totalPages: Math.ceil(
                       _vm.visibleAnnotations.length / _vm.annotationPerPage
                     ),
                     total: _vm.visibleAnnotations.length,
