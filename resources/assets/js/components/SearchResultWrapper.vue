@@ -179,12 +179,17 @@
             }
         },
         mounted() {
-            console.log('CorpusResultComponent mounted.')
+            //console.log('CorpusResultComponent mounted. datasearched: '+this.datasearched+" dataloading: "+this.dataloading+" THI SEARCHES: "+this.searches.length+" FRONTPAGEDATA: "+this.frontpageresultdata.results.length)
             if(!this.datasearched && !this.dataloading && this.searches.length == 0 && !this.frontpageresultdata) {
                 this.$emit('initial-search');
             }
             else if(!this.datasearched && !this.dataloading && this.searches.length == 0 && this.frontpageresultdata){
                 this.$emit('frontpage-search');
+            }
+
+            if(this.frontpageresultdata) {
+                console.log("WELL ?")
+                this.frontPageResultData = null;
             }
 
         }

@@ -261,7 +261,8 @@ class SearchController extends Controller
             'milliseconds' => $result['took'],
             'maxscore' => $result['hits']['max_score'],
             'results' => $result['hits']['hits'],
-            'total' => $result['hits']['total']
+            'total' => $result['hits']['total'],
+            'search' => $request->input('search_terms')
         );
 
         JavaScript::put([

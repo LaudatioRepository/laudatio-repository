@@ -164,7 +164,6 @@
             let el = document.getElementById('corpusSize')
 
             if(el) {
-                console.log("el: "+el)
                 el.style.height = '8px';
                 el.style.margin = '0 auto 8px';
 

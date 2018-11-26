@@ -26597,6 +26597,9 @@ var app = new Vue({
 
             this.dataloading = true;
             this.corpusresults = [];
+            this.frontPageResultData = [];
+            this.corpusformats = [];
+            this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', []);
@@ -26653,6 +26656,8 @@ var app = new Vue({
         frontpageSearch: function frontpageSearch() {
             this.dataloading = true;
             this.corpusresults = [];
+            this.corpusformats = [];
+            this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', []);
@@ -26691,7 +26696,11 @@ var app = new Vue({
                 } //end for results
                 this.dataloading = false;
                 this.datasearched = true;
-                this.searches.push('laudatio_init');
+                this.searches.push(this.frontPageResultData.search);
+                console.log(window.laudatioApp.frontPageResultData);
+                this.frontPageResultData = [];
+                window.laudatioApp.frontPageResultData = undefined;
+                console.log("BRELGH: " + window.laudatioApp.frontPageResultData);
             }
         },
         askElastic: function askElastic(search) {
@@ -26699,6 +26708,9 @@ var app = new Vue({
 
             this.dataloading = true;
             this.corpusresults = [];
+            this.frontPageResultData = [];
+            this.corpusformats = [];
+            this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', []);
@@ -27985,11 +27997,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     mounted: function mounted() {
-        console.log('CorpusResultComponent mounted.');
+        //console.log('CorpusResultComponent mounted. datasearched: '+this.datasearched+" dataloading: "+this.dataloading+" THI SEARCHES: "+this.searches.length+" FRONTPAGEDATA: "+this.frontpageresultdata.results.length)
         if (!this.datasearched && !this.dataloading && this.searches.length == 0 && !this.frontpageresultdata) {
             this.$emit('initial-search');
         } else if (!this.datasearched && !this.dataloading && this.searches.length == 0 && this.frontpageresultdata) {
             this.$emit('frontpage-search');
+        }
+
+        if (this.frontpageresultdata) {
+            console.log("WELL ?");
+            this.frontPageResultData = null;
         }
     }
 });
@@ -28759,7 +28776,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         var el = document.getElementById('corpusSize');
 
         if (el) {
-            console.log("el: " + el);
             el.style.height = '8px';
             el.style.margin = '0 auto 8px';
 
@@ -30765,45 +30781,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -30893,13 +30870,13 @@ var render = function() {
                   },
                   [
                     _vm._v(
-                      "\n                        " +
+                      "\n                    " +
                         _vm._s(
                           _vm._f("arrayToString")(
                             _vm.corpusresult._source.corpus_title
                           )
                         ) +
-                        "\n                    "
+                        "\n                "
                     )
                   ]
                 )
@@ -30978,7 +30955,7 @@ var render = function() {
                             "fa fa-angle-down fa-fw text-primary font-weight-bold"
                         }),
                         _vm._v(
-                          "\n                                Description\n                            "
+                          "\n                            Description\n                        "
                         )
                       ]
                     )
@@ -31186,11 +31163,7 @@ var render = function() {
                       "aria-expanded": "false"
                     }
                   },
-                  [
-                    _vm._v(
-                      "\n                        Download\n                    "
-                    )
-                  ]
+                  [_vm._v("\n                    Download\n                ")]
                 ),
                 _vm._v(" "),
                 _c(
@@ -31236,14 +31209,14 @@ var render = function() {
                   _vm._v(" "),
                   _c("p", [
                     _vm._v(
-                      "\n                        " +
+                      "\n                    " +
                         _vm._s(
                           _vm._f("lastElement")(
                             _vm.corpusresult._source
                               .corpus_encoding_project_description
                           )
                         ) +
-                        "\n                        "
+                        "\n                    "
                     ),
                     _c("a", { attrs: { href: "#" } }, [_vm._v("MORE")])
                   ])
