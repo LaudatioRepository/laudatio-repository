@@ -89,9 +89,9 @@ const app = new Vue({
         initialSearch: function(){
             this.dataloading = true;
             this.corpusresults = [];
-            this.frontPageResultData = [];
-            this.corpusformats = [];
-            this.annotationformats = [];
+            //this.frontPageResultData = [];
+            //this.corpusformats = [];
+            //this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', [])
@@ -189,8 +189,8 @@ const app = new Vue({
         frontpageSearch: function(){
             this.dataloading = true;
             this.corpusresults = [];
-            this.corpusformats = [];
-            this.annotationformats = [];
+            //this.corpusformats = [];
+            //this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', [])
@@ -232,11 +232,7 @@ const app = new Vue({
                 }//end for results
                 this.dataloading = false;
                 this.datasearched = true;
-                this.searches.push(this.frontPageResultData.search);
-                console.log(window.laudatioApp.frontPageResultData);
-                this.frontPageResultData = []
-                window.laudatioApp.frontPageResultData = undefined
-                console.log("BRELGH: "+window.laudatioApp.frontPageResultData);
+                this.searches.push('laudatio_init');
             }
 
 
@@ -244,9 +240,9 @@ const app = new Vue({
         askElastic: function (search) {
             this.dataloading = true;
             this.corpusresults = [];
-            this.frontPageResultData = []
-            this.corpusformats = [];
-            this.annotationformats = [];
+            //this.frontPageResultData = []
+            //this.corpusformats = [];
+            //this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', [])

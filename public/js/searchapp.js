@@ -26597,9 +26597,9 @@ var app = new Vue({
 
             this.dataloading = true;
             this.corpusresults = [];
-            this.frontPageResultData = [];
-            this.corpusformats = [];
-            this.annotationformats = [];
+            //this.frontPageResultData = [];
+            //this.corpusformats = [];
+            //this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', []);
@@ -26656,8 +26656,8 @@ var app = new Vue({
         frontpageSearch: function frontpageSearch() {
             this.dataloading = true;
             this.corpusresults = [];
-            this.corpusformats = [];
-            this.annotationformats = [];
+            //this.corpusformats = [];
+            //this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', []);
@@ -26696,11 +26696,7 @@ var app = new Vue({
                 } //end for results
                 this.dataloading = false;
                 this.datasearched = true;
-                this.searches.push(this.frontPageResultData.search);
-                console.log(window.laudatioApp.frontPageResultData);
-                this.frontPageResultData = [];
-                window.laudatioApp.frontPageResultData = undefined;
-                console.log("BRELGH: " + window.laudatioApp.frontPageResultData);
+                this.searches.push('laudatio_init');
             }
         },
         askElastic: function askElastic(search) {
@@ -26708,9 +26704,9 @@ var app = new Vue({
 
             this.dataloading = true;
             this.corpusresults = [];
-            this.frontPageResultData = [];
-            this.corpusformats = [];
-            this.annotationformats = [];
+            //this.frontPageResultData = []
+            //this.corpusformats = [];
+            //this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', []);
@@ -28002,11 +27998,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$emit('initial-search');
         } else if (!this.datasearched && !this.dataloading && this.searches.length == 0 && this.frontpageresultdata) {
             this.$emit('frontpage-search');
-        }
-
-        if (this.frontpageresultdata) {
-            console.log("WELL ?");
-            this.frontPageResultData = null;
         }
     }
 });

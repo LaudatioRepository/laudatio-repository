@@ -187,11 +187,6 @@
                 this.$emit('frontpage-search');
             }
 
-            if(this.frontpageresultdata) {
-                console.log("WELL ?")
-                this.frontPageResultData = null;
-            }
-
         }
     }
 </script>
