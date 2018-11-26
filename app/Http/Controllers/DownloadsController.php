@@ -26,7 +26,6 @@ class DownloadsController extends Controller
 
     public function teiDownload($path) {
 
-        //$files = glob($this->basePath.'/'.$path.'/TEI-HEADERS');
         $header_filesystem = $this->flysystem->listContents($path.'/TEI-HEADERS');
         $zipper = new Zipper();
         $uniqueName = strtr(base64_encode(openssl_random_pseudo_bytes(16)), "+/=", "XXX");
@@ -44,7 +43,9 @@ class DownloadsController extends Controller
         }
 
         $zipper->close();
-        return response()->download($uniqueName.'.zip');
+        $response = \Response::download($uniqueName.'.zip');
+        ob_end_clean();
+        return $response;
     }
 
     public function citeDownload(Request $request) {

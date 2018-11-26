@@ -69,7 +69,7 @@
                             Download
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item text-14" v-bind:href="('/download/tei/').concat(corpusresult._source.corpuspath)">TEI-Header</a>
+                            <a class="dropdown-item text-14" v-bind:href="('/download/tei/').concat(corpusresult._source.projectpath).concat('/').concat(corpusresult._source.corpuspath)">TEI-Header</a>
                             <!--a class="dropdown-item text-14" href="#">EXCEL</a>
                             <a class="dropdown-item text-14" href="#">PAULA</a>
                             <a class="dropdown-item text-14" href="#">ANNIS</a-->

@@ -31205,9 +31205,10 @@ var render = function() {
                       {
                         staticClass: "dropdown-item text-14",
                         attrs: {
-                          href: "/download/tei/".concat(
-                            _vm.corpusresult._source.corpuspath
-                          )
+                          href: "/download/tei/"
+                            .concat(_vm.corpusresult._source.projectpath)
+                            .concat("/")
+                            .concat(_vm.corpusresult._source.corpuspath)
                         }
                       },
                       [_vm._v("TEI-Header")]
