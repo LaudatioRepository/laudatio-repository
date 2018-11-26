@@ -26774,7 +26774,7 @@ var app = new Vue({
                 this.dataloading = false;
             }
         },
-        submitCorpusFilter: function submitCorpusFilter(corpusFilterObject) {
+        submitCorpusFilter2: function submitCorpusFilter2(corpusFilterObject) {
             for (var key in corpusFilterObject) {
                 if (corpusFilterObject.hasOwnProperty(key)) {
                     if (corpusFilterObject[key] != 'undefined' && corpusFilterObject[key] != '') {
@@ -26819,30 +26819,44 @@ var app = new Vue({
             for (var i = 0; i < this.activefilters.length; i++) {
                 var key = this.activefiltersmap[this.activefilters[i]];
                 //console.log("KEY "+key+" FILTER: "+this.activefilters[i])
-                //console.log("FILTEROBJECTVAL: "+corpusFilterObject[key])
+                var field_values_by_key = this.getSimilarActiveFilterFieldValues(key);
+                console.log("field_values_by_key: " + field_values_by_key);
+
                 for (var i = 0; i < this.corpusresults.length; i++) {
                     for (var corpuskey in this.corpusresults[i]._source) {
                         if (this.corpusresults[i]._source.hasOwnProperty(key)) {
 
                             if (key == "corpus_publication_publication_date" || key == "corpus_publication_license" || key == "corpus_merged_formats" || key == "corpus_size_value") {} else {
-                                console.log("VERGLEICH: " + this.corpusresults[i]._source[key] + " UND " + corpusFilterObject[key]);
-                                var field_values = Object.values(this.activefiltersmap);
-                                if (field_values.length == 1) {
-                                    if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(corpusFilterObject[key].toLowerCase()) == -1) {
+
+                                if (field_values_by_key.length == 1) {
+                                    if (this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(field_values_by_key[0].toLowerCase()) == -1) {
                                         if (this.corpusresultcounter > 0 && this.corpusresults[i]._source.visibility == 1) {
                                             this.corpusresultcounter--;
                                             this.corpusresults[i]._source.visibility = 0;
                                         }
                                     }
+                                } else if (field_values_by_key.length > 1) {
+                                    for (var field_value in field_values_by_key) {
+                                        console.log(this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase() + " => " + field_values_by_key[field_value].toLowerCase() + " = " + this.renderArrayToString(this.corpusresults[i]._source[key]).toLowerCase().indexOf(field_values_by_key[field_value].toLowerCase()));
+                                    }
                                 }
                             }
-                        } //end if
-                    } //end for
-                } //end for
+                        }
+                    }
+                }
             }
         },
-        submitDocumentFilter: function submitDocumentFilter(documentFilterObject) {},
-        submitCorpusFilter2: function submitCorpusFilter2(corpusFilterObject) {
+        getSimilarActiveFilterFieldValues: function getSimilarActiveFilterFieldValues(key) {
+            var filterfields = [];
+            for (var filterkey in this.activefiltersmap) {
+                if (this.activefiltersmap[filterkey] == key) {
+                    filterfields.push(filterkey);
+                }
+            }
+            return filterfields;
+        },
+        submitDocumentFilter2: function submitDocumentFilter2(documentFilterObject) {},
+        submitCorpusFilter: function submitCorpusFilter(corpusFilterObject) {
             this.resetCorpusResults();
             console.log(this.activefilters);
             for (var key in corpusFilterObject) {
@@ -26939,7 +26953,7 @@ var app = new Vue({
                 }
             }
         },
-        submitDocumentFilter2: function submitDocumentFilter2(documentFilterObject) {
+        submitDocumentFilter: function submitDocumentFilter(documentFilterObject) {
             this.resetDocumentResults();
             for (var key in documentFilterObject) {
                 if (documentFilterObject.hasOwnProperty(key)) {
