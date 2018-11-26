@@ -1,7 +1,7 @@
 <template>
         <div class="container bg-corpus-superlight mt-1 mb-1 p-5" v-if="corpusresult._source.visibility == 1">
             <div class="row">
-                <div class="col-2" v-if="corpusresult._source.corpuslogo == ''">
+                <div class="col-2" v-if="corpusresult._source.corpuslogo == null">
                     <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
                 </div>
                 <div class="col-2" v-else>

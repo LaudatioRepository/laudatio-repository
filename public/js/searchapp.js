@@ -30913,7 +30913,7 @@ var render = function() {
         { staticClass: "container bg-corpus-superlight mt-1 mb-1 p-5" },
         [
           _c("div", { staticClass: "row" }, [
-            _vm.corpusresult._source.corpuslogo == ""
+            _vm.corpusresult._source.corpuslogo == null
               ? _c("div", { staticClass: "col-2" }, [
                   _c("img", {
                     staticClass: "w-100",
