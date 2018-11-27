@@ -26779,7 +26779,7 @@ var app = new Vue({
                 if (corpusFilterObject.hasOwnProperty(key)) {
                     if (corpusFilterObject[key] != 'undefined' && corpusFilterObject[key] != '') {
 
-                        if (key == "corpus_publication_publication_date" || key == "corpus_publication_license" || key == "corpus_merged_formats" || key == "corpus_size_value" || key == "corpusSizeTo") {
+                        if (key == "corpus_publication_publication_date" || key == "corpusYearTo" || key == "corpus_publication_license" || key == "corpus_merged_formats" || key == "corpus_size_value" || key == "corpusSizeTo") {
                             if (key == "corpus_size_value" && corpusFilterObject.corpus_size_value != "" && corpusFilterObject.corpusSizeTo != "") {
                                 if (!this.activefilters.includes(corpusFilterObject.corpus_size_value + ":" + corpusFilterObject.corpusSizeTo)) {
                                     this.activefilters.push(corpusFilterObject.corpus_size_value + ":" + corpusFilterObject.corpusSizeTo);
@@ -26807,9 +26807,12 @@ var app = new Vue({
                                 }
                             }
                         } else {
-                            if (!this.activefilters.includes(corpusFilterObject[key])) {
-                                this.activefilters.push(corpusFilterObject[key]);
-                                this.activefiltersmap[corpusFilterObject[key]] = key;
+                            console.log("CORPUS_ " + key + " : " + corpusFilterObject[key]);
+                            if (key.indexOf('corpus') > -1) {
+                                if (!this.activefilters.includes(corpusFilterObject[key])) {
+                                    this.activefilters.push(corpusFilterObject[key]);
+                                    this.activefiltersmap[corpusFilterObject[key]] = key;
+                                }
                             }
                         }
                     }
@@ -26825,7 +26828,7 @@ var app = new Vue({
                 var filtervalue = this.activefilters[i];
 
                 for (var j = 0; j < this.corpusresults.length; j++) {
-                    if (filterkey == "corpus_publication_publication_date" || filterkey == "corpus_publication_license" || filterkey == "corpus_merged_formats" || filterkey == "corpus_size_value" || filterkey == "corpusSizeTo") {
+                    if (filterkey == "corpus_publication_publication_date" || filterkey == "corpusYearTo" || filterkey == "corpus_publication_license" || filterkey == "corpus_merged_formats" || filterkey == "corpus_size_value" || filterkey == "corpusSizeTo") {
 
                         if (filterkey == "corpus_size_value" && corpusFilterObject.corpus_size_value != "" && corpusFilterObject.corpusSizeTo != "") {
                             if (this.isBetween(this.corpusresults[j]._source[filterkey][0], corpusFilterObject.corpus_size_value, corpusFilterObject.corpusSizeTo)) {
@@ -26848,7 +26851,7 @@ var app = new Vue({
                         }
 
                         if (filterkey == "corpus_publication_license" && corpusFilterObject[filterkey].toLowerCase() != "") {
-
+                            console.log("MOIN: " + filterkey + " " + this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase() + " => " + corpusFilterObject[filterkey].toLowerCase() + " == " + this.hasLicense(this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase(), corpusFilterObject[filterkey].toLowerCase()));
                             if (this.hasLicense(this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase(), corpusFilterObject[filterkey].toLowerCase())) {
 
                                 if (!matches.includes(this.corpusresults[j]._id)) {
@@ -26869,24 +26872,112 @@ var app = new Vue({
                             }
                         }
                     } else {
-
-                        if (this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase().indexOf(filtervalue.toLowerCase()) > -1) {
-                            if (!matches.includes(this.corpusresults[j]._id)) {
-                                matches.push(this.corpusresults[j]._id);
+                        if (filterkey.indexOf('corpus') > -1) {
+                            if (this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase().indexOf(filtervalue.toLowerCase()) > -1) {
+                                if (!matches.includes(this.corpusresults[j]._id)) {
+                                    matches.push(this.corpusresults[j]._id);
+                                }
                             }
                         }
                     }
                 }
             }
 
-            for (var k = 0; k < this.corpusresults.length; k++) {
-                if (!matches.includes(this.corpusresults[k]._id)) {
-                    this.corpusresults[k]._source.visibility = 0;
-                    this.corpusresultcounter--;
+            if (matches.length > 0) {
+                for (var k = 0; k < this.corpusresults.length; k++) {
+                    if (!matches.includes(this.corpusresults[k]._id)) {
+                        this.corpusresults[k]._source.visibility = 0;
+                        this.corpusresultcounter--;
+                    }
                 }
             }
         },
-        submitDocumentFilter2: function submitDocumentFilter2(documentFilterObject) {},
+        submitDocumentFilter: function submitDocumentFilter(documentFilterObject) {
+            for (var key in documentFilterObject) {
+                if (documentFilterObject.hasOwnProperty(key)) {
+                    if (documentFilterObject[key] != 'undefined' && documentFilterObject[key] != '') {
+                        if (key == "document_size_extent" || key == "document_publication_publishing_date" || key == "document_size_extent_to" || key == 'document_publication_publishing_date_to') {
+
+                            if (key == "document_size_extent" && documentFilterObject.document_size_extent != "" && documentFilterObject.document_size_extent_to != "") {
+                                if (!this.activefilters.includes(Math.floor(documentFilterObject.document_size_extent) + ":" + Math.floor(documentFilterObject.document_size_extent_to))) {
+                                    this.activefilters.push(Math.floor(documentFilterObject.document_size_extent) + ":" + Math.floor(documentFilterObject.document_size_extent_to));
+                                    this.activefiltersmap[Math.floor(documentFilterObject.document_size_extent) + ":" + Math.floor(documentFilterObject.document_size_extent_to)] = key;
+                                }
+                            } //end if document_size_extent
+
+                            if (key == "document_publication_publishing_date" && documentFilterObject.document_publication_publishing_date != '' && documentFilterObject.document_publication_publishing_date_to != '') {
+                                if (!this.activefilters.includes(documentFilterObject.document_publication_publishing_date + ":" + documentFilterObject.document_publication_publishing_date_to)) {
+                                    this.activefilters.push(documentFilterObject.document_publication_publishing_date + ":" + documentFilterObject.document_publication_publishing_date_to);
+                                    this.activefiltersmap[documentFilterObject.document_publication_publishing_date + ":" + documentFilterObject.document_publication_publishing_date_to] = key;
+                                }
+                            } //end if publishing date
+                        } else {
+                            if (key.indexOf('document') > -1) {
+                                if (!this.activefilters.includes(documentFilterObject[key])) {
+                                    this.activefilters.push(documentFilterObject[key]);
+                                    this.activefiltersmap[documentFilterObject[key]] = key;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            this.filterDocumentResults(documentFilterObject);
+        },
+        filterDocumentResults: function filterDocumentResults(documentFilterObject) {
+            this.resetDocumentResults();
+            var matches = [];
+
+            for (var i = 0; i < this.activefilters.length; i++) {
+                var filterkey = this.activefiltersmap[this.activefilters[i]];
+                var filtervalue = this.activefilters[i];
+
+                for (var j = 0; j < this.documentresults.length; j++) {
+                    if (filterkey == "document_size_extent" || filterkey == "document_publication_publishing_date" || filterkey == "document_size_extent_to" || filterkey == 'document_publication_publishing_date_to') {
+
+                        if (filterkey == "document_size_extent" && documentFilterObject.document_size_extent != "" && documentFilterObject.document_size_extent_to != "") {
+                            if (this.isBetween(this.documentresults[j]._source[filterkey][0], documentFilterObject.document_size_extent, documentFilterObject.document_size_extent_to)) {
+                                if (!matches.includes(this.documentresults[j]._id)) {
+                                    matches.push(this.documentresults[j]._id);
+                                }
+                            }
+                        } //end if document_size_extent
+
+                        if (filterkey == "document_publication_publishing_date" && documentFilterObject.document_publication_publishing_date != '' && documentFilterObject.document_publication_publishing_date_to != '') {
+                            var newest_datum = this.documentresults[j]._source[filterkey][this.documentresults[j]._source[filterkey].length - 1];
+                            var newest_date = newest_datum;
+                            if (newest_datum.indexOf("-") > -1) {
+                                var dateArray = newest_datum.split("-");
+                                newest_date = dateArray[0];
+                            }
+
+                            if (this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date, documentFilterObject.document_publication_publishing_date_to)) {
+                                if (!matches.includes(this.documentresults[j]._id)) {
+                                    matches.push(this.documentresults[j]._id);
+                                }
+                            }
+                        } //end if publishing date
+                    } else {
+                        if (filterkey.indexOf('document') > -1) {
+                            if (this.renderArrayToString(this.documentresults[j]._source[filterkey]).toLowerCase().indexOf(filtervalue.toLowerCase()) > -1) {
+                                if (!matches.includes(this.documentresults[j]._id)) {
+                                    matches.push(this.documentresults[j]._id);
+                                }
+                            }
+                        }
+                    }
+                } //end for documentresults
+            } //end for activefilters
+
+            if (matches.length > 0) {
+                for (var k = 0; k < this.documentresults.length; k++) {
+                    if (!matches.includes(this.documentresults[k]._id)) {
+                        this.documentresults[k]._source.visibility = 0;
+                        this.documentresultcounter--;
+                    }
+                }
+            }
+        },
         submitCorpusFilter2: function submitCorpusFilter2(corpusFilterObject) {
             this.resetCorpusResults();
             for (var key in corpusFilterObject) {
@@ -26983,7 +27074,7 @@ var app = new Vue({
                 }
             }
         },
-        submitDocumentFilter: function submitDocumentFilter(documentFilterObject) {
+        submitDocumentFilter2: function submitDocumentFilter2(documentFilterObject) {
             this.resetDocumentResults();
             for (var key in documentFilterObject) {
                 if (documentFilterObject.hasOwnProperty(key)) {
@@ -27149,14 +27240,27 @@ var app = new Vue({
                 } //end for
 
                 var documentFilterData = {};
+                var j = 0;
                 if (this.activefilters.length > 0) {
-                    for (var j = 0; j < this.activefilters.length; j++) {
+                    for (var j = j; j < this.activefilters.length; j++) {
                         var active_key = this.activefiltersmap[this.activefilters[j]];
-                        documentFilterData[active_key] = this.activefilters[j];
+                        if (active_key == 'document_size_extent') {
+                            var numberarray = this.activefilters[j].split(":");
+                            documentFilterData['document_size_extent'] = numberarray[0].trim();
+                            documentFilterData['document_size_extent_to'] = numberarray[1].trim();
+                        } else if (active_key == 'document_publication_publishing_date') {
+                            var publishingnumberarray = this.activefilters[j].split(":");
+                            documentFilterData['document_publication_publishing_date'] = publishingnumberarray[0].trim();
+                            documentFilterData['document_publication_publishing_date_to'] = publishingnumberarray[1].trim();
+                        } else {
+                            documentFilterData[active_key] = this.activefilters[j];
+                        }
                     }
                 }
 
-                this.submitDocumentFilter(documentFilterData);
+                if (j > 0) {
+                    this.submitDocumentFilter(documentFilterData);
+                }
             } else if (key.indexOf('annotation') > -1 || key.indexOf('preparation') > -1) {
                 for (var i = 0; i < this.annotationresults.length; i++) {
                     if (this.annotationresults[i]._source.hasOwnProperty(key)) {
@@ -27220,9 +27324,10 @@ var app = new Vue({
             this.annotationresultcounter = counter;
         },
         isBetween: function isBetween(theNumber, min, max) {
-            if (parseInt(theNumber.replace(".", "")) >= Math.floor(min) && parseInt(theNumber) <= Math.floor(max)) {
+
+            if (parseInt(theNumber.replace(".", "")) >= Math.floor(min) && parseInt(theNumber.replace(".", "")) <= Math.floor(max)) {
                 return true;
-            } else if (parseInt(theNumber) >= parseInt(min) && parseInt(theNumber) <= parseInt(max)) {
+            } else if (parseInt(theNumber.replace(".", "")) >= parseInt(min) && parseInt(theNumber.replace(".", "")) <= parseInt(max)) {
                 return true;
             } else {
                 return false;
@@ -28855,6 +28960,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             this.$emit('apply-filters');
         },
         emitCorpusFilter: function emitCorpusFilter() {
+            for (var key in this.corpusFilterData) {
+                'C:'.concat(this.corpusFilterData[key]);
+            }
             this.$emit('corpus-filter', this.corpusFilterData);
         },
 
@@ -31493,6 +31601,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -31644,6 +31756,33 @@ var render = function() {
                                 _vm._s(
                                   _vm.documentresult._source
                                     .document_languages_language[0]
+                                )
+                              )
+                            ])
+                          ]
+                        )
+                      : _vm._e(),
+                    _vm._v(" "),
+                    _vm.documentresult._source.document_publication_place !=
+                    "undefined"
+                      ? _c(
+                          "div",
+                          {
+                            staticClass:
+                              "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                          },
+                          [
+                            _c("i", {
+                              staticClass: "fa fa-fw fa-map-marker mr-1"
+                            }),
+                            _vm._v(" "),
+                            _c("span", [
+                              _vm._v(
+                                _vm._s(
+                                  _vm._f("arrayToString")(
+                                    _vm.documentresult._source
+                                      .document_publication_place
+                                  )
                                 )
                               )
                             ])

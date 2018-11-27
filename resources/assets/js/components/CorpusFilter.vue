@@ -123,6 +123,9 @@
                 this.$emit('apply-filters');
             },
             emitCorpusFilter(){
+                for(var key in this.corpusFilterData) {
+                    'C:'.concat(this.corpusFilterData[key])
+                }
                 this.$emit('corpus-filter',this.corpusFilterData);
             },
             clearCorpusFilter: function () {
