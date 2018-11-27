@@ -419,7 +419,6 @@ const app = new Vue({
                             }
                         }
                         else{
-                            console.log("CORPUS_ "+key+" : "+corpusFilterObject[key])
                             if(key.indexOf('corpus') > -1) {
                                 if (!this.activefilters.includes(corpusFilterObject[key])) {
                                     this.activefilters.push(corpusFilterObject[key]);
@@ -435,6 +434,7 @@ const app = new Vue({
         filterCorpusResults: function (corpusFilterObject){
             this.resetCorpusResults();
             var matches = [];
+            var activeFilterCount = this.getActiveFilterCount("corpus");
             for(var i = 0; i < this.activefilters.length; i++) {
                 var filterkey = this.activefiltersmap[this.activefilters[i]];
                 var filtervalue = this.activefilters[i];
@@ -464,7 +464,6 @@ const app = new Vue({
                         }
 
                         if(filterkey == "corpus_publication_license" && corpusFilterObject[filterkey].toLowerCase() != "") {
-                            console.log("MOIN: "+filterkey+" "+this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase()+" => "+corpusFilterObject[filterkey].toLowerCase()+" == "+this.hasLicense(this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase(), corpusFilterObject[filterkey].toLowerCase()))
                             if(this.hasLicense(this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase(), corpusFilterObject[filterkey].toLowerCase())){
 
                                 if(!matches.includes(this.corpusresults[j]._id)){
@@ -773,6 +772,76 @@ const app = new Vue({
             }
         },
         submitAnnotationFilter: function (annotationFilterObject) {
+            for(var key in annotationFilterObject) {
+                if (annotationFilterObject.hasOwnProperty(key)) {
+                    if (annotationFilterObject[key] != 'undefined' && annotationFilterObject[key] != '') {
+                        if (key == "annotation_merged_formats") {
+
+                            for (var formatkey in annotationFilterObject.annotation_merged_formats) {
+                                if(!this.activefilters.includes(annotationFilterObject.annotation_merged_formats[formatkey])) {
+                                    this.activefilters.push(annotationFilterObject.annotation_merged_formats[formatkey]);
+                                    this.activefiltersmap[annotationFilterObject.annotation_merged_formats[formatkey]] = 'annotation_merged_formats';
+                                }
+                            }
+
+                        }
+                        else {
+                            if(key.indexOf('preparation') > -1){
+                                if(!this.activefilters.includes(annotationFilterObject[key])) {
+                                    this.activefilters.push(annotationFilterObject[key]);
+                                    this.activefiltersmap[annotationFilterObject[key]] = key;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            this.filterAnnotationResults(annotationFilterObject);
+        },
+        filterAnnotationResults: function(annotationFilterObject){
+            this.resetAnnotationResults();
+            var matches = [];
+
+            for(var i = 0; i < this.activefilters.length; i++) {
+                var filterkey = this.activefiltersmap[this.activefilters[i]];
+                var filtervalue = this.activefilters[i];
+
+                for(var j = 0; j < this.annotationresults.length; j++) {
+                    if(filterkey == "annotation_merged_formats") {
+
+
+                        for (var formatkey in annotationFilterObject.annotation_merged_formats) {
+
+                            if(this.hasFormats(this.annotationresults[j]._source[filterkey],annotationFilterObject.annotation_merged_formats[formatkey])){
+
+                                if(!matches.includes(this.annotationresults[j]._id)){
+                                    matches.push(this.annotationresults[j]._id);
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        if(filterkey.indexOf('preparation') > -1) {
+                            if (this.renderArrayToString(this.annotationresults[j]._source[filterkey]).toLowerCase().indexOf(filtervalue.toLowerCase()) > -1) {
+                                if (!matches.includes(this.annotationresults[j]._id)) {
+                                    matches.push(this.annotationresults[j]._id);
+                                }
+                            }
+                        }
+                    }
+                }//end for documentresults
+            }//end for activefilters
+
+            if(matches.length > 0) {
+                for (var k = 0; k < this.annotationresults.length; k++) {
+                    if (!matches.includes(this.annotationresults[k]._id)) {
+                        this.annotationresults[k]._source.visibility = 0;
+                        this.annotationresultcounter--;
+                    }
+                }
+            }
+        },
+        submitAnnotationFilter2: function (annotationFilterObject) {
             this.resetAnnotationResults();
             for(var key in annotationFilterObject) {
                 if (annotationFilterObject.hasOwnProperty(key)) {
@@ -930,6 +999,7 @@ const app = new Vue({
         },
         resetActiveFilters: function () {
             this.activefilters = []
+            this.activefiltersmap = {}
         },
         resetCorpusResults() {
             for(var i = 0; i < this.corpusresults.length; i++) {
@@ -983,6 +1053,15 @@ const app = new Vue({
         },
         hasFormats: function(merged_formats,filter_formats) {
             return merged_formats.indexOf(filter_formats) > -1;
+        },
+        getActiveFilterCount: function(type) {
+            var activeFilterCount = 0;
+            for(var key in this.activefiltersmap) {
+                if(this.activefiltersmap[key].indexOf(type) > -1) {
+                    activeFilterCount++;
+                }
+            }
+            return activeFilterCount;
         }
     }
 });
