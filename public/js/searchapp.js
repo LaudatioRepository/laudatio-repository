@@ -27279,12 +27279,17 @@ var app = new Vue({
                 if (this.activefilters.length > 0) {
                     for (j = j; j < this.activefilters.length; j++) {
                         var active_key = this.activefiltersmap[this.activefilters[j]];
+
                         if (active_key == 'corpus_merged_formats') {
                             corpusFilterData[active_key] = [this.activefilters[j]];
                         } else if (active_key == 'corpus_size_value') {
                             var numberarray = this.activefilters[j].split(":");
                             corpusFilterData['corpus_size_value'] = numberarray[0].trim();
                             corpusFilterData['corpusSizeTo'] = numberarray[1].trim();
+                        } else if (active_key == 'corpus_publication_publication_date') {
+                            var numberarray = this.activefilters[j].split(":");
+                            corpusFilterData['corpus_publication_publication_date'] = numberarray[0].trim();
+                            corpusFilterData['corpusYearTo'] = numberarray[1].trim();
                         } else {
                             corpusFilterData[active_key] = this.activefilters[j];
                         }
