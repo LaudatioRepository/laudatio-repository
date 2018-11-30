@@ -28751,7 +28751,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 this.$emit('reset-annotation-filter', filter);
             }
 
-            //this.$emit('reset-activefilter',filter);
+            this.$emit('reset-activefilter', filter);
         },
         resetFilters: function resetFilters() {
             this.localcorpusresultcounter = this.corpusresultcounter;

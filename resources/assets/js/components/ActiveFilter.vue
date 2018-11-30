@@ -65,7 +65,7 @@
                     this.$emit('reset-annotation-filter',filter);
                 }
 
-                //this.$emit('reset-activefilter',filter);
+                this.$emit('reset-activefilter',filter);
             },
             resetFilters() {
                 this.localcorpusresultcounter = this.corpusresultcounter;
