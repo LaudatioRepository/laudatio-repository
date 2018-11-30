@@ -136,6 +136,9 @@
             emitDocumentFilter(){
                 this.$emit('document-filter',this.documentFilterData);
             },
+            emitDropDocumentFilter: function (field){
+                this.$emit('remove-document-filter',field);
+            },
             clearDocumentFilter: function () {
                 this.documentFilterData = {
                     document_title: '',
@@ -155,6 +158,15 @@
                 if(field == 'document_publication_publishing_date'){
                     this.documentFilterData['document_publication_publishing_date'] = ''
                     this.documentFilterData['document_publication_publishing_date_to'] = ''
+                }
+                else if(field == 'document_size_extent'){
+                    this.documentFilterData['document_size_extent'] = ''
+                    this.documentFilterData['document_size_extent_to'] = ''
+                    let documentel = document.getElementById('documentSize')
+
+                    if(documentel) {
+                        documentel.noUiSlider.reset();
+                    }
                 }
                 else{
                     this.documentFilterData[field] = ''
@@ -192,21 +204,15 @@
                 el.noUiSlider.on('update', function ( values, handle ) {
 
                     if ( handle ) {
+                        myvue.documentFilterData.document_size_extent_to = Math.round(values[handle]);
                         paddingMax.innerHTML = Math.round(values[handle]);
 
                     } else {
+                        myvue.documentFilterData.document_size_extent = Math.round(values[handle]);
                         paddingMin.innerHTML = Math.round(values[handle]);
                     }
-                });
-
-                el.noUiSlider.on('end', function ( values, handle ) {
-                    if ( handle ) {
-                        myvue.documentFilterData.document_size_extent_to = values[handle];
-
-                    } else {
-                        //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                        myvue.documentFilterData.document_size_extent = values[handle];
-                    }
+                    myvue.emitDropDocumentFilter('document_size_extent')
+                    myvue.emitDocumentFilter();
                 });
 
                 el.noUiSlider.on('change', function(){

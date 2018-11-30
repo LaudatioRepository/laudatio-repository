@@ -27263,97 +27263,98 @@ var app = new Vue({
 
             this.activefilters.splice(this.activefilters.indexOf(filter), 1);
             delete this.activefiltersmap[filter];
-
-            if (key.indexOf('corpus') > -1) {
-                for (var i = 0; i < this.corpusresults.length; i++) {
-                    if (this.corpusresults[i]._source.hasOwnProperty(key)) {
-                        if (this.corpusresults[i]._source.visibility == 0) {
-                            this.corpusresults[i]._source.visibility = 1;
-                            this.corpusresultcounter++;
+            if (key != 'undefined') {
+                if (key.indexOf('corpus') > -1) {
+                    for (var i = 0; i < this.corpusresults.length; i++) {
+                        if (this.corpusresults[i]._source.hasOwnProperty(key)) {
+                            if (this.corpusresults[i]._source.visibility == 0) {
+                                this.corpusresults[i]._source.visibility = 1;
+                                this.corpusresultcounter++;
+                            }
                         }
                     }
-                }
 
-                var corpusFilterData = {};
-                var j = 0;
-                if (this.activefilters.length > 0) {
-                    for (j = j; j < this.activefilters.length; j++) {
-                        var active_key = this.activefiltersmap[this.activefilters[j]];
+                    var corpusFilterData = {};
+                    var j = 0;
+                    if (this.activefilters.length > 0) {
+                        for (j = j; j < this.activefilters.length; j++) {
+                            var active_key = this.activefiltersmap[this.activefilters[j]];
 
-                        if (active_key == 'corpus_merged_formats') {
-                            corpusFilterData[active_key] = [this.activefilters[j]];
-                        } else if (active_key == 'corpus_size_value') {
-                            var numberarray = this.activefilters[j].split(":");
-                            corpusFilterData['corpus_size_value'] = numberarray[0].trim();
-                            corpusFilterData['corpusSizeTo'] = numberarray[1].trim();
-                        } else if (active_key == 'corpus_publication_publication_date') {
-                            var numberarray = this.activefilters[j].split(":");
-                            corpusFilterData['corpus_publication_publication_date'] = numberarray[0].trim();
-                            corpusFilterData['corpusYearTo'] = numberarray[1].trim();
-                        } else {
-                            corpusFilterData[active_key] = this.activefilters[j];
+                            if (active_key == 'corpus_merged_formats') {
+                                corpusFilterData[active_key] = [this.activefilters[j]];
+                            } else if (active_key == 'corpus_size_value') {
+                                var numberarray = this.activefilters[j].split(":");
+                                corpusFilterData['corpus_size_value'] = numberarray[0].trim();
+                                corpusFilterData['corpusSizeTo'] = numberarray[1].trim();
+                            } else if (active_key == 'corpus_publication_publication_date') {
+                                var numberarray = this.activefilters[j].split(":");
+                                corpusFilterData['corpus_publication_publication_date'] = numberarray[0].trim();
+                                corpusFilterData['corpusYearTo'] = numberarray[1].trim();
+                            } else {
+                                corpusFilterData[active_key] = this.activefilters[j];
+                            }
                         }
                     }
-                }
 
-                if (j > 0) {
-                    this.submitCorpusFilter(corpusFilterData);
-                }
-            } else if (key.indexOf('document') > -1) {
-                for (var i = 0; i < this.documentresults.length; i++) {
-                    if (this.documentresults[i]._source.hasOwnProperty(key)) {
-                        if (this.documentresults[i]._source.visibility == 0) {
-                            this.documentresults[i]._source.visibility = 1;
-                            this.documentresultcounter++;
+                    if (j > 0) {
+                        this.submitCorpusFilter(corpusFilterData);
+                    }
+                } else if (key.indexOf('document') > -1) {
+                    for (var i = 0; i < this.documentresults.length; i++) {
+                        if (this.documentresults[i]._source.hasOwnProperty(key)) {
+                            if (this.documentresults[i]._source.visibility == 0) {
+                                this.documentresults[i]._source.visibility = 1;
+                                this.documentresultcounter++;
+                            }
+                        }
+                    } //end for
+
+                    var documentFilterData = {};
+                    var j = 0;
+                    if (this.activefilters.length > 0) {
+                        for (var j = j; j < this.activefilters.length; j++) {
+                            var active_key = this.activefiltersmap[this.activefilters[j]];
+                            if (active_key == 'document_size_extent') {
+                                var numberarray = this.activefilters[j].split(":");
+                                documentFilterData['document_size_extent'] = numberarray[0].trim();
+                                documentFilterData['document_size_extent_to'] = numberarray[1].trim();
+                            } else if (active_key == 'document_publication_publishing_date') {
+                                var publishingnumberarray = this.activefilters[j].split(":");
+                                documentFilterData['document_publication_publishing_date'] = publishingnumberarray[0].trim();
+                                documentFilterData['document_publication_publishing_date_to'] = publishingnumberarray[1].trim();
+                            } else {
+                                documentFilterData[active_key] = this.activefilters[j];
+                            }
                         }
                     }
-                } //end for
 
-                var documentFilterData = {};
-                var j = 0;
-                if (this.activefilters.length > 0) {
-                    for (var j = j; j < this.activefilters.length; j++) {
-                        var active_key = this.activefiltersmap[this.activefilters[j]];
-                        if (active_key == 'document_size_extent') {
-                            var numberarray = this.activefilters[j].split(":");
-                            documentFilterData['document_size_extent'] = numberarray[0].trim();
-                            documentFilterData['document_size_extent_to'] = numberarray[1].trim();
-                        } else if (active_key == 'document_publication_publishing_date') {
-                            var publishingnumberarray = this.activefilters[j].split(":");
-                            documentFilterData['document_publication_publishing_date'] = publishingnumberarray[0].trim();
-                            documentFilterData['document_publication_publishing_date_to'] = publishingnumberarray[1].trim();
-                        } else {
-                            documentFilterData[active_key] = this.activefilters[j];
+                    if (j > 0) {
+                        this.submitDocumentFilter(documentFilterData);
+                    }
+                } else if (key.indexOf('annotation') > -1 || key.indexOf('preparation') > -1) {
+                    for (var i = 0; i < this.annotationresults.length; i++) {
+                        if (this.annotationresults[i]._source.hasOwnProperty(key)) {
+                            if (this.annotationresults[i]._source.visibility == 0) {
+                                this.annotationresults[i]._source.visibility = 1;
+                                this.annotationresultcounter++;
+                            }
+                        }
+                    } //end for
+
+                    var annotationFilterData = {};
+                    if (this.activefilters.length > 0) {
+                        for (var j = 0; j < this.activefilters.length; j++) {
+                            var active_key = this.activefiltersmap[this.activefilters[j]];
+                            if (active_key == 'annotation_merged_formats') {
+                                annotationFilterData[active_key] = [this.activefilters[j]];
+                            } else {
+                                annotationFilterData[active_key] = this.activefilters[j];
+                            }
                         }
                     }
-                }
 
-                if (j > 0) {
-                    this.submitDocumentFilter(documentFilterData);
+                    this.submitAnnotationFilter(annotationFilterData);
                 }
-            } else if (key.indexOf('annotation') > -1 || key.indexOf('preparation') > -1) {
-                for (var i = 0; i < this.annotationresults.length; i++) {
-                    if (this.annotationresults[i]._source.hasOwnProperty(key)) {
-                        if (this.annotationresults[i]._source.visibility == 0) {
-                            this.annotationresults[i]._source.visibility = 1;
-                            this.annotationresultcounter++;
-                        }
-                    }
-                } //end for
-
-                var annotationFilterData = {};
-                if (this.activefilters.length > 0) {
-                    for (var j = 0; j < this.activefilters.length; j++) {
-                        var active_key = this.activefiltersmap[this.activefilters[j]];
-                        if (active_key == 'annotation_merged_formats') {
-                            annotationFilterData[active_key] = [this.activefilters[j]];
-                        } else {
-                            annotationFilterData[active_key] = this.activefilters[j];
-                        }
-                    }
-                }
-
-                this.submitAnnotationFilter(annotationFilterData);
             }
         },
         resetActiveFilters: function resetActiveFilters() {
@@ -27903,6 +27904,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -27919,16 +27923,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$refs.annotationFilter.clearAnnotationFilter();
             this.$emit('reset-activefilters');
         },
+        removeFilter: function removeFilter(field) {
+            for (var val in this.activefiltersmap) {
+                var key = this.activefiltersmap[val];
+                if (key == field) {
+                    this.activefilters.splice(this.activefilters.indexOf(key), 1);
+                    delete this.activefiltersmap[val];
+                }
+            }
+        },
         resetActiveFilter: function resetActiveFilter(filter) {
             this.$emit('reset-activefilter', filter);
         },
         resetCorpusFilter: function resetCorpusFilter(filter) {
             var key = this.activefiltersmap[filter];
-            console.log(key + " => " + filter);
+            console.log("CORPOUSRESET: " + key + " => " + filter);
             this.$refs.corpusFilter.resetFilterField(key, filter);
         },
         resetDocumentFilter: function resetDocumentFilter(filter) {
             var key = this.activefiltersmap[filter];
+            console.log("DOCRESET: " + key + " => " + filter);
             this.$refs.documentFilter.resetFilterField(key, filter);
         },
         resetAnnotationFilter: function resetAnnotationFilter(filter) {
@@ -27995,7 +28009,8 @@ var render = function() {
             corpusresultcounter: _vm.corpusresultcounter,
             documentresultcounter: _vm.documentresultcounter,
             annotationresultcounter: _vm.annotationresultcounter,
-            activefilters: _vm.activefilters
+            activefilters: _vm.activefilters,
+            activefiltersmap: _vm.activefiltersmap
           },
           on: {
             "corpus-resultcounter": _vm.emitCorpusResultCounter,
@@ -28026,7 +28041,8 @@ var render = function() {
           },
           on: {
             "corpus-filter": _vm.emitCorpusFilter,
-            "apply-filters": _vm.applyFilters
+            "apply-filters": _vm.applyFilters,
+            "remove-corpus-filter": _vm.removeFilter
           }
         })
       ],
@@ -28046,7 +28062,8 @@ var render = function() {
           },
           on: {
             "document-filter": _vm.emitDocumentFilter,
-            "apply-filters": _vm.applyFilters
+            "apply-filters": _vm.applyFilters,
+            "remove-document-filter": _vm.removeFilter
           }
         })
       ],
@@ -28725,10 +28742,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return classes;
         },
         resetFilter: function resetFilter(filter) {
-            this.$emit('reset-corpus-filter', filter);
-            this.$emit('reset-document-filter', filter);
-            this.$emit('reset-annotation-filter', filter);
-            this.$emit('reset-activefilter', filter);
+            var key = this.activefiltersmap[filter];
+            if (key.indexOf("corpus") > -1) {
+                this.$emit('reset-corpus-filter', filter);
+            } else if (key.indexOf("document") > -1) {
+                this.$emit('reset-document-filter', filter);
+            } else if (key.indexOf("annotation") > -1 || key.indexOf("preparation") > -1) {
+                this.$emit('reset-annotation-filter', filter);
+            }
+
+            //this.$emit('reset-activefilter',filter);
         },
         resetFilters: function resetFilters() {
             this.localcorpusresultcounter = this.corpusresultcounter;
@@ -29065,6 +29088,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             this.$emit('corpus-filter', this.corpusFilterData);
         },
 
+        emitDropCorpusFilter: function emitDropCorpusFilter(field) {
+            this.$emit('remove-corpus-filter', field);
+        },
         clearCorpusFilter: function clearCorpusFilter() {
             this.corpusFilterData = {
                 corpus_title: '',
@@ -29102,6 +29128,14 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             } else if (field == 'corpus_publication_publication_date') {
                 this.corpusFilterData['corpus_publication_publication_date'] = '';
                 this.corpusFilterData['corpusYearTo'] = '';
+            } else if (field == 'corpus_size_value') {
+                this.corpusFilterData['corpus_size_value'] = '';
+                this.corpusFilterData['corpusSizeTo'] = '';
+                var corpusel = document.getElementById('corpusSize');
+
+                if (corpusel) {
+                    corpusel.noUiSlider.reset();
+                }
             } else {
                 this.corpusFilterData[field] = '';
             }
@@ -29119,9 +29153,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
     },
     mounted: function mounted() {
         var mycorpusvue = this;
-
-        var rangeSliderList = ['corpusSize'];
-
         var el = document.getElementById('corpusSize');
 
         if (el) {
@@ -29148,19 +29179,15 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             el.noUiSlider.on('update', function (values, handle) {
 
                 if (handle) {
+                    mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
                     paddingMax.innerHTML = Math.round(values[handle]);
                 } else {
+                    mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
                     paddingMin.innerHTML = Math.round(values[handle]);
                 }
-            });
 
-            el.noUiSlider.on('end', function (values, handle) {
-                if (handle) {
-                    mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
-                } else {
-                    //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                    mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
-                }
+                mycorpusvue.emitDropCorpusFilter('corpus_size_value');
+                mycorpusvue.emitCorpusFilter();
             });
 
             el.noUiSlider.on('change', function () {
@@ -29175,9 +29202,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 mycorpusvue.corpusFilterData.corpus_merged_formats.push(set.value);
             }
         });
-    },
-    beforeMount: function beforeMount() {
-        this.id = "corpusfilter";
     }
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(95)))
@@ -29882,6 +29906,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$emit('document-filter', this.documentFilterData);
         },
 
+        emitDropDocumentFilter: function emitDropDocumentFilter(field) {
+            this.$emit('remove-document-filter', field);
+        },
         clearDocumentFilter: function clearDocumentFilter() {
             this.documentFilterData = {
                 document_title: '',
@@ -29901,6 +29928,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             if (field == 'document_publication_publishing_date') {
                 this.documentFilterData['document_publication_publishing_date'] = '';
                 this.documentFilterData['document_publication_publishing_date_to'] = '';
+            } else if (field == 'document_size_extent') {
+                this.documentFilterData['document_size_extent'] = '';
+                this.documentFilterData['document_size_extent_to'] = '';
+                var documentel = document.getElementById('documentSize');
+
+                if (documentel) {
+                    documentel.noUiSlider.reset();
+                }
             } else {
                 this.documentFilterData[field] = '';
             }
@@ -29937,19 +29972,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             el.noUiSlider.on('update', function (values, handle) {
 
                 if (handle) {
+                    myvue.documentFilterData.document_size_extent_to = Math.round(values[handle]);
                     paddingMax.innerHTML = Math.round(values[handle]);
                 } else {
+                    myvue.documentFilterData.document_size_extent = Math.round(values[handle]);
                     paddingMin.innerHTML = Math.round(values[handle]);
                 }
-            });
-
-            el.noUiSlider.on('end', function (values, handle) {
-                if (handle) {
-                    myvue.documentFilterData.document_size_extent_to = values[handle];
-                } else {
-                    //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                    myvue.documentFilterData.document_size_extent = values[handle];
-                }
+                myvue.emitDropDocumentFilter('document_size_extent');
+                myvue.emitDocumentFilter();
             });
 
             el.noUiSlider.on('change', function () {

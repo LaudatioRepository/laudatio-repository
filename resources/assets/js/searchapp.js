@@ -898,110 +898,112 @@ const app = new Vue({
 
             this.activefilters.splice(this.activefilters.indexOf(filter),1);
             delete this.activefiltersmap[filter];
-
-            if(key.indexOf('corpus') > -1) {
-                for(var i = 0; i < this.corpusresults.length; i++) {
-                    if (this.corpusresults[i]._source.hasOwnProperty(key)){
-                        if(this.corpusresults[i]._source.visibility == 0) {
-                            this.corpusresults[i]._source.visibility = 1;
-                            this.corpusresultcounter++;
+            if(key != 'undefined') {
+                if(key.indexOf('corpus') > -1) {
+                    for(var i = 0; i < this.corpusresults.length; i++) {
+                        if (this.corpusresults[i]._source.hasOwnProperty(key)){
+                            if(this.corpusresults[i]._source.visibility == 0) {
+                                this.corpusresults[i]._source.visibility = 1;
+                                this.corpusresultcounter++;
+                            }
                         }
                     }
-                }
 
-                var corpusFilterData = {}
-                var j = 0;
-                if(this.activefilters.length > 0) {
-                    for(j = j; j < this.activefilters.length; j++) {
-                        var active_key = this.activefiltersmap[this.activefilters[j]];
+                    var corpusFilterData = {}
+                    var j = 0;
+                    if(this.activefilters.length > 0) {
+                        for(j = j; j < this.activefilters.length; j++) {
+                            var active_key = this.activefiltersmap[this.activefilters[j]];
 
-                        if(active_key == 'corpus_merged_formats') {
-                            corpusFilterData[active_key] = [this.activefilters[j]];
-                        }
-                        else if(active_key == 'corpus_size_value') {
-                            var numberarray = this.activefilters[j].split(":");
-                            corpusFilterData['corpus_size_value'] = numberarray[0].trim();
-                            corpusFilterData['corpusSizeTo'] = numberarray[1].trim();
-                        }
-                        else if(active_key == 'corpus_publication_publication_date') {
-                            var numberarray = this.activefilters[j].split(":");
-                            corpusFilterData['corpus_publication_publication_date'] = numberarray[0].trim();
-                            corpusFilterData['corpusYearTo'] = numberarray[1].trim();
-                        }
-                        else{
-                            corpusFilterData[active_key] = this.activefilters[j];
-                        }
+                            if(active_key == 'corpus_merged_formats') {
+                                corpusFilterData[active_key] = [this.activefilters[j]];
+                            }
+                            else if(active_key == 'corpus_size_value') {
+                                var numberarray = this.activefilters[j].split(":");
+                                corpusFilterData['corpus_size_value'] = numberarray[0].trim();
+                                corpusFilterData['corpusSizeTo'] = numberarray[1].trim();
+                            }
+                            else if(active_key == 'corpus_publication_publication_date') {
+                                var numberarray = this.activefilters[j].split(":");
+                                corpusFilterData['corpus_publication_publication_date'] = numberarray[0].trim();
+                                corpusFilterData['corpusYearTo'] = numberarray[1].trim();
+                            }
+                            else{
+                                corpusFilterData[active_key] = this.activefilters[j];
+                            }
 
+                        }
                     }
-                }
 
-                if(j > 0) {
-                    this.submitCorpusFilter(corpusFilterData);
-                }
+                    if(j > 0) {
+                        this.submitCorpusFilter(corpusFilterData);
+                    }
 
+                }
+                else if(key.indexOf('document') > -1) {
+                    for(var i = 0; i < this.documentresults.length; i++) {
+                        if (this.documentresults[i]._source.hasOwnProperty(key)){
+                            if(this.documentresults[i]._source.visibility == 0) {
+                                this.documentresults[i]._source.visibility = 1;
+                                this.documentresultcounter++;
+                            }
+                        }
+                    }//end for
+
+                    var documentFilterData = {}
+                    var j = 0;
+                    if(this.activefilters.length > 0) {
+                        for(var j = j; j < this.activefilters.length; j++) {
+                            var active_key = this.activefiltersmap[this.activefilters[j]];
+                            if(active_key == 'document_size_extent'){
+                                var numberarray = this.activefilters[j].split(":");
+                                documentFilterData['document_size_extent'] = numberarray[0].trim();
+                                documentFilterData['document_size_extent_to'] = numberarray[1].trim();
+                            }
+                            else  if(active_key == 'document_publication_publishing_date'){
+                                var publishingnumberarray = this.activefilters[j].split(":");
+                                documentFilterData['document_publication_publishing_date'] = publishingnumberarray[0].trim();
+                                documentFilterData['document_publication_publishing_date_to'] = publishingnumberarray[1].trim();
+                            }
+                            else{
+                                documentFilterData[active_key] = this.activefilters[j];
+                            }
+                        }
+                    }
+
+                    if(j > 0) {
+                        this.submitDocumentFilter(documentFilterData);
+                    }
+
+                }
+                else if(key.indexOf('annotation') > -1 || key.indexOf('preparation') > -1) {
+                    for(var i = 0; i < this.annotationresults.length; i++) {
+                        if (this.annotationresults[i]._source.hasOwnProperty(key)){
+                            if(this.annotationresults[i]._source.visibility == 0) {
+                                this.annotationresults[i]._source.visibility = 1;
+                                this.annotationresultcounter++;
+                            }
+                        }
+                    }//end for
+
+                    var annotationFilterData = {}
+                    if(this.activefilters.length > 0) {
+                        for(var j = 0; j < this.activefilters.length; j++) {
+                            var active_key = this.activefiltersmap[this.activefilters[j]];
+                            if(active_key == 'annotation_merged_formats') {
+                                annotationFilterData[active_key] = [this.activefilters[j]];
+                            }
+                            else{
+                                annotationFilterData[active_key] = this.activefilters[j];
+                            }
+
+                        }
+                    }
+
+                    this.submitAnnotationFilter(annotationFilterData);
+                }
             }
-            else if(key.indexOf('document') > -1) {
-                for(var i = 0; i < this.documentresults.length; i++) {
-                    if (this.documentresults[i]._source.hasOwnProperty(key)){
-                        if(this.documentresults[i]._source.visibility == 0) {
-                            this.documentresults[i]._source.visibility = 1;
-                            this.documentresultcounter++;
-                        }
-                    }
-                }//end for
 
-                var documentFilterData = {}
-                var j = 0;
-                if(this.activefilters.length > 0) {
-                    for(var j = j; j < this.activefilters.length; j++) {
-                        var active_key = this.activefiltersmap[this.activefilters[j]];
-                        if(active_key == 'document_size_extent'){
-                            var numberarray = this.activefilters[j].split(":");
-                            documentFilterData['document_size_extent'] = numberarray[0].trim();
-                            documentFilterData['document_size_extent_to'] = numberarray[1].trim();
-                        }
-                        else  if(active_key == 'document_publication_publishing_date'){
-                            var publishingnumberarray = this.activefilters[j].split(":");
-                            documentFilterData['document_publication_publishing_date'] = publishingnumberarray[0].trim();
-                            documentFilterData['document_publication_publishing_date_to'] = publishingnumberarray[1].trim();
-                        }
-                        else{
-                            documentFilterData[active_key] = this.activefilters[j];
-                        }
-                    }
-                }
-
-                if(j > 0) {
-                    this.submitDocumentFilter(documentFilterData);
-                }
-
-            }
-            else if(key.indexOf('annotation') > -1 || key.indexOf('preparation') > -1) {
-                for(var i = 0; i < this.annotationresults.length; i++) {
-                    if (this.annotationresults[i]._source.hasOwnProperty(key)){
-                        if(this.annotationresults[i]._source.visibility == 0) {
-                            this.annotationresults[i]._source.visibility = 1;
-                            this.annotationresultcounter++;
-                        }
-                    }
-                }//end for
-
-                var annotationFilterData = {}
-                if(this.activefilters.length > 0) {
-                    for(var j = 0; j < this.activefilters.length; j++) {
-                        var active_key = this.activefiltersmap[this.activefilters[j]];
-                        if(active_key == 'annotation_merged_formats') {
-                            annotationFilterData[active_key] = [this.activefilters[j]];
-                        }
-                        else{
-                            annotationFilterData[active_key] = this.activefilters[j];
-                        }
-
-                    }
-                }
-
-                this.submitAnnotationFilter(annotationFilterData);
-            }
         },
         resetActiveFilters: function () {
             this.activefilters = []

@@ -125,6 +125,9 @@
             emitCorpusFilter(){
                 this.$emit('corpus-filter',this.corpusFilterData);
             },
+            emitDropCorpusFilter: function (field){
+                this.$emit('remove-corpus-filter',field);
+            },
             clearCorpusFilter: function () {
                 this.corpusFilterData = {
                     corpus_title: '',
@@ -166,6 +169,15 @@
                     this.corpusFilterData['corpus_publication_publication_date'] = ''
                     this.corpusFilterData['corpusYearTo'] = ''
                 }
+                else if(field == 'corpus_size_value'){
+                    this.corpusFilterData['corpus_size_value'] = ''
+                    this.corpusFilterData['corpusSizeTo'] = ''
+                    let corpusel = document.getElementById('corpusSize')
+
+                    if(corpusel) {
+                        corpusel.noUiSlider.reset();
+                    }
+                }
                 else{
                     this.corpusFilterData[field] = ''
                 }
@@ -188,10 +200,6 @@
         },
         mounted() {
             let mycorpusvue = this;
-
-            var rangeSliderList = ['corpusSize']
-
-
             let el = document.getElementById('corpusSize')
 
             if(el) {
@@ -218,20 +226,15 @@
                 el.noUiSlider.on('update', function ( values, handle ) {
 
                     if ( handle ) {
+                        mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
                         paddingMax.innerHTML = Math.round(values[handle]);
                     } else {
+                        mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
                         paddingMin.innerHTML = Math.round(values[handle]);
                     }
-                });
 
-                el.noUiSlider.on('end', function ( values, handle ) {
-                    if ( handle ) {
-                        mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
-
-                    } else {
-                        //console.log($(el).attr("id")+handle+" => "+values+" FIRST: "+values[handle])
-                        mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
-                    }
+                    mycorpusvue.emitDropCorpusFilter('corpus_size_value')
+                    mycorpusvue.emitCorpusFilter();
                 });
 
 
@@ -249,9 +252,6 @@
                 }
             });
 
-        },
-        beforeMount() {
-            this.id = "corpusfilter"
         }
     }
 </script>

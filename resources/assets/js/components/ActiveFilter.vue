@@ -54,10 +54,18 @@
                 return classes;
             },
             resetFilter(filter) {
-                this.$emit('reset-corpus-filter',filter);
-                this.$emit('reset-document-filter',filter);
-                this.$emit('reset-annotation-filter',filter);
-                this.$emit('reset-activefilter',filter);
+                var key = this.activefiltersmap[filter];
+                if(key.indexOf("corpus") > -1) {
+                    this.$emit('reset-corpus-filter',filter);
+                }
+                else if(key.indexOf("document") > -1) {
+                    this.$emit('reset-document-filter',filter);
+                }
+                else if(key.indexOf("annotation") > -1 || key.indexOf("preparation") > -1) {
+                    this.$emit('reset-annotation-filter',filter);
+                }
+
+                //this.$emit('reset-activefilter',filter);
             },
             resetFilters() {
                 this.localcorpusresultcounter = this.corpusresultcounter;

@@ -13,6 +13,7 @@
                 :documentresultcounter="documentresultcounter"
                 :annotationresultcounter="annotationresultcounter"
                 :activefilters="activefilters"
+                :activefiltersmap="activefiltersmap"
                 v-on:corpus-resultcounter="emitCorpusResultCounter"
                 v-on:document-resultcounter="emitDocumentResultCounter"
                 v-on:annotation-resultcounter="emitAnnotationResultCounter"
@@ -32,6 +33,7 @@
                 ref="corpusFilter"
                 v-on:corpus-filter="emitCorpusFilter"
                 v-on:apply-filters="applyFilters"
+                v-on:remove-corpus-filter="removeFilter"
                 ></corpusfilter>
         </div>
         <div class="mb-4">
@@ -42,6 +44,7 @@
                 ref="documentFilter"
                 v-on:document-filter="emitDocumentFilter"
                 v-on:apply-filters="applyFilters"
+                v-on:remove-document-filter="removeFilter"
                 ></documentfilter>
         </div>
         <div class="mb-4">
@@ -73,16 +76,26 @@
                 this.$refs.annotationFilter.clearAnnotationFilter();
                 this.$emit('reset-activefilters');
             },
+            removeFilter: function(field) {
+                for(var val in this.activefiltersmap) {
+                    var key = this.activefiltersmap[val]
+                    if(key == field) {
+                        this.activefilters.splice(this.activefilters.indexOf(key),1);
+                        delete this.activefiltersmap[val];
+                    }
+                }
+            },
             resetActiveFilter: function(filter){
                 this.$emit('reset-activefilter',filter);
             },
             resetCorpusFilter: function(filter) {
                 var key = this.activefiltersmap[filter];
-                console.log(key+" => "+filter)
+                console.log("CORPOUSRESET: "+key+" => "+filter)
                 this.$refs.corpusFilter.resetFilterField(key,filter);
             },
             resetDocumentFilter: function(filter) {
                 var key = this.activefiltersmap[filter];
+                console.log("DOCRESET: "+key+" => "+filter)
                 this.$refs.documentFilter.resetFilterField(key,filter);
             },
             resetAnnotationFilter: function(filter) {
