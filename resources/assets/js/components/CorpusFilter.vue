@@ -162,6 +162,10 @@
                     }
 
                 }
+                else if(field == 'corpus_publication_publication_date'){
+                    this.corpusFilterData['corpus_publication_publication_date'] = ''
+                    this.corpusFilterData['corpusYearTo'] = ''
+                }
                 else{
                     this.corpusFilterData[field] = ''
                 }

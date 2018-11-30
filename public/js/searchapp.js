@@ -29099,6 +29099,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                         }
                     }
                 }
+            } else if (field == 'corpus_publication_publication_date') {
+                this.corpusFilterData['corpus_publication_publication_date'] = '';
+                this.corpusFilterData['corpusYearTo'] = '';
             } else {
                 this.corpusFilterData[field] = '';
             }
@@ -29894,7 +29897,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 document_merged_languages: ''
             };
         },
-        resetFilterField: function resetFilterField(field, filter) {}
+        resetFilterField: function resetFilterField(field, filter) {
+            if (field == 'document_publication_publishing_date') {
+                this.documentFilterData['document_publication_publishing_date'] = '';
+                this.documentFilterData['document_publication_publishing_date_to'] = '';
+            } else {
+                this.documentFilterData[field] = '';
+            }
+        }
     },
     mounted: function mounted() {
 

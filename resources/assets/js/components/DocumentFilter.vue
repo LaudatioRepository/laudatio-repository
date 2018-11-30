@@ -152,7 +152,13 @@
                 }
             },
             resetFilterField: function(field, filter) {
-
+                if(field == 'document_publication_publishing_date'){
+                    this.documentFilterData['document_publication_publishing_date'] = ''
+                    this.documentFilterData['document_publication_publishing_date_to'] = ''
+                }
+                else{
+                    this.documentFilterData[field] = ''
+                }
             }
         },
         mounted() {
