@@ -32,7 +32,7 @@
                             <input type="text" class="form-control" id="formCorpusPublisher" aria-describedby="inputPublisher" placeholder='"Humboldt Universität"' v-model="corpusFilterData.corpus_publication_publisher" @keyup.enter="emitApplyFilters">
                         </div>
 
-                        <div class="form-group mb-3">
+                        <div class="form-group mb-3" id="corpusflexgroup">
                             <label class="mb-0 text-14 " for="formCorpusFormats">Formats</label>
                             <input type="text" name="formatslist" multiple="multiple" list="formatsList-Corpus" class="flexdatalist corpusformatslist form-control"
                                    data-min-length="0" id="formCorpusFormats" v-model="corpusFilterData.corpus_merged_formats" >
@@ -123,9 +123,6 @@
                 this.$emit('apply-filters');
             },
             emitCorpusFilter(){
-                for(var key in this.corpusFilterData) {
-                    'C:'.concat(this.corpusFilterData[key])
-                }
                 this.$emit('corpus-filter',this.corpusFilterData);
             },
             clearCorpusFilter: function () {
@@ -142,6 +139,33 @@
                 }
 
                 $('#formPanelCorpus').find("ul.flexdatalist-multiple li.value").remove();
+            },
+            resetFilterField: function(field, filter) {
+                if(field == 'corpus_merged_formats'){
+                    this.corpusFilterData[field].splice(this.corpusFilterData[field].indexOf(field),1);
+                    var flexgroup = document.getElementById('corpusflexgroup');
+                    if (flexgroup.hasChildNodes()) {
+                        for (var i = 0; i < flexgroup.children.length; i++) {
+                            if (flexgroup.children[i].tagName == "UL") {
+                                if (flexgroup.children[i].hasChildNodes()) {
+                                    for (var j = 0; j < flexgroup.children[i].children.length; j++) {
+                                        if (flexgroup.children[i].children[j].tagName == "LI") {
+                                            if(flexgroup.children[i].children[j].firstChild.textContent == filter ){
+                                                flexgroup.children[i].children[j].remove();
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+                else{
+                    this.corpusFilterData[field] = ''
+                }
+
             },
             getClass: function () {
                 var classes = "collapse";
@@ -221,6 +245,9 @@
                 }
             });
 
+        },
+        beforeMount() {
+            this.id = "corpusfilter"
         }
     }
 </script>

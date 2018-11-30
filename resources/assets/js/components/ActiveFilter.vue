@@ -32,7 +32,7 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults','documentresults','annotationresults','activefilters','corpusresultcounter','documentresultcounter','annotationresultcounter'],
+        props: ['corpusresults','documentresults','annotationresults','activefilters','activefiltersmap','corpusresultcounter','documentresultcounter','annotationresultcounter'],
         data: function() {
             return {
                 localcorpusresultcounter: this.corpusresultcounter,
@@ -54,6 +54,9 @@
                 return classes;
             },
             resetFilter(filter) {
+                this.$emit('reset-corpus-filter',filter);
+                this.$emit('reset-document-filter',filter);
+                this.$emit('reset-annotation-filter',filter);
                 this.$emit('reset-activefilter',filter);
             },
             resetFilters() {

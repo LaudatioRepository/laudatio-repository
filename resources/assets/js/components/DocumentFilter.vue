@@ -151,6 +151,9 @@
                     document_merged_languages: ''
                 }
             },
+            resetFilterField: function(field, filter) {
+
+            }
         },
         mounted() {
 

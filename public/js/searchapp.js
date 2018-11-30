@@ -27900,10 +27900,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter', 'corpusformats', 'annotationformats'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'activefiltersmap', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter', 'corpusformats', 'annotationformats'],
     methods: {
         applyFilters: function applyFilters() {
             this.$refs.corpusFilter.emitCorpusFilter();
@@ -27918,6 +27921,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         resetActiveFilter: function resetActiveFilter(filter) {
             this.$emit('reset-activefilter', filter);
+        },
+        resetCorpusFilter: function resetCorpusFilter(filter) {
+            var key = this.activefiltersmap[filter];
+            console.log(key + " => " + filter);
+            this.$refs.corpusFilter.resetFilterField(key, filter);
+        },
+        resetDocumentFilter: function resetDocumentFilter(filter) {
+            var key = this.activefiltersmap[filter];
+            this.$refs.documentFilter.resetFilterField(key, filter);
+        },
+        resetAnnotationFilter: function resetAnnotationFilter(filter) {
+            var key = this.activefiltersmap[filter];
+            this.$refs.annotationFilter.resetFilterField(key, filter);
         },
         emitCorpusFilter: function emitCorpusFilter(corpusFilterEmitData) {
             this.$emit('corpus-filter', corpusFilterEmitData);
@@ -27986,7 +28002,10 @@ var render = function() {
             "document-resultcounter": _vm.emitDocumentResultCounter,
             "annotation-resultcounter": _vm.emitAnnotationResultCounter,
             "clear-all-filters": _vm.clearAllFilters,
-            "reset-activefilter": _vm.resetActiveFilter
+            "reset-activefilter": _vm.resetActiveFilter,
+            "reset-corpus-filter": _vm.resetCorpusFilter,
+            "reset-document-filter": _vm.resetDocumentFilter,
+            "reset-annotation-filter": _vm.resetAnnotationFilter
           }
         })
       ],
@@ -28685,7 +28704,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'activefiltersmap', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
     data: function data() {
         return {
             localcorpusresultcounter: this.corpusresultcounter,
@@ -28706,6 +28725,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return classes;
         },
         resetFilter: function resetFilter(filter) {
+            this.$emit('reset-corpus-filter', filter);
+            this.$emit('reset-document-filter', filter);
+            this.$emit('reset-annotation-filter', filter);
             this.$emit('reset-activefilter', filter);
         },
         resetFilters: function resetFilters() {
@@ -29040,9 +29062,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             this.$emit('apply-filters');
         },
         emitCorpusFilter: function emitCorpusFilter() {
-            for (var key in this.corpusFilterData) {
-                'C:'.concat(this.corpusFilterData[key]);
-            }
             this.$emit('corpus-filter', this.corpusFilterData);
         },
 
@@ -29060,6 +29079,29 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             };
 
             $('#formPanelCorpus').find("ul.flexdatalist-multiple li.value").remove();
+        },
+        resetFilterField: function resetFilterField(field, filter) {
+            if (field == 'corpus_merged_formats') {
+                this.corpusFilterData[field].splice(this.corpusFilterData[field].indexOf(field), 1);
+                var flexgroup = document.getElementById('corpusflexgroup');
+                if (flexgroup.hasChildNodes()) {
+                    for (var i = 0; i < flexgroup.children.length; i++) {
+                        if (flexgroup.children[i].tagName == "UL") {
+                            if (flexgroup.children[i].hasChildNodes()) {
+                                for (var j = 0; j < flexgroup.children[i].children.length; j++) {
+                                    if (flexgroup.children[i].children[j].tagName == "LI") {
+                                        if (flexgroup.children[i].children[j].firstChild.textContent == filter) {
+                                            flexgroup.children[i].children[j].remove();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                this.corpusFilterData[field] = '';
+            }
         },
         getClass: function getClass() {
             var classes = "collapse";
@@ -29130,6 +29172,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 mycorpusvue.corpusFilterData.corpus_merged_formats.push(set.value);
             }
         });
+    },
+    beforeMount: function beforeMount() {
+        this.id = "corpusfilter";
     }
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(95)))
@@ -29308,63 +29353,72 @@ var render = function() {
               })
             ]),
             _vm._v(" "),
-            _c("div", { staticClass: "form-group mb-3" }, [
-              _c(
-                "label",
-                {
-                  staticClass: "mb-0 text-14 ",
-                  attrs: { for: "formCorpusFormats" }
-                },
-                [_vm._v("Formats")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
+            _c(
+              "div",
+              {
+                staticClass: "form-group mb-3",
+                attrs: { id: "corpusflexgroup" }
+              },
+              [
+                _c(
+                  "label",
                   {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.corpusFilterData.corpus_merged_formats,
-                    expression: "corpusFilterData.corpus_merged_formats"
-                  }
-                ],
-                staticClass: "flexdatalist corpusformatslist form-control",
-                attrs: {
-                  type: "text",
-                  name: "formatslist",
-                  multiple: "multiple",
-                  list: "formatsList-Corpus",
-                  "data-min-length": "0",
-                  id: "formCorpusFormats"
-                },
-                domProps: { value: _vm.corpusFilterData.corpus_merged_formats },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
+                    staticClass: "mb-0 text-14 ",
+                    attrs: { for: "formCorpusFormats" }
+                  },
+                  [_vm._v("Formats")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.corpusFilterData.corpus_merged_formats,
+                      expression: "corpusFilterData.corpus_merged_formats"
                     }
-                    _vm.$set(
-                      _vm.corpusFilterData,
-                      "corpus_merged_formats",
-                      $event.target.value
-                    )
+                  ],
+                  staticClass: "flexdatalist corpusformatslist form-control",
+                  attrs: {
+                    type: "text",
+                    name: "formatslist",
+                    multiple: "multiple",
+                    list: "formatsList-Corpus",
+                    "data-min-length": "0",
+                    id: "formCorpusFormats"
+                  },
+                  domProps: {
+                    value: _vm.corpusFilterData.corpus_merged_formats
+                  },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(
+                        _vm.corpusFilterData,
+                        "corpus_merged_formats",
+                        $event.target.value
+                      )
+                    }
                   }
-                }
-              }),
-              _vm._v(" "),
-              _c(
-                "datalist",
-                { attrs: { id: "formatsList-Corpus" } },
-                _vm._l(this.uniqueArray(_vm.corpusformats), function(
-                  corpusformat
-                ) {
-                  return _c(
-                    "option",
-                    { attrs: { corpusformat: corpusformat } },
-                    [_vm._v(_vm._s(corpusformat))]
-                  )
-                })
-              )
-            ]),
+                }),
+                _vm._v(" "),
+                _c(
+                  "datalist",
+                  { attrs: { id: "formatsList-Corpus" } },
+                  _vm._l(this.uniqueArray(_vm.corpusformats), function(
+                    corpusformat
+                  ) {
+                    return _c(
+                      "option",
+                      { attrs: { corpusformat: corpusformat } },
+                      [_vm._v(_vm._s(corpusformat))]
+                    )
+                  })
+                )
+              ]
+            ),
             _vm._v(" "),
             _c("div", { staticClass: "form-group mb-3" }, [
               _c(
@@ -29839,7 +29893,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 document_languages_language: '',
                 document_merged_languages: ''
             };
-        }
+        },
+        resetFilterField: function resetFilterField(field, filter) {}
     },
     mounted: function mounted() {
 
@@ -30488,6 +30543,29 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 preparation_encoding_annotation_group: ''
                 //There is some strange bug somewhere that makes it impossible to add a filter twice after the following purge:
             };$('#formPanelAnnotations').find("ul.flexdatalist-multiple li.value").remove();
+        },
+        resetFilterField: function resetFilterField(field, filter) {
+            if (field == 'annotation_merged_formats') {
+                this.annotationFilterData[field].splice(this.annotationFilterData[field].indexOf(field), 1);
+                var flexgroup = document.getElementById('annotationflexgroup');
+                if (flexgroup.hasChildNodes()) {
+                    for (var i = 0; i < flexgroup.children.length; i++) {
+                        if (flexgroup.children[i].tagName == "UL") {
+                            if (flexgroup.children[i].hasChildNodes()) {
+                                for (var j = 0; j < flexgroup.children[i].children.length; j++) {
+                                    if (flexgroup.children[i].children[j].tagName == "LI") {
+                                        if (flexgroup.children[i].children[j].firstChild.textContent == filter) {
+                                            flexgroup.children[i].children[j].remove();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                this.annotationFilterData[field] = '';
+            }
         }
     },
     mounted: function mounted() {
@@ -30624,78 +30702,86 @@ var render = function() {
             })
           ]),
           _vm._v(" "),
-          _c("div", { staticClass: "form-group mb-3" }, [
-            _c(
-              "label",
-              {
-                staticClass: "mb-0 text-14 ",
-                attrs: { for: "formAnnotationsFormats" }
-              },
-              [_vm._v("Formats")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
+          _c(
+            "div",
+            {
+              staticClass: "form-group mb-3",
+              attrs: { id: "annotationflexgroup" }
+            },
+            [
+              _c(
+                "label",
                 {
-                  name: "model",
-                  rawName: "v-model",
+                  staticClass: "mb-0 text-14 ",
+                  attrs: { for: "formAnnotationsFormats" }
+                },
+                [_vm._v("Formats")]
+              ),
+              _vm._v(" "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value:
+                      _vm.annotationFilterData
+                        .preparation_encoding_annotation_group,
+                    expression:
+                      "annotationFilterData.preparation_encoding_annotation_group"
+                  }
+                ],
+                staticClass: "flexdatalist annotationformatslist form-control",
+                attrs: {
+                  type: "text",
+                  name: "formatslist",
+                  multiple: "multiple",
+                  list: "formatsList-Annotations",
+                  "data-min-length": "0",
+                  id: "formAnnotationsFormats"
+                },
+                domProps: {
                   value:
                     _vm.annotationFilterData
-                      .preparation_encoding_annotation_group,
-                  expression:
-                    "annotationFilterData.preparation_encoding_annotation_group"
-                }
-              ],
-              staticClass: "flexdatalist annotationformatslist form-control",
-              attrs: {
-                type: "text",
-                name: "formatslist",
-                multiple: "multiple",
-                list: "formatsList-Annotations",
-                "data-min-length": "0",
-                id: "formAnnotationsFormats"
-              },
-              domProps: {
-                value:
-                  _vm.annotationFilterData.preparation_encoding_annotation_group
-              },
-              on: {
-                keyup: function($event) {
-                  if (
-                    !("button" in $event) &&
-                    _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-                  ) {
-                    return null
-                  }
-                  return _vm.emitApplyFilters($event)
+                      .preparation_encoding_annotation_group
                 },
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
+                on: {
+                  keyup: function($event) {
+                    if (
+                      !("button" in $event) &&
+                      _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                    ) {
+                      return null
+                    }
+                    return _vm.emitApplyFilters($event)
+                  },
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(
+                      _vm.annotationFilterData,
+                      "preparation_encoding_annotation_group",
+                      $event.target.value
+                    )
                   }
-                  _vm.$set(
-                    _vm.annotationFilterData,
-                    "preparation_encoding_annotation_group",
-                    $event.target.value
-                  )
                 }
-              }
-            }),
-            _vm._v(" "),
-            _c(
-              "datalist",
-              { attrs: { id: "formatsList-Annotations" } },
-              _vm._l(this.uniqueArray(_vm.annotationformats), function(
-                annotationformat
-              ) {
-                return _c(
-                  "option",
-                  { attrs: { annotationformat: annotationformat } },
-                  [_vm._v(_vm._s(annotationformat))]
-                )
-              })
-            )
-          ])
+              }),
+              _vm._v(" "),
+              _c(
+                "datalist",
+                { attrs: { id: "formatsList-Annotations" } },
+                _vm._l(this.uniqueArray(_vm.annotationformats), function(
+                  annotationformat
+                ) {
+                  return _c(
+                    "option",
+                    { attrs: { annotationformat: annotationformat } },
+                    [_vm._v(_vm._s(annotationformat))]
+                  )
+                })
+              )
+            ]
+          )
         ])
       ]
     )

@@ -18,6 +18,9 @@
                 v-on:annotation-resultcounter="emitAnnotationResultCounter"
                 v-on:clear-all-filters="clearAllFilters"
                 v-on:reset-activefilter="resetActiveFilter"
+                v-on:reset-corpus-filter="resetCorpusFilter"
+                v-on:reset-document-filter="resetDocumentFilter"
+                v-on:reset-annotation-filter="resetAnnotationFilter"
                 ></activefilter>
         </div>
         <div class="mb-4">
@@ -57,7 +60,7 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults','documentresults', 'annotationresults', 'activefilters','corpusresultcounter','documentresultcounter','annotationresultcounter','corpusformats','annotationformats'],
+        props: ['corpusresults','documentresults', 'annotationresults', 'activefilters','activefiltersmap','corpusresultcounter','documentresultcounter','annotationresultcounter','corpusformats','annotationformats'],
         methods: {
             applyFilters: function (){
                 this.$refs.corpusFilter.emitCorpusFilter();
@@ -72,6 +75,19 @@
             },
             resetActiveFilter: function(filter){
                 this.$emit('reset-activefilter',filter);
+            },
+            resetCorpusFilter: function(filter) {
+                var key = this.activefiltersmap[filter];
+                console.log(key+" => "+filter)
+                this.$refs.corpusFilter.resetFilterField(key,filter);
+            },
+            resetDocumentFilter: function(filter) {
+                var key = this.activefiltersmap[filter];
+                this.$refs.documentFilter.resetFilterField(key,filter);
+            },
+            resetAnnotationFilter: function(filter) {
+                var key = this.activefiltersmap[filter];
+                this.$refs.annotationFilter.resetFilterField(key,filter);
             },
             emitCorpusFilter: function (corpusFilterEmitData) {
                 this.$emit('corpus-filter',corpusFilterEmitData);

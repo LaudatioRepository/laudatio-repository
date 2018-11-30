@@ -19,7 +19,7 @@
                                placeholder='"Lexical"' v-model="annotationFilterData.preparation_encoding_annotation_group" @keyup.enter="emitApplyFilters">
                     </div>
 
-                    <div class="form-group mb-3">
+                    <div class="form-group mb-3" id="annotationflexgroup">
                         <label class="mb-0 text-14 " for="formAnnotationsFormats">Formats</label>
                         <input type="text" name="formatslist" multiple="multiple" list="formatsList-Annotations" class="flexdatalist annotationformatslist form-control"
                                data-min-length="0" id="formAnnotationsFormats" v-model="annotationFilterData.preparation_encoding_annotation_group" @keyup.enter="emitApplyFilters">
@@ -83,6 +83,32 @@
                 //There is some strange bug somewhere that makes it impossible to add a filter twice after the following purge:
                 $('#formPanelAnnotations').find("ul.flexdatalist-multiple li.value").remove();
             },
+            resetFilterField: function(field, filter) {
+                if(field == 'annotation_merged_formats'){
+                    this.annotationFilterData[field].splice(this.annotationFilterData[field].indexOf(field),1);
+                    var flexgroup = document.getElementById('annotationflexgroup');
+                    if (flexgroup.hasChildNodes()) {
+                        for (var i = 0; i < flexgroup.children.length; i++) {
+                            if (flexgroup.children[i].tagName == "UL") {
+                                if (flexgroup.children[i].hasChildNodes()) {
+                                    for (var j = 0; j < flexgroup.children[i].children.length; j++) {
+                                        if (flexgroup.children[i].children[j].tagName == "LI") {
+                                            if(flexgroup.children[i].children[j].firstChild.textContent == filter ){
+                                                flexgroup.children[i].children[j].remove();
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+                else{
+                    this.annotationFilterData[field] = ''
+                }
+            }
         },
         mounted() {
             let myannotationvue = this;

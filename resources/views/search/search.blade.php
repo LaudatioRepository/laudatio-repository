@@ -24,6 +24,7 @@
                                 :documentresults="documentresults"
                                 :annotationresults="annotationresults"
                                 :activefilters="activefilters"
+                                :activefiltersmap="activefiltersmap"
                                 v-on:corpus-filter="submitCorpusFilter"
                                 v-on:document-filter="submitDocumentFilter"
                                 v-on:annotation-filter="submitAnnotationFilter"

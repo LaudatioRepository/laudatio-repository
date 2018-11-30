@@ -914,7 +914,7 @@ const app = new Vue({
                 if(this.activefilters.length > 0) {
                     for(j = j; j < this.activefilters.length; j++) {
                         var active_key = this.activefiltersmap[this.activefilters[j]];
-                        
+
                         if(active_key == 'corpus_merged_formats') {
                             corpusFilterData[active_key] = [this.activefilters[j]];
                         }
