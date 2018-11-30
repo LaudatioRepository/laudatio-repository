@@ -28742,16 +28742,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return classes;
         },
         resetFilter: function resetFilter(filter) {
-            var key = this.activefiltersmap[filter];
-            if (key.indexOf("corpus") > -1) {
-                this.$emit('reset-corpus-filter', filter);
-            } else if (key.indexOf("document") > -1) {
-                this.$emit('reset-document-filter', filter);
-            } else if (key.indexOf("annotation") > -1 || key.indexOf("preparation") > -1) {
-                this.$emit('reset-annotation-filter', filter);
-            }
+            if (this.activefiltersmap != 'undefined') {
+                var key = this.activefiltersmap[filter];
+                if (key.indexOf("corpus") > -1) {
+                    this.$emit('reset-corpus-filter', filter);
+                } else if (key.indexOf("document") > -1) {
+                    this.$emit('reset-document-filter', filter);
+                } else if (key.indexOf("annotation") > -1 || key.indexOf("preparation") > -1) {
+                    this.$emit('reset-annotation-filter', filter);
+                }
 
-            this.$emit('reset-activefilter', filter);
+                this.$emit('reset-activefilter', filter);
+            }
         },
         resetFilters: function resetFilters() {
             this.localcorpusresultcounter = this.corpusresultcounter;
