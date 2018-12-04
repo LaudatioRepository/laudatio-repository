@@ -136,8 +136,7 @@ class CorpusProjectController extends Controller
         $filePath = $this->GitRepoService->createProjectFileStructure($this->flysystem,request('corpusproject_name'));
         //$this->GitRepoService->createGitProject($filePath);
         if($filePath){
-
-            /*
+            
             $gitLabResponse = $this->GitLabService->createGitLabGroup(
                 request('corpusproject_name'),
                 $filePath,
@@ -166,7 +165,6 @@ class CorpusProjectController extends Controller
                 ]);
             }
 
-*/
             $corpusproject = CorpusProject::create([
                 'name' => request('corpusproject_name'),
                 'description' => request('corpusproject_description'),

@@ -449,7 +449,7 @@ class UploadController extends Controller
                                     'description' => $corpusDescription[0],
                                     'visibility' => 'public'
                                 ));
-
+                            //Log::info("GITLABRESPONSE: ".print_r($gitLabResponse,1));
                             if( null != $gitLabResponse &&
                                 isset($gitLabResponse['id'])
                             ){
