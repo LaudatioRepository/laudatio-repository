@@ -27263,12 +27263,10 @@ var app = new Vue({
             }
         },
         resetActiveFilter: function resetActiveFilter(filter) {
-            console.log("FILTER: " + filter + " MAP: " + JSON.stringify(this.activefiltersmap));
             var key = this.activefiltersmap[filter];
-            console.log("THERE WAS A KEY: " + key);
             this.activefilters.splice(this.activefilters.indexOf(filter), 1);
             delete this.activefiltersmap[filter];
-            console.log("KEY STILL THERE ? : " + key + " MAP: " + JSON.stringify(this.activefiltersmap));
+
             if (key != 'undefined') {
                 if (key.indexOf('corpus') > -1) {
                     for (var i = 0; i < this.corpusresults.length; i++) {
@@ -27303,11 +27301,8 @@ var app = new Vue({
                     }
 
                     if (j > 0) {
-                        console.log("RESUBMITTING CORPUSFILTER : " + JSON.stringify(corpusFilterData) + " MAP: " + JSON.stringify(this.activefiltersmap));
                         this.submitCorpusFilter(corpusFilterData);
                     }
-
-                    console.log("AFTER RESUBMITTING CORPUSFILTER : " + JSON.stringify(corpusFilterData) + " MAP: " + JSON.stringify(this.activefiltersmap));
                 } else if (key.indexOf('document') > -1) {
                     for (var i = 0; i < this.documentresults.length; i++) {
                         if (this.documentresults[i]._source.hasOwnProperty(key)) {
