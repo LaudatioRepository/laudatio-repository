@@ -391,9 +391,11 @@ const app = new Vue({
 
                         if(key == "corpus_publication_publication_date" || key == "corpusYearTo"  || key == "corpus_publication_license" || key == "corpus_merged_formats" || key == "corpus_size_value" || key == "corpusSizeTo" ) {
                             if(key == "corpus_size_value" && corpusFilterObject.corpus_size_value != ""  && corpusFilterObject.corpusSizeTo != "") {
-                                if(!this.activefilters.includes(corpusFilterObject.corpus_size_value+":"+corpusFilterObject.corpusSizeTo)) {
-                                    this.activefilters.push(corpusFilterObject.corpus_size_value+":"+corpusFilterObject.corpusSizeTo);
-                                    this.activefiltersmap[corpusFilterObject.corpus_size_value+":"+corpusFilterObject.corpusSizeTo] = key;
+                                if(corpusFilterObject.corpus_size_value > 1 ||   corpusFilterObject.corpusSizeTo < 999999){
+                                    if(!this.activefilters.includes(corpusFilterObject.corpus_size_value+":"+corpusFilterObject.corpusSizeTo)) {
+                                        this.activefilters.push(corpusFilterObject.corpus_size_value+":"+corpusFilterObject.corpusSizeTo);
+                                        this.activefiltersmap[corpusFilterObject.corpus_size_value+":"+corpusFilterObject.corpusSizeTo] = key;
+                                    }
                                 }
                             }
                             if(key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != ""){
@@ -514,10 +516,13 @@ const app = new Vue({
                         if (key == "document_size_extent" || key == "document_publication_publishing_date" || key == "document_size_extent_to" || key == 'document_publication_publishing_date_to') {
 
                             if(key == "document_size_extent"  && documentFilterObject.document_size_extent != ""  && documentFilterObject.document_size_extent_to != "") {
-                                if(!this.activefilters.includes(Math.floor(documentFilterObject.document_size_extent)+":"+Math.floor(documentFilterObject.document_size_extent_to))) {
-                                    this.activefilters.push(Math.floor(documentFilterObject.document_size_extent)+":"+Math.floor(documentFilterObject.document_size_extent_to));
-                                    this.activefiltersmap[Math.floor(documentFilterObject.document_size_extent)+":"+Math.floor(documentFilterObject.document_size_extent_to)] = key;
+                                if(documentFilterObject.document_size_extent > 1 ||   documentFilterObject.document_size_extent_to  < 999999){
+                                    if(!this.activefilters.includes(Math.floor(documentFilterObject.document_size_extent)+":"+Math.floor(documentFilterObject.document_size_extent_to))) {
+                                        this.activefilters.push(Math.floor(documentFilterObject.document_size_extent)+":"+Math.floor(documentFilterObject.document_size_extent_to));
+                                        this.activefiltersmap[Math.floor(documentFilterObject.document_size_extent)+":"+Math.floor(documentFilterObject.document_size_extent_to)] = key;
+                                    }
                                 }
+
                             }//end if document_size_extent
 
                             if(key == "document_publication_publishing_date" && documentFilterObject.document_publication_publishing_date != '' && documentFilterObject.document_publication_publishing_date_to != '') {

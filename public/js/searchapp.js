@@ -26781,9 +26781,11 @@ var app = new Vue({
 
                         if (key == "corpus_publication_publication_date" || key == "corpusYearTo" || key == "corpus_publication_license" || key == "corpus_merged_formats" || key == "corpus_size_value" || key == "corpusSizeTo") {
                             if (key == "corpus_size_value" && corpusFilterObject.corpus_size_value != "" && corpusFilterObject.corpusSizeTo != "") {
-                                if (!this.activefilters.includes(corpusFilterObject.corpus_size_value + ":" + corpusFilterObject.corpusSizeTo)) {
-                                    this.activefilters.push(corpusFilterObject.corpus_size_value + ":" + corpusFilterObject.corpusSizeTo);
-                                    this.activefiltersmap[corpusFilterObject.corpus_size_value + ":" + corpusFilterObject.corpusSizeTo] = key;
+                                if (corpusFilterObject.corpus_size_value > 1 || corpusFilterObject.corpusSizeTo < 999999) {
+                                    if (!this.activefilters.includes(corpusFilterObject.corpus_size_value + ":" + corpusFilterObject.corpusSizeTo)) {
+                                        this.activefilters.push(corpusFilterObject.corpus_size_value + ":" + corpusFilterObject.corpusSizeTo);
+                                        this.activefiltersmap[corpusFilterObject.corpus_size_value + ":" + corpusFilterObject.corpusSizeTo] = key;
+                                    }
                                 }
                             }
                             if (key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != "") {
@@ -26898,9 +26900,11 @@ var app = new Vue({
                         if (key == "document_size_extent" || key == "document_publication_publishing_date" || key == "document_size_extent_to" || key == 'document_publication_publishing_date_to') {
 
                             if (key == "document_size_extent" && documentFilterObject.document_size_extent != "" && documentFilterObject.document_size_extent_to != "") {
-                                if (!this.activefilters.includes(Math.floor(documentFilterObject.document_size_extent) + ":" + Math.floor(documentFilterObject.document_size_extent_to))) {
-                                    this.activefilters.push(Math.floor(documentFilterObject.document_size_extent) + ":" + Math.floor(documentFilterObject.document_size_extent_to));
-                                    this.activefiltersmap[Math.floor(documentFilterObject.document_size_extent) + ":" + Math.floor(documentFilterObject.document_size_extent_to)] = key;
+                                if (documentFilterObject.document_size_extent > 1 || documentFilterObject.document_size_extent_to < 999999) {
+                                    if (!this.activefilters.includes(Math.floor(documentFilterObject.document_size_extent) + ":" + Math.floor(documentFilterObject.document_size_extent_to))) {
+                                        this.activefilters.push(Math.floor(documentFilterObject.document_size_extent) + ":" + Math.floor(documentFilterObject.document_size_extent_to));
+                                        this.activefiltersmap[Math.floor(documentFilterObject.document_size_extent) + ":" + Math.floor(documentFilterObject.document_size_extent_to)] = key;
+                                    }
                                 }
                             } //end if document_size_extent
 
@@ -28785,11 +28789,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.$emit('clear-all-filters');
         }
-    },
-    mounted: function mounted() {
-        $(document).on('click', '.activefilter a i.fa-close', function (e) {
-            //$(this).parent().parent().remove();
-        });
     }
 });
 
@@ -29179,7 +29178,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 paddingMax = document.getElementById('corpusSize' + '-maxVal');
 
             el.noUiSlider.on('update', function (values, handle) {
-
                 if (handle) {
                     mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
                     paddingMax.innerHTML = Math.round(values[handle]);
@@ -29946,8 +29944,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     mounted: function mounted() {
 
         var myvue = this;
-
         var el = document.getElementById('documentSize');
+        var touched = false;
 
         if (el) {
             //console.log("el: "+el)
@@ -29957,7 +29955,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             noUiSlider.create(el, {
                 connect: true,
                 behaviour: 'tap-drag',
-                start: [1, 999999],
+                start: [1, 1000000],
                 range: {
                     // Starting at 500, step the value by 500,
                     // until 4000 is reached. From there, step by 1000.
@@ -29972,14 +29970,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 paddingMax = document.getElementById('documentSize' + '-maxVal');
 
             el.noUiSlider.on('update', function (values, handle) {
-
                 if (handle) {
+
                     myvue.documentFilterData.document_size_extent_to = Math.round(values[handle]);
                     paddingMax.innerHTML = Math.round(values[handle]);
                 } else {
                     myvue.documentFilterData.document_size_extent = Math.round(values[handle]);
                     paddingMin.innerHTML = Math.round(values[handle]);
                 }
+
                 myvue.emitDropDocumentFilter('document_size_extent');
                 myvue.emitDocumentFilter();
             });

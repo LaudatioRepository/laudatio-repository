@@ -176,8 +176,8 @@
         mounted() {
 
             let myvue = this;
-
             let el = document.getElementById('documentSize')
+            var touched = false;
 
             if(el) {
                 //console.log("el: "+el)
@@ -187,7 +187,7 @@
                 noUiSlider.create(el, {
                     connect: true,
                     behaviour: 'tap-drag',
-                    start: [1, 999999],
+                    start: [1, 1000000],
                     range: {
                         // Starting at 500, step the value by 500,
                         // until 4000 is reached. From there, step by 1000.
@@ -198,22 +198,28 @@
                     }
                 });
 
+
                 let paddingMin = document.getElementById('documentSize' + '-minVal'),
                     paddingMax = document.getElementById('documentSize' + '-maxVal');
 
                 el.noUiSlider.on('update', function ( values, handle ) {
-
                     if ( handle ) {
-                        myvue.documentFilterData.document_size_extent_to = Math.round(values[handle]);
-                        paddingMax.innerHTML = Math.round(values[handle]);
+
+                            myvue.documentFilterData.document_size_extent_to = Math.round(values[handle]);
+                            paddingMax.innerHTML = Math.round(values[handle]);
 
                     } else {
-                        myvue.documentFilterData.document_size_extent = Math.round(values[handle]);
-                        paddingMin.innerHTML = Math.round(values[handle]);
+                            myvue.documentFilterData.document_size_extent = Math.round(values[handle]);
+                            paddingMin.innerHTML = Math.round(values[handle]);
+
                     }
+
                     myvue.emitDropDocumentFilter('document_size_extent')
                     myvue.emitDocumentFilter();
+
                 });
+
+
 
                 el.noUiSlider.on('change', function(){
                     // Validate corresponding form

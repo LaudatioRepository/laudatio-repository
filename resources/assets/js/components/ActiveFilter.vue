@@ -101,11 +101,6 @@
 
                 this.$emit('clear-all-filters');
             }
-        },
-        mounted() {
-            $(document).on('click','.activefilter a i.fa-close',function(e){
-                //$(this).parent().parent().remove();
-            });
         }
     }
 </script>

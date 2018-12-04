@@ -224,7 +224,6 @@
                     paddingMax = document.getElementById('corpusSize' + '-maxVal');
 
                 el.noUiSlider.on('update', function ( values, handle ) {
-
                     if ( handle ) {
                         mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
                         paddingMax.innerHTML = Math.round(values[handle]);
@@ -235,6 +234,8 @@
 
                     mycorpusvue.emitDropCorpusFilter('corpus_size_value')
                     mycorpusvue.emitCorpusFilter();
+
+
                 });
 
 
