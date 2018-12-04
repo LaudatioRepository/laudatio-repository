@@ -31,13 +31,20 @@ set('writable_dirs', [
 
 
 // Hosts
+/*
 host('depot1-6.cms.hu-berlin.de')
     ->user('root')
     ->identityFile('/Users/rolfguescini/.ssh/deploy', '/Users/rolfguescini/.ssh/deploy', '')
     ->set('deploy_path', '/var/www/html/laravelaudatio')
-    ->set('branch', 'dataupload')
+    ->set('branch', 'newsearch')
     ->user('rolfguescini');
-
+*/
+host('depot1-5.cms.hu-berlin.de')
+    ->user('root')
+    ->identityFile('/Users/rolfguescini/.ssh/deploy', '/Users/rolfguescini/.ssh/deploy', '')
+    ->set('deploy_path', '/var/www/html/laravelaudatio')
+    ->set('branch', 'continuedsearch')
+    ->user('rolfguescini');
 
 // Tasks
 task('environment', function () {

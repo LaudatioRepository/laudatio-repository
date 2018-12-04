@@ -289,7 +289,6 @@ class ElasticService implements ElasticsearchInterface
     }
 
 
-
     /**
      * @param $id
      * @param bool $full
@@ -703,8 +702,10 @@ class ElasticService implements ElasticsearchInterface
 
     public function getAnnotationByCorpus($searchData,$corpusData,$fields,$index){
         $resultData = array();
-        if (Cache::tags(['annotation_'.$corpusData[0].'_'.$index])->has("getAnnotationByCorpus_".$corpusData[0]."_".$index)) {
-            $resultData = Cache::tags(['annotation_'.$corpusData[0].'_'.$index])->get("getAnnotationByCorpus_".$corpusData[0]."_".$index);
+        $fieldString = join("_",$fields);
+
+        if (Cache::tags(['annotation_'.$corpusData[0].'_'.$fieldString.'_'.$index])->has("getAnnotationByCorpus_".$corpusData[0].'_'.$fieldString.'_'.$index)) {
+            $resultData = Cache::tags(['annotation_'.$corpusData[0].'_'.$fieldString.'_'.$index])->get("getAnnotationByCorpus_".$corpusData[0].'_'.$fieldString.'_'.$index);
         }
         else {
             $queryBuilder = new QueryBuilder();
@@ -730,17 +731,19 @@ class ElasticService implements ElasticsearchInterface
                     $resultData[$counter++] = array();
                 }
             }//end foreach queries
-            Cache::tags(['annotation_'.$corpusData[0].'_'.$index])->forever("getAnnotationByCorpus_".$corpusData[0]."_".$index, $resultData);
+            Cache::tags(['annotation_'.$corpusData[0].'_'.$fieldString.'_'.$index])->forever("getAnnotationByCorpus_".$corpusData[0].'_'.$fieldString.'_'.$index, $resultData);
         }
 
         return $resultData;
     }
 
-    public function getDocumentByCorpus($searchData,$corpusData,$index){
+    public function getDocumentByCorpus($searchData,$corpusData,$fields,$index){
         $resultData = array();
 
-        if (Cache::tags(['document_'.$corpusData[0].'_'.$index])->has("getDocumentByCorpus_".$corpusData[0]."_".$index)) {
-            $resultData = Cache::tags(['document_'.$corpusData[0].'_'.$index])->get("getDocumentByCorpus_".$corpusData[0]."_".$index);
+        $fieldString = join("_",$fields);
+
+        if (Cache::tags(['document_'.$corpusData[0].'_'.$fieldString."_".$index])->has("getDocumentByCorpus_".$corpusData[0].'_'.$fieldString."_".$index)) {
+            $resultData = Cache::tags(['document_'.$corpusData[0].'_'.$fieldString."_".$index])->get("getDocumentByCorpus_".$corpusData[0].'_'.$fieldString."_".$index);
         }
         else {
             $queryBuilder = new QueryBuilder();
@@ -754,10 +757,9 @@ class ElasticService implements ElasticsearchInterface
                     'type' => 'doc',
                     'body' => $queryBody,
                     //'_source_exclude' => ['message'],
-                    '_source' => ["document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"],
+                    '_source' => $fields,
                     'filter_path' => ['hits.hits']
                 ];
-
                 $results = Elasticsearch::search($params);
                 $termData = array_values($corpusData);
 
@@ -767,7 +769,7 @@ class ElasticService implements ElasticsearchInterface
                 else{
                     $resultData[$counter++] = array();
                 }
-                Cache::tags(['document_'.$corpusData[0].'_'.$index])->forever("getDocumentByCorpus_".$corpusData[0]."_".$index, $resultData);
+                Cache::tags(['document_'.$corpusData[0].'_'.$fieldString."_".$index])->forever("getDocumentByCorpus_".$corpusData[0].'_'.$fieldString."_".$index, $resultData);
             }//end foreach queries
         }
 
@@ -894,6 +896,11 @@ class ElasticService implements ElasticsearchInterface
     }
 
 
+    /**
+     * searchGeneral
+     * @param $searchData
+     * @return mixed
+     */
     public function searchGeneral($searchData)
     {
         $queryBuilder = new QueryBuilder();
@@ -901,13 +908,34 @@ class ElasticService implements ElasticsearchInterface
         $queryBody = $queryBuilder->buildMultiMatchQuery($searchData);
         $params = [
             'size' => 1000,
-            'index' => '_all',
+            'index' => trim($searchData['indices']),
             'type' => 'doc',
             'body' => $queryBody,
-            '_source_exclude' => ['message']
+            //'_source_exclude' => ['message']
+            '_source' => $searchData['source'],
         ];
+        $results = Elasticsearch::search($params);
+        return $results;
+    }
 
-
+    /**
+     * listAllPublished
+     * @param $searchData
+     * @return mixed
+     */
+    public function listAllPublished($searchData)
+    {
+        $queryBuilder = new QueryBuilder();
+        $queryBody = null;
+        $queryBody = $queryBuilder->buildMatchAllQuery(array());
+        $params = [
+            'size' => 1000,
+            'index' => trim($searchData['indices']),
+            'type' => 'doc',
+            'body' => $queryBody,
+            //'_source_exclude' => ['message']
+            '_source' => $searchData['source'],
+        ];
         $results = Elasticsearch::search($params);
         return $results;
     }

@@ -34,7 +34,7 @@ class User extends Authenticatable
     }
 
     public function corpus_projects() {
-        return $this->belongsToMany(CorpusProject::class);
+        return $this->belongsToMany(CorpusProject::class)->withPivot('role_id');
     }
 
     public function corpora() {

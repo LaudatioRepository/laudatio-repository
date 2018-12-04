@@ -29,17 +29,3 @@
         }
     }
 </script>
-
-<style lang="css">
-    #search_general{
-        display: flex;
-    }
-
-    #search_general input{
-        flex: 1 auto;
-    }
-
-    #search_general button{
-        border-radius: 0;
-    }
-</style>

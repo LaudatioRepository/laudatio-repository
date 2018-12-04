@@ -137,6 +137,7 @@ class CorpusProjectController extends Controller
         //$this->GitRepoService->createGitProject($filePath);
         if($filePath){
 
+            /*
             $gitLabResponse = $this->GitLabService->createGitLabGroup(
                 request('corpusproject_name'),
                 $filePath,
@@ -165,12 +166,25 @@ class CorpusProjectController extends Controller
                 ]);
             }
 
-
+*/
+            $corpusproject = CorpusProject::create([
+                'name' => request('corpusproject_name'),
+                'description' => request('corpusproject_description'),
+                'directory_path' => $filePath,
+            ]);
 
             $user = \Auth::user();
-            $corpusproject->users()->save($user,['role_id' => 2]);
+
             $projectAdminRole = Role::findById(2);
-            $user->roles()->sync($projectAdminRole);
+            //$user->roles()->sync($projectAdminRole);
+            if($user) {
+                if(!$user->roles->contains($projectAdminRole)){
+                    $user->roles()->attach($projectAdminRole);
+                }
+
+                $corpusproject->users()->save($user,['role_id' => 2]);
+            }
+
 
         }
 

@@ -24,6 +24,7 @@ interface ElasticsearchInterface {
     public function getFormatsByCorpus($corpusId,$index);
     public function search($index, $field, $term);
     public function searchGeneral($searchData);
+    public function listAllPublished($searchData);
     public function searchCorpusIndex($searchData);
     public function rangeSearch($searchData);
     public function searchDocumentIndex($searchData);
@@ -34,7 +35,7 @@ interface ElasticsearchInterface {
     public function getAnnotationByDocument($searchData,$documentData);
     public function getCorpusTitlesByDocument($searchData,$documentData);
     public function getCorpusByAnnotation($searchData);
-    public function getDocumentByCorpus($searchData,$corpusData,$index);
+    public function getDocumentByCorpus($searchData,$corpusData,$fields,$index);
     public function getDocumentsByAnnotationAndCorpusId($documentList,$corpusId,$index);
     public function getDocumentsByDocumentId($documentids,$index);
     public function getAnnotationByCorpus($searchData,$corpusData,$fields,$index);

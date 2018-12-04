@@ -112,6 +112,7 @@ Route::get('/admin/gitlabgroups/create',[ 'as' => 'admin.gitlab.createGroup.', '
 
 /** SEARCH **/
 Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
+Route::post('/search',['as' => 'frontpagesearch', 'uses' => 'SearchController@frontPageSearch']);
 /** END SEARCH **/
 
 

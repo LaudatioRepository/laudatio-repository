@@ -1018,6 +1018,46 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpus_logo;
     }
 
+    public function getCorpusNameByCorpusId($corpusid,$index){
+        $corpus_name = "";
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$index]])->get();
+
+        if(isset($corpus[0])){
+            $corpus_name = $corpus[0]->name;
+        }
+
+        return $corpus_name;
+    }
+
+    public function getCorpusNameByObjectElasticsearchId($type,$objectId){
+        $corpus_name = "";
+        $object = null;
+        switch($type) {
+            case "corpus":
+                $object = Corpus::where("elasticsearch_id",$objectId)->get();
+                if(isset($object[0])){
+                    $corpus_name = $object[0]->name;
+                }
+                break;
+            case "document":
+                $object = Document::where("elasticsearch_id",$objectId)->get();
+                if(isset($object[0])){
+                    $corpus = Corpus::findOrFail($object[0]->corpus_id);
+                    $corpus_name = $corpus->name;
+                }
+                break;
+            case "annotation":
+                $object = Annotation::where("elasticsearch_id",$objectId)->get();
+                if(isset($object[0])){
+                    $corpus = Corpus::findOrFail($object[0]->corpus_id);
+                    $corpus_name = $corpus->name;
+                }
+                break;
+        }//end switch
+
+        return $corpus_name;
+    }
+
     public function  getCurrentCorpusIndexByElasticsearchId($elasticSearchId) {
         $corpus = Corpus::where([
             ["elasticsearch_id","=",$elasticSearchId]
@@ -1107,6 +1147,16 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $corpusPath;
     }
 
+    public function getCorpusPathByCorpusId($corpusid,$corpus_index){
+        $corpusPath = "";
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$corpus_index]])->get();
+        if(isset($corpus[0])){
+            $corpusPath = $corpus[0]->directory_path;
+        }
+
+        return $corpusPath;
+    }
+
 
     public function deleteModels($path){
         $dirArray = explode("/",$path);
@@ -1170,6 +1220,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     }
 
 
+
     /**
      * getPublishedCorpora for listings
      * @param $corpusresponses
@@ -1220,30 +1271,12 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 $documentResult = $elasticService->getDocumentByCorpus(
                     array(array("in_corpora" => $publicationresponse['_source']['corpus'])),
                     array($publicationresponse['_source']['corpus']),
+                    array("document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"),
                     $current_document_index
                 );
 
 
                 if(!empty($current_corpus_index)){
-                    $document_dates = array();
-
-                    if (count($documentResult) > 0 && isset($documentResult[$publicationresponse['_source']['corpus']])){
-                        for($d = 0; $d < count($documentResult[$publicationresponse['_source']['corpus']]); $d++) {
-                            $doc = $documentResult[$publicationresponse['_source']['corpus']][$d];
-                            array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
-                        }
-
-                        sort($document_dates);
-                    }
-
-                    if(count($document_dates) > 0){
-                        if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
-                            $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
-                        }
-                        else{
-                            $document_range = $document_dates[0];
-                        }
-                    }
 
                     if(!array_key_exists($publicationresponse['_source']['corpus'],$corpusdata)){
 
@@ -1253,6 +1286,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                         if(!empty($publishedCorpusid)){
                             $apiData = $elasticService->getCorpus($publishedCorpusid,true,$current_corpus_index);
                             $corpusresponse = json_decode($apiData->getContent(), true);
+                            $document_range = $this->getDocumentRange($corpusresponse,$documentResult);
 
                             $authors = "";
                             for($i = 0; $i < count($corpusresponse['result']['corpus_editor_forename']); $i++){
@@ -1455,6 +1489,35 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $citations;
     }
 
+
+    /**
+     * getDocumentRange
+     * @param $data
+     * @param $documentResult
+     * @return mixed|string
+     */
+    public function getDocumentRange($data,$documentResult) {
+        $document_dates = array();
+        $document_range = "";
+        if (array_key_exists($data['result']['corpus_id'][0],$documentResult)){
+            for($d = 0; $d < count($documentResult[$data['result']['corpus_id'][0]]); $d++) {
+                $doc = $documentResult[$data['result']['corpus_id'][0]][$d];
+                array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+            }
+
+            sort($document_dates);
+
+            if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
+                $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
+            }
+            else{
+                $document_range = $document_dates[0];
+            }
+        }
+
+        return $document_range;
+    }
+
     public function emptyCorpusCache($corpusId, $index){
         Cache::tags(['corpus_'.$corpusId.'_'.$index])->flush();
 
@@ -1514,5 +1577,48 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         }
         
         return $isDuplicate;
+    }
+
+    /**
+     * determineAdminRole
+     *
+     * @param $admin_roles
+     * @return array
+     */
+    public function determineAdminRole($admin_roles){
+     $admin_role_filtered = array();
+
+     $lastRoleId = 1000;
+     foreach ($admin_roles as $id => $admin_role_array) {
+         foreach ($admin_role_array as  $admin_role) {
+             if ($admin_role['role_id'] < $lastRoleId) {
+                 $admin_role_filtered = $admin_role;
+             }
+             $lastRoleId = $admin_role['role_id'];
+         }
+
+     }
+
+     return $admin_role_filtered;
+    }
+
+    public function determineUserAdminRole($user_roles){
+        $user_role_filtered = array();
+
+        $lastRoleId = 1000;
+        foreach ($user_roles as $id => $user_role_array) {
+            if(!isset($user_role_filtered[$id])){
+                $user_role_filtered[$id] = array();
+            }
+            foreach ($user_role_array as  $user_role) {
+                if ($user_role['role_id'] < $lastRoleId) {
+                    array_push($user_role_filtered[$id],$user_role);
+                }
+                $lastRoleId = $user_role['role_id'];
+            }
+
+        }
+
+        return $user_role_filtered;
     }
 }

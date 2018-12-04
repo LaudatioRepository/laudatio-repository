@@ -4,18 +4,18 @@
             <ul class="nav nav-tabs" id="searchtabs" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="tab-corpora" data-toggle="tab" href="#searchtab-corpora" role="tab" aria-controls="searchtab-corpora"
-                       aria-selected="true">Corpora (123)</a>
+                       aria-selected="true">Corpora ({{corpusresultcounter}})</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="tab-documents" data-toggle="tab" href="#searchtab-documents" role="tab" aria-controls="searchtab-documents"
-                       aria-selected="false">Documents (3423)</a>
+                       aria-selected="false">Documents ({{documentresultcounter}})</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="tab-annotations" data-toggle="tab" href="#searchtab-annotations" role="tab" aria-controls="searchtab-annotations"
-                       aria-selected="false">Annotations (3253)</a>
+                       aria-selected="false">Annotations ({{annotationresultcounter}})</a>
                 </li>
             </ul>
-            <div class="form-row ">
+            <!--div class="form-row ">
                 <div class="col-auto">
                     <div class="dropdown">
                         <button class="btn btn-outline-corpus-dark rounded dropdown-toggle font-weight-bold text-uppercase "
@@ -33,12 +33,20 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div-->
         </div>
-        <div class="w-100 py-3 px-6 mb-1 bg-corpus-light d-flex flex-column">
+        <!--div class="w-100 py-3 px-6 mb-1 bg-corpus-light d-flex flex-column">
             <div class="btn btn-sm font-weight-bold text-uppercase btn-outline-corpus-dark align-self-end disabled">
                 Apply Filter
             </div>
-        </div>
+        </div-->
     </div>
 </template>
+<script>
+    export default {
+        props: ['corpusresults','documentresults','annotationresults','corpusresultcounter','documentresultcounter','annotationresultcounter'],
+        mounted() {
+            console.log('CorpusResultHeaderComponent mounted.')
+        }
+    }
+</script>

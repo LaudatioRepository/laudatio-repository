@@ -55,7 +55,7 @@
         methods: {
             emitCorpusData(){
 
-                this.$emit('corpus-search',this.corpusSearchData);
+                    this.$emit('corpus-search',this.corpusSearchData);
             }
         },
         mounted() {

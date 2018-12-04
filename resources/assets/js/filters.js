@@ -50,6 +50,7 @@ Vue.filter('toLocale', function (to) {
     return '/' + i18n.locale + to
 })
 
+
 Vue.filter('truncate', function(string){
     // Make sure an element and number of items to truncate is provided
     if (!string) return;
@@ -58,6 +59,17 @@ Vue.filter('truncate', function(string){
     var content = string.trim();
     content = content.split(' ').slice(0, limit);
     content = content.join(' ') + (after ? after : '');
+
+    return content;
+})
+
+Vue.filter('truncatelist', function(string){
+    // Make sure an element and number of items to truncate is provided
+    if (!string) return;
+    var limit = 5;
+    var after = "...";
+    var contentArray = string.split(",");
+    content = contentArray[0] + (after ? after : '');
 
     return content;
 })

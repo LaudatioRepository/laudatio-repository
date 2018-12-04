@@ -5,17 +5,17 @@
             <span>Corpus</span>
             <i class="collapse-indicator fa fa-chevron-circle-down fa-fw fa-lg text-16"></i>
         </div>
-        <div class="collapse show" id="formPanelCorpus">
+        <div v-bind:class="getClass()" id="formPanelCorpus">
             <div class="card-body px-2">
-                <form action="">
+                <!--form action=""-->
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formCorpusTitle">Title</label>
-                        <input type="text" class="form-control" id="formCorpusTitle" aria-describedby="inputTitle" placeholder='"Ridges herbology"' v-model="corpusSearchData.corpus_title">
+                        <input type="text" class="form-control" id="formCorpusTitle" aria-describedby="inputTitle" placeholder='"Ridges herbology"' v-model="corpusFilterData.corpus_title" @keyup.enter="emitApplyFilters">
                     </div>
 
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formCorpusLanguage">Language</label>
-                        <input type="text" class="form-control" id="formCorpusLanguage" aria-describedby="inputLanguage" placeholder='"German"' v-model="corpusSearchData.corpus_merged_languages">
+                        <input type="text" class="form-control" id="formCorpusLanguage" aria-describedby="inputLanguage" placeholder='"German"' v-model="corpusFilterData.corpus_languages_language" @keyup.enter="emitApplyFilters">
                     </div>
 
                     <div class="d-flex flex-column">
@@ -28,37 +28,32 @@
                     <div id="formPanelCorpus-all1" class="collapse formPanelCorpus-all">
 
                         <div class="form-group mb-3">
-                            <label class="mb-0 text-14 " for="formCorpusPublisher">Language</label>
-                            <input type="text" class="form-control" id="formCorpusPublisher" aria-describedby="inputPublisher" placeholder='"Humboldt Universität"' v-model="corpusSearchData.corpus_publication_publisher">
+                            <label class="mb-0 text-14 " for="formCorpusPublisher">Publisher</label>
+                            <input type="text" class="form-control" id="formCorpusPublisher" aria-describedby="inputPublisher" placeholder='"Humboldt Universität"' v-model="corpusFilterData.corpus_publication_publisher" @keyup.enter="emitApplyFilters">
                         </div>
 
-                        <div class="form-group mb-3">
+                        <div class="form-group mb-3" id="corpusflexgroup">
                             <label class="mb-0 text-14 " for="formCorpusFormats">Formats</label>
-                            <input type="text" name="formatslist" multiple="multiple" list="formatsList-Corpus" class="flexdatalist form-control"
-                                   data-min-length="0" id="formCorpusFormats" v-model="corpusSearchData.corpus_merged_formats" >
+                            <input type="text" name="formatslist" multiple="multiple" list="formatsList-Corpus" class="flexdatalist corpusformatslist form-control"
+                                   data-min-length="0" id="formCorpusFormats" v-model="corpusFilterData.corpus_merged_formats" >
                             <datalist id="formatsList-Corpus">
                                 <!--[if IE 9]><select disabled style="display:none" class="ie9_fix"><![endif]-->
-                                <option value="ANNIS">ANNIS</option>
-                                <option value="EXEL">EXEL</option>
-                                <option value="PAULA">PAULA</option>
-                                <option value="Negra">Negra</option>
-                                <option value="TEI-Header">TEI-Header</option>
-                                <option value="txt">txt</option>
+                                <option v-for="corpusformat in this.uniqueArray(corpusformats)" v-bind:corpusformat="corpusformat">{{corpusformat}}</option>
                                 <!--[if IE 9]></select><![endif]-->
                             </datalist>
                         </div>
 
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formCorpusLicenses">License</label>
-                            <input type="text" class="form-control" id="formCorpusLicenses" aria-describedby="inputLicenses" placeholder='"cc-by"' v-model="corpusSearchData.corpus_publication_license">
+                            <input type="text" class="form-control" id="formCorpusLicenses" aria-describedby="inputLicenses" placeholder='"by-sa"' v-model="corpusFilterData.corpus_publication_license" @keyup.enter="emitApplyFilters">
                         </div>
                     </div>
-                </form>
+                <!--/form-->
 
                 <div id="formPanelCorpus-all2" class="collapse formPanelCorpus-all">
 
 
-                    <form action="">
+                    <!--form action=""-->
                         <div class="form-group mb-3">
                             <label class="mb-2 text-14 " for="dd">Corpus size (Tokens, Words)</label>
                             <div class="d-flex justify-content-between">
@@ -71,115 +66,178 @@
                                         </span>
                                     </div>
                                 </div>
-                                <button type="submit" class="disabled btn btn-sm btn-corpus-dark p-0">
+                                <!--button type="submit" class="disabled btn btn-sm btn-corpus-dark p-0">
                                     <i class="fa fa-angle-right fa-fw fa-2x py-1"></i>
-                                </button>
+                                </button-->
                             </div>
                         </div>
-                    </form>
+                    <!--/form-->
 
-                    <form action="">
+                    <!--form action=""-->
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formCorpusYear">Year of Publication</label>
                             <div class="d-flex justify-content-between">
                                 <div class="d-flex flex-column w-35">
                                     <small id="yearFromHelp" class="form-text text-muted">from</small>
                                     <input class="toBeValidated form-control" placeholder="J J J J" type="number" min="1" max="9999" step="1"
-                                           name="yearFrom" id="formCorpusYearFrom"  v-model="corpusSearchData.corpus_publication_publication_date" />
+                                           name="yearFrom" id="formCorpusYearFrom"  v-model="corpusFilterData.corpus_publication_publication_date" />
                                 </div>
                                 <div class="d-flex flex-column w-35">
                                     <small id="yearToHelp" class="form-text text-muted">to</small>
                                     <input class="toBeValidated form-control" placeholder="J J J J" type="number" min="1" max="9999" step="1"
-                                           name="yearTo" id="formCorpusYearTo" v-model="corpusSearchData.corpusYearTo"  />
+                                           name="yearTo" id="formCorpusYearTo" v-model="corpusFilterData.corpusYearTo"  />
                                 </div>
-                                <button type="submit" class="toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end">
+                                <!--button type="submit" class="toCheckValidation disabled btn btn-sm btn-corpus-dark ml-3 p-0 align-self-end">
                                     <i class="fa fa-angle-right fa-fw fa-2x py-1"></i>
-                                </button>
+                                </button-->
                             </div>
                         </div>
-                    </form>
-
+                    <!--/form-->
                 </div>
             </div>
         </div>
     </div>
 </template>
 <script>
+    import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
+        props: ['corpusresults','documentresults','annotationresults','corpusformats'],
         data: function(){
             return {
-                corpusSearchData : {
+                corpusFilterData : {
                     corpus_title: '',
                     corpus_publication_publisher: '',
-                    corpus_editor_forename: '',
-                    corpus_editor_surname: '',
-                    corpus_merged_editors: '',
                     corpus_publication_publication_date: '',
                     corpusYearTo: '',
-                    corpusyeartype: 'exact',
-                    corpussizetype: 'exact',
                     corpus_size_value: '',
                     corpusSizeTo: '',
-                    corpus_merged_languages: '',
-                    corpus_merged_formats: '',
+                    corpus_languages_language: '',
+                    corpus_merged_formats: [],
                     corpus_publication_license: ''
                 },
                 scope: 'corpus'
             }
         },
         methods: {
-            emitCorpusData(){
+            emitApplyFilters(){
+                this.$emit('apply-filters');
+            },
+            emitCorpusFilter(){
+                this.$emit('corpus-filter',this.corpusFilterData);
+            },
+            emitDropCorpusFilter: function (field){
+                this.$emit('remove-corpus-filter',field);
+            },
+            clearCorpusFilter: function () {
+                this.corpusFilterData = {
+                    corpus_title: '',
+                    corpus_publication_publisher: '',
+                    corpus_publication_publication_date: '',
+                    corpusYearTo: '',
+                    corpus_size_value: '',
+                    corpusSizeTo: '',
+                    corpus_merged_languages: '',
+                    corpus_merged_formats: [],
+                    corpus_publication_license: ''
+                }
 
-                this.$emit('corpus-search',this.corpusSearchData);
+                $('#formPanelCorpus').find("ul.flexdatalist-multiple li.value").remove();
+            },
+            resetFilterField: function(field, filter) {
+                if(field == 'corpus_merged_formats'){
+                    this.corpusFilterData[field].splice(this.corpusFilterData[field].indexOf(field),1);
+                    var flexgroup = document.getElementById('corpusflexgroup');
+                    if (flexgroup.hasChildNodes()) {
+                        for (var i = 0; i < flexgroup.children.length; i++) {
+                            if (flexgroup.children[i].tagName == "UL") {
+                                if (flexgroup.children[i].hasChildNodes()) {
+                                    for (var j = 0; j < flexgroup.children[i].children.length; j++) {
+                                        if (flexgroup.children[i].children[j].tagName == "LI") {
+                                            if(flexgroup.children[i].children[j].firstChild.textContent == filter ){
+                                                flexgroup.children[i].children[j].remove();
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+                else if(field == 'corpus_publication_publication_date'){
+                    this.corpusFilterData['corpus_publication_publication_date'] = ''
+                    this.corpusFilterData['corpusYearTo'] = ''
+                }
+                else if(field == 'corpus_size_value'){
+                    this.corpusFilterData['corpus_size_value'] = ''
+                    this.corpusFilterData['corpusSizeTo'] = ''
+                    let corpusel = document.getElementById('corpusSize')
+
+                    if(corpusel) {
+                        corpusel.noUiSlider.reset();
+                    }
+                }
+                else{
+                    this.corpusFilterData[field] = ''
+                }
+
+            },
+            getClass: function () {
+                var classes = "collapse";
+                if(
+                    this.corpusresults.length >= 1 ||
+                    this.documentresults.length >= 1 ||
+                    this.annotationresults.length >= 1
+                ){
+                    classes += " show"
+                }
+                return classes;
+            },
+            uniqueArray: function (a) {
+                return [ ...new Set(a) ]
             }
         },
         mounted() {
-            console.log('CorpusSearchBlock mounted.')
-        }
-    }
-
-    $(function () {
-        var rangeSliderList = ['corpusSize']
-
-        for(var h = 0; h < rangeSliderList.length; h++) {
-            let i = h
-
-            let el = document.getElementById(rangeSliderList[i])
+            let mycorpusvue = this;
+            let el = document.getElementById('corpusSize')
 
             if(el) {
-                //console.log("el: "+el)
                 el.style.height = '8px';
                 el.style.margin = '0 auto 8px';
 
                 noUiSlider.create(el, {
-                    animate: true,
-                    start: [ 1, 999999 ], // 4 handles, starting at...
-                    margin: 1, // Handles must be at least 300 apart
-                    limit: 999998, // ... but no more than 600
-                    connect: true, // Display a colored bar between the handles
-                    orientation: 'horizontal', // Orient the slider vertically
-                    behaviour: 'tap-drag', // Move handle on tap, bar is draggable
-                    step: 1,
-
+                    connect: true,
+                    behaviour: 'tap-drag',
+                    start: [1, 999999],
                     range: {
-                        'min': 1,
-                        'max': 999999
-                    },
-                });
-
-                let paddingMin = document.getElementById(rangeSliderList[i] + '-minVal'),
-                    paddingMax = document.getElementById(rangeSliderList[i] + '-maxVal');
-
-                el.noUiSlider.on('update', function ( values, handle ) {
-                    console.log($(el).attr("id")+handle+" => "+values)
-                    if ( handle ) {
-                        //this.corpusSearchData
-                        paddingMax.innerHTML = Math.round(values[handle]);
-
-                    } else {
-                        paddingMin.innerHTML = Math.round(values[handle]);
+                        // Starting at 500, step the value by 500,
+                        // until 4000 is reached. From there, step by 1000.
+                        'min': [1],
+                        '10%': [100, 10],
+                        '50%': [4000, 100],
+                        'max': [999999]
                     }
                 });
+
+                let paddingMin = document.getElementById('corpusSize' + '-minVal'),
+                    paddingMax = document.getElementById('corpusSize' + '-maxVal');
+
+                el.noUiSlider.on('update', function ( values, handle ) {
+                    if ( handle ) {
+                        mycorpusvue.corpusFilterData.corpusSizeTo = Math.round(values[handle]);
+                        paddingMax.innerHTML = Math.round(values[handle]);
+                    } else {
+                        mycorpusvue.corpusFilterData.corpus_size_value = Math.round(values[handle]);
+                        paddingMin.innerHTML = Math.round(values[handle]);
+                    }
+
+                    mycorpusvue.emitDropCorpusFilter('corpus_size_value')
+                    mycorpusvue.emitCorpusFilter();
+
+
+                });
+
 
                 el.noUiSlider.on('change', function(){
                     // Validate corresponding form
@@ -187,6 +245,14 @@
                     $(parentForm).find('*[type=submit]').removeClass('disabled');
                 });
             }
+
+
+            $('input.flexdatalist').on('select:flexdatalist', function(event, set, options) {
+                if(mycorpusvue != 'undefined' && $(this).hasClass('corpusformatslist')){
+                    mycorpusvue.corpusFilterData.corpus_merged_formats.push(set.value)
+                }
+            });
+
         }
-    });
+    }
 </script>

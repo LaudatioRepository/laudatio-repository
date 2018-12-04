@@ -7,40 +7,54 @@
 
                 <div class="container">
                     <div class="row">
-                        <div class="col-6 d-flex justify-content-center align-items-center ml-auto mr-auto">
-
-                            <form class="form-group serviceBarSearch w-100">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" placeholder="Search metadata (German or English)" aria-label="search metadata"
-                                           aria-describedby="basic-addon2">
-                                    <div class="input-group-append">
-                                        <button type="button" class="clear-search close" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                        <button class="btn btn-outline-corpus-dark pl-4 pr-4" type="button">
-                                            <i class="text-primary fa fa-fw fa-search fa-lg "></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-
-                            <i class="btn p-0 fa fa-info-circle fa-fw fa-lg ml-3" data-toggle="tooltip" role="button" data-placement="bottom"
-                               title="Get help how to search"></i>
-                        </div>
+                        <generalsearchwrapper  v-on:searchedgeneral="askElastic"></generalsearchwrapper>
                     </div>
                 </div>
-
             </div>
         </div>
         <div class="container-fluid">
             <div class="container">
                 <div class="row mt-5">
-                    <searchfilterwrapper></searchfilterwrapper>
-                    <searchresultwrapper></searchresultwrapper>
+                    <div class="col-3 ">
+                        <div class="d-flex justify-content-between mt-7 mb-3">
+                            <h3 class="h3 font-weight-normal">Filter</h3>
+                        </div>
+                        <searchfilterwrapper
+                                :corpusresults="corpusresults"
+                                :documentresults="documentresults"
+                                :annotationresults="annotationresults"
+                                :activefilters="activefilters"
+                                :activefiltersmap="activefiltersmap"
+                                v-on:corpus-filter="submitCorpusFilter"
+                                v-on:document-filter="submitDocumentFilter"
+                                v-on:annotation-filter="submitAnnotationFilter"
+                                v-on:corpus-resultcounter="updateCorpusCounter"
+                                v-on:document-resultcounter="updateDocumentCounter"
+                                v-on:annotation-resultcounter="updateAnnotationCounter"
+                                v-on:reset-activefilter="resetActiveFilter"
+                                v-on:reset-activefilters="resetActiveFilters"
+                                :corpusresultcounter="corpusresultcounter"
+                                :documentresultcounter="documentresultcounter"
+                                :annotationresultcounter="annotationresultcounter"
+                                :corpusformats="corpusformats"
+                                :annotationformats="annotationformats"></searchfilterwrapper>
+                    </div>
+                    <searchresultwrapper
+                            :corpusresults="corpusresults"
+                            :datasearched="datasearched"
+                            :dataloading="dataloading"
+                            :documentresults="documentresults"
+                            :annotationresults="annotationresults"
+                            :searches="searches"
+                            :corpusresultcounter="corpusresultcounter"
+                            :documentresultcounter="documentresultcounter"
+                            :annotationresultcounter="annotationresultcounter"
+                            v-on:initial-search="initialSearch"
+                            v-on:frontpage-search="frontpageSearch"
+                            :frontpageresultdata="frontPageResultData"
+                            ></searchresultwrapper>
                 </div>
-
             </div>
-
         </div>
     </div>
 @endsection
