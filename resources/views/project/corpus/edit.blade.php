@@ -1,12 +1,22 @@
 @extends('layouts.project_ux', ['isLoggedIn' => $isLoggedIn])
 
 @section('content')
-    <div class="container-fluid bg-bluegrey-mid bsh-1">
+    <div class="container-fluid bg-bluegrey-mid bsh-1" {{ Session::has('notification') ? 'data-notification' : '' }} data-notification-type='{{ Session::get('alert_type', 'info') }}' data-notification-message='{{ json_encode(Session::get('message')) }}'>
         <div class="container pt-5">
+            <div class="alert alert-dismissible fade show" role="alert" id="alert-laudatio">
+                <span class="alert-laudatio-message"></span>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
             <div class="row">
-
                 <div class="col-2 pl-7 pr-7">
-                    <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
+                    @if (isset($corpus->corpus_logo))
+                        <img class="rounded-circle bg-white w-100"  src="/images/corpuslogos/{{$corpus_data['project_directorypath']}}_{{$corpus->directory_path}}_{{$corpus->corpus_logo}}" alt="corpus-logo">
+                    @else
+                        <img class="rounded-circle bg-white w-100"  src="/images/placeholder_circle.svg" alt="circle-image">
+                    @endif
+
                 </div>
                 <div class="col">
                     <small class="text-14 text-grey">
@@ -17,6 +27,7 @@
                             no name defined yet
                         @else
                             {{$corpus_data['name']}}
+                            Version {{$corpus_data['version']}}
                         @endif
                     </h3>
                     <div class="mt-1">
@@ -29,25 +40,33 @@
                     </div>
 
                 </div>
-
+                @if($corpus_data['headerdata']['corpusheader'] == 1)
                 <div class="col-2">
                     <div class="card text-white bg-transparent">
                         <h6 class="corpus-title h6 text-uppercase text-12 text-wine-trans">
                             Corpus
                         </h6>
                         <div class="card-body d-flex flex-column">
-                            <a href="adminPreview_corpus.html" class="disabled btn btn-primary font-weight-bold text-uppercase rounded small">
+                            <a href="/browse/corpus/{{$corpus->elasticsearch_id}}" class="btn btn-primary font-weight-bold text-uppercase rounded small">
                                 Preview
                             </a>
+                            @if (Auth::user()->can('Can create corpus'))
+                                <button id="publishCorpusButton" class=" btn btn-primary font-weight-bold text-uppercase rounded small mt-3" data-toggle="modal"
+                                        data-target="#publishCorpusModal">
+                                    Publish
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
             <div class="row mt-5">
 
                 <nav class="navbar navbar-expand-sm navbar-light bg-transparent p-0 container" role="tablist">
 
                     <div class="navbar-nav nav row w-100 px-5">
+
                         <div class="nav-item maintablink col-2 text-center text-14 font-weight-bold active">
                             <a class=" nav-link maintablink text-dark text-uppercase " data-toggle="tab" href="#editCorpus" role="tab">
                                 Upload / Edit
@@ -87,8 +106,10 @@
 
         <div role="tabpanel"  class="tab-pane active" id="editCorpus">
             @include('project.corpus.headerFiles')
+            <input type="hidden" name="auth_user_name" id="auth_user_name" value="{{Auth::user()->name}}" />
+            <input type="hidden" name="auth_user_id" id="auth_user_id" value="{{Auth::user()->id}}" />
+            <input type="hidden" name="auth_user_email" id="auth_user_email" value="{{Auth::user()->email}}" />
         </div>
-
         <div role="tabpanel"  class="tab-pane fade in" id="messageBoard">
             @include('project.corpus.messageboard')
         </div>
@@ -104,12 +125,10 @@
                                 <a href="#" class="btn btn-primary font-weight-bold text-uppercase rounded">
                                     Invite Collaborator
                                 </a>
-                                @else
-                                    &nbsp;
                                 @endif
                             </div>
 
-                            <table class="documents-table table table-bluegrey-dark  table-striped">
+                            <table class="message-table table table-bluegrey-dark  table-striped">
                                 <thead class="bg-bluegrey-mid">
                                 <tr class="text-14 text-grey-light">
                                     <th scope="col">Collaborator</th>
@@ -176,8 +195,8 @@
                                     <td colspan="2">
                                         @if (Auth::user()->can('Can assign users to corpus'))
                                             <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="selectAll_corpusEdit">
-                                                <label class="custom-control-label text-14" for="selectAll_corpusEdit">
+                                                <input type="checkbox" class="custom-control-input" id="selectAll_corpusUserEdit">
+                                                <label class="custom-control-label text-14" for="selectAll_corpusUserEdit">
                                                     Select all
                                                 </label>
                                             </div>
@@ -204,6 +223,59 @@
 
                 </div>
 
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="publishCorpusModal" tabindex="-1" role="dialog" aria-labelledby="publishCorpusModalTitle"
+         aria-hidden="true">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content border-0 rounded-lg bsh-1">
+
+                <div class="modal-body px-5">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fa fa-close" aria-hidden="true"></i>
+                    </button>
+                    <div id="publish-error-message" class="alert alert-danger" role="alert"></div>
+                    <h3 class="h3 modal-title mt-3 w-75" id="publishCorpusModalTitle">
+                    </h3>
+
+                    <p class="mt-3 mb-1" id="publishCorpusModalSubtitle">
+                    </p>
+
+                    <div id="publishCorpusModalSubtitleContent"></div>
+
+                </div>
+                <div class="modal-footer bg-corpus-light px-4 rounded-lg-bt">
+                    <button class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded px-5" data-dismiss="modal"
+                            aria-label="Close">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary font-weight-bold text-uppercase rounded px-5" data-dismiss="modal"
+                            data-toggle="modal" data-target="#publishSuccessCorpusModal" id="doPublish">
+                        Publish
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="h3 modal-title mt-3 w-75" id="confirmDeleteTitle">Are you sure you want to delete the following files?</div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded px-5" data-dismiss="modal"
+                            aria-label="Close">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" id="doDelete" data-idkey="">Delete</button>
+                    <input type="hidden" data- id="postDeleteData" value="" />
+                </div>
             </div>
         </div>
     </div>

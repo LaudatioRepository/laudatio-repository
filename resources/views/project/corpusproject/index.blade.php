@@ -53,12 +53,16 @@
 
                                     </div>
                                     <div class="col-2 p-0 mr-2">
-                                        <button  class="corpusProject-startEdit btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
-                                            Edit project
-                                        </button>
-                                        <a href="{{ route('corpus.create',['corpusproject' => $corpusProjectId]) }}" class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
-                                            Add Corpus
-                                        </a>
+                                        @if (Auth::user()->can('Can edit corpus project'))
+                                            <button  class="corpusProject-startEdit btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
+                                                Edit project
+                                            </button>
+                                        @endif
+                                        @if (Auth::user()->can('Can create corpus'))
+                                            <a href="{{ route('corpus.create',['corpusproject' => $corpusProjectId]) }}" class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded mb-4 w-100">
+                                                Add Corpus
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
 
@@ -94,10 +98,15 @@
 
                              <!-- CORPO-->
                             @foreach($corpusProject['corpora'] as $corpus)
+                                @if ($corpus['workflow_status'] == 0)
                                     <div class="container bg-bluegrey-midlight mt-1 mb-1 p-5">
                                         <div class="row">
                                             <div class="col-2 pl-4">
-                                                <img class="w-100" src="/images/placeholder_circle.svg" alt="circle-image">
+                                                @if (isset($corpus['corpus_logo']))
+                                                    <img class="rounded-circle bg-white w-100"  src="/images/corpuslogos/{{$corpusProject['directory_path']}}_{{$corpus['corpus_directorypath']}}_{{$corpus['corpus_logo']}}" alt="corpus-logo">
+                                                @else
+                                                    <img class="rounded-circle bg-white w-100"  src="/images/placeholder_circle.svg" alt="circle-image">
+                                                @endif
                                             </div>
                                             <div class="col">
                                                 <small class="text-14 text-grey">
@@ -125,14 +134,17 @@
                                                     </button>
                                                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                         <a class="dropdown-item text-14" href="{{ route('corpus.edit',['corpus' => $corpus['id']]) }}">Edit Corpus</a>
-                                                        <a class="dropdown-item text-14" href="adminPreview_corpus.html">Preview Corpus</a>
-                                                        <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#publishCorpusModal">Publish Corpus</a>
-                                                        <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#deleteCorpusModal">Delete Corpus</a>
+                                                        <a class="dropdown-item text-14" href="{{route('browse.showHeaders.get', ['header' => 'corpus', 'id' => $corpus['elasticsearch_id']])}}">Preview Corpus</a>
+                                                        <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#publishCorpusModal" data-corpusid="{{$corpus['id']}}" data-corpuspath="{{$corpus['corpuspath']}}" id="publishCorpusButton">Publish Corpus</a>
+                                                        @if (Auth::user()->can('Administer the application'))
+                                                            <a class="dropdown-item text-14" href="#" data-toggle="modal" data-target="#deleteCorpusModal" data-corpusid="{{$corpus['id']}}" data-corpusname="{{$corpus['name']}}" data-corpuspath="{{$corpus['corpuspath']}}"  id="checkDeleteCorpusButton">Delete Corpus</a>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                 @endif
                             @endforeach
                         @endforeach
                         </div>
@@ -140,7 +152,7 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="deleteCorpusModal" tabindex="-1" role="dialog" aria-labelledby="deleteCorpusModal"
+        <div class="modal fade" id="publishCorpusModal" tabindex="-1" role="dialog" aria-labelledby="publishCorpusModalTitle"
              aria-hidden="true">
             <div class="modal-dialog " role="document">
                 <div class="modal-content border-0 rounded-lg bsh-1">
@@ -149,31 +161,13 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <i class="fa fa-close" aria-hidden="true"></i>
                         </button>
-                        <h3 class="h3 modal-title mt-3">
-                            Do you really want to delete corpus "no name defined yet" ?
+                        <h3 class="h3 modal-title mt-3 w-75" id="publishCorpusModalTitle">
                         </h3>
 
-                        <p class="mt-3 mb-1">
-                            It includes:
+                        <p class="mt-3 mb-1" id="publishCorpusModalSubtitle">
                         </p>
 
-                        <ul class="list-group list-group-flush mb-3">
-                            <li class="list-group-item">
-                                <b>(0) Corpus Header</b>
-                            </li>
-                            <li class="list-group-item">
-                                <b>(0) Document Header</b>
-                            </li>
-                            <li class="list-group-item">
-                                <b>(0) Annotation Header</b>
-                            </li>
-                            <li class="list-group-item">
-                                <b>(0) Corpus Data Format</b>
-                            </li>
-                            <li class="list-group-item">
-                                <b>(0) Defined License</b>
-                            </li>
-                        </ul>
+                        <div id="publishCorpusModalSubtitleContent"></div>
 
                     </div>
                     <div class="modal-footer bg-corpus-light px-4 rounded-lg-bt">
@@ -181,7 +175,39 @@
                                 aria-label="Close">
                             Cancel
                         </button>
-                        <button class="btn btn-primary font-weight-bold text-uppercase rounded px-5">
+                        <button class="btn btn-primary font-weight-bold text-uppercase rounded px-5" data-dismiss="modal"
+                                data-toggle="modal" data-target="#publishSuccessCorpusModal" id="doPublish">
+                            Publish
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="deleteCorpusModal" tabindex="-1" role="dialog" aria-labelledby="deleteCorpusModalTitle"
+             aria-hidden="true">
+            <div class="modal-dialog " role="document">
+                <div class="modal-content border-0 rounded-lg bsh-1">
+
+                    <div class="modal-body px-5">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i class="fa fa-close" aria-hidden="true"></i>
+                        </button>
+                        <h3 class="h3 modal-title mt-3" id="deleteCorpusModalTitle">
+                        </h3>
+
+                        <p class="mt-3 mb-1">
+                            It includes:
+                        </p>
+
+                        <div id="corpusContent"></div>
+
+                    </div>
+                    <div class="modal-footer bg-corpus-light px-4 rounded-lg-bt">
+                        <button class="btn btn-outline-corpus-dark font-weight-bold text-uppercase rounded px-5" data-dismiss="modal"
+                                aria-label="Close">
+                            Cancel
+                        </button>
+                        <button class="btn btn-primary font-weight-bold text-uppercase rounded px-5" id="deleteCorpusButton">
                             Delete
                         </button>
                     </div>

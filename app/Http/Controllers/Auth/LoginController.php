@@ -53,10 +53,9 @@ class LoginController extends Controller
                 $redirect = '/dashboard';
             }
 */
-            $intended = $request->session()->get('url.intended');
+            $intended = $request->session()->get('url.intended',url('/'));
             $urlArray = explode("/",$intended);
             $redirect = '/'.join('/',array_slice($urlArray, 3));
-
             $response = array('success' => true, 'redirect' => $redirect);
             return response()->json($response);
         }

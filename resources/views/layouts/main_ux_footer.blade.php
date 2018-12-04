@@ -9,10 +9,10 @@
         <nav class="navbar navbar-expand-sm navbar-light bg-white p-0 bsh-0">
             <ul class="navbar-nav ml-auto mr-auto">
                 <li class="nav-item  text-14 font-weight-bold text-uppercase">
-                    <a class="nav-link px-5 py-4 text-dark" href="#">Project</a>
+                    <a class="nav-link px-5 py-4 text-dark" href="http://www.laudatio-repository.org/laudatio/">Project</a>
                 </li>
                 <li class="nav-item  text-14 font-weight-bold text-uppercase">
-                    <a class="nav-link px-5 py-4 text-dark" href="#">Contact</a>
+                    <a class="nav-link px-5 py-4 text-dark" href="http://www.laudatio-repository.org/laudatio/mitarbeiter/">Contact</a>
                 </li>
                 <li class="nav-item  text-14 font-weight-bold text-uppercase">
                     <a class="nav-link px-5 py-4 text-dark" href="#">Imprint</a>

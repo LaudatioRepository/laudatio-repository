@@ -5,14 +5,19 @@ Auth::routes();
 Route::post('login', ['as' => 'login', 'uses' => 'Auth\LoginController@doLogin']);
 Route::get('signin', ['as' => 'signin', 'uses' => 'Auth\LoginController@signin']);
 
+Route::get('/registeruser', ['as' => 'registeruser', 'uses' => 'LaudatioRegisterController@registerUser']);
+Route::get('/registerform', ['as' => 'registerform', 'uses' => 'LaudatioRegisterController@registerForm']);
+Route::post('/registerconsent', ['as' => 'registerconsent', 'uses' => 'LaudatioRegisterController@registerConsent']);
+Route::post('/storeregister', ['as' => 'storeregister', 'uses' => 'LaudatioRegisterController@storeRegister']);
+
 
 Route::get('/', ['as' => 'frontpage', 'uses' => 'IndexController@index']);
 Route::get('/dashboard', ['as' => 'dashboard', 'uses' => 'DashboardController@index'])->middleware('auth');
 Route::get('/admin', ['as' => 'admin', 'uses' => 'AdminController@index']);
-Route::get('/browse', ['as' => 'browse', 'uses' => 'BrowseController@index']);
+Route::get('/published/{perPage?}/{sortKriterium?}', ['as' => 'browse', 'uses' => 'BrowseController@index']);
 Route::get('/publish', ['as' => 'publish', 'uses' => 'IndexController@publish']);
 Route::get('/schema/{path?}',[ 'as' => 'gitRepo.route.schema', 'uses' => 'GitRepoController@listSchema'])->where('path', '.+')->middleware('auth');
-Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
+
 
 
 
@@ -29,7 +34,7 @@ Route::delete('/corpusprojects/{corpusproject}',[ 'as' => 'corpusProject.destroy
 
 Route::get('/corpusprojects/assigncorpora/{corpusproject}',[ 'as' => 'corpusProject.assignCorpora', 'uses' => 'CorpusProjectController@assignCorpora'])->middleware('auth');
 Route::post('/corpusprojects/{corpusproject}/corpora',[ 'as' => 'corpusProject.assign.store.', 'uses' => 'CorpusProjectController@storeCorpusRelations'])->middleware('auth');
-Route::get('/corpusprojects/inviteusers',[ 'as' => 'corpusProject.invitations', 'uses' => 'CorpusProjectController@inviteUsers'])->middleware('auth');
+Route::get('/invitations',[ 'as' => 'corpusProject.invitations', 'uses' => 'CorpusProjectController@invitations'])->middleware('auth');
 Route::get('/corpusprojects/assignusers/{corpusproject}',[ 'as' => 'corpusProject.assignusers', 'uses' => 'CorpusProjectController@assignUsers'])->middleware('auth');
 Route::post('/corpusprojects/{corpusproject}/users',[ 'as' => 'corpusProject.StoreUsers', 'uses' => 'CorpusProjectController@storeUserRelations'])->middleware('auth');
 /** END CORPUS PROJECTS  **/
@@ -44,16 +49,14 @@ Route::get('/corpusprojects/corpora/{corpus}/{filepath}/show',[ 'as' => 'corpus.
 Route::get('/corpusprojects/corpora/{corpus}/{path?}',[ 'as' => 'corpus.show', 'uses' => 'CorpusController@show'])->where('path', '.+')->middleware('auth');
 Route::post('/corpusprojects/corpora',[ 'as' => 'corpus.store', 'uses' => 'CorpusController@store'])->middleware('auth');
 Route::get('/corpusprojects/corpora/{corpus}/{user}/delete',[ 'as' => 'project.usercorpusroles.destroy', 'uses' => 'CorpusController@destroyCorpusUser'])->middleware('auth');
-Route::delete('/corpusprojects/corpora/{corpus}/{projectId}',[ 'as' => 'corpus.destroy', 'uses' => 'CorpusController@destroy'])->middleware('auth');
 /** END CORPORA  **/
 
 
 
 /** UPLOAD **/
-Route::get('/corpusprojects/upload/{dirname?}',['as' => 'gitRepo.upload.get', 'uses' => 'UploadController@uploadForm'])->where('dirname', '.+')->middleware('auth');
-Route::get('/corpusprojects/uploadFiles/{dirname?}',['as' => 'gitRepo.uploadFiles.get', 'uses' => 'UploadController@uploadDataForm'])->where('dirname', '.+')->middleware('auth');
 Route::post('/corpusprojects/upload',['as' => 'gitRepo.upload.post', 'uses' => 'UploadController@uploadSubmit'])->middleware('auth');
-Route::post('/corpusprojects/uploadFiles',['as' => 'gitRepo.uploadFiles.post', 'uses' => 'UploadController@uploadSubmitFiles'])->middleware('auth');
+Route::post('/corpusprojects/uploadFiles',['as' => 'gitRepo.uploadFiles.post', 'uses' => 'UploadController@uploadSubmitFiles']);
+Route::post('/corpusprojects/uploadCorpusImage',['as' => 'gitRepo.uploadCorpusImage.post', 'uses' => 'UploadController@UploadCorpusImage']);
 /** END UPLOAD **/
 
 
@@ -107,9 +110,19 @@ Route::get('/admin/gitlabgroups/create',[ 'as' => 'admin.gitlab.createGroup.', '
 /** END GITLAB **/
 
 
+/** SEARCH **/
+Route::get('/search',['as' => 'search', 'uses' => 'SearchController@index']);
+Route::post('/search',['as' => 'frontpagesearch', 'uses' => 'SearchController@frontPageSearch']);
+/** END SEARCH **/
+
 
 Route::get('/validatetei/{dirname}',['as' => 'gitRepo.validatetei.get', 'uses' => 'ValidateTEIController@validateFiles'])->where('dirname', '.+')->middleware('auth');
 
 
+
 /*BROWSE */
-Route::get('/browse/{header}/{id}', ['as' => 'browse.showHeaders.get', 'uses' => 'BrowseController@index']);
+Route::get('/browse/{header}/{id}', ['as' => 'browse.showHeaders.get', 'uses' => 'BrowseController@show']);
+
+/* DOWNLOAD */
+Route::get('/download/tei/{path}', 'DownloadsController@teiDownload')->where('path', '.+');
+Route::post('/download/citation', 'DownloadsController@citeDownload');

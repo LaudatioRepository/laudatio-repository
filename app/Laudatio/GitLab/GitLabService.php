@@ -47,8 +47,15 @@ class GitLabService implements GitLabInterface {
         return GitLab::api('projects')->remove($projectId);
     }
 
+    public function updateGitLabTag($gitLabId,$tagName,$releaseDescription){
+        return GitLab::api('projects')->update();
+    }
+
+
     public function unlinkProjectFromGroup($projectId,$groupId){
         return $this->delete('projects/'.$this->encodePath($projectId).'/share/'.$this->encodePath($groupId));
     }
+
+
 
 }

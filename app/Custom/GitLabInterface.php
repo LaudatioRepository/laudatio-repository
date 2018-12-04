@@ -15,6 +15,8 @@ interface GitLabInterface {
     public function updateGitLabGroup($groupId,$params);
     public function deleteGitLabGroup($groupId);
 
+    public function updateGitLabTag($gitLabId,$tagName,$releaseDescription);
+
     public function createGitLabProject($name, $path, $description,$visibility);
     public function deleteGitLabProject($projectId);
     public function unlinkProjectFromGroup($projectId,$groupId);

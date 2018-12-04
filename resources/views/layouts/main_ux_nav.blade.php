@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white bsh-1 px-1 py-0">
     <div class="container">
-        <a class="navbar-brand" href="">
+        <a class="navbar-brand homenav" href="/">
             <img src="{{ asset('images/logo-laudatio.svg') }}" alt="logo laudatio">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNavbar" aria-controls="mainNavbar"
@@ -10,23 +10,23 @@
 
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active text-14 font-weight-bold">
-                    <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('browse') }}">Published Corpora</a>
+                <li class="nav-item headerlink text-14 font-weight-bold">
+                    <a class="nav-link headerlink published px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('browse') }}">Published Corpora</a>
                 </li>
-                <li class="nav-item text-14 font-weight-bold ">
-                    <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('search') }}">Search</a>
+                <li class="nav-item headerlink  text-14 font-weight-bold ">
+                    <a class="nav-link headerlink  search  px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('search') }}">Search</a>
                 </li>
-                <li class="nav-item text-14 font-weight-bold ">
-                    <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('corpusProject.index') }}">Publish</a>
+                <li class="nav-item headerlink  text-14 font-weight-bold ">
+                    <a class="nav-link headerlink corpusprojects  px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('corpusProject.index') }}">Publish</a>
                 </li>
-                <li class="nav-item text-14 font-weight-bold ">
-                    <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="#">Help</a>
+                <li class="nav-item headerlink help  text-14 font-weight-bold ">
+                    <a class="nav-link headerlink  px-5 pt-4 pb-3 text-dark text-uppercase" href="#">Help</a>
                 </li>
             </ul>
 
             @if (Auth::guest())
             <div class="nav-item text-14 font-weight-bold ">
-                <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('register') }}">Register</a>
+                <a class="nav-link px-5 pt-4 pb-3 text-dark text-uppercase" href="{{ route('registeruser') }}">Register</a>
             </div>
             <button type="button" data-toggle="modal" data-target="#signInModal" class="btn btn-outline-corpus-dark ml-1 font-weight-bold text-14 rounded text-dark text-uppercase">
                 Sign In
@@ -67,9 +67,9 @@
                             <div id="login-error-message" class="alert alert-danger" role="alert"></div>
                             <div class="form-group mt-3">
                                 <label for="email" class="text-14 text-dark-trans mb-0 pl-3">
-                                    <small>DFN-AAI or Dariah Username / Email</small>
+                                    <small>Your GitLab / HU email address</small>
                                 </label>
-                                <input id="email" type="text" class="toBeValidated form-control" name="email" value="{{ old('email') }}" required autofocus>
+                                <input type="text" class="toBeValidated form-control" name="email" value="{{ old('email') }}" required autofocus>
 
                             </div>
 
@@ -107,7 +107,6 @@
                             <button type="submit" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-30 float-right">
                                 Login
                             </button>
-                            <!--a href="{{ route('dashboard') }}" class="toCheckValidation disabled btn btn-primary rounded text-uppercase font-weight-bold w-30 float-right">Login</a-->
                         </div>
                     </form>
                 </div>

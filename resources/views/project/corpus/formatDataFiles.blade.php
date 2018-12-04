@@ -31,7 +31,7 @@
                         <a href="javascript:" id="format_CancelButton" class="btn btn-outline-format-dark text-uppercase font-weight-bold rounded px-5 mr-3 uploadcontrols">
                             Cancel
                         </a>
-                        <a href="{{ route('corpus.edit',['format' =>$corpus->id ])}}" class="disabled btn btn-primary text-uppercase font-weight-bold rounded">
+                        <a href="javascript:" id="format_FinishButton"  class="disabled btn btn-primary text-uppercase font-weight-bold rounded datafinishbutton">
                             Finish Upload
                         </a>
                         <!-- Submit can happen at this place -->
@@ -46,42 +46,79 @@
     <div id="formatFileList">
         <div class="col">
             <div class="d-flex justify-content-between mt-7 mb-3">
-                <h3 class="h3 font-weight-normal">Corpus Header XML</h3>
+                <h3 class="h3 font-weight-normal">Corpus Format Files</h3>
                 <a href="javascript:" id="format_UploadButton" class="btn btn-primary font-weight-bold text-uppercase rounded uploadcontrols">
                     File Upload
                 </a>
             </div>
 
-            <table class="custom-table documents-table table table-bluegrey-dark  table-striped">
+            <table class="custom-table documents-table table table-bluegrey-dark  table-striped" id="format_table">
                 <thead class="bg-bluegrey-mid">
                 <tr class="text-14 text-grey">
                     <th scope="col">Uploaded Files</th>
                     <th scope="col">Collaborator</th>
-                    <th scope="col">updated</th>
+                    <th scope="col">Affiliation</th>
+                    <th scope="col">Updated</th>
                     <th scope="col">Delete</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach($corpus_data['corpusFormatData']['projects'] as $fileData)
+                    @if(isset($fileData['headerObject']))
                     <tr>
                         <td>
                             <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="formatEditItem_0001">
-                                <label class="custom-control-label font-weight-bold" for="formatEditItem_0001">
+                                <input type="checkbox" class="custom-control-input" id="formatEditItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
+                                <label class="custom-control-label font-weight-bold" for="formatEditItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
                                     {{$fileData['basename']}}
                                 </label>
                             </div>
                         </td>
-                        <td class="text-14 text-grey-light">uploader</td>
+                        @if(isset($fileData['uploader_name']))
+                            <td class="text-14 text-grey-light">{{$fileData['uploader_name']}}</td>
+                        @else
+                            <td class="text-14 text-grey-light">&nbsp;</td>
+                        @endif
+
+                        @if(isset($fileData['uploader_affiliation']))
+                            <td class="text-14 text-grey-light">{{$fileData['uploader_affiliation']}}</td>
+                        @else
+                            <td class="text-14 text-grey-light">&nbsp;</td>
+                        @endif
                         <td class="text-14 text-grey-light">{{  Carbon\Carbon::parse($fileData['lastupdated'])->format('H:i,M d') }}</td>
                         <td>
-                            <a href="#">
-                                <i class="fa fa-trash-o fa-fw fa-lg text-dark"></i>
+                            <a href="javascript:" id="formatDeleteItem§{{$fileData['basename']}}§{{$fileData['headerObject']->id}}">
+                                <i class="fa fa-trash-o fa-fw fa-lg text-dark headerDeleteTrashcan"></i>
                             </a>
                         </td>
                     </tr>
+                    @endif
                 @endforeach
                 </tbody>
+                <tfoot class="bg-bluegrey-mid">
+                <tr>
+                    <td colspan="3">
+                        @if (Auth::user()->can('Can delete Corpus'))
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="selectAll_formatEdit">
+                                <label class="custom-control-label text-14" for="selectAll_formatEdit">
+                                    Select all
+                                </label>
+                            </div>
+                        @else
+                            <div class="custom-control custom-checkbox">&nbsp;</div>
+                        @endif
+                    </td>
+                    <td colspan="2">
+                        @if (Auth::user()->can('Can delete Corpus'))
+                            <button class="float-right disabled btn btn-outline-corpus-dark font-weight-bold text-uppercase btn-sm" id="deleteSelectedFormatsButton">
+                                Delete Selected Files
+                            </button>&nbsp;
+                        @endif
+
+                    </td>
+                </tr>
+                </tfoot>
             </table>
         </div>
     </div>

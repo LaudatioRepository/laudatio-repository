@@ -9,7 +9,7 @@ set('repository', 'git@bitbucket.org:guescini-HU/vuelasticsearchjslaudatio.git')
 set('git_tty', true); // [Optional] Allocate tty for git on first deployment
 add('shared_files', ['.env','config/flysystem.php','config/filesystems.php','config/gitlab.php','config/laudatio.php']);
 add('shared_dirs', ['storage', 'vendor']);
-add('writable_dirs', ['releases','storage','vendor']);
+add('writable_dirs', ['releases','storage','vendor','public']);
 set('ssh_type', 'native');
 set('ssh_multiplexing', true);
 set('http_user', 'www-data');
@@ -25,17 +25,26 @@ set('writable_dirs', [
     'storage/framework/sessions',
     'storage/framework/views',
     'storage/framework/views/gitLab',
-    'storage/logs',]);
+    'storage/logs',
+    'public'
+    ]);
 
 
 // Hosts
+/*
 host('depot1-6.cms.hu-berlin.de')
     ->user('root')
     ->identityFile('/Users/rolfguescini/.ssh/deploy', '/Users/rolfguescini/.ssh/deploy', '')
     ->set('deploy_path', '/var/www/html/laravelaudatio')
-    ->set('branch', 'messageboard')
+    ->set('branch', 'newsearch')
     ->user('rolfguescini');
-
+*/
+host('depot1-5.cms.hu-berlin.de')
+    ->user('root')
+    ->identityFile('/Users/rolfguescini/.ssh/deploy', '/Users/rolfguescini/.ssh/deploy', '')
+    ->set('deploy_path', '/var/www/html/laravelaudatio')
+    ->set('branch', 'continuedsearch')
+    ->user('rolfguescini');
 
 // Tasks
 task('environment', function () {
@@ -44,18 +53,20 @@ task('environment', function () {
     run('cp /var/www/html/laravelaudatio/gitlab.php {{release_path}}/config/gitlab.php');
     run('cp /var/www/html/laravelaudatio/laudatio.php {{release_path}}/config/laudatio.php');
     run('cp /var/www/html/laravelaudatio/deployenv {{release_path}}/.env');
+    run('mkdir {{release_path}}/public/images/corpuslogos');
     //run('cp /var/www/html/laravelaudatio/Groups.php {{release_path}}/vendor/m4tthumphrey/php-gitlab-api/lib/Gitlab/Api/Groups.php');
 })->desc('Environment setup');
 
+/*
 task('makespace', function () {
-    run('cd /var/www/html/laravelaudatio/releases');
     run('sudo -su www-data');
+    run('cd /var/www/html/laravelaudatio/releases');
     run('rm -rf *');
     run('exit');
 })->desc('Environment setup');
 
 before('deploy','makespace');
-
+*/
 
 desc('Execute artisan config:clear');
 task('clearconfig', function () {

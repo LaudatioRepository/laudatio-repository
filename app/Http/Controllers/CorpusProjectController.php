@@ -51,6 +51,7 @@ class CorpusProjectController extends Controller
 
             $corpus_projects[$corpusProject->id]['name'] = $corpusProject->name;
             $corpus_projects[$corpusProject->id]['description'] = $corpusProject->description;
+            $corpus_projects[$corpusProject->id]['directory_path'] = $corpusProject->directory_path;
 
 
             $corpusProjectUsers = $corpusProject->users()->get();
@@ -74,6 +75,11 @@ class CorpusProjectController extends Controller
                 }
                 $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['name'] = $projectCorpus->name;
                 $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['id'] = $projectCorpus->id;
+                $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['corpus_directorypath'] = $projectCorpus->directory_path;
+                $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['corpuspath'] = $corpusProject->directory_path."/".$projectCorpus->directory_path;
+                $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['workflow_status'] = $projectCorpus->workflow_status;
+                $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['elasticsearch_id'] = $projectCorpus->elasticsearch_id;
+                $corpus_projects[$corpusProject->id]['corpora'][$projectCorpus->id]['corpus_logo'] = $projectCorpus->corpus_logo;
 
                 $corpusUsers = $projectCorpus->users()->get();
                 foreach ($corpusUsers as $corpusUser){
@@ -90,7 +96,6 @@ class CorpusProjectController extends Controller
 
             }
         }
-
         //dd($corpus_projects);
         return view('project.corpusproject.index')
             ->with('corpusProjects',$corpus_projects)
@@ -131,6 +136,8 @@ class CorpusProjectController extends Controller
         $filePath = $this->GitRepoService->createProjectFileStructure($this->flysystem,request('corpusproject_name'));
         //$this->GitRepoService->createGitProject($filePath);
         if($filePath){
+
+            /*
             $gitLabResponse = $this->GitLabService->createGitLabGroup(
                 request('corpusproject_name'),
                 $filePath,
@@ -138,23 +145,47 @@ class CorpusProjectController extends Controller
                 'public'
                 );
 
-            Log::info("gitLabResponse: CorpusProject ".print_r($gitLabResponse,1));
+            //Log::info("gitLabResponse: CorpusProject ".print_r($gitLabResponse,1));
 
+            if($gitLabResponse['id']) {
+                $corpusproject = CorpusProject::create([
+                    'name' => request('corpusproject_name'),
+                    'description' => request('corpusproject_description'),
+                    'directory_path' => $filePath,
+                    'gitlab_group_path' => $gitLabResponse['path'],
+                    'gitlab_id' => $gitLabResponse['id'],
+                    'gitlab_web_url' => $gitLabResponse['web_url'],
+                    'gitlab_parent_id' => $gitLabResponse['parent_id']
+                ]);
+            }
+            else{
+                $corpusproject = CorpusProject::create([
+                    'name' => request('corpusproject_name'),
+                    'description' => request('corpusproject_description'),
+                    'directory_path' => $filePath,
+                ]);
+            }
 
+*/
             $corpusproject = CorpusProject::create([
                 'name' => request('corpusproject_name'),
                 'description' => request('corpusproject_description'),
                 'directory_path' => $filePath,
-                'gitlab_group_path' => $gitLabResponse['path'],
-                'gitlab_id' => $gitLabResponse['id'],
-                'gitlab_web_url' => $gitLabResponse['web_url'],
-                'gitlab_parent_id' => $gitLabResponse['parent_id']
             ]);
 
-            /*
             $user = \Auth::user();
-            $corpusp->users()->save($user,['role_id' => 2]);
-            */
+
+            $projectAdminRole = Role::findById(2);
+            //$user->roles()->sync($projectAdminRole);
+            if($user) {
+                if(!$user->roles->contains($projectAdminRole)){
+                    $user->roles()->attach($projectAdminRole);
+                }
+
+                $corpusproject->users()->save($user,['role_id' => 2]);
+            }
+
+
         }
 
         return redirect()->route('corpusProject.index');
@@ -343,7 +374,13 @@ class CorpusProjectController extends Controller
         return redirect()->route('project.corpusProject.index');
     }
 
-    public function inviteUsers(CorpusProject $corpusProject){}
+    public function invitations(){
+        $isLoggedIn = \Auth::check();
+        $loggedInUser = \Auth::user();
+        return view('project.corpusproject.invite')
+            ->with('isLoggedIn', $isLoggedIn)
+            ->with('loggedInUser',$loggedInUser);
+    }
 
     /**
      * @param CorpusProject $corpusproject

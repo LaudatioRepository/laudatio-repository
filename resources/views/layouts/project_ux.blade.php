@@ -19,11 +19,20 @@
 <body>
 <div id="rootContainer" class="container-fluid m-0 p-0">
     @include ('layouts.main_ux_nav')
-    @include ('layouts.admin_ux_breadcrumb')
+    @if($isLoggedIn)
+        @include ('layouts.admin_ux_breadcrumb')
+    @else
+        @include ('layouts.project_ux_breadcrumb')
+    @endif
+    @if($flash = session('message'))
+        <div id="flash-message" class="alert alert-success">
+            {{ $flash }}
+        </div>
+    @endif
     @yield('content')
     @include('layouts.main_ux_footer')
 </div>
-<script src="{{ asset('js/vendorscripts.js') }}"></script>
+<script src="{{ asset('js/vendorscripts_old.js') }}"></script>
 @if(isset($corpus_data))
 <script>
     window.Laravel = <?php echo json_encode([
@@ -36,6 +45,7 @@
 @endif
 <script src="{{ asset('js/scripts.js') }}"></script>
 <script src="{{ asset('js/jq.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 </body>
 
 </html>

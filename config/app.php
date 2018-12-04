@@ -188,9 +188,11 @@ return [
         App\Providers\GitRepoProvider::class,
         App\Providers\GitLabServiceProvider::class,
         App\Providers\LaudatioUtilsServiceProvider::class,
+        App\Providers\ValidatorServiceProvider::class,
         //Laravel\Socialite\SocialiteServiceProvider::class,
         \SocialiteProviders\Manager\ServiceProvider::class,
         Laracasts\Utilities\JavaScript\JavaScriptServiceProvider::class,
+        Chumper\Zipper\ZipperServiceProvider::class
 
     ],
 
@@ -247,7 +249,9 @@ return [
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
-        'Avatar'    => Laravolt\Avatar\Facade::class
+        'Avatar'    => Laravolt\Avatar\Facade::class,
+        'Zipper' => Chumper\Zipper\Zipper::class,
+        'StringHelper'=> App\Helpers\StringHelper::class,
 
     ],
 

@@ -9,6 +9,7 @@
 namespace App\Laudatio\GitLaB;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use App\Exceptions\CorpusNameAlreadyExistsException;
 use DB;
 use Log;
 
@@ -58,9 +59,27 @@ class GitFunction
         return $process->getOutput();
     }
 
+    public function addGitHooks($path, $user, $email) {
+        $isAdded = false;
+
+        $process = new Process("git add githooks",$this->basePath."/".$path);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            $isAdded = true;
+        }
+
+        return $isAdded;
+    }
+
 
     public function doAddFile($file,$path){
-        $process = new Process("git add $file",$path);
+        $process = new Process("git add \"$file\"",$path);
         $process->run();
 
         // executes after the command finishes
@@ -73,7 +92,7 @@ class GitFunction
 
 
     public function isUntracked($status){
-        return (strpos($status,"untracked files present") !== false);
+        return (strpos($status,"untracked files present") !== false || strpos($status,"Untracked files:") !== false);
     }
 
     public function isTracked($path){
@@ -81,7 +100,7 @@ class GitFunction
         $pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
         $folder = substr($path,strrpos($path,"/")+1);
 
-        $process = new Process("git ls-files --others --exclude-standard $folder",$pathWithOutAddedFolder);
+        $process = new Process("git ls-files --exclude-standard \"$folder\"",$pathWithOutAddedFolder);
         $process->run();
 
         // executes after the command finishes
@@ -125,7 +144,7 @@ class GitFunction
         //$pathWithOutAddedFolder = substr($path,0,strrpos($path,"/"));
         $folder = substr($path,strrpos($path,"/")+1);
 
-        $process = new Process("git diff $file",$path);
+        $process = new Process("git diff \"$file\"",$path);
         $process->run();
 
         // executes after the command finishes
@@ -190,7 +209,6 @@ class GitFunction
     public function addUntracked($pathWithOutAddedFolder, $folder = ""){
         $isAdded = false;
         $status = $this->getStatus($this->basePath."/".$pathWithOutAddedFolder);
-
         if($folder == ""){
             if($this->isUntracked($status)){
                 $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder);
@@ -201,13 +219,11 @@ class GitFunction
             }
         }
         else {
-            if(!$this->isTracked($this->basePath."/".$pathWithOutAddedFolder."/".$folder)){
-
+            if($this->isUntracked($status)){
                 if (is_dir($folder)) {
                     $addResult = $this->doAdd($this->basePath."/".$pathWithOutAddedFolder."/".$folder);
                 }
                 else{
-
                     $addResult = $this->doAddFile($folder,$this->basePath."/".$pathWithOutAddedFolder);
                 }
 
@@ -240,9 +256,10 @@ class GitFunction
         return $isAdded;
     }
 
-    public function commitFiles($path, $commitmessage, $user){
+    public function commitFiles($path, $commitmessage, $user, $email){
         $isCommitted = false;
-        $process = new Process("git commit -m \"".$commitmessage."\" ",$path);
+
+        $process = new Process("git commit -m \"".$commitmessage." by ".$user." (".$email.") \" ",$path);
         $process->setTimeout(3600);
         $process->run();
 
@@ -258,6 +275,84 @@ class GitFunction
         }
 
         return $isCommitted;
+    }
+
+    public function commitFile($path,$file, $commitmessage, $user, $email){
+        $isCommitted = false;
+
+        $process = new Process("git commit -m '".$commitmessage." '".$file. "' by ".$user." (".$email.")' ".$file,$path);
+        $process->setTimeout(3600);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            if($this->isCommitted($commitmessage,$processOutput)){
+                $isCommitted = true;
+            }
+        }
+
+        return $isCommitted;
+    }
+
+    public function setCorpusVersionTag($corpusPath, $tagmessage, $version, $user,$email, $blame) {
+        $isTagged = false;
+        $process = null;
+        if($blame) {
+            $process = new Process(" git tag -a v".$version." -m \"".$tagmessage." by ".$user." (".$email.") \" ",$this->basePath."/".$corpusPath);
+        }
+        else {
+            $process = new Process(" git tag -a v".$version." -m \"".$tagmessage."\"",$this->basePath."/".$corpusPath);
+        }
+
+        $process->setTimeout(3600);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+
+            if($this->isTagged($version,$this->basePath."/".$corpusPath)){
+
+                $push_process = new Process(" git push origin v".$version,$this->basePath."/".$corpusPath);
+                $push_process->setTimeout(3600);
+                $push_process->run();
+
+                if (!$push_process->isSuccessful()) {
+                    throw new ProcessFailedException($push_process);
+                }
+                else{
+                    $isTagged = true;
+                }
+            }
+        }
+        return $isTagged;
+    }
+
+    public function isTagged($version,$corpusPath) {
+        $isTagged = false;
+
+        $process = new Process(" git tag",$corpusPath);
+        $process->setTimeout(3600);
+        $process->run();
+
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+        else{
+            $processOutput = $process->getOutput();
+            if(strpos($processOutput, strval($version)   ) !== false){
+                $isTagged = true;
+            }
+        }
+        return $isTagged;
     }
 
     public function addRemote($origin,$path) {
@@ -323,6 +418,33 @@ class GitFunction
         return $isPushed;
     }
 
+    public function resetAdd($path,$files){
+        $isReset = false;
+        foreach($files as $file) {
+            //git reset -- main/*
+            $process = null;
+            if(is_dir($file)){
+                $process = new Process("git reset -- ".$file."/*",$this->basePath."/".$path);
+            }
+            else{
+                $process = new Process("git reset -- $file",$this->basePath."/".$path);
+            }
+
+            $process->setTimeout(3600);
+            $process->run();
+
+            // executes after the command finishes
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+            else{
+                $processOutput = $process->getOutput();
+                $isReset = true;
+            }
+        }
+        return $isReset;
+    }
+
     public function pushFiles($path,$corpusid) {
         $isPushed = false;
         $process = new Process("git push",$this->basePath."/".$path);
@@ -378,7 +500,7 @@ class GitFunction
         /*
          * cp ../../../scripts/githooks/* .git
          */
-        $hookProcess = new Process("cp ".$this->scriptPath."/githooks/* .git/hooks",$this->basePath."/".$path);
+        $hookProcess = new Process("cp ".$this->scriptPath."/githooks/* githooks",$this->basePath."/".$path);
         $hookProcess->run();
         // executes after the command finishes
         if (!$hookProcess->isSuccessful()) {
@@ -390,6 +512,49 @@ class GitFunction
         }
 
         return $isCopied;
+    }
+
+
+    public function setGitConfig($path, $configs) {
+        $listOfErrors = array();
+        foreach ($configs as $config) {
+            $process = new Process("git config ".$config,$this->basePath."/".$path);
+            $process->run();
+            // executes after the command finishes
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+            else{
+                array_push($listOfErrors, $process->getOutput());
+
+            }
+        }
+        return $listOfErrors;
+    }
+
+
+    public function setCoreHooksPath($path){
+        $isSet = false;
+        /*
+         * cp ../../../scripts/githooks/* .git
+         */
+        $hookProcess = new Process('printf "\t hooksPath = githooks\n" >> .git/config',$this->basePath."/".$path);
+        $hookProcess->run();
+        // executes after the command finishes
+        if (!$hookProcess->isSuccessful()) {
+            throw new ProcessFailedException($hookProcess->getErrorOutput());
+        }
+        else{
+            $processOutput = $hookProcess->getOutput();
+            $isSet = true;
+        }
+
+        return $isSet;
+    }
+
+    public static function __callStatic($name, $arguments)
+    {
+        // TODO: Implement __callStatic() method.
     }
 
     public function copyScripts($path){
@@ -417,9 +582,14 @@ class GitFunction
     }
 
     /**
+     * writeFiles
+     *
      * @param $dirPath
      * @param $fileDataArray
-     * @return string
+     * @param $flySystem
+     * @param $fileTempPath
+     * @param $theFilePath
+     * @return array
      */
     public function writeFiles($dirPath, $fileDataArray,$flySystem,$fileTempPath,$theFilePath){
         foreach($fileDataArray as $fileData) {
@@ -456,28 +626,38 @@ class GitFunction
             }
         }
 
-        //write file if exists
-        $fileArray = explode("/", $theFilePath);
 
+        $stream = null;
         $fileInDirectory = "";
-        if(count($fileArray) == 1){
-            $fileInDirectory = array_pop($fileArray);
+        $writePath = "";
+
+        if(strpos($theFilePath,'images') !== false) {
+            $writePath = $theFilePath;
+            $flySystem->has($theFilePath);
+        }
+        else{
+            //write file if exists
+            $fileArray = explode("/", $theFilePath);
+
+
+            if(count($fileArray) == 1){
+                $fileInDirectory = array_pop($fileArray);
+            }
+
+            $writePath = $dirPath."/".$fileInDirectory;
         }
 
+        $existingFile = $flySystem->has($dirPath."/".$fileInDirectory);
 
-        #if(file_exists($this->basePath."/".$dirPath."/".$fileInDirectory)){
-            $existingFile = $flySystem->has($dirPath."/".$fileInDirectory);
-            $stream = null;
-            if(!$existingFile){
-                $stream = fopen($fileTempPath, 'r+');
-                $flySystem->writeStream($dirPath."/".$fileInDirectory, $stream);
-            }
-            else{
-                $stream = fopen($fileTempPath, 'r+');
-                $flySystem->updateStream($dirPath."/".$fileInDirectory, $stream);
-            }
-        #}
-        array_push($createdDirectoryPath,$this->basePath."/".$dirPath."/".$fileInDirectory);
+        if(!$existingFile){
+            $stream = fopen($fileTempPath, 'r+');
+            $flySystem->writeStream($writePath, $stream);
+        }
+        else{
+            $stream = fopen($fileTempPath, 'r+');
+            $flySystem->updateStream($writePath, $stream);
+        }
+        array_push($createdDirectoryPath,$this->basePath."/".$writePath);
 
         if (is_resource($stream)) {
             fclose($stream);
@@ -513,7 +693,7 @@ class GitFunction
     }
 
 
-    public function deleteFiles($path){
+    public function deleteFiles($path,$user,$email){
 
         $isdeleted = false;
         $isFile = false;
@@ -540,7 +720,7 @@ class GitFunction
 
         $process = null;
         $folder = str_replace(" ","\\ ",$folder);
-        //dd("FOLDER: ".$folder." CWDPATH: ".$cwdPath);
+
 
         if($isFile){
             $process = new Process("git rm $folder",$cwdPath);
@@ -563,7 +743,7 @@ class GitFunction
             if($this->isAdded($addStatus)){
 
 
-                $commit = $this->commitFiles($cwdPath,"deleting $cwdPath/$folder");
+                $commit = $this->commitFiles($cwdPath,"deleting $folder",$user,$email);
                 $commitstatus = $this->getStatus($cwdPath);
 
                 if($this->isCleanWorkingTree($commitstatus)){
@@ -641,7 +821,6 @@ class GitFunction
 
             $process = null;
             $folder = str_replace(" ","\\ ",$folder);
-
             $process = new Process("rm -rf $folder",$cwdPath);
             $process->run();
 
@@ -657,7 +836,7 @@ class GitFunction
         else{
             //we are deleting contents of a folder
             $dirArray = explode("/",$path);
-            //dd($dirArray);
+
             if(!$isCorpus && !$isProject){
                 $type = $dirArray[3];
                 $objects = null;
@@ -738,6 +917,8 @@ class GitFunction
     public function isDottedFile($file){
         return strpos($file,".") == 0;
     }
+
+
 
     public function getListOfStagedFiles($path){
         $listOfFiles = array();

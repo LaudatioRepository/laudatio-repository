@@ -3,10 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Annotation;
+use App\Document;
+use App\Corpus;
+use App\Custom\GitRepoInterface;
+use App\Custom\LaudatioUtilsInterface;
+use GrahamCampbell\Flysystem\FlysystemManager;
+use App\Custom\ElasticsearchInterface;
 use Illuminate\Http\Request;
+use Response;
+use Log;
 
 class AnnotationController extends Controller
 {
+    protected $GitRepoService;
+    protected $LaudatioUtilService;
+    protected $elasticService;
+    protected $flysystem;
+
+    public function __construct(GitRepoInterface $GitRepoService, FlysystemManager $flysystem,LaudatioUtilsInterface $laudatioUtils,ElasticsearchInterface $elasticService)
+    {
+        $this->GitRepoService = $GitRepoService;
+        $this->LaudatioUtilService = $laudatioUtils;
+        $this->flysystem = $flysystem;
+        $this->elasticService = $elasticService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -80,20 +101,114 @@ class AnnotationController extends Controller
      */
     public function destroy(Annotation $annotation)
     {
-        $isLoggedIn = \Auth::check();
-        $user = \Auth::user();
+        $result = array();
+        $status = "";
+        try {
+            $corpusid = $request->input('corpusid');
+            $corpusPath = $request->input('path');
+            $toBeDeleted = $request->input('tobedeleted');
 
+            if(count($annotation->documents()) > 0) {
+                $annotation->documents()->detach();
+            }
 
-        if(count($annotation->documents()) > 0) {
-            $annotation->documents()->detach();
+            $annotation->delete();
+
+            $status = "success";
+            $result['delete_annotation_content_response']  = "Document content was successfully deleted";
+        }
+        catch (\Exception $e) {
+            $status = "error";
+            $result['delete_annotation_content_response']  = "There was a problem deleting the Document content. The error was: ($e) A message has been sent to the site administrator. Please try again later";
         }
 
-        $annotation->delete();
+        $response = array(
+            'status' => $status,
+            'msg' => $result,
+        );
 
-        $corpora = Corpus::latest()->get();
+        return Response::json($response);
 
-        return view('admin.corpusadmin.index', compact('corpora'))
-            ->with('isLoggedIn', $isLoggedIn)
-            ->with('user',$user);
+    }
+
+    public function destroyAnnotationContent(Request $request) {
+        $result = array();
+        $status = "success";
+        $loggedInUser = \Auth::user();
+
+        try{
+            $corpusid = $request->input('corpusid');
+            $corpus = Corpus::findOrFail($corpusid);
+            $corpusPath = $request->input('path');
+            $auth_user_name = $request->input('auth_user_name');
+            $auth_user_id = $request->input('auth_user_id');
+            $auth_user_email = $request->input('auth_user_email');
+            $toBeDeletedCollection = $request->input('tobedeleted');
+            $corpusIsVersioned = $this->LaudatioUtilService->corpusIsVersioned($corpusid);
+
+            foreach ($toBeDeletedCollection as $toBeDeleted) {
+
+                $fileDeleteResult = false;
+
+                if($corpusIsVersioned) {
+                    $fileDeleteResult = $this->GitRepoService->deleteFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName'],$auth_user_name,$auth_user_email);
+                }
+                else{
+                    $fileDeleteResult = $this->GitRepoService->deleteUntrackedFile($this->flysystem,$corpusPath."/".$toBeDeleted['fileName']);
+                }
+
+
+
+                if($fileDeleteResult) {
+
+                    $annotation = Annotation::findOrFail($toBeDeleted['databaseId']);
+
+
+                    if($corpusIsVersioned) {
+                        $searchData = array();
+                        array_push($searchData,array(
+                            "_id" => $annotation->elasticsearch_id
+                        ));
+
+                        $elasticSearchDeleteResult = $this->elasticService->deleteIndexedObject($annotation->elasticsearch_index,$searchData);
+
+                        if(!$elasticSearchDeleteResult['error']) {
+                            if(count($annotation->documents()) > 0) {
+                                $annotation->documents()->detach();
+                            }
+                            $annotation->delete();
+
+                            $pushResult = $this->GitRepoService->pushFiles($corpusPath,$corpusid,$auth_user_name);
+                        }
+
+                        $this->LaudatioUtilService->emptyAnnotationCacheByNameAndCorpusId($annotation->annotation_id, $corpusid, $annotation->elasticsearch_index);
+                        $this->LaudatioUtilService->emptyAnnotationCacheByCorpusId($corpus->corpus_id,$annotation->elasticsearch_index);
+                        $this->LaudatioUtilService->emptyAnnotationCacheByAnnotationIndex($annotation->elasticsearch_index);
+                    }
+                    else {
+                        if(count($annotation->documents()) > 0) {
+                            $annotation->documents()->detach();
+                        }
+                        $annotation->delete();
+                    }
+
+                }
+            }
+
+            $result['delete_content_response']  = "Annotation content was successfully deleted";
+
+        }
+        catch (\Exception $e) {
+            $status = "error";
+            $result['delete_content_response']  = "There was a problem deleting the Annotation content. The error was: ($e) A message has been sent to the site administrator. Please try again later";
+        }
+
+
+        $response = array(
+            'status' => $status,
+            'msg' => $result,
+        );
+
+        return Response::json($response);
     }
 }

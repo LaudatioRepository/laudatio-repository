@@ -16,12 +16,30 @@ use App\CorpusProject;
 use App\Corpus;
 use App\Document;
 use App\Annotation;
+use App\CorpusFile;
 use App\Preparation;
+use App\Role;
+use App\User;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use App\Exceptions\CorpusNameAlreadyExistsException;
 use Log;
+use Cache;
 use DB;
 
 class LaudatioUtilService implements LaudatioUtilsInterface
 {
+
+
+    protected $basePath;
+
+    public function __construct()
+    {
+        $this->basePath = config('laudatio.basePath');
+    }
 
     /**
      * Parse xml to json
@@ -70,7 +88,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                 $attributesArray[$attributeKey] = (string)$attribute;
             }
 
-            
+
         }
 
         //get child nodes from all namespaces
@@ -94,7 +112,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
                     $tagsArray[$childTagName] =
                         in_array($childTagName, $options['alwaysArray']) || !$options['autoArray']
                             ? array($childProperties) : $childProperties;
-                            //? array($childProperties) : array($childProperties);
+                    //? array($childProperties) : array($childProperties);
                 } elseif (
                     is_array($tagsArray[$childTagName]) && array_keys($tagsArray[$childTagName])
                     === range(0, count($tagsArray[$childTagName]) - 1)
@@ -135,8 +153,8 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      */
     public function setCorpusAttributes($json,$params){
         $jsonPath = new JSONPath($json,JSONPath::ALLOW_MAGIC);
-        $corpusId = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.id')->data();
-        $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
+        $corpus_id = $params['corpus_id'];
+        $corpusTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title')->data();
         $corpusDesc = $jsonPath->find('$.TEI.teiHeader.encodingDesc[0].projectDesc.p.text')->data();
         $corpusSizeType = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.type')->data();
         $corpusSizeValue = $jsonPath->find('$.TEI.teiHeader.fileDesc.extent.text')->data();
@@ -147,17 +165,20 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             "description" => $corpusDesc[0],
             "corpus_size_type" => $corpusSizeType[0],
             "corpus_size_value" => $corpusSizeValue[0],
+            "publication_version" => $params['publication_version'],
+            "workflow_status" => 0,
             'uid' => $params['uid'],
             'gitlab_group_id' => $params['gitlab_group_id'],
             'directory_path' => $params['corpus_path'],
-            'corpus_id' => count($corpusId) > 0 ? $corpusId[0] : uniqid('corpus_'),
+            'corpus_id' => $corpus_id,
             'gitlab_id' => $params['gitlab_id'],
             'gitlab_web_url' => $params['gitlab_web_url'],
             'gitlab_ssh_url' => $params['gitlab_ssh_url'],
             'gitlab_namespace_path' => $params['gitlab_name_with_namespace'],
-            "file_name" => $params['fileName']
+            "file_name" => $params['file_name'],
+            "elasticsearch_index" => $params['elasticsearch_index'],
+            "guidelines_elasticsearch_index" => $params['guidelines_elasticsearch_index'],
         ]);
-
 
         return $corpus;
     }
@@ -166,6 +187,134 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $corpus = Corpus::find($corpusId);
         $corpus->update($params);
         return $corpus;
+    }
+
+    public function updateCorpusFileAttributes($corpus){
+        $updated = true;
+
+        try{
+            foreach ($corpus->corpusfiles as $corpusfile) {
+                $corpusfile->directory_path = $corpus->directory_path;
+                $corpusfile->save();
+            }
+        }
+        catch(\Exception $e) {
+            $updated = false;
+        }
+
+        return $updated;
+    }
+
+    public function duplicateCorpus($oldCorpus, $new_corpus_elasticsearch_id,$new_corpus_id, $new_corpus_index, $new_guideline_index, $now,$oldDocumentIndex,$oldAnnotationIndex,$new_document_index,$new_annotation_index){
+        $elasticsearchIndexes = array();
+        //create a new corpus to represent the new working period
+        $new_corpus = new Corpus();
+
+        $new_corpus->name = $oldCorpus->name;
+        $new_corpus->uid = $oldCorpus->uid;
+        $new_corpus->description = $oldCorpus->description;
+        $new_corpus->corpus_size_type = $oldCorpus->corpus_size_type;
+        $new_corpus->corpus_size_value = $oldCorpus->corpus_size_value;
+        $new_corpus->directory_path = $oldCorpus->directory_path;
+        $new_corpus->corpus_id = $new_corpus_id;
+        $new_corpus->file_name = $oldCorpus->file_name;
+        $new_corpus->elasticsearch_id = $new_corpus_elasticsearch_id;
+        $new_corpus->guidelines_elasticsearch_index = $new_guideline_index;
+        $new_corpus->elasticsearch_index = $new_corpus_index;
+        $new_corpus->publication_version = "working_period";
+        $new_corpus->gitlab_group_id = $oldCorpus->gitlab_group_id;
+        $new_corpus->gitlab_id = $oldCorpus->gitlab_id;
+        $new_corpus->gitlab_web_url = $oldCorpus->gitlab_web_url;
+        $new_corpus->gitlab_namespace_path = $oldCorpus->gitlab_namespace_path;
+        $new_corpus->workflow_status = 0;
+        $new_corpus->corpus_logo = $oldCorpus->corpus_logo;
+        $new_corpus->save();
+
+        //attach user roles
+
+        $corpusUser = User::find($new_corpus->uid);
+        $corpusAdminRole = Role::findById(3);
+        $corpusUser->roles()->sync($corpusAdminRole);
+        if($corpusUser) {
+            if(!$corpusUser->roles->contains($corpusAdminRole)){
+                $corpusUser->roles()->attach($corpusAdminRole);
+            }
+
+            $new_corpus->users()->save($corpusUser,['role_id' => 3]);
+        }
+
+
+        /* for each corpusproject attached to this corpus, detach the old corpus (?),
+        and attach the new corpus to the corpus project for the next working period
+        */
+
+        $corpusProjects = $oldCorpus->corpusprojects()->get();
+        foreach($corpusProjects as $corpusProject) {
+            //$corpusProject->corpora()->detach($corpus->id);
+            $new_corpus->corpusprojects()->attach($corpusProject);
+        }
+
+        $prefixarray = explode("§",$new_corpus_id);
+
+        $documentElasticsearchIndexes = array();
+        $documentElasticsearchIndexes['prefix'] = $prefixarray[0];
+        $documentElasticsearchIndexes['indexes'] = array();
+        $documentElasticsearchIndexes['indexes'][$oldDocumentIndex] = array();
+        foreach ($oldCorpus->documents()->get() as $document) {
+            $new_document_elasticsearch_id = $now."§".$document->elasticsearch_id;
+            array_push($documentElasticsearchIndexes['indexes'][$oldDocumentIndex],$new_document_elasticsearch_id);
+            $newDocument = new Document();
+            $newDocument->title = $document->title;
+            $newDocument->uid = $document->uid;
+            $newDocument->file_name = $document->file_name;
+            $newDocument->document_genre = $document->document_genre;
+            $newDocument->document_size_type = $document->document_size_type;
+            $newDocument->document_size_value = $document->document_size_value;
+            $newDocument->document_id = $document->document_id;
+            $newDocument->corpus_id = $new_corpus->id;
+            $newDocument->elasticsearch_id = $new_document_elasticsearch_id;
+            $newDocument->elasticsearch_index = $new_document_index;
+            $newDocument->publication_version = $document->publication_version;
+            $newDocument->directory_path = $document->directory_path;
+            $newDocument->workflow_status = 0;
+            $newDocument->save();
+            $new_corpus->documents()->save($newDocument);
+            $document->workflow_status = 1;
+            $document->save();
+        }
+        $elasticsearchIndexes['document'] = $documentElasticsearchIndexes;
+
+        $annotationElasticsearchIndexes = array();
+        $annotationElasticsearchIndexes['prefix'] = $prefixarray[0];
+        $annotationElasticsearchIndexes['indexes'] = array();
+        $annotationElasticsearchIndexes['indexes'][$oldAnnotationIndex] = array();
+        foreach ($oldCorpus->annotations()->get() as $annotation) {
+            $new_annotation_elasticsearch_id = $now."§".$annotation->elasticsearch_id;
+            array_push($annotationElasticsearchIndexes['indexes'][$oldAnnotationIndex],$new_annotation_elasticsearch_id);
+            $newAnnotation = new Annotation();
+            $newAnnotation->uid = $annotation->uid;
+            $newAnnotation->file_name = $annotation->file_name;
+            $newAnnotation->annotation_id = $annotation->annotation_id;
+            $newAnnotation->annotation_group = $annotation->annotation_group;
+            $newAnnotation->annotation_size_type = $annotation->annotation_size_type;
+            $newAnnotation->annotation_size_value = $annotation->annotation_size_value;
+            $newAnnotation->corpus_id = $new_corpus->id;
+            $newAnnotation->elasticsearch_id = $new_annotation_elasticsearch_id;
+            $newAnnotation->elasticsearch_index = $new_annotation_index;
+            $newAnnotation->publication_version = $annotation->publication_version;
+            $newAnnotation->directory_path = $annotation->directory_path;
+            $newAnnotation->workflow_status = 0;
+            $newAnnotation->save();
+            foreach ($annotation->documents()->get() as $annodocu){
+                $newAnnotation->documents()->attach($annodocu);
+            }
+            $annotation->workflow_status = 1;
+            $annotation->save();
+        }
+
+        $elasticsearchIndexes['annotation'] = $annotationElasticsearchIndexes;
+
+        return $elasticsearchIndexes;
     }
 
     /**
@@ -190,7 +339,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $fileName
      * @return Document
      */
-    public function setDocumentAttributes($json,$corpusId,$fileName,$isDir){
+    public function setDocumentAttributes($json,$corpusId,$uid,$fileName,$isDir){
         $jsonPath = new JSONPath($json);
 
         $documentTitle = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.text')->data();
@@ -212,7 +361,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
 
         $document = null;
-        $documentObject = $this->getModelByFileName($fileName,'document',$isDir);
+        $documentObject = $this->getModelByFileAndCorpus($fileName,'document',$isDir,$corpusId);
         $corpus = Corpus::find($corpusId);
 
         if(count($documentObject) > 0){
@@ -223,6 +372,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $document->document_size_value = count($documentSizeValue) > 0 ? $documentSizeValue[0]: 0;
             $document->document_id = $document_id[0];
             $document->corpus_id = $corpusId;
+            $document->uid = $uid;
             $document->file_name = $fileName;
             $document->directory_path = $corpus->directory_path;
             $document->save();
@@ -235,6 +385,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             $document->document_size_value = count($documentSizeValue) > 0 ? $documentSizeValue[0]: 0;
             $document->document_id = $document_id[0];
             $document->corpus_id = $corpusId;
+            $document->uid = $uid;
             $document->directory_path = $corpus->directory_path;
             $document->file_name = $fileName;
             $document->save();
@@ -286,6 +437,79 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         return $document;
     }
 
+    /**
+     * setCommitData
+     *
+     * @param $commitData
+     * @param $corpusId
+     * @return bool
+     */
+    public function setCommitData($commitData,$corpusId) {
+        $setData = true;
+
+        try {
+            foreach ($commitData as $path => $data) {
+                $pathArray = explode("/",$path);
+                $object = null;
+
+                if(strrpos($path,"corpus") !== false) {
+                    $fileName = $pathArray[2];
+                    if(strpos($fileName,".md") === false){
+                        $tempObject = $this->getModelByFileAndCorpus($fileName, "corpus", false, $corpusId);
+                        $object = Corpus::findOrFail($tempObject[0]->id);
+                        $this->setVersionMapping($object,"corpus");
+                    }
+                }
+                else if(strrpos($path,"document") !== false) {
+                    $fileName = $pathArray[2];
+                    if(strpos($fileName,".md") === false){
+                        $tempObject = $this->getModelByFileAndCorpus($fileName, "document", false, $corpusId);
+                        $object = Document::findOrFail($tempObject[0]->id);
+                        $this->setVersionMapping($object,"document");
+                    }
+
+                }
+                else if(strrpos($path,"annotation") !== false) {
+                    $fileName = $pathArray[2];
+                    if(strpos($fileName,".md") === false){
+                        $tempObject = $this->getModelByFileAndCorpus($fileName, "annotation", false, $corpusId);
+                        $object = Annotation::findOrFail($tempObject[0]->id);
+                        $this->setVersionMapping($object,"annotation");
+                    }
+
+                }
+                else if(strrpos($path,"CORPUS-DATA") !== false) {
+                    $fileName = $pathArray[1];
+                    if(strpos($fileName,".md") === false) {
+                        $tempObject = $this->getModelByFileName($fileName, "CORPUS-DATA", false, $corpusId);
+                        $object = CorpusFile::findOrFail($tempObject->id);
+                    }
+                }
+
+
+
+                $params = array(
+                    "gitlab_commit_sha" => $data['sha_string'],
+                    "gitlab_commit_date" => $data['date'],
+                    "gitlab_commit_description" => $data['date'],
+                );
+
+                if(null != $object){
+                    $object->update($params);
+                }
+
+            }
+        }
+        catch (\Exception $e) {
+            $setData = false;
+            Log::info("setCommitData: error: ".$e->getMessage());
+        }
+
+
+
+        return $setData;
+    }
+
     public function updateDocumentAttributes($params,$documentId){
         $document = Document::find($documentId);
         $document->update($params);
@@ -314,7 +538,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @param $fileName
      * @return Annotation|mixed
      */
-    public function setAnnotationAttributes($json,$corpusId,$fileName,$isDir){
+    public function setAnnotationAttributes($json,$corpusId,$uid,$fileName,$isDir){
         $jsonPath = new JSONPath($json);
 
         $annotationId = $jsonPath->find('$.TEI.teiHeader.fileDesc.titleStmt.title.corresp')->data();
@@ -332,14 +556,14 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         $corpus = Corpus::find($corpusId);
 
         if(count($annotationsFromDB) > 0){
-
             foreach($annotationsFromDB as $annotationFromDB)
-              $annotationFromDB->update([
-                  "annotation_size_type" => $annotationSizeType[0],
-                  "annotation_size_value" => $annotationSizeValue[0],
-                  "directory_path" => $corpus->directory_path,
-                  "file_name" => $fileName
-            ]);
+                $annotationFromDB->update([
+                    "annotation_size_type" => $annotationSizeType[0],
+                    "annotation_size_value" => $annotationSizeValue[0],
+                    "directory_path" => $corpus->directory_path,
+                    "file_name" => $fileName,
+                    "uid" => $uid
+                ]);
 
             $annotationFromDB->save();
 
@@ -347,11 +571,11 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         }
         else{
             $annotation = new Annotation;
-
             $annotation->annotation_id = $annotationId[0];
             $annotation->annotation_size_type = $annotationSizeType[0];
             $annotation->annotation_size_value = $annotationSizeValue[0];
             $annotation->corpus_id = $corpusId;
+            $annotation->uid = $uid;
             $annotation->file_name = $fileName;
             $annotation->directory_path = $corpus->directory_path;
             $annotation->save();
@@ -417,7 +641,7 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     }
 
     public function updateAnnotationAttributes($params,$annotationId){
-        $annotation = annotaion::find($annotationId);
+        $annotation = Annotation::find($annotationId);
         $annotation->update($params);
         return $annotation;
     }
@@ -496,19 +720,92 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
 
     /**
+     * setVersionMapping
+     *
+     * @param $object
+     * @param $type
+     * @return int
+     */
+    public function setVersionMapping($object,$type){
+
+        if(count($object) > 0){
+            if(null != $object->vid){
+                $object->vid++;
+            }
+            else{
+                $object->vid = 1;
+            }
+
+
+            $object->save();
+
+            $id_vid = DB::table('versions')->select('id', 'vid')->where([
+                    ['id','=',$object->id],
+                    ['type','=',$type],
+                ]
+            )->get();
+
+            if(count($id_vid) > 0){
+                DB::table('versions')->where('id',$object->id)->update(
+                    ['vid' => $object->vid]
+                );
+            }
+            else{
+                DB::table('versions')->insert(
+                    [
+                        'id' => $object->id,
+                        'vid' => $object->vid,
+                        'type' => $type
+                    ]
+                );
+            }
+        }
+
+        return $object->vid;
+
+    }
+
+    /**
+     * setCorpusLogoSymLink
+     * @param $path
+     * @return string
+     */
+    public function setCorpusLogoSymLink($flysystem, $path) {
+
+        $pathArray = explode("/",$path);
+        end($pathArray);
+        $last_id = key($pathArray);
+
+        $imagePath = public_path('images');
+        $toPath = $imagePath."/corpuslogos/".$pathArray[0]."_".$pathArray[1]."_".$pathArray[$last_id];
+
+        if(!file_exists ($toPath)){
+
+            $process = new Process("ln -s ".$this->basePath."/".$path." ".$toPath);
+            $process->run();
+
+            // executes after the command finishes
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+
+            return $process->getOutput();
+        }
+
+    }
+
+
+    /**
      * Set the version mapping for each version of a header
      *
      * @param $fileName
      * @param $type
+     * @param $isDir
+     * @param $corpusid
+     * @return mixed
      */
-    public function setVersionMapping($fileName,$type, $isDir){
-        $object = null;
-        if($isDir){
-            $object = $this->getModelByFileName($fileName,$type,$isDir);
-        }
-        else{
-            $object = $this->getModelByFileName($fileName,$type, $isDir);
-        }
+    public function setVersionMapping_old($fileName,$type, $isDir,$corpusid){
+        $object = $this->getModelByFileAndCorpus($fileName,$type, $isDir,$corpusid);
 
         if(count($object) > 0){
             if(null != $object[0]->vid){
@@ -543,8 +840,9 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             }
         }
 
-    }
+        return $object[0]->vid;
 
+    }
 
     public function getModelByType($id,$type){
         $object = null;
@@ -569,30 +867,34 @@ class LaudatioUtilService implements LaudatioUtilsInterface
      * @return mixed
      * @todo: This is very brittle, we need some kind of GUID, and to add at least the corpus id to avoid ambiguity
      */
-    public function getModelByFileName($fileName, $type, $isDir){
+    public function getModelByFileName($fileName, $type, $isDir,$corpusId){
         $object = null;
         switch ($type){
             case 'corpus':
                 if($isDir){
                     $object = Corpus::where([
-                        ['directory_path', '=',$fileName]
+                        ['directory_path', '=',$fileName],
+                        ['id', '=',$corpusId]
                     ])->get();
                 }
                 else{
                     $object = Corpus::where([
-                        ['file_name', '=',$fileName]
+                        ['file_name', '=',$fileName],
+                        ['id', '=',$corpusId]
                     ])->get();
                 }
                 break;
             case 'document':
                 if($isDir){
                     $object = Document::where([
-                        ['directory_path', '=',$fileName]
+                        ['directory_path', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
                     ])->get();
                 }
                 else{
                     $object = Document::where([
-                        ['file_name', '=',$fileName]
+                        ['file_name', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
                     ])->get();
                 }
 
@@ -600,17 +902,26 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             case 'annotation':
                 if($isDir){
                     $object = Annotation::where([
-                        ['directory_path', '=',$fileName]
+                        ['directory_path', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
                     ])->get();
                 }
                 else{
                     $object = Annotation::where([
-                        ['file_name', '=',$fileName]
+                        ['file_name', '=',$fileName],
+                        ['corpus_id', '=',$corpusId]
                     ])->get();
                 }
 
                 break;
+            case 'CORPUS-DATA':
+                $object = CorpusFile::where([
+                    ['file_name', '=',$fileName],
+                    ['corpus_id', '=',$corpusId]
+                ])->get();
+                break;
         }
+
         return $object;
     }
 
@@ -627,12 +938,14 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             case 'corpus':
                 if($isDir){
                     $object = Corpus::where([
-                        ['directory_path', '=',$fileName]
+                        ['directory_path', '=',$fileName],
+                        ['id', '=',$corpusId]
                     ])->get();
                 }
                 else{
                     $object = Corpus::where([
-                        ['file_name', '=',$fileName]
+                        ['file_name', '=',$fileName],
+                        ['id', '=',$corpusId]
                     ])->get();
                 }
                 break;
@@ -669,6 +982,181 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         }
         return $object;
     }
+
+    public function getElasticSearchIdByCorpusId($corpusid,$corpus_index)
+    {
+        $elasticSearchId = null;
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$corpus_index]])->get();
+        if(count($corpus) > 0) {
+            $elasticSearchId = $corpus[0]->elasticsearch_id;
+        }
+        return $elasticSearchId;
+    }
+
+    public function getElasticSearchIndexByCorpusId($corpusid)
+    {
+        $corpus = Corpus::find($corpusid);
+        return $corpus->elasticsearch_index;
+    }
+
+
+    public function getDatabaseIdByCorpusId($corpusid)
+    {
+        $corpus = Corpus::where("corpus_id",$corpusid)->get();
+        return $corpus[0]->id;
+    }
+
+
+    public function getCorpusLogoByCorpusId($corpusid,$index){
+        $corpus_logo = "";
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$index]])->get();
+
+        if(isset($corpus[0])){
+            $corpus_logo = $corpus[0]->corpus_logo;
+        }
+
+        return $corpus_logo;
+    }
+
+    public function getCorpusNameByCorpusId($corpusid,$index){
+        $corpus_name = "";
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$index]])->get();
+
+        if(isset($corpus[0])){
+            $corpus_name = $corpus[0]->name;
+        }
+
+        return $corpus_name;
+    }
+
+    public function getCorpusNameByObjectElasticsearchId($type,$objectId){
+        $corpus_name = "";
+        $object = null;
+        switch($type) {
+            case "corpus":
+                $object = Corpus::where("elasticsearch_id",$objectId)->get();
+                if(isset($object[0])){
+                    $corpus_name = $object[0]->name;
+                }
+                break;
+            case "document":
+                $object = Document::where("elasticsearch_id",$objectId)->get();
+                if(isset($object[0])){
+                    $corpus = Corpus::findOrFail($object[0]->corpus_id);
+                    $corpus_name = $corpus->name;
+                }
+                break;
+            case "annotation":
+                $object = Annotation::where("elasticsearch_id",$objectId)->get();
+                if(isset($object[0])){
+                    $corpus = Corpus::findOrFail($object[0]->corpus_id);
+                    $corpus_name = $corpus->name;
+                }
+                break;
+        }//end switch
+
+        return $corpus_name;
+    }
+
+    public function  getCurrentCorpusIndexByElasticsearchId($elasticSearchId) {
+        $corpus = Corpus::where([
+            ["elasticsearch_id","=",$elasticSearchId]
+        ])->get();
+        return $corpus[0]->elasticsearch_index;
+    }
+
+    public function getCurrentDocumentIndexByElasticsearchId($elasticSearchId){
+        $document = Document::where([
+            ["elasticsearch_id","=",$elasticSearchId]
+        ])->get();
+        return $document[0]->elasticsearch_index;
+    }
+
+    public function getCurrentAnnotationIndexByElasticsearchId($elasticSearchId){
+        $annotation = Annotation::where([
+            ["elasticsearch_id","=",$elasticSearchId]
+        ])->get();
+        return $annotation[0]->elasticsearch_index;
+    }
+
+    public function getCurrentCorpusIndexByAnnotationElasticsearchId($elasticSearchId){
+        $annotation = Annotation::where([
+            ["elasticsearch_id","=",$elasticSearchId]
+        ])->get();
+
+        $corpus = $annotation[0]->corpus()->get();
+        return $corpus[0]->elasticsearch_index;
+    }
+
+
+
+    public function getCurrentCorpusIndexByDocumentElasticsearchId($elasticSearchId){
+        $document = Document::where([
+            ["elasticsearch_id","=",$elasticSearchId]
+        ])->get();
+        $corpus = $document[0]->corpus()->get();
+        return $corpus[0]->elasticsearch_index;
+    }
+
+    public function getDocumentGenreByCorpusId($corpusid,$index)
+    {
+        $genre = "N/A";
+
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$index]])->get();
+        if(isset($corpus[0])){
+            $documents = $corpus[0]->documents()->get();
+            $genre = isset($documents[0]) ? $documents[0]->document_genre : "N/A";
+        }
+
+        return $genre;
+    }
+    public function getCorpusVersion($corpusId){
+        $corpus = Corpus::where("corpus_id",$corpusId)->get();
+        return $corpus[0]->publication_version;
+    }
+
+
+    public function getWorkFlowStatus($corpusId){
+        $corpus = Corpus::where("corpus_id",$corpusId)->get();
+        return $corpus[0]->workflow_status;
+    }
+
+
+
+    public function getCorpusProjectPathByCorpusId($corpusId,$corpus_index){
+        $projectPath = "";
+        $corpus = Corpus::where([["elasticsearch_id","=",$corpusId],["elasticsearch_index","=",$corpus_index]])->get();
+        if(isset($corpus[0])){
+            $corpusprojects = $corpus[0]->corpusprojects()->get();
+            $project = $corpusprojects[0];
+            $projectPath = $project->directory_path;
+        }
+
+        return $projectPath;
+    }
+
+    public function getCorpusAndProjectPathByCorpusId($corpusid,$corpus_index){
+        $corpusPath = "";
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$corpus_index]])->get();
+        if(isset($corpus[0])){
+            $corpusprojects = $corpus[0]->corpusprojects()->get();
+            $project = $corpusprojects[0];
+            $corpusPath = $project->directory_path."/".$corpus[0]->directory_path;
+        }
+
+        return $corpusPath;
+    }
+
+    public function getCorpusPathByCorpusId($corpusid,$corpus_index){
+        $corpusPath = "";
+        $corpus = Corpus::where([["corpus_id","=",$corpusid],["elasticsearch_index","=",$corpus_index]])->get();
+        if(isset($corpus[0])){
+            $corpusPath = $corpus[0]->directory_path;
+        }
+
+        return $corpusPath;
+    }
+
 
     public function deleteModels($path){
         $dirArray = explode("/",$path);
@@ -721,8 +1209,6 @@ class LaudatioUtilService implements LaudatioUtilsInterface
     }
 
     public function getDirectoryPath($paths,$fileName){
-        Log::info("?ATHS: ".print_r($paths, 1));
-        Log::info("?FNAM: ".print_r($fileName, 1));
         $directoryPath = "";
         foreach ($paths as $path) {
             if (strpos($path,$fileName) !== false){
@@ -731,5 +1217,408 @@ class LaudatioUtilService implements LaudatioUtilsInterface
             }
         }
         return $directoryPath;
+    }
+
+
+
+    /**
+     * getPublishedCorpora for listings
+     * @param $corpusresponses
+     * @return array
+     */
+    public function getPublishedCorpusData($corpusresponses, $elasticService, $perPage ,$sortKriterium, $currentPage){
+
+        $responseArray = array(
+            "entries" => array(),
+            "totalcount" => 0,
+            "perPageArray" => array(),
+            "perPage" => 0
+        );
+
+        $corpusdata = array();
+        $entries = null;
+        $perPageArray = array();
+        $sortedCollection = array();
+        $perPage = null;
+
+        if(count($corpusresponses['result']) > 0){
+            $document_range = "";
+            foreach($corpusresponses['result'][0] as $publicationresponse){
+                //dd($publicationresponse);
+
+                if(isset($publicationresponse['_source']['corpus_index'])) {
+                    $current_corpus_index = $publicationresponse['_source']['corpus_index'];
+                }
+
+                if(isset($publicationresponse['_source']['documents'])) {
+                    $documentcount = count($publicationresponse['_source']['documents']);
+                }
+
+                if(isset($publicationresponse['_source']['annotations'])) {
+                    $annotationcount = count($publicationresponse['_source']['annotations']);
+                }
+
+
+                if(isset($publicationresponse['_source']['document_index'])) {
+                    $current_document_index = $publicationresponse['_source']['document_index'];
+                }
+
+                if(isset($publicationresponse['_source']['annotation_index'])) {
+                    $current_annotation_index = $publicationresponse['_source']['annotation_index'];
+                }
+
+
+                $documentResult = $elasticService->getDocumentByCorpus(
+                    array(array("in_corpora" => $publicationresponse['_source']['corpus'])),
+                    array($publicationresponse['_source']['corpus']),
+                    array("document_title","document_publication_publishing_date","document_publication_place","document_list_of_annotations_name","in_corpora","document_size_extent"),
+                    $current_document_index
+                );
+
+
+                if(!empty($current_corpus_index)){
+
+                    if(!array_key_exists($publicationresponse['_source']['corpus'],$corpusdata)){
+
+
+                        $publishedCorpusid = $this->getElasticSearchIdByCorpusId($publicationresponse['_source']['corpus'],$current_corpus_index);
+
+                        if(!empty($publishedCorpusid)){
+                            $apiData = $elasticService->getCorpus($publishedCorpusid,true,$current_corpus_index);
+                            $corpusresponse = json_decode($apiData->getContent(), true);
+                            $document_range = $this->getDocumentRange($corpusresponse,$documentResult);
+
+                            $authors = "";
+                            for($i = 0; $i < count($corpusresponse['result']['corpus_editor_forename']); $i++){
+                                $authors .= $corpusresponse['result']['corpus_editor_surname'][$i].", ".$corpusresponse['result']['corpus_editor_forename'][$i].";";
+                            }
+
+
+                            $corpus_publication_date = "01.01.1900";
+                            for($j = 0; $j < count($corpusresponse['result']['corpus_publication_publication_date']); $j++) {
+                                $date =   $corpusresponse['result']['corpus_publication_publication_date'][$j];
+                                if($date > $corpus_publication_date) {
+                                    $corpus_publication_date = $date;
+                                }
+                            }
+                            $corpus_path = $this->getCorpusAndProjectPathByCorpusId($publicationresponse['_source']['corpus'],$current_corpus_index);
+                            $corpusPathArray = explode("/",$corpus_path);
+
+                            $corpusLogo = "";
+                            $corpusLogobyCorpusid = $this->getCorpusLogoByCorpusId($publicationresponse['_source']['corpus'],$current_corpus_index);
+
+                            if(null != $corpusLogobyCorpusid) {
+                                $corpusLogo = $corpusLogobyCorpusid;
+                            }
+                            $data['result']['corpus_logo'] = $corpusLogo;
+
+                            $corpusdata[$publicationresponse['_source']['corpus']] = array(
+                                'corpus_title' => $publicationresponse['_source']['name'],
+                                'corpus_version' => $publicationresponse['_source']['publication_version'],
+                                'corpus_logo' => $corpusLogo,
+                                'corpus_project_directorypath' => $corpusPathArray[0],
+                                'corpus_directorypath' => $corpusPathArray[1],
+                                'corpus_path' => $corpus_path,
+                                'authors' => $authors,
+                                'corpus_languages_language' => $corpusresponse['result']['corpus_languages_language'][0],
+                                'corpus_size_value' => str_replace(array(',','.'),'',$corpusresponse['result']['corpus_size_value'][0]),
+                                'corpus_publication_date' => $corpus_publication_date,
+                                'corpus_publication_license' => $corpusresponse['result']['corpus_publication_license'][0],
+                                'corpus_encoding_project_description' => $publicationresponse['_source']['description'],
+                                'document_genre' => $this->getDocumentGenreByCorpusId($corpusresponse['result']['corpus_id'][0],$current_corpus_index),
+                                'document_publication_range' => $document_range,
+                                'download_path' => $this->getCorpusAndProjectPathByCorpusId($publishedCorpusid,$current_corpus_index),
+                                'documentcount' => $documentcount,
+                                'annotationcount' => $annotationcount,
+                                'elasticid' => $publishedCorpusid
+                            );
+                        }
+                    }
+                }
+            }
+
+            $collection = new Collection($corpusdata);
+            //dd($collection);
+            $kriterium = null;
+            $sortKriteria = array(
+                "1" => "corpus_title",
+                "2" => "corpus_size_value",
+                "3_desc" => "corpus_size_value",
+                "4" => "corpus_publication_date",
+                "5_desc" => "corpus_publication_date",
+                "6" => "document_publication_range",
+                "7_desc" => "document_publication_range"
+            );
+
+            if(!isset($sortKriterium)) {
+                $kriterium = "corpus_title";
+            }
+            else{
+                switch($sortKriterium){
+                    case 3:
+                    case 5:
+                    case 7:
+                        $sortKriterium .= "_desc";
+                        break;
+                }
+                $kriterium = $sortKriteria[$sortKriterium];
+            }
+
+            $sortedCollection = null;
+            if(strpos($sortKriterium, "desc") !== false) {
+                $sortedCollection = $collection->sortByDesc($kriterium, SORT_NATURAL|SORT_FLAG_CASE);
+            }
+            else{
+                $sortedCollection = $collection->sortBy($kriterium,SORT_NATURAL|SORT_FLAG_CASE);
+            }
+
+            if(!isset($perPage)) {
+                $perPage  = 4;
+            }
+
+            $perPageArray = array(
+                $perPage => "",
+                "6" => "",
+                "12" => "",
+                "18" => "",
+                "all" => ""
+            );
+
+            if($perPage == count($sortedCollection)){
+                $perPageArray['all'] = "selected";
+            }
+            else{
+                $perPageArray[$perPage] = "selected";
+            }
+
+
+            $currentPageSearchResults = $sortedCollection->slice(($currentPage - 1) * $perPage, $perPage)->all();
+            $entries = new LengthAwarePaginator($currentPageSearchResults, count($sortedCollection), $perPage, $currentPage,['path' => LengthAwarePaginator::resolveCurrentPath()] );
+
+            $responseArray = array(
+                "entries" => $entries,
+                "totalcount" => count($sortedCollection),
+                "perPageArray" => $perPageArray,
+                "perPage" => $perPage
+            );
+        }
+
+        return $responseArray;
+    }
+
+    /**
+     * buildCiteFormat creates citations for a given piece of data
+     * @param $data
+     * @return array
+     */
+    public function buildCiteFormat($data){
+        $cite = "";
+        $citedauthors = "";
+        $authorstring = "";
+
+        foreach ($data['authors'] as $authorData) {
+            $namearray = explode(" ", $authorData);
+            $citedauthors .= $namearray[1].", ";
+            $authorstring .= $namearray[1]." ".$namearray[0].", ";
+        }
+
+
+        $homepage = $data['corpus_encoding_project_homepage'];
+        $handle = $data['published_handle'];
+
+        $citedauthors = substr($citedauthors,0,strrpos($citedauthors,","));
+        $authorstring = substr($authorstring,0,strrpos($authorstring,","));
+        $authorstring .= ' ('. $data['publishing_year'].')';
+        $citedauthors .= ' ('. $data['publishing_year'].')';
+
+        $APAcite = $namearray[1].", ".
+            substr($namearray[0],0,1).
+            ". (".$data['publishing_year']."). ".
+            $data['title']." (".$data['version']."). ".
+            $data['publishing_institution'].".".
+            " Homepage: ".$homepage.".";
+            " Corpus-Link: ".$handle.".";
+
+
+        $CHIAGOcite = $namearray[1].", ".
+            $namearray[0].".".
+            "´".$data['title']." (".$data['version'].")´ ".
+            $data['publishing_institution'].", ".$data['publishing_year'].".".
+            " Homepage: ".$homepage.".".
+            " Corpus-Link: ".$handle.".";
+
+
+        $HARVARDcite = $namearray[1].", ".
+            substr($namearray[0],0,1).
+            ". (".$data['publishing_year']."). ".
+            "´".$data['title']." (".$data['version'].")´ ".
+            $data['publishing_institution'].
+            " Homepage: ".$homepage.".".
+            " Corpus-Link: ".$handle.".";
+
+
+
+        $BibTexcite = "";
+        $BibTexcite .= "@Misc{".$citedauthors.",\n";
+        $BibTexcite .= "\t author \t = {".$authorstring."}, \n";
+        $BibTexcite .= "\t title \t = {{".$data['title']." (Version ".$data['version'].")}}, \n";
+        $BibTexcite .= "\t year \t = {".$data['publishing_year']."}, \n";
+        $BibTexcite .= "\t note \t = {".$data['publishing_institution']."}, \n";
+        $BibTexcite .= "\t url \t = {".$handle."}, \n";
+        $BibTexcite .= "}";
+
+        $TXTcite = "";
+        //$TXTcite .= $citedauthors."\n";
+        //$TXTcite .= $authorstring."\n";
+        $TXTcite .= $authorstring."; ";
+        //$TXTcite .= $data['title']." (Version ".$data['version'].")\n";
+        $TXTcite .= $data['title']." (Version ".$data['version']."); ";
+        //$TXTcite .= $data['publishing_year']."\n";
+        //$TXTcite .= $data['publishing_institution']."\n";
+        $TXTcite .= $data['publishing_institution']."; ";
+        $TXTcite .= " Homepage: ".$homepage."; ";
+        $TXTcite .= " Corpus-Link: ".$handle."\n";
+
+        $citations = array();
+        $citations['apa'] = $APAcite;
+        $citations['chicago'] = $CHIAGOcite;
+        $citations['harvard'] = $HARVARDcite;
+        $citations['bibtex'] = $BibTexcite;
+        $citations['txt'] = $TXTcite;
+
+        return $citations;
+    }
+
+
+    /**
+     * getDocumentRange
+     * @param $data
+     * @param $documentResult
+     * @return mixed|string
+     */
+    public function getDocumentRange($data,$documentResult) {
+        $document_dates = array();
+        $document_range = "";
+        if (array_key_exists($data['result']['corpus_id'][0],$documentResult)){
+            for($d = 0; $d < count($documentResult[$data['result']['corpus_id'][0]]); $d++) {
+                $doc = $documentResult[$data['result']['corpus_id'][0]][$d];
+                array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+            }
+
+            sort($document_dates);
+
+            if($document_dates[count($document_dates) -1] > $document_range = $document_dates[0]) {
+                $document_range = $document_dates[0]." - ".$document_dates[count($document_dates) -1];
+            }
+            else{
+                $document_range = $document_dates[0];
+            }
+        }
+
+        return $document_range;
+    }
+
+    public function emptyCorpusCache($corpusId, $index){
+        Cache::tags(['corpus_'.$corpusId.'_'.$index])->flush();
+
+        Cache::tags(['formats_'.$corpusId.'_'.$index])->flush();
+
+        $guidelineIndex = str_replace("corpus","guideline",$index);
+        Cache::tags(['guidelines_'.$corpusId.'_'.$guidelineIndex])->flush();
+    }
+
+    public function emptyDocumentCacheByCorpusId($corpusId,$index){
+
+        Cache::tags(['document_'.$corpusId.'_'.$index])->flush();
+
+        // @todo: flushes too all docs, and not only the relevant ones ?
+        //Cache::tags(['document'])->flush();
+
+    }
+    public function emptyDocumentCacheByDocumentIndex($documentIndex){
+        Cache::tags(['document_'.$documentIndex])->flush();
+    }
+    public function emptyDocumentCacheByDocumentElasticsearchId($documentId, $documentIndex){
+        Cache::tags(['document_'.$documentId.'_'.$documentIndex])->flush();
+    }
+
+    public function emptyAnnotationCacheByCorpusId($corpusId, $index){
+        Cache::tags(['annotation_'.$corpusId.'_'.$index])->flush();
+    }
+
+    public function emptyAnnotationCacheByAnnotationIndex($index){
+        Cache::tags(['annotation_'.$index])->flush();
+    }
+
+    public function emptyAnnotationCacheByNameAndCorpusId($name, $corpusId, $index) {
+        Cache::tags([ 'annotation_'.$name.'_'.$corpusId.'_'.$index])->flush();
+    }
+
+    public function emptyAnnotationGroupCacheByAnnotationAndCorpusId($annotationId,$corpusId, $index){
+        Cache::tags(['annotationgroup_'.$corpusId.'_'.$index])->flush();
+    }
+
+
+    /**
+     * checkForDuplicateCorpusName checks the path-normalized name of a corpus if it already exists with in a project
+     *
+     * @param $corpus_name_path
+     * @param $corpus_project_id
+     * @return mixed
+     */
+    public function checkForDuplicateCorpusName($corpus_name, $corpus_name_path, $corpus_project_id) {
+        $isDuplicate = false;
+        $corpusProject = CorpusProject::findOrFail($corpus_project_id);
+        foreach ($corpusProject->corpora()->get() as $projectCorpus) {
+            if($projectCorpus->directory_path == $corpus_name_path) {
+
+                throw new CorpusNameAlreadyExistsException("The Corpus name $corpus_name is already taken within this Corpus project. Please select another title for the Corpus.",0,null);
+            }
+        }
+        
+        return $isDuplicate;
+    }
+
+    /**
+     * determineAdminRole
+     *
+     * @param $admin_roles
+     * @return array
+     */
+    public function determineAdminRole($admin_roles){
+     $admin_role_filtered = array();
+
+     $lastRoleId = 1000;
+     foreach ($admin_roles as $id => $admin_role_array) {
+         foreach ($admin_role_array as  $admin_role) {
+             if ($admin_role['role_id'] < $lastRoleId) {
+                 $admin_role_filtered = $admin_role;
+             }
+             $lastRoleId = $admin_role['role_id'];
+         }
+
+     }
+
+     return $admin_role_filtered;
+    }
+
+    public function determineUserAdminRole($user_roles){
+        $user_role_filtered = array();
+
+        $lastRoleId = 1000;
+        foreach ($user_roles as $id => $user_role_array) {
+            if(!isset($user_role_filtered[$id])){
+                $user_role_filtered[$id] = array();
+            }
+            foreach ($user_role_array as  $user_role) {
+                if ($user_role['role_id'] < $lastRoleId) {
+                    array_push($user_role_filtered[$id],$user_role);
+                }
+                $lastRoleId = $user_role['role_id'];
+            }
+
+        }
+
+        return $user_role_filtered;
     }
 }

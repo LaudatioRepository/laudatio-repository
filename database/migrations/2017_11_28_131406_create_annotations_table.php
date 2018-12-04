@@ -24,6 +24,8 @@ class CreateAnnotationsTable extends Migration
             $table->string('annotation_size_value')->nullable();
             $table->integer('corpus_id')->nullable();
             $table->string('elasticsearch_id')->nullable();
+            $table->string('elasticsearch_index')->nullable();
+            $table->string('publication_version')->nullable();
             $table->string('directory_path')->nullable();
             $table->string('gitlab_commit_sha')->nullable();
             $table->dateTime('gitlab_commit_date')->nullable();

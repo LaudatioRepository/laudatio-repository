@@ -17,22 +17,21 @@
 </head>
 
 <body>
-<div id="rootContainer" class="container-fluid m-0 p-0">
+<div class="container-fluid m-0 p-0">
     @include ('layouts.main_ux_nav')
-    @include ('layouts.admin_ux_breadcrumb')
+    @if($flash = session('message'))
+        <div id="flash-message" class="alert alert-success">
+            {{ $flash }}
+        </div>
+    @endif
     @yield('content')
     @include('layouts.main_ux_footer')
 </div>
-<script src="{{ asset('js/vendorscripts.js') }}"></script>
+<script src="{{ asset('js/vendorscripts_old.js') }}"></script>
 <script src="{{ asset('js/scripts.js') }}"></script>
+<script src="{{ asset('js/browseapp.js') }}"></script>
 <script src="{{ asset('js/jq.js') }}"></script>
-@if (session('openLogin'))
-    //some js function that will open your hidden modal
-    //if you use bootstrap modal
-    <script>
-        $('#signInModal').modal('show');
-    </script>
-@endif
+
 </body>
 
 </html>

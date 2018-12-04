@@ -4,10 +4,10 @@
         <nav aria-label="breadcrumb" class="breadcrumbs">
             <ol class="breadcrumb bg-transparent">
                 <li class="text-12 text-uppercase breadcrumb-item">
-                    <a class="text-dark" href="#">Home</a>
+                    <a class="text-dark" href="/">Home</a>
                 </li>
                 <li class="text-12 text-uppercase breadcrumb-item">
-                    <a class="text-dark" href="#">Publish</a>
+                    <a class="text-dark" href="/corpusprojects">Publish</a>
                 </li>
                 <li class="text-12 text-uppercase breadcrumb-item text-wine-trans active" aria-current="page">Corpus projects</li>
             </ol>

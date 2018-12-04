@@ -44,13 +44,13 @@
                                         {{ csrf_field() }}
                                     <div class="form-group">
                                         <label class="text-14 text-dark-trans mb-1 pl-3" for="corpusproject_name">
-                                            <small>Corpus Project title</small>
+                                            <small>Corpus Project title <span style="color: red">*</span></small>
                                         </label>
                                         <input type="text" class="form-control" id="corpusproject_name" name="corpusproject_name" required placeholder="What's the project title?">
                                     </div>
                                     <div class="form-group mt-3">
                                         <label class="text-14 text-dark-trans mb-1 pl-3" for="editCorpusProject_Description">
-                                            <small>Corpus Project description</small>
+                                            <small>Corpus Project description <span style="color: red">*</span></small>
                                         </label>
                                         <textarea id="corpusproject_description" name="corpusproject_description" class="form-control py-3" cols="30" rows="8" placeholder="here you can describe the purpose of your project. We recommend between 300 and max. 500 chars."></textarea>
                                     </div>

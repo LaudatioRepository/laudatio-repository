@@ -24,7 +24,9 @@ Route::group(array('prefix' => 'searchapi'), function() {
     Route::get('getcorpus','ElasticController@getCorpus');
     Route::get('getdocument','ElasticController@getDocument');
     Route::get('getannotation','ElasticController@getAnnotation');
+    Route::get('getpublishedindexes','ElasticController@getPublishedIndexes');
     Route::post('searchGeneral','ElasticController@searchGeneral');
+    Route::post('listAllPublished','ElasticController@listAllPublished');
     Route::post('searchCorpus','ElasticController@searchCorpusIndex');
     Route::post('searchDateRange','ElasticController@searchCorpusIndex');
     Route::post('searchDocument','ElasticController@searchDocumentIndex');
@@ -43,6 +45,32 @@ Route::group(array('prefix' => 'searchapi'), function() {
     Route::post('truncateIndex','ElasticController@truncateIndex');
 });
 
+Route::group(array('prefix' => 'corpusapi'), function() {
+    Route::get('corpusprojects','ApiController@getCorpusProjects');
+    Route::get('corpusprojects/{id}','ApiController@getCorpusProject');
+    Route::get('corpusprojects/{id}/corpuses','ApiController@getCorporaByCorpusproject');
+
+    Route::get('corpuses','ApiController@getCorpora');
+    Route::get('corpuses/{id}','ApiController@getCorpus');
+    Route::get('corpuses/{id}/documents','ApiController@getDocumentsByCorpus');
+    Route::get('corpuses/{id}/annotations','ApiController@getAnnotationsByCorpus');
+
+    Route::get('documents','ApiController@getDocuments');
+    Route::get('documents/{id}','ApiController@getDocument');
+    Route::get('documents/{id}/annotations','ApiController@getAnnotationsByDocument');
+
+    Route::get('annotations','ApiController@getDocuments');
+    Route::get('annotations/{id}','ApiController@getDocument');
+    Route::get('annotations/{id}/documents','ApiController@getDocumentsByAnnotation');
+});
+
+
+Route::group(array('prefix' => 'dbapi'), function() {
+    Route::post('getdatabaseid','ApiController@getDatabaseIdByFilenameAndCorpusId');
+});
+
+
+
 Route::group(array('prefix' => 'adminapi'), function() {
     Route::post('userroles','RoleController@storeRelations');
     Route::post('userrolesbyproject','CorpusProjectController@storeRelationsByProject');
@@ -52,13 +80,23 @@ Route::group(array('prefix' => 'adminapi'), function() {
     Route::post('deletemultiple','GitRepoController@deleteMultipleFiles');
     Route::post('createFormat','GitRepoController@createFormatFolder');
     Route::post('validateHeaders','GitRepoController@validateCorpus');
-    Route::post('preparePublication','CorpusController@preparePublication');
+    Route::post('preparePublication','PublicationController@preparePublication');
+    Route::post('checkCorpusContent','PublicationController@checkCorpusContent');
+    Route::post('deleteCorpusContent','CorpusController@destroyCorpusContent');
+    Route::post('deleteDocumentContent','DocumentController@destroyDocumentContent');
+    Route::post('deleteAnnotationContent','AnnotationController@destroyAnnotationContent');
+    Route::post('deleteFormatContent','ApiController@destroyFormatFileContent');
+    Route::post('publishCorpus','PublicationController@publishCorpus');
     Route::post('updateCorpusProject/{corpusProject}','CorpusProjectController@update');
     Route::post('postMessage','MessageBoardController@create');
     Route::post('assignMessage','MessageController@assignMessage');
     Route::post('completeMessage','MessageController@completeMessage');
     Route::post('deleteMessage','MessageController@destroyMessage');
 
+});
+
+Route::group(array('prefix' => 'browseapi'), function() {
+    Route::post('scrapeLicenseDeed','ScraperController@scrapeLicenseDeed');
 });
 
 
