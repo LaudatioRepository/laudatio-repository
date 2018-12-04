@@ -391,7 +391,7 @@ const app = new Vue({
 
                         if(key == "corpus_publication_publication_date" || key == "corpusYearTo"  || key == "corpus_publication_license" || key == "corpus_merged_formats" || key == "corpus_size_value" || key == "corpusSizeTo" ) {
                             if(key == "corpus_size_value" && corpusFilterObject.corpus_size_value != ""  && corpusFilterObject.corpusSizeTo != "") {
-                                if(corpusFilterObject.corpus_size_value > 1 ||   corpusFilterObject.corpusSizeTo < 999999){
+                                if(corpusFilterObject.corpus_size_value > 1 ||  corpusFilterObject.corpusSizeTo < 999999){
                                     if(!this.activefilters.includes(corpusFilterObject.corpus_size_value+":"+corpusFilterObject.corpusSizeTo)) {
                                         this.activefilters.push(corpusFilterObject.corpus_size_value+":"+corpusFilterObject.corpusSizeTo);
                                         this.activefiltersmap[corpusFilterObject.corpus_size_value+":"+corpusFilterObject.corpusSizeTo] = key;
@@ -899,10 +899,12 @@ const app = new Vue({
 
         },
         resetActiveFilter: function(filter) {
+            console.log("FILTER: "+filter+" MAP: "+JSON.stringify(this.activefiltersmap))
             var key = this.activefiltersmap[filter];
-
+            console.log("THERE WAS A KEY: "+key)
             this.activefilters.splice(this.activefilters.indexOf(filter),1);
             delete this.activefiltersmap[filter];
+            console.log("KEY STILL THERE ? : "+key+" MAP: "+JSON.stringify(this.activefiltersmap))
             if(key != 'undefined') {
                 if(key.indexOf('corpus') > -1) {
                     for(var i = 0; i < this.corpusresults.length; i++) {
@@ -941,9 +943,11 @@ const app = new Vue({
                     }
 
                     if(j > 0) {
+                        console.log("RESUBMITTING CORPUSFILTER : "+JSON.stringify(corpusFilterData)+" MAP: "+JSON.stringify(this.activefiltersmap))
                         this.submitCorpusFilter(corpusFilterData);
                     }
 
+                    console.log("AFTER RESUBMITTING CORPUSFILTER : "+JSON.stringify(corpusFilterData)+" MAP: "+JSON.stringify(this.activefiltersmap))
                 }
                 else if(key.indexOf('document') > -1) {
                     for(var i = 0; i < this.documentresults.length; i++) {

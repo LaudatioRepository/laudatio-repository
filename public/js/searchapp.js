@@ -27263,10 +27263,12 @@ var app = new Vue({
             }
         },
         resetActiveFilter: function resetActiveFilter(filter) {
+            console.log("FILTER: " + filter + " MAP: " + JSON.stringify(this.activefiltersmap));
             var key = this.activefiltersmap[filter];
-
+            console.log("THERE WAS A KEY: " + key);
             this.activefilters.splice(this.activefilters.indexOf(filter), 1);
             delete this.activefiltersmap[filter];
+            console.log("KEY STILL THERE ? : " + key + " MAP: " + JSON.stringify(this.activefiltersmap));
             if (key != 'undefined') {
                 if (key.indexOf('corpus') > -1) {
                     for (var i = 0; i < this.corpusresults.length; i++) {
@@ -27301,8 +27303,11 @@ var app = new Vue({
                     }
 
                     if (j > 0) {
+                        console.log("RESUBMITTING CORPUSFILTER : " + JSON.stringify(corpusFilterData) + " MAP: " + JSON.stringify(this.activefiltersmap));
                         this.submitCorpusFilter(corpusFilterData);
                     }
+
+                    console.log("AFTER RESUBMITTING CORPUSFILTER : " + JSON.stringify(corpusFilterData) + " MAP: " + JSON.stringify(this.activefiltersmap));
                 } else if (key.indexOf('document') > -1) {
                     for (var i = 0; i < this.documentresults.length; i++) {
                         if (this.documentresults[i]._source.hasOwnProperty(key)) {
@@ -27932,7 +27937,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 var key = this.activefiltersmap[val];
                 if (key == field) {
                     this.activefilters.splice(this.activefilters.indexOf(key), 1);
-                    delete this.activefiltersmap[val];
+                    if (key == "corpus_size_value" || key == "document_size_extent") {
+                        if (Object.keys(this.activefiltersmap).length > 1) {
+                            delete this.activefiltersmap[val];
+                        }
+                    } else {
+                        delete this.activefiltersmap[val];
+                    }
                 }
             }
         },
@@ -27941,12 +27952,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         resetCorpusFilter: function resetCorpusFilter(filter) {
             var key = this.activefiltersmap[filter];
-            console.log("CORPOUSRESET: " + key + " => " + filter);
             this.$refs.corpusFilter.resetFilterField(key, filter);
         },
         resetDocumentFilter: function resetDocumentFilter(filter) {
             var key = this.activefiltersmap[filter];
-            console.log("DOCRESET: " + key + " => " + filter);
             this.$refs.documentFilter.resetFilterField(key, filter);
         },
         resetAnnotationFilter: function resetAnnotationFilter(filter) {

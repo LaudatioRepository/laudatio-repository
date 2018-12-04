@@ -81,7 +81,16 @@
                     var key = this.activefiltersmap[val]
                     if(key == field) {
                         this.activefilters.splice(this.activefilters.indexOf(key),1);
-                        delete this.activefiltersmap[val];
+                        if((key == "corpus_size_value" || key == "document_size_extent")) {
+                            if(Object.keys(this.activefiltersmap).length  > 1){
+                                delete this.activefiltersmap[val];
+                            }
+
+                        }
+                        else{
+                            delete this.activefiltersmap[val];
+                        }
+
                     }
                 }
             },
@@ -90,12 +99,10 @@
             },
             resetCorpusFilter: function(filter) {
                 var key = this.activefiltersmap[filter];
-                console.log("CORPOUSRESET: "+key+" => "+filter)
                 this.$refs.corpusFilter.resetFilterField(key,filter);
             },
             resetDocumentFilter: function(filter) {
                 var key = this.activefiltersmap[filter];
-                console.log("DOCRESET: "+key+" => "+filter)
                 this.$refs.documentFilter.resetFilterField(key,filter);
             },
             resetAnnotationFilter: function(filter) {
