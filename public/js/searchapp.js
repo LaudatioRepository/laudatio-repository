@@ -32265,51 +32265,46 @@ var render = function() {
               )
             ),
             _vm._v(" "),
-            _c(
-              "div",
-              {
-                directives: [
-                  {
-                    name: "show",
-                    rawName: "v-show",
-                    value:
-                      _vm.annotationresult._source.in_documents != "undefined",
-                    expression:
-                      "annotationresult._source.in_documents != 'undefined'"
-                  }
-                ],
-                staticClass:
-                  "col-4 d-flex justify-content-between align-items-start"
-              },
-              [
-                _c(
-                  "a",
+            typeof _vm.annotationresult._source.in_documents !== "undefined" &&
+            Object.keys(_vm.annotationresult._source.in_documents).length > 0
+              ? _c(
+                  "div",
                   {
                     staticClass:
-                      "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
-                    attrs: { href: "#" }
+                      "col-4 d-flex justify-content-between align-items-start"
                   },
                   [
-                    _c("i", {
-                      staticClass:
-                        "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
-                    }),
-                    _vm._v(" "),
                     _c(
-                      "span",
-                      { staticClass: "text-primary text-14 font-weight-bold" },
+                      "a",
+                      {
+                        staticClass:
+                          "labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ",
+                        attrs: { href: "#" }
+                      },
                       [
-                        _vm._v(
-                          _vm._s(
-                            _vm.annotationresult._source.in_documents.length
-                          )
+                        _c("i", {
+                          staticClass:
+                            "fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            staticClass: "text-primary text-14 font-weight-bold"
+                          },
+                          [
+                            _vm._v(
+                              _vm._s(
+                                _vm.annotationresult._source.in_documents.length
+                              )
+                            )
+                          ]
                         )
                       ]
                     )
                   ]
                 )
-              ]
-            )
+              : _vm._e()
           ])
         ]
       )

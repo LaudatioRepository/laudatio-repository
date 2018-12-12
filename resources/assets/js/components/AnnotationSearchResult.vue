@@ -14,7 +14,7 @@
             <div class="col-2">
                 <div class="text-grey text-14" v-for="(group, groupindex) in unique(annotationresult._source.preparation_encoding_annotation_group)" v-bind:group="group" :key="groupindex">{{group}}</div>
             </div>
-            <div class="col-4 d-flex justify-content-between align-items-start" v-show="annotationresult._source.in_documents != 'undefined'">
+            <div class="col-4 d-flex justify-content-between align-items-start" v-if="typeof annotationresult._source.in_documents !== 'undefined' && Object.keys(annotationresult._source.in_documents).length > 0">
                 <a href="#" class="labelBadge badge bg-white border border-corpus-dark rounded mx-1 py-1 ">
                     <i class="fa fa-text-height fa-fw fa-file-text-o align-baseline fa-lg text-wine"></i>
                     <span class="text-primary text-14 font-weight-bold">{{annotationresult._source.in_documents.length}}</span>
