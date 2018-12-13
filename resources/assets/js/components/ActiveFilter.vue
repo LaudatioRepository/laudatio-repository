@@ -13,7 +13,7 @@
                         <div class="m-1 activefilter" v-for="filtervalue in activefilters" v-bind:filtervalue="filtervalue">
                             <a href="#" class="badge badge-corpus-mid p-1 text-14 font-weight-normal rounded">
                                 <i class="fa fa-close fa-fw" @click="resetFilter(filtervalue)"></i>
-                                {{filtervalue}}
+                                <span v-html="resolveIcon(filtervalue)"></span>
                             </a>
                         </div>
 
@@ -52,6 +52,18 @@
                     classes += " show"
                 }
                 return classes;
+            },
+            resolveIcon(filter) {
+                if(filter.indexOf("C_") > -1){
+                    filter = filter.replace("C_","<i class=\"fa fa-fw fa-book align-baseline fa-lg text-wine\"></i> &nbsp;");
+                }
+                else if(filter.indexOf("D_") > -1){
+                    filter = filter.replace("D_","<i class=\"fa  fa-fw fa-file-text-o align-baseline fa-lg text-wine\"></i> &nbsp;");
+                }
+                else if(filter.indexOf("A_") > -1){
+                    filter = filter.replace("A_","<i class=\"fa fa-fw fa-edit align-text-middle fa-lg text-wine\"></i> &nbsp;");
+                }
+              return filter;
             },
             resetFilter(filter) {
                 if(this.activefiltersmap != 'undefined') {
