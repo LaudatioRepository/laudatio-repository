@@ -694,11 +694,16 @@ const app = new Vue({
         },
         resetActiveFilter: function(filter) {
             var key = this.activefiltersmap[filter];
-            console.log("activefilters: "+JSON.stringify(this.activefilters))
-            console.log("activefiltersmap: "+JSON.stringify(this.activefiltersmap))
+
             if(typeof filter != 'undefined' && this.activefiltersmap.hasOwnProperty(filter)){
                 this.activefilters.splice(this.activefilters.indexOf(filter),1);
                 delete this.activefiltersmap[filter];
+                if(key == "corpus_size_value"){
+                    this.$refs.filterwrapper.$refs.corpusFilter.resetNoUiSlider();
+                }
+                else if(key == "document_size_extent"){
+                    this.$refs.filterwrapper.$refs.documentFilter.resetNoUiSlider();
+                }
             }
             
 
@@ -739,7 +744,7 @@ const app = new Vue({
                         }
                     }
 
-                    console.log(corpusFilterData)
+
                     if(j > 0) {
                         this.submitCorpusFilter(corpusFilterData);
                     }

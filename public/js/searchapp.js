@@ -27052,11 +27052,15 @@ var app = new Vue({
         },
         resetActiveFilter: function resetActiveFilter(filter) {
             var key = this.activefiltersmap[filter];
-            console.log("activefilters: " + JSON.stringify(this.activefilters));
-            console.log("activefiltersmap: " + JSON.stringify(this.activefiltersmap));
+
             if (typeof filter != 'undefined' && this.activefiltersmap.hasOwnProperty(filter)) {
                 this.activefilters.splice(this.activefilters.indexOf(filter), 1);
                 delete this.activefiltersmap[filter];
+                if (key == "corpus_size_value") {
+                    this.$refs.filterwrapper.$refs.corpusFilter.resetNoUiSlider();
+                } else if (key == "document_size_extent") {
+                    this.$refs.filterwrapper.$refs.documentFilter.resetNoUiSlider();
+                }
             }
 
             if (typeof key != 'undefined') {
@@ -27092,7 +27096,6 @@ var app = new Vue({
                         }
                     }
 
-                    console.log(corpusFilterData);
                     if (j > 0) {
                         this.submitCorpusFilter(corpusFilterData);
                     }
@@ -27740,8 +27743,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         resetCorpusFilter: function resetCorpusFilter(filter) {
             var key = this.activefiltersmap[filter];
-            console.log("FILTER: " + filter);
-            console.log("key: " + key);
             this.$refs.corpusFilter.resetFilterField(key, filter);
         },
         resetDocumentFilter: function resetDocumentFilter(filter) {
@@ -28942,13 +28943,16 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             } else if (field == 'corpus_size_value') {
                 //this.corpusFilterData['corpus_size_value'] = 1
                 //this.corpusFilterData['corpusSizeTo'] = 999999
-                var corpusel = document.getElementById('corpusSize');
 
-                if (corpusel) {
-                    //corpusel.noUiSlider.reset();
-                }
             } else {
                 this.corpusFilterData[field] = '';
+            }
+        },
+        resetNoUiSlider: function resetNoUiSlider() {
+            var corpusel = document.getElementById('corpusSize');
+
+            if (corpusel) {
+                corpusel.noUiSlider.reset();
             }
         },
         getClass: function getClass() {
@@ -29739,15 +29743,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 this.documentFilterData['document_publication_publishing_date'] = '';
                 this.documentFilterData['document_publication_publishing_date_to'] = '';
             } else if (field == 'document_size_extent') {
-                this.documentFilterData['document_size_extent'] = '';
-                this.documentFilterData['document_size_extent_to'] = '';
-                var documentel = document.getElementById('documentSize');
+                //this.documentFilterData['document_size_extent'] = ''
+                //this.documentFilterData['document_size_extent_to'] = ''
 
-                if (documentel) {
-                    documentel.noUiSlider.reset();
-                }
             } else {
                 this.documentFilterData[field] = '';
+            }
+        },
+        resetNoUiSlider: function resetNoUiSlider() {
+            var documentel = document.getElementById('documentSize');
+
+            if (documentel) {
+                documentel.noUiSlider.reset();
             }
         }
     },

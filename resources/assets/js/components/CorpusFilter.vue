@@ -172,16 +172,19 @@
                 else if(field == 'corpus_size_value'){
                     //this.corpusFilterData['corpus_size_value'] = 1
                     //this.corpusFilterData['corpusSizeTo'] = 999999
-                    let corpusel = document.getElementById('corpusSize')
 
-                    if(corpusel) {
-                        //corpusel.noUiSlider.reset();
-                    }
                 }
                 else{
                     this.corpusFilterData[field] = ''
                 }
 
+            },
+            resetNoUiSlider: function() {
+                let corpusel = document.getElementById('corpusSize')
+
+                if(corpusel) {
+                    corpusel.noUiSlider.reset();
+                }
             },
             getClass: function () {
                 var classes = "collapse";

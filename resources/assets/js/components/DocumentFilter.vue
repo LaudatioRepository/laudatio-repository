@@ -160,16 +160,19 @@
                     this.documentFilterData['document_publication_publishing_date_to'] = ''
                 }
                 else if(field == 'document_size_extent'){
-                    this.documentFilterData['document_size_extent'] = ''
-                    this.documentFilterData['document_size_extent_to'] = ''
-                    let documentel = document.getElementById('documentSize')
+                    //this.documentFilterData['document_size_extent'] = ''
+                    //this.documentFilterData['document_size_extent_to'] = ''
 
-                    if(documentel) {
-                        documentel.noUiSlider.reset();
-                    }
                 }
                 else{
                     this.documentFilterData[field] = ''
+                }
+            },
+            resetNoUiSlider: function() {
+                let documentel = document.getElementById('documentSize')
+
+                if(documentel) {
+                    documentel.noUiSlider.reset();
                 }
             }
         },

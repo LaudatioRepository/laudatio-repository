@@ -37,6 +37,7 @@
                                 :documentresultcounter="documentresultcounter"
                                 :annotationresultcounter="annotationresultcounter"
                                 :corpusformats="corpusformats"
+                                ref="filterwrapper"
                                 :annotationformats="annotationformats"></searchfilterwrapper>
                     </div>
                     <searchresultwrapper
@@ -51,6 +52,7 @@
                             :annotationresultcounter="annotationresultcounter"
                             v-on:initial-search="initialSearch"
                             v-on:frontpage-search="frontpageSearch"
+                            ref="searchwrapper"
                             :frontpageresultdata="frontPageResultData"
                             ></searchresultwrapper>
                 </div>
