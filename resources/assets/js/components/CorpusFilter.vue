@@ -145,7 +145,7 @@
             },
             resetFilterField: function(field, filter) {
                 if(field == 'corpus_merged_formats'){
-                    this.corpusFilterData[field].splice(this.corpusFilterData[field].indexOf(field),1);
+                    //this.corpusFilterData[field].splice(this.corpusFilterData[field].indexOf(field),1);
                     var flexgroup = document.getElementById('corpusflexgroup');
                     if (flexgroup.hasChildNodes()) {
                         for (var i = 0; i < flexgroup.children.length; i++) {
@@ -170,12 +170,12 @@
                     this.corpusFilterData['corpusYearTo'] = ''
                 }
                 else if(field == 'corpus_size_value'){
-                    this.corpusFilterData['corpus_size_value'] = ''
-                    this.corpusFilterData['corpusSizeTo'] = ''
+                    //this.corpusFilterData['corpus_size_value'] = 1
+                    //this.corpusFilterData['corpusSizeTo'] = 999999
                     let corpusel = document.getElementById('corpusSize')
 
                     if(corpusel) {
-                        corpusel.noUiSlider.reset();
+                        //corpusel.noUiSlider.reset();
                     }
                 }
                 else{

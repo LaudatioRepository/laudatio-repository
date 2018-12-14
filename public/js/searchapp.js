@@ -27052,9 +27052,12 @@ var app = new Vue({
         },
         resetActiveFilter: function resetActiveFilter(filter) {
             var key = this.activefiltersmap[filter];
-
-            this.activefilters.splice(this.activefilters.indexOf(filter), 1);
-            delete this.activefiltersmap[filter];
+            console.log("activefilters: " + JSON.stringify(this.activefilters));
+            console.log("activefiltersmap: " + JSON.stringify(this.activefiltersmap));
+            if (typeof filter != 'undefined' && this.activefiltersmap.hasOwnProperty(filter)) {
+                this.activefilters.splice(this.activefilters.indexOf(filter), 1);
+                delete this.activefiltersmap[filter];
+            }
 
             if (typeof key != 'undefined') {
                 if (key.indexOf('corpus') > -1) {
@@ -27077,7 +27080,7 @@ var app = new Vue({
                                 corpusFilterData[active_key] = [this.activefilters[j]];
                             } else if (active_key == 'corpus_size_value') {
                                 var numberarray = this.activefilters[j].split(":");
-                                corpusFilterData['corpus_size_value'] = numberarray[0].trim();
+                                corpusFilterData['corpus_size_value'] = numberarray[0].trim().replace("C_", "");
                                 corpusFilterData['corpusSizeTo'] = numberarray[1].trim();
                             } else if (active_key == 'corpus_publication_publication_date') {
                                 var numberarray = this.activefilters[j].split(":");
@@ -27089,6 +27092,7 @@ var app = new Vue({
                         }
                     }
 
+                    console.log(corpusFilterData);
                     if (j > 0) {
                         this.submitCorpusFilter(corpusFilterData);
                     }
@@ -27109,7 +27113,7 @@ var app = new Vue({
                             var active_key = this.activefiltersmap[this.activefilters[j]];
                             if (active_key == 'document_size_extent') {
                                 var numberarray = this.activefilters[j].split(":");
-                                documentFilterData['document_size_extent'] = numberarray[0].trim();
+                                documentFilterData['document_size_extent'] = numberarray[0].trim().replace("D_", "");
                                 documentFilterData['document_size_extent_to'] = numberarray[1].trim();
                             } else if (active_key == 'document_publication_publishing_date') {
                                 var publishingnumberarray = this.activefilters[j].split(":");
@@ -27736,6 +27740,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         resetCorpusFilter: function resetCorpusFilter(filter) {
             var key = this.activefiltersmap[filter];
+            console.log("FILTER: " + filter);
+            console.log("key: " + key);
             this.$refs.corpusFilter.resetFilterField(key, filter);
         },
         resetDocumentFilter: function resetDocumentFilter(filter) {
@@ -28913,7 +28919,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         },
         resetFilterField: function resetFilterField(field, filter) {
             if (field == 'corpus_merged_formats') {
-                this.corpusFilterData[field].splice(this.corpusFilterData[field].indexOf(field), 1);
+                //this.corpusFilterData[field].splice(this.corpusFilterData[field].indexOf(field),1);
                 var flexgroup = document.getElementById('corpusflexgroup');
                 if (flexgroup.hasChildNodes()) {
                     for (var i = 0; i < flexgroup.children.length; i++) {
@@ -28934,12 +28940,12 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 this.corpusFilterData['corpus_publication_publication_date'] = '';
                 this.corpusFilterData['corpusYearTo'] = '';
             } else if (field == 'corpus_size_value') {
-                this.corpusFilterData['corpus_size_value'] = '';
-                this.corpusFilterData['corpusSizeTo'] = '';
+                //this.corpusFilterData['corpus_size_value'] = 1
+                //this.corpusFilterData['corpusSizeTo'] = 999999
                 var corpusel = document.getElementById('corpusSize');
 
                 if (corpusel) {
-                    corpusel.noUiSlider.reset();
+                    //corpusel.noUiSlider.reset();
                 }
             } else {
                 this.corpusFilterData[field] = '';

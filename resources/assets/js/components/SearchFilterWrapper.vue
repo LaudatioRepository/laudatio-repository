@@ -99,6 +99,8 @@
             },
             resetCorpusFilter: function(filter) {
                 var key = this.activefiltersmap[filter];
+                console.log("FILTER: "+filter)
+                console.log("key: "+key)
                 this.$refs.corpusFilter.resetFilterField(key,filter);
             },
             resetDocumentFilter: function(filter) {

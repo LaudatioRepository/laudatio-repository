@@ -694,9 +694,13 @@ const app = new Vue({
         },
         resetActiveFilter: function(filter) {
             var key = this.activefiltersmap[filter];
-
-            this.activefilters.splice(this.activefilters.indexOf(filter),1);
-            delete this.activefiltersmap[filter];
+            console.log("activefilters: "+JSON.stringify(this.activefilters))
+            console.log("activefiltersmap: "+JSON.stringify(this.activefiltersmap))
+            if(typeof filter != 'undefined' && this.activefiltersmap.hasOwnProperty(filter)){
+                this.activefilters.splice(this.activefilters.indexOf(filter),1);
+                delete this.activefiltersmap[filter];
+            }
+            
 
             if(typeof key != 'undefined') {
                 if(key.indexOf('corpus') > -1) {
@@ -720,7 +724,7 @@ const app = new Vue({
                             }
                             else if(active_key == 'corpus_size_value') {
                                 var numberarray = this.activefilters[j].split(":");
-                                corpusFilterData['corpus_size_value'] = numberarray[0].trim();
+                                corpusFilterData['corpus_size_value'] = numberarray[0].trim().replace("C_","");
                                 corpusFilterData['corpusSizeTo'] = numberarray[1].trim();
                             }
                             else if(active_key == 'corpus_publication_publication_date') {
@@ -735,6 +739,7 @@ const app = new Vue({
                         }
                     }
 
+                    console.log(corpusFilterData)
                     if(j > 0) {
                         this.submitCorpusFilter(corpusFilterData);
                     }
@@ -757,7 +762,7 @@ const app = new Vue({
                             var active_key = this.activefiltersmap[this.activefilters[j]];
                             if(active_key == 'document_size_extent'){
                                 var numberarray = this.activefilters[j].split(":");
-                                documentFilterData['document_size_extent'] = numberarray[0].trim();
+                                documentFilterData['document_size_extent'] = numberarray[0].trim().replace("D_","");
                                 documentFilterData['document_size_extent_to'] = numberarray[1].trim();
                             }
                             else  if(active_key == 'document_publication_publishing_date'){
