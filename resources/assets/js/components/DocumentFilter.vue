@@ -134,7 +134,9 @@
                 this.$emit('apply-filters');
             },
             emitDocumentFilter(){
-                this.$emit('document-filter',this.documentFilterData);
+                if(this.filterIsActivated()) {
+                    this.$emit('document-filter', this.documentFilterData);
+                }
             },
             emitDropDocumentFilter: function (field){
                 this.$emit('remove-document-filter',field);
@@ -169,11 +171,29 @@
                 }
             },
             resetNoUiSlider: function() {
+                this.documentFilterData['document_size_extent'] = 1;
+                this.documentFilterData['document_size_extent_to'] = 999999;
                 let documentel = document.getElementById('documentSize')
 
                 if(documentel) {
                     documentel.noUiSlider.reset();
                 }
+            },
+            filterIsActivated: function() {
+                var isActivated = false;
+                for(var key in this.documentFilterData) {
+                    if (this.documentFilterData.hasOwnProperty(key)) {
+                        if((key == "document_size_extent" && this.documentFilterData.document_size_extent != 1) || (key == "document_size_extent_to" && this.documentFilterData.document_size_extent_to != 999999) && this.documentFilterData[key] != "") {
+                            isActivated = true;
+                            break;
+                        }
+                        else if(key != "document_size_extent" && key != "document_size_extent_to" && this.documentFilterData[key] != "") {
+                            isActivated = true;
+                            break;
+                        }
+                    }
+                }
+                return isActivated;
             }
         },
         mounted() {
@@ -217,8 +237,10 @@
 
                     }
 
-                    myvue.emitDropDocumentFilter('document_size_extent')
-                    myvue.emitDocumentFilter();
+                    if(myvue.filterIsActivated()){
+                        myvue.emitDropDocumentFilter('document_size_extent')
+                        myvue.emitDocumentFilter();
+                    }
 
                 });
 

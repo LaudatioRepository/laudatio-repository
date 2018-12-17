@@ -26697,8 +26697,6 @@ var app = new Vue({
                 this.dataloading = false;
                 this.datasearched = true;
                 this.searches.push(this.frontPageResultData.search);
-                // this.$set(this.frontPageResultData, undefined)
-                //this.frontPageResultData = undefined;
                 window.laudatioApp.frontPageResultData = undefined;
             }
         },
@@ -26784,6 +26782,7 @@ var app = new Vue({
                                 if (corpusFilterObject.corpus_size_value > 1 || corpusFilterObject.corpusSizeTo < 999999) {
                                     if (!this.activefilters.includes('C_' + corpusFilterObject.corpus_size_value + ":" + corpusFilterObject.corpusSizeTo) && !this.activefiltersmap.hasOwnProperty('C_' + corpusFilterObject.corpus_size_value + ":" + corpusFilterObject.corpusSizeTo)) {
                                         this.activefilters.push('C_' + corpusFilterObject.corpus_size_value + ":" + corpusFilterObject.corpusSizeTo);
+                                        this.removeValueFromMap('corpus_size_value');
                                         this.activefiltersmap['C_' + corpusFilterObject.corpus_size_value + ":" + corpusFilterObject.corpusSizeTo] = key;
                                     }
                                 }
@@ -26907,6 +26906,7 @@ var app = new Vue({
                                 if (documentFilterObject.document_size_extent > 1 || documentFilterObject.document_size_extent_to < 999999) {
                                     if (!this.activefilters.includes('D_' + documentFilterObject.document_size_extent + ":" + documentFilterObject.document_size_extent_to) && !this.activefiltersmap.hasOwnProperty('D_' + documentFilterObject.document_size_extent + ":" + documentFilterObject.document_size_extent_to)) {
                                         this.activefilters.push('D_' + documentFilterObject.document_size_extent + ":" + documentFilterObject.document_size_extent_to);
+                                        this.removeValueFromMap('document_size_extent');
                                         this.activefiltersmap['D_' + documentFilterObject.document_size_extent + ":" + documentFilterObject.document_size_extent_to] = key;
                                     }
                                 }
@@ -27159,6 +27159,13 @@ var app = new Vue({
                     }
 
                     this.submitAnnotationFilter(annotationFilterData);
+                }
+            }
+        },
+        removeValueFromMap: function removeValueFromMap(field) {
+            for (var key in this.activefiltersmap) {
+                if (this.activefiltersmap[key] == field) {
+                    delete this.activefiltersmap[key];
                 }
             }
         },
@@ -27736,7 +27743,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     if (this.activefilters.indexOf(val) >= 0) {
                         this.activefilters.splice(this.activefilters.indexOf(val), 1);
                     }
-
                     if (key == "corpus_size_value" || key == "document_size_extent") {
                         if (Object.keys(this.activefiltersmap).length > 1) {
                             delete this.activefiltersmap[val];
@@ -27764,12 +27770,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         emitCorpusFilter: function emitCorpusFilter(corpusFilterEmitData) {
             this.$emit('corpus-filter', corpusFilterEmitData);
+            this.$parent.$refs.searchwrapper.setActiveTab('corpus', this.activefilters, this.activefiltersmap);
         },
         emitDocumentFilter: function emitDocumentFilter(documentFilterEmitData) {
             this.$emit('document-filter', documentFilterEmitData);
+            this.$parent.$refs.searchwrapper.setActiveTab('document', this.activefilters, this.activefiltersmap);
         },
         emitAnnotationFilter: function emitAnnotationFilter(annotationFilterEmitData) {
             this.$emit('annotation-filter', annotationFilterEmitData);
+            this.$parent.$refs.searchwrapper.setActiveTab('annotation', this.activefilters, this.activefiltersmap);
         },
         emitCorpusResultCounter: function emitCorpusResultCounter(emittedCorpusResultCounter) {
             this.$emit('corpus-resultcounter', emittedCorpusResultCounter);
@@ -28118,6 +28127,64 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         annotationPerPageChange: function annotationPerPageChange(perpage) {
             this.annotationPerPage = perpage;
             this.currentAnnotationPage = 1;
+        },
+        setActiveTab: function setActiveTab(header, filters, filtersmap) {
+            var corpuselem = document.getElementById('searchtab-corpora');
+            var corpustabelem = document.getElementById('tab-corpora');
+            var documentelem = document.getElementById('searchtab-documents');
+            var documenttabelem = document.getElementById('tab-documents');
+            var annotationelem = document.getElementById('searchtab-annotations');
+            var annotationtabelem = document.getElementById('tab-annotations');
+
+            var lastValue = filters[filters.length - 1];
+            var lastKey = filtersmap[lastValue];
+
+            if (lastKey.indexOf(header) > -1 || header == 'annotation' && lastKey.indexOf('preparation') > -1) {
+                switch (header) {
+                    case 'corpus':
+                        corpuselem.classList.add('active'); // Add class
+                        corpustabelem.classList.add('active');
+                        if (documentelem.classList.contains('active')) {
+                            // Check for class
+                            documentelem.classList.remove('active'); // Remove class
+                            documenttabelem.classList.remove('active');
+                        }
+                        if (annotationelem.classList.contains('active')) {
+                            // Check for class
+                            annotationelem.classList.remove('active'); // Remove class
+                            annotationtabelem.classList.remove('active');
+                        }
+                        break;
+                    case 'document':
+                        documentelem.classList.add('active'); // Add class
+                        documenttabelem.classList.add('active');
+                        if (corpuselem.classList.contains('active')) {
+                            // Check for class
+                            corpuselem.classList.remove('active'); // Remove class
+                            corpustabelem.classList.remove('active');
+                        }
+                        if (annotationelem.classList.contains('active')) {
+                            // Check for class
+                            annotationelem.classList.remove('active'); // Remove class
+                            annotationtabelem.classList.remove('active');
+                        }
+                        break;
+                    case 'annotation':
+                        annotationelem.classList.add('active'); // Add class
+                        annotationtabelem.classList.add('active');
+                        if (corpuselem.classList.contains('active')) {
+                            // Check for class
+                            corpuselem.classList.remove('active'); // Remove class
+                            corpustabelem.classList.remove('active');
+                        }
+                        if (documentelem.classList.contains('active')) {
+                            // Check for class
+                            documentelem.classList.remove('active'); // Remove class
+                            documenttabelem.classList.remove('active');
+                        }
+                        break;
+                }
+            }
         }
     },
     computed: {
@@ -28906,7 +28973,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             this.$emit('apply-filters');
         },
         emitCorpusFilter: function emitCorpusFilter() {
-            this.$emit('corpus-filter', this.corpusFilterData);
+            if (this.filterIsActivated()) {
+                this.$emit('corpus-filter', this.corpusFilterData);
+            }
         },
 
         emitDropCorpusFilter: function emitDropCorpusFilter(field) {
@@ -28973,6 +29042,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             }
         },
         resetNoUiSlider: function resetNoUiSlider() {
+            this.corpusFilterData['corpus_size_value'] = 1;
+            this.corpusFilterData['corpusSizeTo'] = 999999;
             var corpusel = document.getElementById('corpusSize');
 
             if (corpusel) {
@@ -28988,6 +29059,21 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         },
         uniqueArray: function uniqueArray(a) {
             return [].concat(_toConsumableArray(new Set(a)));
+        },
+        filterIsActivated: function filterIsActivated() {
+            var isActivated = false;
+            for (var key in this.corpusFilterData) {
+                if (this.corpusFilterData.hasOwnProperty(key)) {
+                    if (key == "corpus_size_value" && this.corpusFilterData.corpus_size_value != 1 || key == "corpusSizeTo" && this.corpusFilterData.corpusSizeTo != 999999 && this.corpusFilterData[key] != "") {
+                        isActivated = true;
+                        break;
+                    } else if (key != "corpus_size_value" && key != "corpusSizeTo" && this.corpusFilterData[key] != "") {
+                        isActivated = true;
+                        break;
+                    }
+                }
+            }
+            return isActivated;
         }
     },
     mounted: function mounted() {
@@ -29024,8 +29110,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                     paddingMin.innerHTML = Math.round(values[handle]);
                 }
 
-                mycorpusvue.emitDropCorpusFilter('corpus_size_value');
-                mycorpusvue.emitCorpusFilter();
+                if (mycorpusvue.filterIsActivated()) {
+                    mycorpusvue.emitDropCorpusFilter('corpus_size_value');
+                    mycorpusvue.emitCorpusFilter();
+                }
             });
 
             el.noUiSlider.on('change', function () {
@@ -29741,7 +29829,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$emit('apply-filters');
         },
         emitDocumentFilter: function emitDocumentFilter() {
-            this.$emit('document-filter', this.documentFilterData);
+            if (this.filterIsActivated()) {
+                this.$emit('document-filter', this.documentFilterData);
+            }
         },
 
         emitDropDocumentFilter: function emitDropDocumentFilter(field) {
@@ -29775,11 +29865,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
         },
         resetNoUiSlider: function resetNoUiSlider() {
+            this.documentFilterData['document_size_extent'] = 1;
+            this.documentFilterData['document_size_extent_to'] = 999999;
             var documentel = document.getElementById('documentSize');
 
             if (documentel) {
                 documentel.noUiSlider.reset();
             }
+        },
+        filterIsActivated: function filterIsActivated() {
+            var isActivated = false;
+            for (var key in this.documentFilterData) {
+                if (this.documentFilterData.hasOwnProperty(key)) {
+                    if (key == "document_size_extent" && this.documentFilterData.document_size_extent != 1 || key == "document_size_extent_to" && this.documentFilterData.document_size_extent_to != 999999 && this.documentFilterData[key] != "") {
+                        isActivated = true;
+                        break;
+                    } else if (key != "document_size_extent" && key != "document_size_extent_to" && this.documentFilterData[key] != "") {
+                        isActivated = true;
+                        break;
+                    }
+                }
+            }
+            return isActivated;
         }
     },
     mounted: function mounted() {
@@ -29820,8 +29927,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     paddingMin.innerHTML = Math.round(values[handle]);
                 }
 
-                myvue.emitDropDocumentFilter('document_size_extent');
-                myvue.emitDocumentFilter();
+                if (myvue.filterIsActivated()) {
+                    myvue.emitDropDocumentFilter('document_size_extent');
+                    myvue.emitDocumentFilter();
+                }
             });
 
             el.noUiSlider.on('change', function () {
@@ -30413,7 +30522,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
         },
 
         emitAnnotationFilter: function emitAnnotationFilter() {
-            this.$emit('annotation-filter', this.annotationFilterData);
+            if (this.filterIsActivated()) {
+                this.$emit('annotation-filter', this.annotationFilterData);
+            }
         },
         uniqueArray: function uniqueArray(a) {
             return [].concat(_toConsumableArray(new Set(a)));
@@ -30467,6 +30578,18 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                     }
                 }
             }
+        },
+        filterIsActivated: function filterIsActivated() {
+            var isActivated = false;
+            for (var key in this.annotationFilterData) {
+                if (this.annotationFilterData.hasOwnProperty(key)) {
+                    if (this.annotationFilterData[key] != "") {
+                        isActivated = true;
+                        break;
+                    }
+                }
+            }
+            return isActivated;
         }
     },
     mounted: function mounted() {

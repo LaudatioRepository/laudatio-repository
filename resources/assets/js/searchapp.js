@@ -233,8 +233,6 @@ const app = new Vue({
                 this.dataloading = false;
                 this.datasearched = true;
                 this.searches.push(this.frontPageResultData.search);
-               // this.$set(this.frontPageResultData, undefined)
-                //this.frontPageResultData = undefined;
                 window.laudatioApp.frontPageResultData = undefined;
             }
 
@@ -396,6 +394,7 @@ const app = new Vue({
                                         && !this.activefiltersmap.hasOwnProperty('C_'+corpusFilterObject.corpus_size_value+":"+corpusFilterObject.corpusSizeTo)
                                     ) {
                                         this.activefilters.push('C_'+corpusFilterObject.corpus_size_value+":"+corpusFilterObject.corpusSizeTo);
+                                        this.removeValueFromMap('corpus_size_value');
                                         this.activefiltersmap['C_'+corpusFilterObject.corpus_size_value+":"+corpusFilterObject.corpusSizeTo] = key;
                                     }
                                 }
@@ -538,6 +537,7 @@ const app = new Vue({
                                     if(!this.activefilters.includes('D_'+documentFilterObject.document_size_extent+":"+documentFilterObject.document_size_extent_to)
                                         && !this.activefiltersmap.hasOwnProperty('D_'+documentFilterObject.document_size_extent+":"+documentFilterObject.document_size_extent_to)) {
                                         this.activefilters.push('D_'+documentFilterObject.document_size_extent+":"+documentFilterObject.document_size_extent_to);
+                                        this.removeValueFromMap('document_size_extent');
                                         this.activefiltersmap['D_'+documentFilterObject.document_size_extent+":"+documentFilterObject.document_size_extent_to] = key;
                                     }
                                 }
@@ -567,7 +567,7 @@ const app = new Vue({
                     }
                 }
             }
-            this.filterDocumentResults(documentFilterObject);
+            this.filterDocumentResults(documentFilterObject)
         },
         filterDocumentResults: function(documentFilterObject) {
             this.resetDocumentResults();
@@ -827,6 +827,13 @@ const app = new Vue({
                 }
             }
 
+        },
+        removeValueFromMap: function (field){
+            for(var key in this.activefiltersmap) {
+                if(this.activefiltersmap[key] == field) {
+                    delete this.activefiltersmap[key];
+                }
+            }
         },
         resetActiveFilters: function () {
             this.activefilters = []

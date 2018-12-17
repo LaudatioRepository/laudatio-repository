@@ -147,6 +147,59 @@
             annotationPerPageChange: function(perpage) {
                 this.annotationPerPage = perpage;
                 this.currentAnnotationPage = 1;
+            },
+            setActiveTab: function(header, filters, filtersmap) {
+                var corpuselem = document.getElementById( 'searchtab-corpora' );
+                var corpustabelem = document.getElementById( 'tab-corpora' );
+                var documentelem = document.getElementById( 'searchtab-documents' );
+                var documenttabelem = document.getElementById( 'tab-documents' );
+                var annotationelem = document.getElementById( 'searchtab-annotations' );
+                var annotationtabelem = document.getElementById( 'tab-annotations' );
+                
+                var lastValue = filters[filters.length-1]
+                var lastKey =  filtersmap[lastValue]
+
+                if(lastKey.indexOf(header) > -1 || (header == 'annotation' && lastKey.indexOf('preparation') > -1)){
+                    switch(header) {
+                        case 'corpus':
+                            corpuselem.classList.add('active'); // Add class
+                            corpustabelem.classList.add('active');
+                            if ( documentelem.classList.contains('active') ) { // Check for class
+                                documentelem.classList.remove('active'); // Remove class
+                                documenttabelem.classList.remove('active')
+                            }
+                            if ( annotationelem.classList.contains('active') ) { // Check for class
+                                annotationelem.classList.remove('active'); // Remove class
+                                annotationtabelem.classList.remove('active');
+                            }
+                            break;
+                        case 'document':
+                            documentelem.classList.add('active'); // Add class
+                            documenttabelem.classList.add('active')
+                            if ( corpuselem.classList.contains('active') ) { // Check for class
+                                corpuselem.classList.remove('active'); // Remove class
+                                corpustabelem.classList.remove('active');
+                            }
+                            if ( annotationelem.classList.contains('active') ) { // Check for class
+                                annotationelem.classList.remove('active'); // Remove class
+                                annotationtabelem.classList.remove('active');
+                            }
+                            break;
+                        case 'annotation':
+                            annotationelem.classList.add('active'); // Add class
+                            annotationtabelem.classList.add('active');
+                            if ( corpuselem.classList.contains('active') ) { // Check for class
+                                corpuselem.classList.remove('active'); // Remove class
+                                corpustabelem.classList.remove('active');
+                            }
+                            if ( documentelem.classList.contains('active') ) { // Check for class
+                                documentelem.classList.remove('active'); // Remove class
+                                documenttabelem.classList.remove('active')
+                            }
+                            break;
+                    }
+                }
+
             }
         },
         computed: {

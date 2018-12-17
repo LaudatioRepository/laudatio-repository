@@ -84,7 +84,6 @@
                         if(this.activefilters.indexOf(val) >= 0){
                             this.activefilters.splice(this.activefilters.indexOf(val),1);
                         }
-
                         if(key == "corpus_size_value" || key == "document_size_extent") {
                             if(Object.keys(this.activefiltersmap).length  > 1){
                                 delete this.activefiltersmap[val];
@@ -115,12 +114,15 @@
             },
             emitCorpusFilter: function (corpusFilterEmitData) {
                 this.$emit('corpus-filter',corpusFilterEmitData);
+                this.$parent.$refs.searchwrapper.setActiveTab('corpus',this.activefilters,this.activefiltersmap)
             },
             emitDocumentFilter: function (documentFilterEmitData) {
                 this.$emit('document-filter',documentFilterEmitData);
+                this.$parent.$refs.searchwrapper.setActiveTab('document',this.activefilters,this.activefiltersmap)
             },
             emitAnnotationFilter: function (annotationFilterEmitData) {
                 this.$emit('annotation-filter',annotationFilterEmitData);
+                this.$parent.$refs.searchwrapper.setActiveTab('annotation',this.activefilters,this.activefiltersmap)
             },
             emitCorpusResultCounter: function(emittedCorpusResultCounter) {
                 this.$emit('corpus-resultcounter',emittedCorpusResultCounter);

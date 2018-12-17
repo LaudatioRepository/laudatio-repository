@@ -69,7 +69,10 @@
                 this.$emit('apply-filters');
             },
             emitAnnotationFilter: function () {
-                this.$emit('annotation-filter',this.annotationFilterData);
+                if(this.filterIsActivated()){
+                    this.$emit('annotation-filter',this.annotationFilterData);
+                }
+
             },
             uniqueArray: function (a) {
                 return [ ...new Set(a) ]
@@ -129,6 +132,18 @@
                     }
                 }
             },
+            filterIsActivated: function() {
+                var isActivated = false;
+                for(var key in this.annotationFilterData) {
+                    if (this.annotationFilterData.hasOwnProperty(key)) {
+                        if(this.annotationFilterData[key] != "") {
+                            isActivated = true;
+                            break;
+                        }
+                    }
+                }
+                return isActivated;
+            }
         },
         mounted() {
             let myannotationvue = this;

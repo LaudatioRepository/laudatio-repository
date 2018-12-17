@@ -123,7 +123,9 @@
                 this.$emit('apply-filters');
             },
             emitCorpusFilter(){
-                this.$emit('corpus-filter',this.corpusFilterData);
+                if(this.filterIsActivated()) {
+                    this.$emit('corpus-filter', this.corpusFilterData);
+                }
             },
             emitDropCorpusFilter: function (field){
                 this.$emit('remove-corpus-filter',field);
@@ -195,6 +197,8 @@
                 }
             },
             resetNoUiSlider: function() {
+                this.corpusFilterData['corpus_size_value'] = 1;
+                this.corpusFilterData['corpusSizeTo'] = 999999;
                 let corpusel = document.getElementById('corpusSize')
 
                 if(corpusel) {
@@ -214,6 +218,22 @@
             },
             uniqueArray: function (a) {
                 return [ ...new Set(a) ]
+            },
+            filterIsActivated: function() {
+                var isActivated = false;
+                for(var key in this.corpusFilterData) {
+                    if (this.corpusFilterData.hasOwnProperty(key)) {
+                        if((key == "corpus_size_value" && this.corpusFilterData.corpus_size_value != 1) || (key == "corpusSizeTo" && this.corpusFilterData.corpusSizeTo != 999999) && this.corpusFilterData[key] != "") {
+                            isActivated = true;
+                            break;
+                        }
+                        else if(key != "corpus_size_value" && key != "corpusSizeTo" && this.corpusFilterData[key] != "") {
+                            isActivated = true;
+                            break;
+                        }
+                    }
+                }
+                return isActivated;
             }
         },
         mounted() {
@@ -250,8 +270,11 @@
                         paddingMin.innerHTML = Math.round(values[handle]);
                     }
 
-                    mycorpusvue.emitDropCorpusFilter('corpus_size_value')
-                    mycorpusvue.emitCorpusFilter();
+                    if(mycorpusvue.filterIsActivated()) {
+                        mycorpusvue.emitDropCorpusFilter('corpus_size_value')
+                        mycorpusvue.emitCorpusFilter();
+                    }
+
 
 
                 });
