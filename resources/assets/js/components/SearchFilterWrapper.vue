@@ -14,6 +14,7 @@
                 :annotationresultcounter="annotationresultcounter"
                 :activefilters="activefilters"
                 :activefiltersmap="activefiltersmap"
+                :activefilterhits="activefilterhits"
                 v-on:corpus-resultcounter="emitCorpusResultCounter"
                 v-on:document-resultcounter="emitDocumentResultCounter"
                 v-on:annotation-resultcounter="emitAnnotationResultCounter"
@@ -63,7 +64,7 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults','documentresults', 'annotationresults', 'activefilters','activefiltersmap','corpusresultcounter','documentresultcounter','annotationresultcounter','corpusformats','annotationformats'],
+        props: ['corpusresults','documentresults', 'annotationresults', 'activefilters','activefiltersmap','activefilterhits','corpusresultcounter','documentresultcounter','annotationresultcounter','corpusformats','annotationformats'],
         methods: {
             applyFilters: function (){
                 this.$refs.corpusFilter.emitCorpusFilter();

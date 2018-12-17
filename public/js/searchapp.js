@@ -26553,6 +26553,7 @@ var app = new Vue({
         annotationresults: [],
         searches: [],
         activefilters: [],
+        activefilterhits: {},
         activefiltersmap: {},
         documentsByCorpus: [],
         annotationsByCorpus: [],
@@ -26829,6 +26830,9 @@ var app = new Vue({
 
                 if (typeof filterkey != 'undefined' && filterkey != 'undefined') {
                     var filtervalue = this.activefilters[i];
+                    if (!this.activefilterhits.hasOwnProperty(filtervalue)) {
+                        this.activefilterhits[filtervalue] = 0;
+                    }
                     filtervalue = filtervalue.replace("C_", "");
 
                     for (var j = 0; j < this.corpusresults.length; j++) {
@@ -26837,6 +26841,7 @@ var app = new Vue({
                             if (filterkey == "corpus_size_value" && corpusFilterObject.corpus_size_value != "" && corpusFilterObject.corpusSizeTo != "") {
                                 if (this.isBetween(this.corpusresults[j]._source[filterkey][0], corpusFilterObject.corpus_size_value, corpusFilterObject.corpusSizeTo)) {
                                     if (!matches.includes(this.corpusresults[j]._id)) {
+                                        this.activefilterhits["C_" + filtervalue]++;
                                         matches.push(this.corpusresults[j]._id);
                                     }
                                 }
@@ -26848,6 +26853,7 @@ var app = new Vue({
                                     if (this.hasFormats(this.corpusresults[j]._source[filterkey], corpusFilterObject.corpus_merged_formats[formatkey])) {
 
                                         if (!matches.includes(this.corpusresults[j]._id)) {
+                                            this.activefilterhits["C_" + filtervalue]++;
                                             matches.push(this.corpusresults[j]._id);
                                         }
                                     }
@@ -26858,6 +26864,7 @@ var app = new Vue({
                                 if (this.hasLicense(this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase(), corpusFilterObject[filterkey].toLowerCase())) {
 
                                     if (!matches.includes(this.corpusresults[j]._id)) {
+                                        this.activefilterhits["C_" + filtervalue]++;
                                         matches.push(this.corpusresults[j]._id);
                                     }
                                 }
@@ -26870,6 +26877,7 @@ var app = new Vue({
                                 if (this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date, corpusFilterObject.corpusYearTo)) {
 
                                     if (!matches.includes(this.corpusresults[j]._id)) {
+                                        this.activefilterhits["C_" + filtervalue]++;
                                         matches.push(this.corpusresults[j]._id);
                                     }
                                 }
@@ -26878,6 +26886,7 @@ var app = new Vue({
                             if (filterkey.indexOf('corpus') > -1) {
                                 if (this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase().indexOf(filtervalue.toLowerCase()) > -1) {
                                     if (!matches.includes(this.corpusresults[j]._id)) {
+                                        this.activefilterhits["C_" + filtervalue]++;
                                         matches.push(this.corpusresults[j]._id);
                                     }
                                 }
@@ -26938,6 +26947,9 @@ var app = new Vue({
             for (var i = 0; i < this.activefilters.length; i++) {
                 var filterkey = this.activefiltersmap[this.activefilters[i]];
                 var filtervalue = this.activefilters[i];
+                if (!this.activefilterhits.hasOwnProperty(filtervalue)) {
+                    this.activefilterhits[filtervalue] = 0;
+                }
                 filtervalue = filtervalue.replace("D_", "");
 
                 for (var j = 0; j < this.documentresults.length; j++) {
@@ -26946,6 +26958,7 @@ var app = new Vue({
                         if (filterkey == "document_size_extent" && documentFilterObject.document_size_extent != "" && documentFilterObject.document_size_extent_to != "") {
                             if (this.isBetween(this.documentresults[j]._source[filterkey][0], documentFilterObject.document_size_extent, documentFilterObject.document_size_extent_to)) {
                                 if (!matches.includes(this.documentresults[j]._id)) {
+                                    this.activefilterhits["D_" + filtervalue]++;
                                     matches.push(this.documentresults[j]._id);
                                 }
                             }
@@ -26961,6 +26974,7 @@ var app = new Vue({
 
                             if (this.isBetween(newest_date, documentFilterObject.document_publication_publishing_date, documentFilterObject.document_publication_publishing_date_to)) {
                                 if (!matches.includes(this.documentresults[j]._id)) {
+                                    this.activefilterhits["D_" + filtervalue]++;
                                     matches.push(this.documentresults[j]._id);
                                 }
                             }
@@ -26969,6 +26983,7 @@ var app = new Vue({
                         if (filterkey.indexOf('document') > -1) {
                             if (this.renderArrayToString(this.documentresults[j]._source[filterkey]).toLowerCase().indexOf(filtervalue.toLowerCase()) > -1) {
                                 if (!matches.includes(this.documentresults[j]._id)) {
+                                    this.activefilterhits["D_" + filtervalue]++;
                                     matches.push(this.documentresults[j]._id);
                                 }
                             }
@@ -27018,6 +27033,9 @@ var app = new Vue({
             for (var i = 0; i < this.activefilters.length; i++) {
                 var filterkey = this.activefiltersmap[this.activefilters[i]];
                 var filtervalue = this.activefilters[i];
+                if (!this.activefilterhits.hasOwnProperty(filtervalue)) {
+                    this.activefilterhits[filtervalue] = 0;
+                }
                 filtervalue = filtervalue.replace("A_", "");
                 for (var j = 0; j < this.annotationresults.length; j++) {
                     if (filterkey == "annotation_merged_formats") {
@@ -27027,6 +27045,7 @@ var app = new Vue({
                             if (this.hasFormats(this.annotationresults[j]._source[filterkey], annotationFilterObject.annotation_merged_formats[formatkey])) {
 
                                 if (!matches.includes(this.annotationresults[j]._id)) {
+                                    this.activefilterhits["A_" + filtervalue]++;
                                     matches.push(this.annotationresults[j]._id);
                                 }
                             }
@@ -27035,6 +27054,7 @@ var app = new Vue({
                         if (filterkey.indexOf('preparation') > -1) {
                             if (this.renderArrayToString(this.annotationresults[j]._source[filterkey]).toLowerCase().indexOf(filtervalue.toLowerCase()) > -1) {
                                 if (!matches.includes(this.annotationresults[j]._id)) {
+                                    this.activefilterhits["A_" + filtervalue]++;
                                     matches.push(this.annotationresults[j]._id);
                                 }
                             }
@@ -27719,10 +27739,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'activefiltersmap', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter', 'corpusformats', 'annotationformats'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'activefiltersmap', 'activefilterhits', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter', 'corpusformats', 'annotationformats'],
     methods: {
         applyFilters: function applyFilters() {
             this.$refs.corpusFilter.emitCorpusFilter();
@@ -27832,7 +27853,8 @@ var render = function() {
             documentresultcounter: _vm.documentresultcounter,
             annotationresultcounter: _vm.annotationresultcounter,
             activefilters: _vm.activefilters,
-            activefiltersmap: _vm.activefiltersmap
+            activefiltersmap: _vm.activefiltersmap,
+            activefilterhits: _vm.activefilterhits
           },
           on: {
             "corpus-resultcounter": _vm.emitCorpusResultCounter,
@@ -28598,10 +28620,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'activefiltersmap', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
+    props: ['corpusresults', 'documentresults', 'annotationresults', 'activefilters', 'activefiltersmap', 'activefilterhits', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter'],
     data: function data() {
         return {
             localcorpusresultcounter: this.corpusresultcounter,
@@ -28630,6 +28653,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 filter = filter.replace("A_", "<i class=\"fa fa-fw fa-edit align-text-middle fa-lg text-wine\"></i> &nbsp;");
             }
             return filter;
+        },
+        resolveHit: function resolveHit(filter) {
+            var hasHit = false;
+            if (this.activefilterhits[filter] > 0) {
+                hasHit = true;
+            }
+            return hasHit;
         },
         resetFilter: function resetFilter(filter) {
             if (this.activefiltersmap != 'undefined') {
@@ -28749,6 +28779,18 @@ var render = function() {
                         domProps: {
                           innerHTML: _vm._s(_vm.resolveIcon(filtervalue))
                         }
+                      }),
+                      _vm._v(" "),
+                      _c("i", {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: _vm.resolveHit(filtervalue),
+                            expression: "resolveHit(filtervalue)"
+                          }
+                        ],
+                        staticClass: "fa fa-check fa-fw"
                       })
                     ]
                   )

@@ -14,6 +14,7 @@
                             <a href="#" class="badge badge-corpus-mid p-1 text-14 font-weight-normal rounded">
                                 <i class="fa fa-close fa-fw" @click="resetFilter(filtervalue)"></i>
                                 <span v-html="resolveIcon(filtervalue)"></span>
+                                <i class="fa fa-check fa-fw" v-show="resolveHit(filtervalue)"></i>
                             </a>
                         </div>
 
@@ -32,7 +33,7 @@
 <script>
     import { mapState, mapActions, mapGetters } from 'vuex'
     export default {
-        props: ['corpusresults','documentresults','annotationresults','activefilters','activefiltersmap','corpusresultcounter','documentresultcounter','annotationresultcounter'],
+        props: ['corpusresults','documentresults','annotationresults','activefilters','activefiltersmap','activefilterhits','corpusresultcounter','documentresultcounter','annotationresultcounter'],
         data: function() {
             return {
                 localcorpusresultcounter: this.corpusresultcounter,
@@ -64,6 +65,13 @@
                     filter = filter.replace("A_","<i class=\"fa fa-fw fa-edit align-text-middle fa-lg text-wine\"></i> &nbsp;");
                 }
               return filter;
+            },
+            resolveHit(filter) {
+                var hasHit = false;
+                if(this.activefilterhits[filter] > 0){
+                    hasHit = true;
+                }
+                return hasHit;
             },
             resetFilter(filter) {
                 if(this.activefiltersmap != 'undefined') {
