@@ -108,7 +108,27 @@
                 else{
                     this.annotationFilterData[field] = ''
                 }
-            }
+            },
+            resetFormatField: function(filter){
+                var flexgroup = document.getElementById('annotationflexgroup');
+                if (flexgroup.hasChildNodes()) {
+                    for (var i = 0; i < flexgroup.children.length; i++) {
+                        if (flexgroup.children[i].tagName == "UL") {
+                            if (flexgroup.children[i].hasChildNodes()) {
+                                for (var j = 0; j < flexgroup.children[i].children.length; j++) {
+                                    if (flexgroup.children[i].children[j].tagName == "LI") {
+                                        if(flexgroup.children[i].children[j].firstChild.textContent == filter ){
+                                            this.annotationFilterData['annotation_merged_formats'].splice(this.annotationFilterData['annotation_merged_formats'].indexOf(filter),1);
+                                            flexgroup.children[i].children[j].remove();
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            },
         },
         mounted() {
             let myannotationvue = this;

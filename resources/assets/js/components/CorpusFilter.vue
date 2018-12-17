@@ -169,15 +169,30 @@
                     this.corpusFilterData['corpus_publication_publication_date'] = ''
                     this.corpusFilterData['corpusYearTo'] = ''
                 }
-                else if(field == 'corpus_size_value'){
-                    //this.corpusFilterData['corpus_size_value'] = 1
-                    //this.corpusFilterData['corpusSizeTo'] = 999999
-
-                }
                 else{
                     this.corpusFilterData[field] = ''
                 }
 
+            },
+            resetFormatField: function(filter){
+                var flexgroup = document.getElementById('corpusflexgroup');
+                if (flexgroup.hasChildNodes()) {
+                    for (var i = 0; i < flexgroup.children.length; i++) {
+                        if (flexgroup.children[i].tagName == "UL") {
+                            if (flexgroup.children[i].hasChildNodes()) {
+                                for (var j = 0; j < flexgroup.children[i].children.length; j++) {
+                                    if (flexgroup.children[i].children[j].tagName == "LI") {
+                                        if(flexgroup.children[i].children[j].firstChild.textContent == filter ){
+                                            this.corpusFilterData['corpus_merged_formats'].splice(this.corpusFilterData['corpus_merged_formats'].indexOf(filter),1);
+                                            flexgroup.children[i].children[j].remove();
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
             },
             resetNoUiSlider: function() {
                 let corpusel = document.getElementById('corpusSize')

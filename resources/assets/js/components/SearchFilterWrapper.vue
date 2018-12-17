@@ -79,9 +79,13 @@
             removeFilter: function(field) {
                 for(var val in this.activefiltersmap) {
                     var key = this.activefiltersmap[val]
+
                     if(key == field) {
-                        this.activefilters.splice(this.activefilters.indexOf(key),1);
-                        if((key == "corpus_size_value" || key == "document_size_extent")) {
+                        if(this.activefilters.indexOf(val) >= 0){
+                            this.activefilters.splice(this.activefilters.indexOf(val),1);
+                        }
+
+                        if(key == "corpus_size_value" || key == "document_size_extent") {
                             if(Object.keys(this.activefiltersmap).length  > 1){
                                 delete this.activefiltersmap[val];
                             }

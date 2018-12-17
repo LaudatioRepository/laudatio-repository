@@ -402,7 +402,11 @@ const app = new Vue({
                             }
                             if(key == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != ""){
                                 for (var formatkey in corpusFilterObject.corpus_merged_formats) {
-                                    if(!this.activefilters.includes('C_'+corpusFilterObject.corpus_merged_formats[formatkey])
+                                    if(
+                                        !this.activefilters.includes(corpusFilterObject.corpus_merged_formats[formatkey])
+                                        && !this.activefiltersmap.hasOwnProperty(corpusFilterObject.corpus_merged_formats[formatkey])
+                                        &&
+                                        !this.activefilters.includes('C_'+corpusFilterObject.corpus_merged_formats[formatkey])
                                         && !this.activefiltersmap.hasOwnProperty('C_'+corpusFilterObject.corpus_merged_formats[formatkey])) {
                                         this.activefilters.push('C_'+corpusFilterObject.corpus_merged_formats[formatkey]);
                                         this.activefiltersmap['C_'+corpusFilterObject.corpus_merged_formats[formatkey]] = 'corpus_merged_formats';
@@ -445,68 +449,72 @@ const app = new Vue({
             this.resetCorpusResults();
             var matches = [];
             var activeFilterCount = this.getActiveFilterCount("corpus");
-
             for(var i = 0; i < this.activefilters.length; i++) {
                 var filterkey = this.activefiltersmap[this.activefilters[i]];
-                var filtervalue = this.activefilters[i];
-                filtervalue = filtervalue.replace("C_","");
 
-                for(var j = 0; j < this.corpusresults.length; j++) {
-                    if (filterkey == "corpus_publication_publication_date" || filterkey == "corpusYearTo" || filterkey == "corpus_publication_license" || filterkey == "corpus_merged_formats" || filterkey == "corpus_size_value"|| filterkey == "corpusSizeTo" ) {
 
-                        if(filterkey == "corpus_size_value" && corpusFilterObject.corpus_size_value != ""  && corpusFilterObject.corpusSizeTo != "") {
-                            if(this.isBetween(this.corpusresults[j]._source[filterkey][0], corpusFilterObject.corpus_size_value,corpusFilterObject.corpusSizeTo)){
-                                if(!matches.includes(this.corpusresults[j]._id)){
-                                    matches.push(this.corpusresults[j]._id);
+                if(typeof filterkey != 'undefined' && filterkey != 'undefined') {
+                    var filtervalue = this.activefilters[i];
+                    filtervalue = filtervalue.replace("C_","");
+
+                    for(var j = 0; j < this.corpusresults.length; j++) {
+                        if (filterkey == "corpus_publication_publication_date" || filterkey == "corpusYearTo" || filterkey == "corpus_publication_license" || filterkey == "corpus_merged_formats" || filterkey == "corpus_size_value"|| filterkey == "corpusSizeTo" ) {
+
+                            if(filterkey == "corpus_size_value" && corpusFilterObject.corpus_size_value != ""  && corpusFilterObject.corpusSizeTo != "") {
+                                if(this.isBetween(this.corpusresults[j]._source[filterkey][0], corpusFilterObject.corpus_size_value,corpusFilterObject.corpusSizeTo)){
+                                    if(!matches.includes(this.corpusresults[j]._id)){
+                                        matches.push(this.corpusresults[j]._id);
+                                    }
+                                }
+
+                            }
+
+                            if(filterkey == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != ""){
+                                for (var formatkey in corpusFilterObject.corpus_merged_formats) {
+
+                                    if(this.hasFormats(this.corpusresults[j]._source[filterkey],corpusFilterObject.corpus_merged_formats[formatkey])){
+
+                                        if(!matches.includes(this.corpusresults[j]._id)){
+                                            matches.push(this.corpusresults[j]._id);
+                                        }
+                                    }
                                 }
                             }
 
-                        }
-
-                        if(filterkey == "corpus_merged_formats" && corpusFilterObject.corpus_merged_formats != ""){
-                            for (var formatkey in corpusFilterObject.corpus_merged_formats) {
-
-                                if(this.hasFormats(this.corpusresults[j]._source[filterkey],corpusFilterObject.corpus_merged_formats[formatkey])){
+                            if(filterkey == "corpus_publication_license" && corpusFilterObject[filterkey].toLowerCase() != "") {
+                                if(this.hasLicense(this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase(), corpusFilterObject[filterkey].toLowerCase())){
 
                                     if(!matches.includes(this.corpusresults[j]._id)){
                                         matches.push(this.corpusresults[j]._id);
                                     }
                                 }
                             }
-                        }
 
-                        if(filterkey == "corpus_publication_license" && corpusFilterObject[filterkey].toLowerCase() != "") {
-                            if(this.hasLicense(this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase(), corpusFilterObject[filterkey].toLowerCase())){
+                            if(filterkey == "corpus_publication_publication_date" && corpusFilterObject.corpus_publication_publication_date != '' && corpusFilterObject.corpusYearTo != '') {
+                                var newest_datum = this.corpusresults[j]._source[filterkey][(this.corpusresults[j]._source[filterkey].length -1)];
+                                var dateArray = newest_datum.split("-");
+                                var newest_date = dateArray[0];
+                                if( this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date,corpusFilterObject.corpusYearTo)){
 
-                                if(!matches.includes(this.corpusresults[j]._id)){
-                                    matches.push(this.corpusresults[j]._id);
+                                    if(!matches.includes(this.corpusresults[j]._id)){
+                                        matches.push(this.corpusresults[j]._id);
+                                    }
+
                                 }
                             }
                         }
-
-                        if(filterkey == "corpus_publication_publication_date" && corpusFilterObject.corpus_publication_publication_date != '' && corpusFilterObject.corpusYearTo != '') {
-                            var newest_datum = this.corpusresults[j]._source[filterkey][(this.corpusresults[j]._source[filterkey].length -1)];
-                            var dateArray = newest_datum.split("-");
-                            var newest_date = dateArray[0];
-                            if( this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date,corpusFilterObject.corpusYearTo)){
-
-                                if(!matches.includes(this.corpusresults[j]._id)){
-                                    matches.push(this.corpusresults[j]._id);
-                                }
-
-                            }
-                        }
-                    }
-                    else {
-                        if(filterkey.indexOf('corpus') > -1){
-                            if(this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase().indexOf(filtervalue.toLowerCase()) > -1) {
-                                if(!matches.includes(this.corpusresults[j]._id)){
-                                    matches.push(this.corpusresults[j]._id);
+                        else {
+                            if(filterkey.indexOf('corpus') > -1){
+                                if(this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase().indexOf(filtervalue.toLowerCase()) > -1) {
+                                    if(!matches.includes(this.corpusresults[j]._id)){
+                                        matches.push(this.corpusresults[j]._id);
+                                    }
                                 }
                             }
                         }
-                    }
-                }
+                    }//end for
+                }//end if filterkey
+
             }
 
             if(matches.length > 0) {
@@ -694,7 +702,6 @@ const app = new Vue({
         },
         resetActiveFilter: function(filter) {
             var key = this.activefiltersmap[filter];
-
             if(typeof filter != 'undefined' && this.activefiltersmap.hasOwnProperty(filter)){
                 this.activefilters.splice(this.activefilters.indexOf(filter),1);
                 delete this.activefiltersmap[filter];
@@ -703,6 +710,12 @@ const app = new Vue({
                 }
                 else if(key == "document_size_extent"){
                     this.$refs.filterwrapper.$refs.documentFilter.resetNoUiSlider();
+                }
+                else if(key == "corpus_merged_formats") {
+                    this.$refs.filterwrapper.$refs.corpusFilter.resetFormatField(filter.replace("C_",""));
+                }
+                else if(key == "annotation_merged_formats") {
+                    this.$refs.filterwrapper.$refs.annotationFilter.resetFormatField(filter.replace("A_",""));
                 }
             }
             
