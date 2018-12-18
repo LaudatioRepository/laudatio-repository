@@ -252,3 +252,7 @@ li.license + li.commercial {
   display: none;
 }
 
+.laudatiohighlight {
+  background-color: #fff27f;
+}
+

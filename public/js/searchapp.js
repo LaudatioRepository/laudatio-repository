@@ -26549,8 +26549,11 @@ var app = new Vue({
     data: {
         results: [],
         corpusresults: [],
+        corpushighlights: {},
         documentresults: [],
+        documenthighlights: {},
         annotationresults: [],
+        annotationhighlights: {},
         searches: [],
         activefilters: [],
         activefilterhits: {},
@@ -26598,9 +26601,6 @@ var app = new Vue({
 
             this.dataloading = true;
             this.corpusresults = [];
-            //this.frontPageResultData = [];
-            //this.corpusformats = [];
-            //this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', []);
@@ -26706,9 +26706,6 @@ var app = new Vue({
 
             this.dataloading = true;
             this.corpusresults = [];
-            //this.frontPageResultData = []
-            //this.corpusformats = [];
-            //this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', []);
@@ -26736,6 +26733,7 @@ var app = new Vue({
                 };
 
                 var corpus_ids = [];
+                //console.log("searchGeneral: "+JSON.stringify(postData));
                 window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(function (res) {
                     if (res.data.results.length > 0) {
                         /*
@@ -26751,9 +26749,44 @@ var app = new Vue({
                                 for (var key in formatsarray) {
                                     _this2.corpusformats.push(formatsarray[key]);
                                 }
+
+                                var highlightobject = res.data.results[ri].highlight;
+                                if (!_this2.corpushighlights.hasOwnProperty(res.data.results[ri]._id)) {
+                                    _this2.corpushighlights[res.data.results[ri]._id] = [];
+                                }
+
+                                var tempobject = {};
+                                for (var fieldkey in highlightobject) {
+                                    var tempstring = '';
+                                    for (var d = 0; d < highlightobject[fieldkey].length; d++) {
+                                        tempstring += highlightobject[fieldkey][d].concat(' ');
+                                    }
+                                    tempobject[fieldkey] = tempstring;
+                                }
+
+                                if (!_this2.hasObject(_this2.corpushighlights[res.data.results[ri]._id], tempobject)) {
+                                    _this2.corpushighlights[res.data.results[ri]._id].push(tempobject);
+                                }
                             } else if (res.data.results[ri]._index.indexOf("document_") == 0) {
                                 _this2.documentresults.push(res.data.results[ri]);
                                 _this2.documentresultcounter++;
+
+                                var highlightobject = res.data.results[ri].highlight;
+                                if (!_this2.documenthighlights.hasOwnProperty(res.data.results[ri]._id)) {
+                                    _this2.documenthighlights[res.data.results[ri]._id] = [];
+                                }
+
+                                var tempobject = {};
+                                for (var fieldkey in highlightobject) {
+                                    var tempstring = '';
+                                    for (var d = 0; d < highlightobject[fieldkey].length; d++) {
+                                        tempstring += highlightobject[fieldkey][d].concat(' ');
+                                    }
+                                    tempobject[fieldkey] = tempstring;
+                                }
+                                if (!_this2.hasObject(_this2.documenthighlights[res.data.results[ri]._id], tempobject)) {
+                                    _this2.documenthighlights[res.data.results[ri]._id].push(tempobject);
+                                }
                             } else if (res.data.results[ri]._index.indexOf("annotation_") == 0) {
                                 _this2.annotationresults.push(res.data.results[ri]);
                                 _this2.annotationresultcounter++;
@@ -26761,6 +26794,24 @@ var app = new Vue({
                                 var annotationformatsarray = res.data.results[ri]._source.annotation_merged_formats.split(",");
                                 for (var key in annotationformatsarray) {
                                     _this2.annotationformats.push(annotationformatsarray[key]);
+                                }
+
+                                var highlightobject = res.data.results[ri].highlight;
+                                if (!_this2.annotationhighlights.hasOwnProperty(res.data.results[ri]._id)) {
+                                    _this2.annotationhighlights[res.data.results[ri]._id] = [];
+                                }
+
+                                var tempobject = {};
+                                for (var fieldkey in highlightobject) {
+                                    var tempstring = '';
+                                    for (var d = 0; d < highlightobject[fieldkey].length; d++) {
+                                        tempstring += highlightobject[fieldkey][d].concat(' ');
+                                    }
+                                    tempobject[fieldkey] = tempstring;
+                                }
+
+                                if (!_this2.hasObject(_this2.annotationhighlights[res.data.results[ri]._id], tempobject)) {
+                                    _this2.annotationhighlights[res.data.results[ri]._id].push(tempobject);
                                 }
                             } ///end which index
                         } //end for results
@@ -27253,6 +27304,41 @@ var app = new Vue({
                 }
             }
             return activeFilterCount;
+        },
+        isEquivalent: function isEquivalent(a, b) {
+            // Create arrays of property names
+            var aProps = Object.getOwnPropertyNames(a);
+            var bProps = Object.getOwnPropertyNames(b);
+
+            // If number of properties is different,
+            // objects are not equivalent
+            if (aProps.length != bProps.length) {
+                return false;
+            }
+
+            for (var i = 0; i < aProps.length; i++) {
+                var propName = aProps[i];
+
+                // If values of same property are not equal,
+                // objects are not equivalent
+                if (a[propName] !== b[propName]) {
+                    return false;
+                }
+            }
+
+            // If we made it this far, objects
+            // are considered equivalent
+            return true;
+        },
+        hasObject: function hasObject(array, object) {
+            var hasObject = false;
+            for (var i = 0; i < array.length; i++) {
+                if (this.isEquivalent(array[i], object)) {
+                    hasObject = true;
+                    break;
+                }
+            }
+            return hasObject;
         }
     }
 });
@@ -28110,9 +28196,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched', 'dataloading', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter', 'frontpageresultdata'],
+    props: ['corpusresults', 'corpushighlights', 'documentresults', 'documenthighlights', 'annotationresults', 'annotationhighlights', 'datasearched', 'dataloading', 'searches', 'corpusresultcounter', 'documentresultcounter', 'annotationresultcounter', 'frontpageresultdata'],
     data: function data() {
         return {
             currentCorpusPage: 1,
@@ -28157,6 +28246,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var documenttabelem = document.getElementById('tab-documents');
             var annotationelem = document.getElementById('searchtab-annotations');
             var annotationtabelem = document.getElementById('tab-annotations');
+            console.log("GOT: " + header);
 
             var lastValue = filters[filters.length - 1];
             var lastKey = filtersmap[lastValue];
@@ -28373,7 +28463,10 @@ var render = function() {
                 index < _vm.currentCorpusPage * _vm.corpusPerPage
                 ? _c("corpussearchresult", {
                     key: _vm.guid(index),
-                    attrs: { corpusresult: corpusresult }
+                    attrs: {
+                      corpusresult: corpusresult,
+                      corpushighlights: _vm.corpushighlights
+                    }
                   })
                 : _vm._e()
             }),
@@ -28424,7 +28517,10 @@ var render = function() {
                 documentindex < _vm.currentDocumentPage * _vm.documentPerPage
                 ? _c("documentsearchresult", {
                     key: _vm.guid(documentindex),
-                    attrs: { documentresult: documentresult }
+                    attrs: {
+                      documentresult: documentresult,
+                      documenthighlights: _vm.documenthighlights
+                    }
                   })
                 : _vm._e()
             }),
@@ -28476,7 +28572,10 @@ var render = function() {
                   _vm.currentAnnotationPage * _vm.annotationPerPage
                 ? _c("annotationsearchresult", {
                     key: _vm.guid(annotationindex),
-                    attrs: { annotationresult: annotationresult }
+                    attrs: {
+                      annotationresult: annotationresult,
+                      annotationhighlights: _vm.annotationhighlights
+                    }
                   })
                 : _vm._e()
             }),
@@ -31237,10 +31336,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['corpusresult', 'corpuspaths'],
+    props: ['corpusresult', 'corpushighlights', 'corpuspaths'],
     methods: {
         browseUri: function browseUri(id) {
             return '/browse/corpus/'.concat(id);
@@ -31318,24 +31419,38 @@ var render = function() {
             _vm._v(" "),
             _c("div", { staticClass: "col" }, [
               _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "text-dark",
-                    attrs: { href: _vm.browseUri(_vm.corpusresult._id) }
-                  },
-                  [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(
-                          _vm._f("arrayToString")(
-                            _vm.corpusresult._source.corpus_title
-                          )
-                        ) +
-                        "\n                "
-                    )
-                  ]
+                _vm.corpushighlights.hasOwnProperty(_vm.corpusresult._id) &&
+                _vm.corpushighlights[_vm.corpusresult._id][0].hasOwnProperty(
+                  "corpus_title"
                 )
+                  ? _c("a", {
+                      staticClass: "text-dark",
+                      attrs: { href: _vm.browseUri(_vm.corpusresult._id) },
+                      domProps: {
+                        innerHTML: _vm._s(
+                          _vm.corpushighlights[_vm.corpusresult._id][0]
+                            .corpus_title
+                        )
+                      }
+                    })
+                  : _c(
+                      "a",
+                      {
+                        staticClass: "text-dark",
+                        attrs: { href: _vm.browseUri(_vm.corpusresult._id) }
+                      },
+                      [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(
+                              _vm._f("arrayToString")(
+                                _vm.corpusresult._source.corpus_title
+                              )
+                            ) +
+                            "\n                "
+                        )
+                      ]
+                    )
               ]),
               _vm._v(" "),
               _vm.corpusresult._source.corpus_editor_forename != "undefined" &&
@@ -31804,43 +31919,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['documentresult'],
+    props: ['documentresult', 'documenthighlights'],
     methods: {
         browseUri: function browseUri(id) {
             return '/browse/document/'.concat(id);
@@ -31871,24 +31953,38 @@ var render = function() {
           _c("div", { staticClass: "row" }, [
             _c("div", { staticClass: "col" }, [
               _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "text-dark",
-                    attrs: { href: _vm.browseUri(_vm.documentresult._id) }
-                  },
-                  [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(
-                          _vm._f("arrayToString")(
-                            _vm.documentresult._source.document_title
-                          )
-                        ) +
-                        "\n                "
+                _vm.documenthighlights.hasOwnProperty(_vm.documentresult._id) &&
+                _vm.documenthighlights[
+                  _vm.documentresult._id
+                ][0].hasOwnProperty("document_title")
+                  ? _c("a", {
+                      staticClass: "text-dark",
+                      attrs: { href: _vm.browseUri(_vm.documentresult._id) },
+                      domProps: {
+                        innerHTML: _vm._s(
+                          _vm.documenthighlights[_vm.documentresult._id][0]
+                            .document_title
+                        )
+                      }
+                    })
+                  : _c(
+                      "a",
+                      {
+                        staticClass: "text-dark",
+                        attrs: { href: _vm.browseUri(_vm.documentresult._id) }
+                      },
+                      [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(
+                              _vm._f("arrayToString")(
+                                _vm.documentresult._source.document_title
+                              )
+                            ) +
+                            "\n                "
+                        )
+                      ]
                     )
-                  ]
-                )
               ]),
               _vm._v(" "),
               _c("span", { staticClass: "text-grey text-14" }, [
@@ -32162,46 +32258,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['annotationresult'],
+    props: ['annotationresult', 'annotationhighlights'],
     methods: {
         browseUri: function browseUri(id, type) {
             return '/browse/annotation/'.concat(id);
@@ -32235,24 +32294,40 @@ var render = function() {
           _c("div", { staticClass: "row" }, [
             _c("div", { staticClass: "col" }, [
               _c("h4", { staticClass: "h4 font-weight-bold" }, [
-                _c(
-                  "a",
-                  {
-                    staticClass: "text-dark",
-                    attrs: { href: _vm.browseUri(_vm.annotationresult._id) }
-                  },
-                  [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(
-                          _vm._f("arrayToString")(
-                            _vm.annotationresult._source.preparation_title
-                          )
-                        ) +
-                        "\n                "
+                _vm.annotationhighlights.hasOwnProperty(
+                  _vm.annotationresult._id
+                ) &&
+                _vm.annotationhighlights[
+                  _vm.annotationresult._id
+                ][0].hasOwnProperty("preparation_title")
+                  ? _c("a", {
+                      staticClass: "text-dark",
+                      attrs: { href: _vm.browseUri(_vm.annotationresult._id) },
+                      domProps: {
+                        innerHTML: _vm._s(
+                          _vm.annotationhighlights[_vm.annotationresult._id][0]
+                            .preparation_title
+                        )
+                      }
+                    })
+                  : _c(
+                      "a",
+                      {
+                        staticClass: "text-dark",
+                        attrs: { href: _vm.browseUri(_vm.annotationresult._id) }
+                      },
+                      [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(
+                              _vm._f("arrayToString")(
+                                _vm.annotationresult._source.preparation_title
+                              )
+                            ) +
+                            "\n                "
+                        )
+                      ]
                     )
-                  ]
-                )
               ]),
               _vm._v(" "),
               _c("span", { staticClass: "text-grey text-14" }, [

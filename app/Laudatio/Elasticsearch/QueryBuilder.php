@@ -16,6 +16,7 @@ use ONGR\ElasticsearchDSL\Query\TermLevel\RangeQuery;
 use ONGR\ElasticsearchDSL\Aggregation\Bucketing\DateRangeAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\Bucketing\RangeAggregation;
 use ONGR\ElasticsearchDSL\Aggregation\Bucketing\TermsAggregation;
+use ONGR\ElasticsearchDSL\Highlight\Highlight;
 use ONGR\ElasticsearchDSL\Search;
 use Log;
 
@@ -62,6 +63,22 @@ class QueryBuilder
         $multiMatchQuery = new MultiMatchQuery($data['fields'],$data['query']);
         $search = new Search();
         $search->addQuery($multiMatchQuery);
+        $queryArray = $search->toArray();
+        return $queryArray;
+    }
+
+    public function buildMultiMatchHighlightQuery($data){
+        $multiMatchQuery = null;
+        $multiMatchQuery = new MultiMatchQuery($data['fields'],$data['query']);
+        $search = new Search();
+        $search->addQuery($multiMatchQuery);
+
+        $highlight = new Highlight();
+        foreach ($data['fields'] as $field) {
+            $highlight->addField($field);
+        }
+        $highlight->setTags(['<span class="laudatiohighlight">'], ['</span>']);
+        $search->addHighlight($highlight);
         $queryArray = $search->toArray();
         return $queryArray;
     }

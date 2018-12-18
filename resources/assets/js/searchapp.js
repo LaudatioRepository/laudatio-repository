@@ -43,8 +43,11 @@ const app = new Vue({
     data: {
         results: [],
         corpusresults: [],
+        corpushighlights: {},
         documentresults: [],
+        documenthighlights: {},
         annotationresults: [],
+        annotationhighlights: {},
         searches: [],
         activefilters: [],
         activefilterhits: {},
@@ -90,9 +93,6 @@ const app = new Vue({
         initialSearch: function(){
             this.dataloading = true;
             this.corpusresults = [];
-            //this.frontPageResultData = [];
-            //this.corpusformats = [];
-            //this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', [])
@@ -242,9 +242,6 @@ const app = new Vue({
         askElastic: function (search) {
             this.dataloading = true;
             this.corpusresults = [];
-            //this.frontPageResultData = []
-            //this.corpusformats = [];
-            //this.annotationformats = [];
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', [])
@@ -339,6 +336,7 @@ const app = new Vue({
                 };
 
                 let corpus_ids = [];
+                //console.log("searchGeneral: "+JSON.stringify(postData));
                 window.axios.post('api/searchapi/searchGeneral', JSON.stringify(postData)).then(res => {
                     if (res.data.results.length > 0) {
                         /*
@@ -355,10 +353,48 @@ const app = new Vue({
                                     this.corpusformats.push(formatsarray[key])
                                 }
 
+                                var highlightobject = res.data.results[ri].highlight;
+                                if(!this.corpushighlights.hasOwnProperty(res.data.results[ri]._id)){
+                                    this.corpushighlights[res.data.results[ri]._id] = [];
+                                }
+
+                                var tempobject = {}
+                                for (var fieldkey in highlightobject) {
+                                    var tempstring = '';
+                                    for (var d = 0; d < highlightobject[fieldkey].length;d++) {
+                                        tempstring += highlightobject[fieldkey][d].concat(' ');
+                                    }
+                                    tempobject[fieldkey] = tempstring;
+                                }
+
+
+                                if(!this.hasObject(this.corpushighlights[res.data.results[ri]._id],tempobject)) {
+                                    this.corpushighlights[res.data.results[ri]._id].push(tempobject);
+                                }
+
                             }
                             else if(res.data.results[ri]._index.indexOf("document_") == 0){
                                 this.documentresults.push(res.data.results[ri]);
                                 this.documentresultcounter ++;
+
+                                var highlightobject = res.data.results[ri].highlight;
+                                if(!this.documenthighlights.hasOwnProperty(res.data.results[ri]._id)){
+                                    this.documenthighlights[res.data.results[ri]._id] = [];
+                                }
+
+                                var tempobject = {}
+                                for (var fieldkey in highlightobject) {
+                                    var tempstring = '';
+                                    for (var d = 0; d < highlightobject[fieldkey].length;d++) {
+                                        tempstring += highlightobject[fieldkey][d].concat(' ');
+                                    }
+                                    tempobject[fieldkey] = tempstring;
+                                }
+                                if(!this.hasObject(this.documenthighlights[res.data.results[ri]._id],tempobject)) {
+                                    this.documenthighlights[res.data.results[ri]._id].push(tempobject);
+                                }
+
+
                             }
                             else if(res.data.results[ri]._index.indexOf("annotation_") == 0){
                                 this.annotationresults.push(res.data.results[ri]);
@@ -368,6 +404,25 @@ const app = new Vue({
                                 for (var key in annotationformatsarray) {
                                     this.annotationformats.push(annotationformatsarray[key])
                                 }
+
+                                var highlightobject = res.data.results[ri].highlight;
+                                if(!this.annotationhighlights.hasOwnProperty(res.data.results[ri]._id)){
+                                    this.annotationhighlights[res.data.results[ri]._id] = [];
+                                }
+
+                                var tempobject = {}
+                                for (var fieldkey in highlightobject) {
+                                    var tempstring = '';
+                                    for (var d = 0; d < highlightobject[fieldkey].length;d++) {
+                                        tempstring += highlightobject[fieldkey][d].concat(' ');
+                                    }
+                                    tempobject[fieldkey] = tempstring;
+                                }
+
+                                if(!this.hasObject(this.annotationhighlights[res.data.results[ri]._id],tempobject)) {
+                                    this.annotationhighlights[res.data.results[ri]._id].push(tempobject);
+                                }
+
                             }///end which index
                         }//end for results
                     }//end if results
@@ -920,6 +975,41 @@ const app = new Vue({
                 }
             }
             return activeFilterCount;
+        },
+        isEquivalent: function (a, b) {
+            // Create arrays of property names
+            var aProps = Object.getOwnPropertyNames(a);
+            var bProps = Object.getOwnPropertyNames(b);
+
+            // If number of properties is different,
+            // objects are not equivalent
+            if (aProps.length != bProps.length) {
+                return false;
+            }
+
+            for (var i = 0; i < aProps.length; i++) {
+                var propName = aProps[i];
+
+                // If values of same property are not equal,
+                // objects are not equivalent
+                if (a[propName] !== b[propName]) {
+                    return false;
+                }
+            }
+
+            // If we made it this far, objects
+            // are considered equivalent
+            return true;
+        },
+        hasObject: function(array, object) {
+            var hasObject = false;
+            for(var i = 0; i < array.length; i++) {
+                if(this.isEquivalent(array[i],object)){
+                    hasObject = true;
+                    break;
+                }
+            }
+            return hasObject;
         }
     }
 });

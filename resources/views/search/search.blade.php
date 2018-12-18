@@ -43,10 +43,13 @@
                     </div>
                     <searchresultwrapper
                             :corpusresults="corpusresults"
+                            :corpushighlights="corpushighlights"
                             :datasearched="datasearched"
                             :dataloading="dataloading"
                             :documentresults="documentresults"
+                            :documenthighlights="documenthighlights"
                             :annotationresults="annotationresults"
+                            :annotationhighlights="annotationhighlights"
                             :searches="searches"
                             :corpusresultcounter="corpusresultcounter"
                             :documentresultcounter="documentresultcounter"

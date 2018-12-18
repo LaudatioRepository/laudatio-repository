@@ -905,7 +905,7 @@ class ElasticService implements ElasticsearchInterface
     {
         $queryBuilder = new QueryBuilder();
         $queryBody = null;
-        $queryBody = $queryBuilder->buildMultiMatchQuery($searchData);
+        $queryBody = $queryBuilder->buildMultiMatchHighlightQuery($searchData);
         $params = [
             'size' => 1000,
             'index' => trim($searchData['indices']),

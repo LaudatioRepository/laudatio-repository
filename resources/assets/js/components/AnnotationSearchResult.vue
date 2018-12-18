@@ -3,7 +3,9 @@
         <div class="row">
             <div class="col">
                 <h4 class="h4 font-weight-bold">
-                    <a class="text-dark" v-bind:href="browseUri(annotationresult._id)">
+                    <a class="text-dark" v-bind:href="browseUri(annotationresult._id)" v-if="annotationhighlights.hasOwnProperty(annotationresult._id) && annotationhighlights[annotationresult._id][0].hasOwnProperty('preparation_title')" v-html="annotationhighlights[annotationresult._id][0].preparation_title">
+                    </a>
+                    <a class="text-dark" v-bind:href="browseUri(annotationresult._id)" v-else>
                         {{annotationresult._source.preparation_title | arrayToString}}
                     </a>
                 </h4>
@@ -29,49 +31,10 @@
         </div>
 
     </div>
-
-     <!--div class="container d-flex flex-column align-items-center justify-content-center mb-5 mt-5">
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-                <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                </li>
-                <li class="page-item font-weight-bold active">
-                    <a class="page-link" href="#">1</a>
-                </li>
-                <li class="page-item font-weight-bold">
-                    <a class="page-link" href="#">2</a>
-                </li>
-                <li class="page-item font-weight-bold">
-                    <a class="page-link" href="#">3</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                        <span class="sr-only">Next</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-        <div class="form-row">
-            <div class="col-auto">
-
-                <select class="custom-select custom-select-sm font-weight-bold text-uppercase">
-                    <option selected>6 results / page</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                </select>
-            </div>
-        </div>
-    </div-->
 </template>
 <script>
     export default {
-        props: ['annotationresult'],
+        props: ['annotationresult','annotationhighlights'],
         methods: {
             browseUri: function(id,type) {
                 return '/browse/annotation/'.concat(id);

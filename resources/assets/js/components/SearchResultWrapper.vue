@@ -57,6 +57,7 @@
                     v-for="(corpusresult, index) in visibleCorpora"
                     v-bind:corpusresult="corpusresult"
                     :key="guid(index)"
+                    :corpushighlights="corpushighlights"
                     ></corpussearchresult>
                 <pagination
                         v-if="corpusresults != 'undefined' && visibleCorpora.length >= 1 && visibleCorpora.length >= corpusPerPage"
@@ -75,6 +76,7 @@
                         v-for="(documentresult, documentindex) in visibleDocuments"
                         v-bind:documentresult="documentresult"
                         :key="guid(documentindex)"
+                        :documenthighlights="documenthighlights"
                         ></documentsearchresult>
                 <pagination
                         v-if="documentresults != 'undefined' && visibleDocuments.length >= 1 && visibleDocuments.length >= documentPerPage"
@@ -94,6 +96,7 @@
                         v-for="(annotationresult, annotationindex) in visibleAnnotations"
                         v-bind:annotationresult="annotationresult"
                         :key="guid(annotationindex)"
+                        :annotationhighlights="annotationhighlights"
                         ></annotationsearchresult>
                 <pagination
                         v-if="annotationresults != 'undefined' && visibleAnnotations.length >= 1"
@@ -111,7 +114,7 @@
 </template>
 <script>
     export default {
-        props: ['corpusresults', 'documentresults', 'annotationresults', 'datasearched','dataloading', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter','frontpageresultdata'],
+        props: ['corpusresults', 'corpushighlights', 'documentresults','documenthighlights', 'annotationresults', 'annotationhighlights', 'datasearched','dataloading', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter','frontpageresultdata'],
         data: function (){
             return{
                 currentCorpusPage: 1,
@@ -155,6 +158,7 @@
                 var documenttabelem = document.getElementById( 'tab-documents' );
                 var annotationelem = document.getElementById( 'searchtab-annotations' );
                 var annotationtabelem = document.getElementById( 'tab-annotations' );
+                console.log("GOT: "+header);
 
                 var lastValue = filters[filters.length-1]
                 var lastKey =  filtersmap[lastValue]

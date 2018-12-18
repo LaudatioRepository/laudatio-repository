@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="{{ asset('css/ux_style.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/nouislider.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/laudatio.css') }}" rel="stylesheet">
 </head>
 
 <body>

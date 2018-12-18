@@ -9,7 +9,9 @@
                 </div>
                 <div class="col">
                     <h4 class="h4 font-weight-bold">
-                        <a class="text-dark" v-bind:href="browseUri(corpusresult._id)">
+                        <a class="text-dark" v-bind:href="browseUri(corpusresult._id)" v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id][0].hasOwnProperty('corpus_title')" v-html="corpushighlights[corpusresult._id][0].corpus_title">
+                        </a>
+                        <a class="text-dark" v-bind:href="browseUri(corpusresult._id)" v-else>
                             {{ corpusresult._source.corpus_title | arrayToString }}
                         </a>
                     </h4>
@@ -100,7 +102,7 @@
 <script>
     import { mapState, mapActions } from 'vuex'
     export default {
-        props: ['corpusresult','corpuspaths'],
+        props: ['corpusresult','corpushighlights','corpuspaths'],
         methods: {
             browseUri: function(id) {
                 return '/browse/corpus/'.concat(id);
