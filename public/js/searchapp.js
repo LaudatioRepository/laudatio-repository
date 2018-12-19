@@ -26706,14 +26706,16 @@ var app = new Vue({
 
             this.dataloading = true;
             this.corpusresults = [];
+            this.corpushighlights = {};
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', []);
             this.$store.dispatch('clearDocuments', []);
             this.$store.dispatch('clearAnnotations', []);
-            this.corpusresults = [];
             this.documentresults = [];
+            this.documenthighlights = {};
             this.annotationresults = [];
+            this.annotationhighlights = {};
             this.corpusresultcounter = 0;
             this.documentresultcounter = 0;
             this.annotationresultcounter = 0;
@@ -31338,6 +31340,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -31478,12 +31483,29 @@ var render = function() {
                     [
                       _c("i", { staticClass: "fa fa-fw fa-clock-o mr-1" }),
                       _vm._v(" "),
-                      _c("span", [
-                        _vm._v(
-                          "D. from " +
-                            _vm._s(_vm.corpusresult._source.documentrange)
-                        )
-                      ])
+                      _vm.corpushighlights.hasOwnProperty(
+                        _vm.corpusresult._id
+                      ) &&
+                      _vm.corpushighlights[
+                        _vm.corpusresult._id
+                      ][0].hasOwnProperty("documentrange")
+                        ? _c("span", [
+                            _vm._v("D. from "),
+                            _c("span", {
+                              domProps: {
+                                innerHTML: _vm._s(
+                                  _vm.corpushighlights[_vm.corpusresult._id][0]
+                                    .documentrange
+                                )
+                              }
+                            })
+                          ])
+                        : _c("span", [
+                            _vm._v(
+                              "D. from " +
+                                _vm._s(_vm.corpusresult._source.documentrange)
+                            )
+                          ])
                     ]
                   ),
                   _vm._v(" "),
@@ -31496,9 +31518,25 @@ var render = function() {
                     [
                       _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
                       _vm._v(" "),
-                      _c("span", [
-                        _vm._v(_vm._s(_vm.corpusresult._source.documentgenre))
-                      ])
+                      _vm.corpushighlights.hasOwnProperty(
+                        _vm.corpusresult._id
+                      ) &&
+                      _vm.corpushighlights[
+                        _vm.corpusresult._id
+                      ][0].hasOwnProperty("documentgenre")
+                        ? _c("span", {
+                            domProps: {
+                              innerHTML: _vm._s(
+                                _vm.corpushighlights[_vm.corpusresult._id][0]
+                                  .documentgenre
+                              )
+                            }
+                          })
+                        : _c("span", [
+                            _vm._v(
+                              _vm._s(_vm.corpusresult._source.documentgenre)
+                            )
+                          ])
                     ]
                   ),
                   _vm._v(" "),
@@ -31778,19 +31816,36 @@ var render = function() {
                 [
                   _c("hr"),
                   _vm._v(" "),
-                  _c("p", [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(
-                          _vm._f("lastElement")(
-                            _vm.corpusresult._source
+                  _vm.corpushighlights.hasOwnProperty(_vm.corpusresult._id) &&
+                  _vm.corpushighlights[_vm.corpusresult._id][0].hasOwnProperty(
+                    "corpus_encoding_project_description"
+                  )
+                    ? _c("p", {
+                        domProps: {
+                          innerHTML: _vm._s(
+                            _vm.corpushighlights[_vm.corpusresult._id][0]
                               .corpus_encoding_project_description
                           )
-                        ) +
-                        "\n                    "
-                    ),
-                    _c("a", { attrs: { href: "#" } }, [_vm._v("MORE")])
-                  ])
+                        }
+                      })
+                    : _c("p", [
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(
+                              _vm._f("lastElement")(
+                                _vm.corpusresult._source
+                                  .corpus_encoding_project_description
+                              )
+                            ) +
+                            "\n                "
+                        )
+                      ]),
+                  _vm._v(" "),
+                  _c(
+                    "a",
+                    { attrs: { href: _vm.browseUri(_vm.corpusresult._id) } },
+                    [_vm._v("MORE")]
+                  )
                 ]
               )
             ])

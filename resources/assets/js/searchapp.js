@@ -242,14 +242,16 @@ const app = new Vue({
         askElastic: function (search) {
             this.dataloading = true;
             this.corpusresults = [];
+            this.corpushighlights = {}
             this.datasearched = false;
             this.corpusCacheString = "";
             this.$store.dispatch('clearCorpus', [])
             this.$store.dispatch('clearDocuments', [])
             this.$store.dispatch('clearAnnotations', [])
-            this.corpusresults = [];
             this.documentresults = [];
+            this.documenthighlights = {};
             this.annotationresults = [];
+            this.annotationhighlights = {};
             this.corpusresultcounter = 0;
             this.documentresultcounter = 0;
             this.annotationresultcounter = 0;

@@ -127,6 +127,12 @@ class ElasticController extends Controller
                 $documentgenre = $this->LaudatioUtils->getDocumentGenreByCorpusId($index,$index);
                 $result['hits']['hits'][$i]['_source']['documentgenre'] = $documentgenre;
 
+                /*
+                if(strpos($documentgenre,$request->searchData['query']) !== false) {
+                    $result['hits']['hits'][$i]['highlight']['documentgenre'] = array('<span class="laudatiohighlight">'.$request->searchData['query'].'</span>');
+                }
+                */
+
                 $current_document_index = str_replace("corpus","document",$index);
 
                 $documentResult = $this->ElasticService->getDocumentByCorpus(

@@ -20,10 +20,12 @@
                         <div class="col col-auto mr-1">
                             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                 <i class="fa fa-fw fa-clock-o mr-1"></i>
-                                <span>D. from {{corpusresult._source.documentrange}}</span>
+                                <span v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id][0].hasOwnProperty('documentrange')">D. from <span v-html="corpushighlights[corpusresult._id][0].documentrange"></span></span>
+                                <span v-else>D. from {{corpusresult._source.documentrange}}</span>
                             </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                             <i class="fa fa-fw fa-th-list  mr-1"></i>
-                            <span>{{corpusresult._source.documentgenre}}</span>
+                            <span v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id][0].hasOwnProperty('documentgenre')" v-html="corpushighlights[corpusresult._id][0].documentgenre"></span>
+                            <span v-else>{{corpusresult._source.documentgenre}}</span>
                         </div>
                             <div class="mt-2">
                                 <a class="text-dark text-uppercase search-description-expander" data-toggle="collapse" v-bind:href="('#corpusSearchItem_').concat(corpusresult._id)"
@@ -90,10 +92,11 @@
                 <div class="col">
                     <div v-bind:id="('corpusSearchItem_').concat(corpusresult._id)" class="collapse row pl-0 pr-3 pb-0">
                         <hr />
-                        <p>
+                        <p v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id][0].hasOwnProperty('corpus_encoding_project_description')" v-html="corpushighlights[corpusresult._id][0].corpus_encoding_project_description"></p>
+                        <p v-else>
                             {{corpusresult._source.corpus_encoding_project_description | lastElement}}
-                            <a href="#">MORE</a>
                         </p>
+                        <a v-bind:href="browseUri(corpusresult._id)">MORE</a>
                     </div>
                 </div>
             </div>
