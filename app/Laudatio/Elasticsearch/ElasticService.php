@@ -56,6 +56,7 @@ class ElasticService implements ElasticsearchInterface
         $createIndexParams = array(
             'index' => $index_id,
             'body' => array(
+                'settings' => $mapping['settings'],
                 'mappings' => array(
                     'doc'=> array(
                         '_source' => array(
@@ -112,6 +113,7 @@ class ElasticService implements ElasticsearchInterface
         $createIndexParams = array(
             'index' => $new_index_id,
             'body' => array(
+                'settings' => $mapping['settings'],
                 'mappings' => array(
                     'doc'=> array(
                         '_source' => array(

@@ -163,7 +163,7 @@ class CorpusProjectController extends Controller
                     'directory_path' => $filePath,
                 ]);
             }
-            
+
             $user = \Auth::user();
 
             $projectAdminRole = Role::findById(2);

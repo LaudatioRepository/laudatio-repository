@@ -427,10 +427,10 @@ class UploadController extends Controller
 
                         //create indexes
 
-                        $corpusIndexCreateResult = $this->elasticService->createMappedIndex($this->indexMappingPath.'/corpus_mapping.json',$corpusIndexName);
-                        $documentIndexCreateResult = $this->elasticService->createMappedIndex($this->indexMappingPath.'/document_mapping.json',$documentIndexName);
-                        $annotationIndexCreateResult = $this->elasticService->createMappedIndex($this->indexMappingPath.'/annotation_mapping.json',$annotationIndexName);
-                        $guidelineIndexCreateResult = $this->elasticService->createMappedIndex($this->indexMappingPath.'/guideline_mapping.json',$guidelineIndexName);
+                        $corpusIndexCreateResult = $this->elasticService->createMappedIndex($this->indexMappingPath.'/analyzed_corpus_mapping.json',$corpusIndexName);
+                        $documentIndexCreateResult = $this->elasticService->createMappedIndex($this->indexMappingPath.'/analyzed_document_mapping.json',$documentIndexName);
+                        $annotationIndexCreateResult = $this->elasticService->createMappedIndex($this->indexMappingPath.'/analyzed_annotation_mapping.json',$annotationIndexName);
+                        $guidelineIndexCreateResult = $this->elasticService->createMappedIndex($this->indexMappingPath.'/analyzed_guideline_mapping.json',$guidelineIndexName);
 
                         if($corpusIndexCreateResult['status'] == 'success' &&
                             $documentIndexCreateResult['status'] == 'success' &&
