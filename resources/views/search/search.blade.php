@@ -50,6 +50,7 @@
                             :documenthighlights="documenthighlights"
                             :annotationresults="annotationresults"
                             :annotationhighlights="annotationhighlights"
+                            :filteredcorpushighlightmap="filteredcorpushighlightmap"
                             :searches="searches"
                             :corpusresultcounter="corpusresultcounter"
                             :documentresultcounter="documentresultcounter"

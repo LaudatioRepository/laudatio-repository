@@ -58,6 +58,7 @@
                     v-bind:corpusresult="corpusresult"
                     :key="guid(index)"
                     :corpushighlights="corpushighlights"
+                    :filteredcorpushighlightmap="filteredcorpushighlightmap"
                     ></corpussearchresult>
                 <pagination
                         v-if="corpusresults != 'undefined' && visibleCorpora.length >= 1 && visibleCorpora.length >= corpusPerPage"
@@ -114,7 +115,7 @@
 </template>
 <script>
     export default {
-        props: ['corpusresults', 'corpushighlights', 'documentresults','documenthighlights', 'annotationresults', 'annotationhighlights', 'datasearched','dataloading', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter','frontpageresultdata'],
+        props: ['corpusresults', 'corpushighlights', 'filteredcorpushighlightmap', 'documentresults','documenthighlights', 'annotationresults', 'annotationhighlights', 'datasearched','dataloading', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter','frontpageresultdata'],
         data: function (){
             return{
                 currentCorpusPage: 1,
