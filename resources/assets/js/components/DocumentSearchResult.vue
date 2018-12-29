@@ -58,7 +58,7 @@
 <script>
 
     export default {
-        props: ['documentresult','documenthighlights'],
+        props: ['documentresult','documenthighlights','filtereddocumenthighlightmap'],
         methods: {
             browseUri: function(id) {
                 return '/browse/document/'.concat(id);

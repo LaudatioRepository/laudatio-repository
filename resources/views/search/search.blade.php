@@ -51,6 +51,8 @@
                             :annotationresults="annotationresults"
                             :annotationhighlights="annotationhighlights"
                             :filteredcorpushighlightmap="filteredcorpushighlightmap"
+                            :filtereddocumenthighlightmap="filtereddocumenthighlightmap"
+                            :filteredannotationhighlightmap="filteredannotationhighlightmap"
                             :searches="searches"
                             :corpusresultcounter="corpusresultcounter"
                             :documentresultcounter="documentresultcounter"

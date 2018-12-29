@@ -78,6 +78,7 @@
                         v-bind:documentresult="documentresult"
                         :key="guid(documentindex)"
                         :documenthighlights="documenthighlights"
+                        :filtereddocumenthighlightmap="filtereddocumenthighlightmap"
                         ></documentsearchresult>
                 <pagination
                         v-if="documentresults != 'undefined' && visibleDocuments.length >= 1 && visibleDocuments.length >= documentPerPage"
@@ -98,6 +99,7 @@
                         v-bind:annotationresult="annotationresult"
                         :key="guid(annotationindex)"
                         :annotationhighlights="annotationhighlights"
+                        :filteredannotationhighlightmap="filteredannotationhighlightmap"
                         ></annotationsearchresult>
                 <pagination
                         v-if="annotationresults != 'undefined' && visibleAnnotations.length >= 1"
@@ -115,7 +117,7 @@
 </template>
 <script>
     export default {
-        props: ['corpusresults', 'corpushighlights', 'filteredcorpushighlightmap', 'documentresults','documenthighlights', 'annotationresults', 'annotationhighlights', 'datasearched','dataloading', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter','frontpageresultdata'],
+        props: ['corpusresults', 'corpushighlights', 'filteredcorpushighlightmap', 'filtereddocumenthighlightmap','filteredannotationhighlightmap', 'documentresults','documenthighlights', 'annotationresults', 'annotationhighlights', 'datasearched','dataloading', 'searches','corpusresultcounter','documentresultcounter','annotationresultcounter','frontpageresultdata'],
         data: function (){
             return{
                 currentCorpusPage: 1,

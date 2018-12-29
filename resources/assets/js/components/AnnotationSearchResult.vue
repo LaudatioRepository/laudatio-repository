@@ -34,7 +34,7 @@
 </template>
 <script>
     export default {
-        props: ['annotationresult','annotationhighlights'],
+        props: ['annotationresult','annotationhighlights','filteredannotationhighlightmap'],
         methods: {
             browseUri: function(id,type) {
                 return '/browse/annotation/'.concat(id);
