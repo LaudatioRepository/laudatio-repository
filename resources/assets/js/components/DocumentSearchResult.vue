@@ -7,6 +7,7 @@
 
                     <a class="text-dark" v-bind:href="browseUri(documentresult._id)" v-if="documenthighlights.hasOwnProperty(documentresult._id) && documenthighlights[documentresult._id][0].hasOwnProperty('document_title')" v-html="documenthighlights[documentresult._id][0].document_title">
                     </a>
+                    <a v-else-if="filtereddocumenthighlightmap.hasOwnProperty(documentresult._id) && filtereddocumenthighlightmap[documentresult._id].hasOwnProperty('document_title')" v-html="filtereddocumenthighlightmap[documentresult._id].document_title"></a>
                     <a class="text-dark" v-bind:href="browseUri(documentresult._id)" v-else>
                         {{documentresult._source.document_title | arrayToString}}
                     </a>
@@ -15,7 +16,14 @@
                 </h4>
                 <span class="text-grey text-14">
                     Corpus: {{documentresult._source.corpus_name}}
-                    <br> {{documentresult._source.document_author_surname | arrayToString}}, {{documentresult._source.document_author_forename | arrayToString}}</span>
+                    <br>
+                    <span v-if="documenthighlights.hasOwnProperty(documentresult._id) && documenthighlights[documentresult._id][0].hasOwnProperty('document_author_surname')" v-html="documenthighlights[documentresult._id][0].document_author_surname"></span>
+                    <span v-else-if="filtereddocumenthighlightmap.hasOwnProperty(documentresult._id) && filtereddocumenthighlightmap[documentresult._id].hasOwnProperty('document_author_surname')" v-html="filtereddocumenthighlightmap[documentresult._id].document_author_surname"></span>
+                    <span v-else>{{documentresult._source.document_author_surname | arrayToString}}</span>,
+                    <span v-if="documenthighlights.hasOwnProperty(documentresult._id) && documenthighlights[documentresult._id][0].hasOwnProperty('document_author_forename')" v-html="documenthighlights[documentresult._id][0].document_author_forename"></span>
+                    <span v-else-if="filtereddocumenthighlightmap.hasOwnProperty(documentresult._id) && filtereddocumenthighlightmap[documentresult._id].hasOwnProperty('document_author_forename')" v-html="filtereddocumenthighlightmap[documentresult._id].document_author_forename"></span>
+                    <span v-else>{{documentresult._source.document_author_forename | arrayToString}}</span>
+                </span>
                 <div class="row mt-2">
                     <div class="col d-flex flex-wrap justify-content-start">
                         <div class="mr-7">
@@ -30,11 +38,15 @@
                         </div>
                         <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap" v-if="documentresult._source.document_languages_language != 'undefined'">
                             <i class="fa fa-fw fa-globe mr-1"></i>
-                            <span>{{documentresult._source.document_languages_language[0]}}</span>
+                            <span v-if="documenthighlights.hasOwnProperty(documentresult._id) && documenthighlights[documentresult._id][0].hasOwnProperty('document_languages_language')" v-html="documenthighlights[documentresult._id][0].document_languages_language"></span>
+                            <span v-else-if="filtereddocumenthighlightmap.hasOwnProperty(documentresult._id) && filtereddocumenthighlightmap[documentresult._id].hasOwnProperty('document_languages_language')" v-html="filtereddocumenthighlightmap[documentresult._id].document_languages_language"></span>
+                            <span v-else>{{documentresult._source.document_languages_language[0]}}</span>
                         </div>
                         <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap" v-if="documentresult._source.document_publication_place != 'undefined'">
                             <i class="fa fa-fw fa-map-marker mr-1"></i>
-                            <span>{{documentresult._source.document_publication_place | arrayToString}}</span>
+                            <span v-if="documenthighlights.hasOwnProperty(documentresult._id) && documenthighlights[documentresult._id][0].hasOwnProperty('document_publication_place')" v-html="documenthighlights[documentresult._id][0].document_publication_place"></span>
+                            <span v-else-if="filtereddocumenthighlightmap.hasOwnProperty(documentresult._id) && filtereddocumenthighlightmap[documentresult._id].hasOwnProperty('document_publication_place')" v-html="filtereddocumenthighlightmap[documentresult._id].document_publication_place"></span>
+                            <span v-else>{{documentresult._source.document_publication_place | arrayToString}}</span>
                         </div>
                     </div>
                 </div>

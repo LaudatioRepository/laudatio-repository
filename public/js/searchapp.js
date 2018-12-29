@@ -27111,7 +27111,6 @@ var app = new Vue({
                         this.documentresultcounter--;
                     }
                 }
-                //this.filterDocumentResults(documentFilterObject)
                 this.setDocumentFilterHighlights();
             }
         },
@@ -27454,8 +27453,11 @@ var app = new Vue({
         filterHighlightReplace: function filterHighlightReplace(filterstring, contentstring) {
             var newContentString = '';
             var matched = contentstring.split(' ').map(function (val) {
+                //console.log(val.toLowerCase()+" => "+filterstring.toLowerCase()+" : "+val.toLowerCase().indexOf(filterstring.toLowerCase()))
                 if (val.toLowerCase().indexOf(filterstring.toLowerCase()) > -1) {
                     newContentString += '<span class=\"laudatiofilterhighlight\">' + val + '</span> ';
+                } else if (filterstring.toLowerCase().indexOf(val.toLowerCase()) > -1) {
+                    newContentString += '<span class=\"laudatiofilterhighlight\">' + filterstring + '</span> ';
                 } else {
                     newContentString += val + " ";
                 }
@@ -32270,6 +32272,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -32318,24 +32332,39 @@ var render = function() {
                         )
                       }
                     })
-                  : _c(
-                      "a",
-                      {
-                        staticClass: "text-dark",
-                        attrs: { href: _vm.browseUri(_vm.documentresult._id) }
-                      },
-                      [
-                        _vm._v(
-                          "\n                    " +
-                            _vm._s(
-                              _vm._f("arrayToString")(
-                                _vm.documentresult._source.document_title
-                              )
-                            ) +
-                            "\n                "
-                        )
-                      ]
-                    )
+                  : _vm.filtereddocumenthighlightmap.hasOwnProperty(
+                      _vm.documentresult._id
+                    ) &&
+                    _vm.filtereddocumenthighlightmap[
+                      _vm.documentresult._id
+                    ].hasOwnProperty("document_title")
+                    ? _c("a", {
+                        domProps: {
+                          innerHTML: _vm._s(
+                            _vm.filtereddocumenthighlightmap[
+                              _vm.documentresult._id
+                            ].document_title
+                          )
+                        }
+                      })
+                    : _c(
+                        "a",
+                        {
+                          staticClass: "text-dark",
+                          attrs: { href: _vm.browseUri(_vm.documentresult._id) }
+                        },
+                        [
+                          _vm._v(
+                            "\n                    " +
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  _vm.documentresult._source.document_title
+                                )
+                              ) +
+                              "\n                "
+                          )
+                        ]
+                      )
               ]),
               _vm._v(" "),
               _c("span", { staticClass: "text-grey text-14" }, [
@@ -32345,20 +32374,81 @@ var render = function() {
                     "\n                "
                 ),
                 _c("br"),
-                _vm._v(
-                  " " +
-                    _vm._s(
-                      _vm._f("arrayToString")(
-                        _vm.documentresult._source.document_author_surname
-                      )
-                    ) +
-                    ", " +
-                    _vm._s(
-                      _vm._f("arrayToString")(
-                        _vm.documentresult._source.document_author_forename
-                      )
-                    )
-                )
+                _vm._v(" "),
+                _vm.documenthighlights.hasOwnProperty(_vm.documentresult._id) &&
+                _vm.documenthighlights[
+                  _vm.documentresult._id
+                ][0].hasOwnProperty("document_author_surname")
+                  ? _c("span", {
+                      domProps: {
+                        innerHTML: _vm._s(
+                          _vm.documenthighlights[_vm.documentresult._id][0]
+                            .document_author_surname
+                        )
+                      }
+                    })
+                  : _vm.filtereddocumenthighlightmap.hasOwnProperty(
+                      _vm.documentresult._id
+                    ) &&
+                    _vm.filtereddocumenthighlightmap[
+                      _vm.documentresult._id
+                    ].hasOwnProperty("document_author_surname")
+                    ? _c("span", {
+                        domProps: {
+                          innerHTML: _vm._s(
+                            _vm.filtereddocumenthighlightmap[
+                              _vm.documentresult._id
+                            ].document_author_surname
+                          )
+                        }
+                      })
+                    : _c("span", [
+                        _vm._v(
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              _vm.documentresult._source.document_author_surname
+                            )
+                          )
+                        )
+                      ]),
+                _vm._v(",\n                "),
+                _vm.documenthighlights.hasOwnProperty(_vm.documentresult._id) &&
+                _vm.documenthighlights[
+                  _vm.documentresult._id
+                ][0].hasOwnProperty("document_author_forename")
+                  ? _c("span", {
+                      domProps: {
+                        innerHTML: _vm._s(
+                          _vm.documenthighlights[_vm.documentresult._id][0]
+                            .document_author_forename
+                        )
+                      }
+                    })
+                  : _vm.filtereddocumenthighlightmap.hasOwnProperty(
+                      _vm.documentresult._id
+                    ) &&
+                    _vm.filtereddocumenthighlightmap[
+                      _vm.documentresult._id
+                    ].hasOwnProperty("document_author_forename")
+                    ? _c("span", {
+                        domProps: {
+                          innerHTML: _vm._s(
+                            _vm.filtereddocumenthighlightmap[
+                              _vm.documentresult._id
+                            ].document_author_forename
+                          )
+                        }
+                      })
+                    : _c("span", [
+                        _vm._v(
+                          _vm._s(
+                            _vm._f("arrayToString")(
+                              _vm.documentresult._source
+                                .document_author_forename
+                            )
+                          )
+                        )
+                      ])
               ]),
               _vm._v(" "),
               _c("div", { staticClass: "row mt-2" }, [
@@ -32430,14 +32520,44 @@ var render = function() {
                           [
                             _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
                             _vm._v(" "),
-                            _c("span", [
-                              _vm._v(
-                                _vm._s(
-                                  _vm.documentresult._source
-                                    .document_languages_language[0]
-                                )
-                              )
-                            ])
+                            _vm.documenthighlights.hasOwnProperty(
+                              _vm.documentresult._id
+                            ) &&
+                            _vm.documenthighlights[
+                              _vm.documentresult._id
+                            ][0].hasOwnProperty("document_languages_language")
+                              ? _c("span", {
+                                  domProps: {
+                                    innerHTML: _vm._s(
+                                      _vm.documenthighlights[
+                                        _vm.documentresult._id
+                                      ][0].document_languages_language
+                                    )
+                                  }
+                                })
+                              : _vm.filtereddocumenthighlightmap.hasOwnProperty(
+                                  _vm.documentresult._id
+                                ) &&
+                                _vm.filtereddocumenthighlightmap[
+                                  _vm.documentresult._id
+                                ].hasOwnProperty("document_languages_language")
+                                ? _c("span", {
+                                    domProps: {
+                                      innerHTML: _vm._s(
+                                        _vm.filtereddocumenthighlightmap[
+                                          _vm.documentresult._id
+                                        ].document_languages_language
+                                      )
+                                    }
+                                  })
+                                : _c("span", [
+                                    _vm._v(
+                                      _vm._s(
+                                        _vm.documentresult._source
+                                          .document_languages_language[0]
+                                      )
+                                    )
+                                  ])
                           ]
                         )
                       : _vm._e(),
@@ -32455,16 +32575,46 @@ var render = function() {
                               staticClass: "fa fa-fw fa-map-marker mr-1"
                             }),
                             _vm._v(" "),
-                            _c("span", [
-                              _vm._v(
-                                _vm._s(
-                                  _vm._f("arrayToString")(
-                                    _vm.documentresult._source
-                                      .document_publication_place
-                                  )
-                                )
-                              )
-                            ])
+                            _vm.documenthighlights.hasOwnProperty(
+                              _vm.documentresult._id
+                            ) &&
+                            _vm.documenthighlights[
+                              _vm.documentresult._id
+                            ][0].hasOwnProperty("document_publication_place")
+                              ? _c("span", {
+                                  domProps: {
+                                    innerHTML: _vm._s(
+                                      _vm.documenthighlights[
+                                        _vm.documentresult._id
+                                      ][0].document_publication_place
+                                    )
+                                  }
+                                })
+                              : _vm.filtereddocumenthighlightmap.hasOwnProperty(
+                                  _vm.documentresult._id
+                                ) &&
+                                _vm.filtereddocumenthighlightmap[
+                                  _vm.documentresult._id
+                                ].hasOwnProperty("document_publication_place")
+                                ? _c("span", {
+                                    domProps: {
+                                      innerHTML: _vm._s(
+                                        _vm.filtereddocumenthighlightmap[
+                                          _vm.documentresult._id
+                                        ].document_publication_place
+                                      )
+                                    }
+                                  })
+                                : _c("span", [
+                                    _vm._v(
+                                      _vm._s(
+                                        _vm._f("arrayToString")(
+                                          _vm.documentresult._source
+                                            .document_publication_place
+                                        )
+                                      )
+                                    )
+                                  ])
                           ]
                         )
                       : _vm._e()
@@ -32609,6 +32759,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['annotationresult', 'annotationhighlights', 'filteredannotationhighlightmap'],
@@ -32661,24 +32813,41 @@ var render = function() {
                         )
                       }
                     })
-                  : _c(
-                      "a",
-                      {
-                        staticClass: "text-dark",
-                        attrs: { href: _vm.browseUri(_vm.annotationresult._id) }
-                      },
-                      [
-                        _vm._v(
-                          "\n                    " +
-                            _vm._s(
-                              _vm._f("arrayToString")(
-                                _vm.annotationresult._source.preparation_title
-                              )
-                            ) +
-                            "\n                "
-                        )
-                      ]
-                    )
+                  : _vm.filteredannotationhighlightmap.hasOwnProperty(
+                      _vm.annotationresult._id
+                    ) &&
+                    _vm.filteredannotationhighlightmap[
+                      _vm.annotationresult._id
+                    ].hasOwnProperty("preparation_title")
+                    ? _c("a", {
+                        domProps: {
+                          innerHTML: _vm._s(
+                            _vm.filteredannotationhighlightmap[
+                              _vm.annotationresult._id
+                            ].preparation_title
+                          )
+                        }
+                      })
+                    : _c(
+                        "a",
+                        {
+                          staticClass: "text-dark",
+                          attrs: {
+                            href: _vm.browseUri(_vm.annotationresult._id)
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                    " +
+                              _vm._s(
+                                _vm._f("arrayToString")(
+                                  _vm.annotationresult._source.preparation_title
+                                )
+                              ) +
+                              "\n                "
+                          )
+                        ]
+                      )
               ]),
               _vm._v(" "),
               _c("span", { staticClass: "text-grey text-14" }, [

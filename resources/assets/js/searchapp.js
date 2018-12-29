@@ -759,7 +759,6 @@ const app = new Vue({
                         this.documentresultcounter--;
                     }
                 }
-                //this.filterDocumentResults(documentFilterObject)
                 this.setDocumentFilterHighlights()
             }
         },
@@ -1130,8 +1129,12 @@ const app = new Vue({
         filterHighlightReplace: function(filterstring, contentstring) {
             var newContentString = '';
             var matched = contentstring.split(' ').map(function(val){
+                //console.log(val.toLowerCase()+" => "+filterstring.toLowerCase()+" : "+val.toLowerCase().indexOf(filterstring.toLowerCase()))
                 if (val.toLowerCase().indexOf(filterstring.toLowerCase()) > -1) {
                     newContentString += '<span class=\"laudatiofilterhighlight\">'+val+'</span> ';
+                }
+                else if(filterstring.toLowerCase().indexOf(val.toLowerCase()) > -1) {
+                    newContentString += '<span class=\"laudatiofilterhighlight\">'+filterstring+'</span> ';
                 }
                 else{
                     newContentString += val+" ";
