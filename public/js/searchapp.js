@@ -27170,6 +27170,10 @@ var app = new Vue({
                 }
                 filtervalue = filtervalue.replace("A_", "");
                 for (var j = 0; j < this.annotationresults.length; j++) {
+                    if (!this.filteredannotationhighlights.hasOwnProperty(this.annotationresults[j]._id)) {
+                        this.filteredannotationhighlights[this.annotationresults[j]._id] = [];
+                    }
+
                     if (filterkey == "annotation_merged_formats") {
 
                         for (var formatkey in annotationFilterObject.annotation_merged_formats) {
@@ -31498,6 +31502,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -31657,13 +31662,13 @@ var render = function() {
                       _vm.corpushighlights.hasOwnProperty(
                         _vm.corpusresult._id
                       ) &&
-                      _vm.corpushighlights[_vm.corpusresult._id].hasOwnProperty(
-                        "corpus_publication_publisher"
-                      )
+                      _vm.corpushighlights[
+                        _vm.corpusresult._id
+                      ][0].hasOwnProperty("corpus_publication_publisher")
                         ? _c("span", {
                             domProps: {
                               innerHTML: _vm._s(
-                                _vm.corpushighlights[_vm.corpusresult._id]
+                                _vm.corpushighlights[_vm.corpusresult._id][0]
                                   .corpus_publication_publisher
                               )
                             }
@@ -31712,13 +31717,13 @@ var render = function() {
                       _vm.corpushighlights.hasOwnProperty(
                         _vm.corpusresult._id
                       ) &&
-                      _vm.corpushighlights[_vm.corpusresult._id].hasOwnProperty(
-                        "corpus_merged_formats"
-                      )
+                      _vm.corpushighlights[
+                        _vm.corpusresult._id
+                      ][0].hasOwnProperty("corpus_merged_formats")
                         ? _c("span", {
                             domProps: {
                               innerHTML: _vm._s(
-                                _vm.corpushighlights[_vm.corpusresult._id]
+                                _vm.corpushighlights[_vm.corpusresult._id][0]
                                   .corpus_merged_formats
                               )
                             }
@@ -31866,31 +31871,46 @@ var render = function() {
                         [
                           _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
                           _vm._v(" "),
-                          _vm.filteredcorpushighlightmap.hasOwnProperty(
+                          _vm.corpushighlights.hasOwnProperty(
                             _vm.corpusresult._id
                           ) &&
-                          _vm.filteredcorpushighlightmap[
+                          _vm.corpushighlights[
                             _vm.corpusresult._id
-                          ].hasOwnProperty("corpus_languages_language")
+                          ][0].hasOwnProperty("corpus_languages_language")
                             ? _c("span", {
                                 domProps: {
                                   innerHTML: _vm._s(
-                                    _vm.filteredcorpushighlightmap[
+                                    _vm.corpushighlights[
                                       _vm.corpusresult._id
-                                    ].corpus_languages_language
+                                    ][0].corpus_languages_language
                                   )
                                 }
                               })
-                            : _c("span", [
-                                _vm._v(
-                                  _vm._s(
-                                    _vm._f("truncatelist")(
-                                      _vm.corpusresult._source
-                                        .corpus_languages_language[0]
+                            : _vm.filteredcorpushighlightmap.hasOwnProperty(
+                                _vm.corpusresult._id
+                              ) &&
+                              _vm.filteredcorpushighlightmap[
+                                _vm.corpusresult._id
+                              ].hasOwnProperty("corpus_languages_language")
+                              ? _c("span", {
+                                  domProps: {
+                                    innerHTML: _vm._s(
+                                      _vm.filteredcorpushighlightmap[
+                                        _vm.corpusresult._id
+                                      ].corpus_languages_language
+                                    )
+                                  }
+                                })
+                              : _c("span", [
+                                  _vm._v(
+                                    _vm._s(
+                                      _vm._f("truncatelist")(
+                                        _vm.corpusresult._source
+                                          .corpus_languages_language[0]
+                                      )
                                     )
                                   )
-                                )
-                              ])
+                                ])
                         ]
                       )
                     : _vm._e(),
@@ -32862,23 +32882,58 @@ var render = function() {
             _c(
               "div",
               { staticClass: "col-2" },
-              _vm._l(
-                _vm.unique(
-                  _vm.annotationresult._source
-                    .preparation_encoding_annotation_group
+              [
+                _vm._l(
+                  _vm.unique(
+                    _vm.annotationresult._source
+                      .preparation_encoding_annotation_group
+                  ),
+                  function(group, groupindex) {
+                    return _vm.annotationhighlights.hasOwnProperty(
+                      _vm.annotationresult._id
+                    ) &&
+                      _vm.annotationhighlights[
+                        _vm.annotationresult._id
+                      ][0].hasOwnProperty(
+                        "preparation_encoding_annotation_group"
+                      ) &&
+                      _vm.annotationhighlights[_vm.annotationresult._id][0]
+                        .preparation_encoding_annotation_group == group
+                      ? _c("div", {
+                          key: groupindex,
+                          staticClass: "text-grey text-14",
+                          attrs: { group: group },
+                          domProps: {
+                            innerHTML: _vm._s(
+                              _vm.annotationhighlights[
+                                _vm.annotationresult._id
+                              ][0].preparation_encoding_annotation_group
+                            )
+                          }
+                        })
+                      : _vm._e()
+                  }
                 ),
-                function(group, groupindex) {
-                  return _c(
-                    "div",
-                    {
-                      key: groupindex,
-                      staticClass: "text-grey text-14",
-                      attrs: { group: group }
-                    },
-                    [_vm._v(_vm._s(group))]
-                  )
-                }
-              )
+                _vm._v(" "),
+                _vm._l(
+                  _vm.unique(
+                    _vm.annotationresult._source
+                      .preparation_encoding_annotation_group
+                  ),
+                  function(group, groupindex) {
+                    return _c(
+                      "div",
+                      {
+                        key: groupindex,
+                        staticClass: "text-grey text-14",
+                        attrs: { group: group }
+                      },
+                      [_vm._v(_vm._s(group))]
+                    )
+                  }
+                )
+              ],
+              2
             ),
             _vm._v(" "),
             typeof _vm.annotationresult._source.in_documents !== "undefined" &&

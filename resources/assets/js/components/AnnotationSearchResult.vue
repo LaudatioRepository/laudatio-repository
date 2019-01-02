@@ -15,7 +15,7 @@
                   </span>
             </div>
             <div class="col-2">
-                
+                <div class="text-grey text-14" v-for="(group, groupindex) in unique(annotationresult._source.preparation_encoding_annotation_group)" v-bind:group="group" :key="groupindex" v-if="annotationhighlights.hasOwnProperty(annotationresult._id) && annotationhighlights[annotationresult._id][0].hasOwnProperty('preparation_encoding_annotation_group') && annotationhighlights[annotationresult._id][0].preparation_encoding_annotation_group == group" v-html="annotationhighlights[annotationresult._id][0].preparation_encoding_annotation_group"></div>
                 <div class="text-grey text-14" v-for="(group, groupindex) in unique(annotationresult._source.preparation_encoding_annotation_group)" v-bind:group="group" :key="groupindex">{{group}}</div>
             </div>
             <div class="col-4 d-flex justify-content-between align-items-start" v-if="typeof annotationresult._source.in_documents !== 'undefined' && Object.keys(annotationresult._source.in_documents).length > 0">

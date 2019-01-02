@@ -824,8 +824,11 @@ const app = new Vue({
                 }
                 filtervalue = filtervalue.replace("A_","");
                 for(var j = 0; j < this.annotationresults.length; j++) {
-                    if(filterkey == "annotation_merged_formats") {
+                    if(!this.filteredannotationhighlights.hasOwnProperty(this.annotationresults[j]._id)){
+                        this.filteredannotationhighlights[this.annotationresults[j]._id] = [];
+                    }
 
+                    if(filterkey == "annotation_merged_formats") {
 
                         for (var formatkey in annotationFilterObject.annotation_merged_formats) {
 

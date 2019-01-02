@@ -22,7 +22,7 @@
                         <div class="col col-auto mr-1">
                             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                 <i class="fa fa-fw fa-globe mr-1"></i>
-                                <span v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id].hasOwnProperty('corpus_publication_publisher')" v-html="corpushighlights[corpusresult._id].corpus_publication_publisher"></span>
+                                <span v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id][0].hasOwnProperty('corpus_publication_publisher')" v-html="corpushighlights[corpusresult._id][0].corpus_publication_publisher"></span>
                                 <span v-else-if="filteredcorpushighlightmap.hasOwnProperty(corpusresult._id) && filteredcorpushighlightmap[corpusresult._id].hasOwnProperty('corpus_publication_publisher')" v-html="filteredcorpushighlightmap[corpusresult._id].corpus_publication_publisher"></span>
                                 <span v-else>
                                     {{corpusresult._source.corpus_publication_publisher | arrayToString}}
@@ -32,7 +32,7 @@
                         <div class="col col-auto mr-1">
                             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                 <i class="fa fa-fw fa-globe mr-1"></i>
-                                <span v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id].hasOwnProperty('corpus_merged_formats')" v-html="corpushighlights[corpusresult._id].corpus_merged_formats"></span>
+                                <span v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id][0].hasOwnProperty('corpus_merged_formats')" v-html="corpushighlights[corpusresult._id][0].corpus_merged_formats"></span>
                                 <span v-else-if="filteredcorpushighlightmap.hasOwnProperty(corpusresult._id) && filteredcorpushighlightmap[corpusresult._id].hasOwnProperty('corpus_merged_formats')" v-html="filteredcorpushighlightmap[corpusresult._id].corpus_merged_formats"></span>
                                 <span v-else>
                                     {{corpusresult._source.corpus_merged_formats | truncate}}
@@ -62,7 +62,8 @@
                         <div class="col col-auto mr-1">
                             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap" v-if="corpusresult._source.corpus_languages_language != 'undefined'">
                                 <i class="fa fa-fw fa-globe mr-1"></i>
-                                <span v-if="filteredcorpushighlightmap.hasOwnProperty(corpusresult._id) && filteredcorpushighlightmap[corpusresult._id].hasOwnProperty('corpus_languages_language')" v-html="filteredcorpushighlightmap[corpusresult._id].corpus_languages_language"></span>
+                                <span v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id][0].hasOwnProperty('corpus_languages_language')" v-html="corpushighlights[corpusresult._id][0].corpus_languages_language"></span>
+                                <span v-else-if="filteredcorpushighlightmap.hasOwnProperty(corpusresult._id) && filteredcorpushighlightmap[corpusresult._id].hasOwnProperty('corpus_languages_language')" v-html="filteredcorpushighlightmap[corpusresult._id].corpus_languages_language"></span>
                                 <span v-else>{{corpusresult._source.corpus_languages_language[0] | truncatelist}}</span>
                             </div>
                             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
