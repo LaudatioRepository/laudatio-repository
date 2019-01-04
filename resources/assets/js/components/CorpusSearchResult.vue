@@ -48,8 +48,8 @@
                                 <span v-else>D. from {{corpusresult._source.documentrange}}</span>
                             </div> <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                             <i class="fa fa-fw fa-th-list  mr-1"></i>
-                            <span v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id][0].hasOwnProperty('documentgenre')" v-html="corpushighlights[corpusresult._id][0].documentgenre"></span>
-                            <span v-else>{{corpusresult._source.documentgenre}}</span>
+                            <span v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id][0].hasOwnProperty('corpus_document_genre')" v-html="corpushighlights[corpusresult._id][0].corpus_document_genre"></span>
+                            <span v-else>{{corpusresult._source.corpus_document_genre | arrayToString}}</span>
                         </div>
                             <div class="mt-2">
                                 <a class="text-dark text-uppercase search-description-expander" data-toggle="collapse" v-bind:href="('#corpusSearchItem_').concat(corpusresult._id)"

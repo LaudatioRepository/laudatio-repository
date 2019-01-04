@@ -203,8 +203,20 @@ class PublicationController extends Controller
 
                             $guidelineReindexResponse = $this->elasticService->createMappedIndexAndReindex($this->indexMappingPath.'/analyzed_guideline_mapping.json', $new_guideline_index, $oldGuidelineIndex, $documentMatchQuery,$new_guidelines_elasticsearch_id,$new_corpus_id);
 
-                            $tag = $this->GitRepoService->setCorpusVersionTag($corpuspath,$corpus->name." version ".$corpus->publication_version,$corpus->publication_version,$corpusid,$auth_user_name,$auth_user_email);
+                            //$tag = $this->GitRepoService->setCorpusVersionTag($corpuspath,$corpus->name." version ".$corpus->publication_version,$corpus->publication_version,$corpusid,$auth_user_name,$auth_user_email);
+                            $tagMessage = array(
+                                "corpusIndex" => $new_corpus_index,
+                                "documentIndex" => $new_document_index,
+                                "annotationIndex" => $new_annotation_index,
+                                "guidelineIndex" => $new_guideline_index,
+                                "corpusid" => $corpus->id,
+                                "corpusIndexedId" => $corpus->corpus_id,
+                                "username" => $auth_user_name,
+                                "useremail" =>  $auth_user_email
+                            );
 
+                            $hexedJson = str_replace('"','\"',json_encode( $tagMessage));
+                            $tag = $this->GitRepoService->setCorpusVersionTag($corpuspath,$hexedJson,$corpus->publication_version,$auth_user_name,$auth_user_email, false);
                             if($tag) {
                                 $result['publish_corpus_response']  = "The Corpus was successfully published";
                                 $status = "success";
