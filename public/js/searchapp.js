@@ -27124,7 +27124,7 @@ var app = new Vue({
 
                         for (var l = 0; l < this.filtereddocumenthighlights[documentId].length; l++) {
                             for (var filterfield in this.filtereddocumenthighlights[documentId][l]) {
-                                //console.log(filterfield+" : "+this.filtereddocumenthighlights[documentId][l][filterfield]+" => "+this.documentresults[documentresultkey]._source[filterfield])
+                                console.log("SETTING: " + filterfield + " : " + this.filtereddocumenthighlights[documentId][l][filterfield] + " => " + this.documentresults[documentresultkey]._source[filterfield]);
                                 if (this.documentresults[documentresultkey]._source.hasOwnProperty(filterfield)) {
                                     this.filtereddocumenthighlightmap[documentId][filterfield] = this.filterHighlightReplace(this.filtereddocumenthighlights[documentId][l][filterfield], this.documentresults[documentresultkey]._source[filterfield][0]);
                                 }
@@ -27237,24 +27237,37 @@ var app = new Vue({
         },
         resetActiveFilterHighlight: function resetActiveFilterHighlight(filter) {
             var key = this.activefiltersmap[filter];
-            console.log(key + " resetActiveFilterHighlight: " + filter);
             if (filter.indexOf("C_") > -1) {
-                for (var corpusKey in this.filteredcorpushighlightmap) {
-                    if (this.filteredcorpushighlightmap[corpusKey].hasOwnProperty(key)) {
-                        delete this.filteredcorpushighlightmap[corpusKey][key];
+                for (var corpusId in this.filteredcorpushighlights) {
+                    for (var l = 0; l < this.filteredcorpushighlights[corpusId].length; l++) {
+                        for (var filterfield in this.filteredcorpushighlights[corpusId][l]) {
+                            if (filterfield == key) {
+                                delete this.filteredcorpushighlights[corpusId][l][filterfield];
+                                delete this.filteredcorpushighlightmap[corpusId][key];
+                            }
+                        }
                     }
                 }
             } else if (filter.indexOf("D_") > -1) {
-                console.log(this.filtereddocumenthighlightmap);
-                for (var documentCorpusKey in this.filtereddocumenthighlightmap) {
-                    if (this.filtereddocumenthighlightmap[documentCorpusKey].hasOwnProperty(key)) {
-                        delete this.filtereddocumenthighlightmap[documentCorpusKey][key];
+                for (var documentId in this.filtereddocumenthighlights) {
+                    for (var l = 0; l < this.filtereddocumenthighlights[documentId].length; l++) {
+                        for (var filterfield in this.filtereddocumenthighlights[documentId][l]) {
+                            if (filterfield == key) {
+                                delete this.filtereddocumenthighlights[documentId][l][filterfield];
+                                delete this.filtereddocumenthighlightmap[documentId][key];
+                            }
+                        }
                     }
                 }
             } else if (filter.indexOf("A_") > -1) {
-                for (var corpusKey in this.filteredannotationhighlightmap) {
-                    if (this.filteredannotationhighlightmap[corpusKey].hasOwnProperty(key)) {
-                        delete this.filteredannotationhighlightmap[corpusKey][key];
+                for (var documentId in this.filteredannotationhighlights) {
+                    for (var l = 0; l < this.filteredannotationhighlights[documentId].length; l++) {
+                        for (var filterfield in this.filteredannotationhighlights[documentId][l]) {
+                            if (filterfield == key) {
+                                delete this.filteredannotationhighlights[documentId][l][filterfield];
+                                delete this.filteredannotationhighlightmap[documentId][key];
+                            }
+                        }
                     }
                 }
             }
