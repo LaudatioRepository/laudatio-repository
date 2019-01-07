@@ -68,7 +68,7 @@
             },
             resolveHit(filter) {
                 var hasHit = false;
-                if(this.activefilterhits[filter] > 0){
+                if(this.activefilterhits.hasOwnProperty(filter)){
                     hasHit = true;
                 }
                 return hasHit;
@@ -85,8 +85,9 @@
                     else if(key.indexOf("annotation") > -1 || key.indexOf("preparation") > -1) {
                         this.$emit('reset-annotation-filter',filter);
                     }
-
+                    this.$emit('reset-activefilterhighlight',filter);
                     this.$emit('reset-activefilter',filter);
+
                 }
 
             },

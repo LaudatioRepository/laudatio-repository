@@ -161,7 +161,6 @@
                 var documenttabelem = document.getElementById( 'tab-documents' );
                 var annotationelem = document.getElementById( 'searchtab-annotations' );
                 var annotationtabelem = document.getElementById( 'tab-annotations' );
-                console.log("GOT: "+header);
 
                 var lastValue = filters[filters.length-1]
                 var lastKey =  filtersmap[lastValue]

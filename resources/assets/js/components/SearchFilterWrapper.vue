@@ -23,6 +23,7 @@
                 v-on:reset-corpus-filter="resetCorpusFilter"
                 v-on:reset-document-filter="resetDocumentFilter"
                 v-on:reset-annotation-filter="resetAnnotationFilter"
+                v-on:reset-activefilterhighlight="resetActiveFilterHighlight"
                 ></activefilter>
         </div>
         <div class="mb-4">
@@ -100,6 +101,9 @@
             },
             resetActiveFilter: function(filter){
                 this.$emit('reset-activefilter',filter);
+            },
+            resetActiveFilterHighlight: function(filter) {
+                this.$emit('reset-activefilterhighlight',filter);
             },
             resetCorpusFilter: function(filter) {
                 var key = this.activefiltersmap[filter];

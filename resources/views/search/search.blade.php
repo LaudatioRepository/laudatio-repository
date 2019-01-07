@@ -34,6 +34,7 @@
                                 v-on:annotation-resultcounter="updateAnnotationCounter"
                                 v-on:reset-activefilter="resetActiveFilter"
                                 v-on:reset-activefilters="resetActiveFilters"
+                                v-on:reset-activefilterhighlight="resetActiveFilterHighlight"
                                 :corpusresultcounter="corpusresultcounter"
                                 :documentresultcounter="documentresultcounter"
                                 :annotationresultcounter="annotationresultcounter"

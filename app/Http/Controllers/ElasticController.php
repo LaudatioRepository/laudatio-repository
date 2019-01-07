@@ -124,8 +124,8 @@ class ElasticController extends Controller
                 $result['hits']['hits'][$i]['_source']['projectpath'] = $projectPath;
                 $result['hits']['hits'][$i]['_source']['corpuspath'] = $corpusPath;
                 $result['hits']['hits'][$i]['_source']['corpuslogo'] = $corpusLogo;
-                $documentgenre = $this->LaudatioUtils->getDocumentGenreByCorpusId($index,$index);
-                $result['hits']['hits'][$i]['_source']['documentgenre'] = $documentgenre;
+                //$documentgenre = $this->LaudatioUtils->getDocumentGenreByCorpusId($index,$index);
+                //$result['hits']['hits'][$i]['_source']['documentgenre'] = $documentgenre;
 
                 /*
                 if(strpos($documentgenre,$request->searchData['query']) !== false) {
@@ -191,8 +191,8 @@ class ElasticController extends Controller
                 $result['hits']['hits'][$i]['_source']['projectpath'] = $projectPath;
                 $result['hits']['hits'][$i]['_source']['corpuspath'] = $corpusPath;
                 $result['hits']['hits'][$i]['_source']['corpuslogo'] = $corpusLogo;
-                $documentgenre = $this->LaudatioUtils->getDocumentGenreByCorpusId($index,$index);
-                $result['hits']['hits'][$i]['_source']['documentgenre'] = $documentgenre;
+                //$documentgenre = $this->LaudatioUtils->getDocumentGenreByCorpusId($index,$index);
+                //$result['hits']['hits'][$i]['_source']['documentgenre'] = $documentgenre;
 
                 $current_document_index = str_replace("corpus","document",$index);
 

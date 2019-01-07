@@ -540,9 +540,9 @@ const app = new Vue({
                             if(filterkey == "corpus_size_value" && corpusFilterObject.corpus_size_value != ""  && corpusFilterObject.corpusSizeTo != "") {
                                 if(this.isBetween(this.corpusresults[j]._source[filterkey][0], corpusFilterObject.corpus_size_value,corpusFilterObject.corpusSizeTo)){
                                     if(!matches.includes(this.corpusresults[j]._id)){
-                                        this.activefilterhits["C_"+filtervalue]++;
                                         matches.push(this.corpusresults[j]._id);
                                     }
+                                    this.activefilterhits["C_"+filtervalue]++;
                                     var tempObject = {}
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -556,9 +556,9 @@ const app = new Vue({
                                     if(this.hasFormats(this.corpusresults[j]._source[filterkey],corpusFilterObject.corpus_merged_formats[formatkey])){
 
                                         if(!matches.includes(this.corpusresults[j]._id)){
-                                            this.activefilterhits["C_"+filtervalue]++;
                                             matches.push(this.corpusresults[j]._id);
                                         }
+                                        this.activefilterhits["C_"+filtervalue]++;
                                         var tempObject = {}
                                         tempObject[filterkey] = filtervalue;
                                         this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -570,9 +570,9 @@ const app = new Vue({
                                 if(this.hasLicense(this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase(), corpusFilterObject[filterkey].toLowerCase())){
 
                                     if(!matches.includes(this.corpusresults[j]._id)){
-                                        this.activefilterhits["C_"+filtervalue]++;
                                         matches.push(this.corpusresults[j]._id);
                                     }
+                                    this.activefilterhits["C_"+filtervalue]++;
                                     var tempObject = {}
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -586,10 +586,9 @@ const app = new Vue({
                                 if( this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date,corpusFilterObject.corpusYearTo)){
 
                                     if(!matches.includes(this.corpusresults[j]._id)){
-                                        this.activefilterhits["C_"+filtervalue]++;
                                         matches.push(this.corpusresults[j]._id);
-
                                     }
+                                    this.activefilterhits["C_"+filtervalue]++;
                                     var tempObject = {}
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -600,9 +599,9 @@ const app = new Vue({
                             if(filterkey.indexOf('corpus') > -1){
                                 if(this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase().indexOf(filtervalue.toLowerCase()) > -1) {
                                     if(!matches.includes(this.corpusresults[j]._id)){
-                                        this.activefilterhits["C_"+filtervalue]++;
                                         matches.push(this.corpusresults[j]._id);
                                     }
+                                    this.activefilterhits["C_"+filtervalue]++;
                                     var tempObject = {}
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -777,6 +776,7 @@ const app = new Vue({
 
                         for(var l = 0; l < this.filtereddocumenthighlights[documentId].length; l++) {
                             for(var filterfield in this.filtereddocumenthighlights[documentId][l]) {
+                                //console.log(filterfield+" : "+this.filtereddocumenthighlights[documentId][l][filterfield]+" => "+this.documentresults[documentresultkey]._source[filterfield])
                                 if (this.documentresults[documentresultkey]._source.hasOwnProperty(filterfield)) {
                                     this.filtereddocumenthighlightmap[documentId][filterfield] = this.filterHighlightReplace(this.filtereddocumenthighlights[documentId][l][filterfield], this.documentresults[documentresultkey]._source[filterfield][0]);
                                 }
@@ -886,11 +886,37 @@ const app = new Vue({
                         for(var l = 0; l < this.filteredannotationhighlights[annotationId].length; l++) {
                             for(var filterfield in this.filteredannotationhighlights[annotationId][l]) {
                                 if (this.annotationresults[annotationresultkey]._source.hasOwnProperty(filterfield)) {
-                                    this.filteredannotationhighlightmap[annotationId][filterfield] = this.filterHighlightReplace(this.filteredannotationhighlights[annotationId][l][filterfield], this.annotationresults[annotationresultkey]._source[filterfield][0]);
+                                    this.filteredannotationhighlightmap[annotationId][filterfield] = this.filterHighlightReplace(this.filteredannotationhighlights[annotationId][l][filterfield], this.annotationresults[annotationresultkey]._source[filterfield]);
                                 }
                             }
                         }
 
+                    }
+                }
+            }
+        },
+        resetActiveFilterHighlight: function(filter) {
+            var key = this.activefiltersmap[filter];
+            console.log(key+" resetActiveFilterHighlight: "+filter)
+            if(filter.indexOf("C_") > -1) {
+                for(var corpusKey in this.filteredcorpushighlightmap) {
+                    if(this.filteredcorpushighlightmap[corpusKey].hasOwnProperty(key)){
+                        delete this.filteredcorpushighlightmap[corpusKey][key]
+                    }
+                }
+            }
+            else if(filter.indexOf("D_") > -1) {
+                console.log(this.filtereddocumenthighlightmap)
+                for(var documentCorpusKey in this.filtereddocumenthighlightmap) {
+                    if(this.filtereddocumenthighlightmap[documentCorpusKey].hasOwnProperty(key)){
+                        delete this.filtereddocumenthighlightmap[documentCorpusKey][key]
+                    }
+                }
+            }
+            else if(filter.indexOf("A_") > -1) {
+                for(var corpusKey in this.filteredannotationhighlightmap) {
+                    if(this.filteredannotationhighlightmap[corpusKey].hasOwnProperty(key)){
+                        delete this.filteredannotationhighlightmap[corpusKey][key]
                     }
                 }
             }
@@ -1031,6 +1057,9 @@ const app = new Vue({
             }
         },
         resetActiveFilters: function () {
+            for(var i = 0; i < this.activefilters.length; i++){
+                this.resetActiveFilterHighlight(this.activefilters[i]);
+            }
             this.activefilters = []
             this.activefiltersmap = {}
         },
@@ -1136,8 +1165,9 @@ const app = new Vue({
         },
         filterHighlightReplace: function(filterstring, contentstring) {
             var newContentString = '';
+           // console.log("POOP: "+filterstring.toLowerCase()+" : "+contentstring.toLowerCase()+" => "+contentstring.toLowerCase().indexOf(filterstring.toLowerCase()))
             var matched = contentstring.split(' ').map(function(val){
-                //console.log(val.toLowerCase()+" => "+filterstring.toLowerCase()+" : "+val.toLowerCase().indexOf(filterstring.toLowerCase()))
+               // console.log(val.toLowerCase()+" => "+filterstring.toLowerCase()+" : "+val.toLowerCase().indexOf(filterstring.toLowerCase()))
                 if (val.toLowerCase().indexOf(filterstring.toLowerCase()) > -1) {
                     newContentString += '<span class=\"laudatiofilterhighlight\">'+val+'</span> ';
                 }
@@ -1148,6 +1178,7 @@ const app = new Vue({
                     newContentString += val+" ";
                 }
             });
+
             return newContentString;
         }
     }

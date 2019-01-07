@@ -18,10 +18,10 @@
                     Corpus: {{documentresult._source.corpus_name}}
                     <br>
                     <span v-if="documenthighlights.hasOwnProperty(documentresult._id) && documenthighlights[documentresult._id][0].hasOwnProperty('document_author_surname')" v-html="documenthighlights[documentresult._id][0].document_author_surname"></span>
-                    <span v-else-if="filtereddocumenthighlightmap.hasOwnProperty(documentresult._id) && filtereddocumenthighlightmap[documentresult._id].hasOwnProperty('document_author_surname')" v-html="filtereddocumenthighlightmap[documentresult._id].document_author_surname"></span>
+                    <span v-else-if="filtereddocumenthighlightmap.hasOwnProperty(documentresult._id) && filtereddocumenthighlightmap[documentresult._id].hasOwnProperty('document_merged_authors')" v-html="highlightName(documentresult._source.document_author_surname[0],filtereddocumenthighlightmap[documentresult._id].document_merged_authors)"></span>
                     <span v-else>{{documentresult._source.document_author_surname | arrayToString}}</span>,
-                    <span v-if="documenthighlights.hasOwnProperty(documentresult._id) && documenthighlights[documentresult._id][0].hasOwnProperty('document_author_forename')" v-html="documenthighlights[documentresult._id][0].document_author_forename"></span>
-                    <span v-else-if="filtereddocumenthighlightmap.hasOwnProperty(documentresult._id) && filtereddocumenthighlightmap[documentresult._id].hasOwnProperty('document_author_forename')" v-html="filtereddocumenthighlightmap[documentresult._id].document_author_forename"></span>
+                    <span v-if="documenthighlights.hasOwnProperty(documentresult._id) && documenthighlights[documentresult._id][0].hasOwnProperty('document_author_forename')" v-html="documenthighlights[documentresult._id][0].document_merged_authors"></span>
+                    <span v-else-if="filtereddocumenthighlightmap.hasOwnProperty(documentresult._id) && filtereddocumenthighlightmap[documentresult._id].hasOwnProperty('document_merged_authors')" v-html="highlightName(documentresult._source.document_author_forename[0],filtereddocumenthighlightmap[documentresult._id].document_merged_authors)"></span>
                     <span v-else>{{documentresult._source.document_author_forename | arrayToString}}</span>
                 </span>
                 <div class="row mt-2">
@@ -74,6 +74,13 @@
         methods: {
             browseUri: function(id) {
                 return '/browse/document/'.concat(id);
+            },
+            highlightName: function(name, markup){
+                var returnedName = name;
+                if(markup.indexOf(name) > -1){
+                    returnedName = markup;
+                }
+                return returnedName;
             },
             emitDocumentRelations: function(documentId){
                 this.$store.dispatch('clearCorpus',[])

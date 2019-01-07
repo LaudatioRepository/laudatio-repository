@@ -26904,9 +26904,9 @@ var app = new Vue({
                             if (filterkey == "corpus_size_value" && corpusFilterObject.corpus_size_value != "" && corpusFilterObject.corpusSizeTo != "") {
                                 if (this.isBetween(this.corpusresults[j]._source[filterkey][0], corpusFilterObject.corpus_size_value, corpusFilterObject.corpusSizeTo)) {
                                     if (!matches.includes(this.corpusresults[j]._id)) {
-                                        this.activefilterhits["C_" + filtervalue]++;
                                         matches.push(this.corpusresults[j]._id);
                                     }
+                                    this.activefilterhits["C_" + filtervalue]++;
                                     var tempObject = {};
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -26919,9 +26919,9 @@ var app = new Vue({
                                     if (this.hasFormats(this.corpusresults[j]._source[filterkey], corpusFilterObject.corpus_merged_formats[formatkey])) {
 
                                         if (!matches.includes(this.corpusresults[j]._id)) {
-                                            this.activefilterhits["C_" + filtervalue]++;
                                             matches.push(this.corpusresults[j]._id);
                                         }
+                                        this.activefilterhits["C_" + filtervalue]++;
                                         var tempObject = {};
                                         tempObject[filterkey] = filtervalue;
                                         this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -26933,9 +26933,9 @@ var app = new Vue({
                                 if (this.hasLicense(this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase(), corpusFilterObject[filterkey].toLowerCase())) {
 
                                     if (!matches.includes(this.corpusresults[j]._id)) {
-                                        this.activefilterhits["C_" + filtervalue]++;
                                         matches.push(this.corpusresults[j]._id);
                                     }
+                                    this.activefilterhits["C_" + filtervalue]++;
                                     var tempObject = {};
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -26949,9 +26949,9 @@ var app = new Vue({
                                 if (this.isBetween(newest_date, corpusFilterObject.corpus_publication_publication_date, corpusFilterObject.corpusYearTo)) {
 
                                     if (!matches.includes(this.corpusresults[j]._id)) {
-                                        this.activefilterhits["C_" + filtervalue]++;
                                         matches.push(this.corpusresults[j]._id);
                                     }
+                                    this.activefilterhits["C_" + filtervalue]++;
                                     var tempObject = {};
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -26961,9 +26961,9 @@ var app = new Vue({
                             if (filterkey.indexOf('corpus') > -1) {
                                 if (this.renderArrayToString(this.corpusresults[j]._source[filterkey]).toLowerCase().indexOf(filtervalue.toLowerCase()) > -1) {
                                     if (!matches.includes(this.corpusresults[j]._id)) {
-                                        this.activefilterhits["C_" + filtervalue]++;
                                         matches.push(this.corpusresults[j]._id);
                                     }
+                                    this.activefilterhits["C_" + filtervalue]++;
                                     var tempObject = {};
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -27124,6 +27124,7 @@ var app = new Vue({
 
                         for (var l = 0; l < this.filtereddocumenthighlights[documentId].length; l++) {
                             for (var filterfield in this.filtereddocumenthighlights[documentId][l]) {
+                                //console.log(filterfield+" : "+this.filtereddocumenthighlights[documentId][l][filterfield]+" => "+this.documentresults[documentresultkey]._source[filterfield])
                                 if (this.documentresults[documentresultkey]._source.hasOwnProperty(filterfield)) {
                                     this.filtereddocumenthighlightmap[documentId][filterfield] = this.filterHighlightReplace(this.filtereddocumenthighlights[documentId][l][filterfield], this.documentresults[documentresultkey]._source[filterfield][0]);
                                 }
@@ -27226,10 +27227,34 @@ var app = new Vue({
                         for (var l = 0; l < this.filteredannotationhighlights[annotationId].length; l++) {
                             for (var filterfield in this.filteredannotationhighlights[annotationId][l]) {
                                 if (this.annotationresults[annotationresultkey]._source.hasOwnProperty(filterfield)) {
-                                    this.filteredannotationhighlightmap[annotationId][filterfield] = this.filterHighlightReplace(this.filteredannotationhighlights[annotationId][l][filterfield], this.annotationresults[annotationresultkey]._source[filterfield][0]);
+                                    this.filteredannotationhighlightmap[annotationId][filterfield] = this.filterHighlightReplace(this.filteredannotationhighlights[annotationId][l][filterfield], this.annotationresults[annotationresultkey]._source[filterfield]);
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        resetActiveFilterHighlight: function resetActiveFilterHighlight(filter) {
+            var key = this.activefiltersmap[filter];
+            console.log(key + " resetActiveFilterHighlight: " + filter);
+            if (filter.indexOf("C_") > -1) {
+                for (var corpusKey in this.filteredcorpushighlightmap) {
+                    if (this.filteredcorpushighlightmap[corpusKey].hasOwnProperty(key)) {
+                        delete this.filteredcorpushighlightmap[corpusKey][key];
+                    }
+                }
+            } else if (filter.indexOf("D_") > -1) {
+                console.log(this.filtereddocumenthighlightmap);
+                for (var documentCorpusKey in this.filtereddocumenthighlightmap) {
+                    if (this.filtereddocumenthighlightmap[documentCorpusKey].hasOwnProperty(key)) {
+                        delete this.filtereddocumenthighlightmap[documentCorpusKey][key];
+                    }
+                }
+            } else if (filter.indexOf("A_") > -1) {
+                for (var corpusKey in this.filteredannotationhighlightmap) {
+                    if (this.filteredannotationhighlightmap[corpusKey].hasOwnProperty(key)) {
+                        delete this.filteredannotationhighlightmap[corpusKey][key];
                     }
                 }
             }
@@ -27352,6 +27377,9 @@ var app = new Vue({
             }
         },
         resetActiveFilters: function resetActiveFilters() {
+            for (var i = 0; i < this.activefilters.length; i++) {
+                this.resetActiveFilterHighlight(this.activefilters[i]);
+            }
             this.activefilters = [];
             this.activefiltersmap = {};
         },
@@ -27456,8 +27484,9 @@ var app = new Vue({
         },
         filterHighlightReplace: function filterHighlightReplace(filterstring, contentstring) {
             var newContentString = '';
+            // console.log("POOP: "+filterstring.toLowerCase()+" : "+contentstring.toLowerCase()+" => "+contentstring.toLowerCase().indexOf(filterstring.toLowerCase()))
             var matched = contentstring.split(' ').map(function (val) {
-                //console.log(val.toLowerCase()+" => "+filterstring.toLowerCase()+" : "+val.toLowerCase().indexOf(filterstring.toLowerCase()))
+                // console.log(val.toLowerCase()+" => "+filterstring.toLowerCase()+" : "+val.toLowerCase().indexOf(filterstring.toLowerCase()))
                 if (val.toLowerCase().indexOf(filterstring.toLowerCase()) > -1) {
                     newContentString += '<span class=\"laudatiofilterhighlight\">' + val + '</span> ';
                 } else if (filterstring.toLowerCase().indexOf(val.toLowerCase()) > -1) {
@@ -27466,6 +27495,7 @@ var app = new Vue({
                     newContentString += val + " ";
                 }
             });
+
             return newContentString;
         }
     }
@@ -27954,6 +27984,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -27990,6 +28021,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         resetActiveFilter: function resetActiveFilter(filter) {
             this.$emit('reset-activefilter', filter);
+        },
+        resetActiveFilterHighlight: function resetActiveFilterHighlight(filter) {
+            this.$emit('reset-activefilterhighlight', filter);
         },
         resetCorpusFilter: function resetCorpusFilter(filter) {
             var key = this.activefiltersmap[filter];
@@ -28078,7 +28112,8 @@ var render = function() {
             "reset-activefilter": _vm.resetActiveFilter,
             "reset-corpus-filter": _vm.resetCorpusFilter,
             "reset-document-filter": _vm.resetDocumentFilter,
-            "reset-annotation-filter": _vm.resetAnnotationFilter
+            "reset-annotation-filter": _vm.resetAnnotationFilter,
+            "reset-activefilterhighlight": _vm.resetActiveFilterHighlight
           }
         })
       ],
@@ -28377,7 +28412,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var documenttabelem = document.getElementById('tab-documents');
             var annotationelem = document.getElementById('searchtab-annotations');
             var annotationtabelem = document.getElementById('tab-annotations');
-            console.log("GOT: " + header);
 
             var lastValue = filters[filters.length - 1];
             var lastKey = filtersmap[lastValue];
@@ -28891,7 +28925,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         resolveHit: function resolveHit(filter) {
             var hasHit = false;
-            if (this.activefilterhits[filter] > 0) {
+            if (this.activefilterhits.hasOwnProperty(filter)) {
                 hasHit = true;
             }
             return hasHit;
@@ -28906,7 +28940,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 } else if (key.indexOf("annotation") > -1 || key.indexOf("preparation") > -1) {
                     this.$emit('reset-annotation-filter', filter);
                 }
-
+                this.$emit('reset-activefilterhighlight', filter);
                 this.$emit('reset-activefilter', filter);
             }
         },
@@ -31823,9 +31857,8 @@ var render = function() {
                         : _c("span", [
                             _vm._v(
                               _vm._s(
-                                _vm._f("arrayToString")(
-                                  _vm.corpusresult._source.corpus_document_genre
-                                )
+                                _vm.corpusresult._source
+                                  .corpus_document_genre[0]
                               )
                             )
                           ])
@@ -32316,6 +32349,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         browseUri: function browseUri(id) {
             return '/browse/document/'.concat(id);
         },
+        highlightName: function highlightName(name, markup) {
+            var returnedName = name;
+            if (markup.indexOf(name) > -1) {
+                returnedName = markup;
+            }
+            return returnedName;
+        },
         emitDocumentRelations: function emitDocumentRelations(documentId) {
             this.$store.dispatch('clearCorpus', []);
             this.$store.dispatch('clearAnnotations', []);
@@ -32416,13 +32456,17 @@ var render = function() {
                     ) &&
                     _vm.filtereddocumenthighlightmap[
                       _vm.documentresult._id
-                    ].hasOwnProperty("document_author_surname")
+                    ].hasOwnProperty("document_merged_authors")
                     ? _c("span", {
                         domProps: {
                           innerHTML: _vm._s(
-                            _vm.filtereddocumenthighlightmap[
-                              _vm.documentresult._id
-                            ].document_author_surname
+                            _vm.highlightName(
+                              _vm.documentresult._source
+                                .document_author_surname[0],
+                              _vm.filtereddocumenthighlightmap[
+                                _vm.documentresult._id
+                              ].document_merged_authors
+                            )
                           )
                         }
                       })
@@ -32444,7 +32488,7 @@ var render = function() {
                       domProps: {
                         innerHTML: _vm._s(
                           _vm.documenthighlights[_vm.documentresult._id][0]
-                            .document_author_forename
+                            .document_merged_authors
                         )
                       }
                     })
@@ -32453,13 +32497,17 @@ var render = function() {
                     ) &&
                     _vm.filtereddocumenthighlightmap[
                       _vm.documentresult._id
-                    ].hasOwnProperty("document_author_forename")
+                    ].hasOwnProperty("document_merged_authors")
                     ? _c("span", {
                         domProps: {
                           innerHTML: _vm._s(
-                            _vm.filtereddocumenthighlightmap[
-                              _vm.documentresult._id
-                            ].document_author_forename
+                            _vm.highlightName(
+                              _vm.documentresult._source
+                                .document_author_forename[0],
+                              _vm.filtereddocumenthighlightmap[
+                                _vm.documentresult._id
+                              ].document_merged_authors
+                            )
                           )
                         }
                       })
