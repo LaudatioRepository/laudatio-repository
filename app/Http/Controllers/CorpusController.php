@@ -410,7 +410,9 @@ class CorpusController extends Controller
 
 
         //get filedata $flysystem,$corpus,$path = ""
-
+/*
+ * todo: this is one of the things that slows down uploading, and needs at least to be cached.
+ */
         $folderData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS");
         $corpusFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/corpus");
         $documentFileData = $this->GitRepoService->getCorpusFiles($this->flysystem,$corpus->id, $path."/TEI-HEADERS/document");

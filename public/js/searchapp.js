@@ -31839,7 +31839,7 @@ var render = function() {
                               _vm._v(
                                 "\n                            " +
                                   _vm._s(
-                                    _vm._f("truncate")(
+                                    _vm._f("truncatelist")(
                                       _vm.corpusresult._source
                                         .corpus_merged_formats
                                     )

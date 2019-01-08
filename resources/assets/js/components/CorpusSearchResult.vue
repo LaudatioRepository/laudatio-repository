@@ -35,7 +35,7 @@
                                 <span v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id][0].hasOwnProperty('corpus_merged_formats')" v-html="corpushighlights[corpusresult._id][0].corpus_merged_formats"></span>
                                 <span v-else-if="filteredcorpushighlightmap.hasOwnProperty(corpusresult._id) && filteredcorpushighlightmap[corpusresult._id].hasOwnProperty('corpus_merged_formats')" v-html="filteredcorpushighlightmap[corpusresult._id].corpus_merged_formats"></span>
                                 <span v-else>
-                                    {{corpusresult._source.corpus_merged_formats | truncate}}
+                                    {{corpusresult._source.corpus_merged_formats | truncatelist}}
                                 </span>
                             </div>
                         </div>
