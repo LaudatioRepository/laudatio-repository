@@ -1502,7 +1502,13 @@ class LaudatioUtilService implements LaudatioUtilsInterface
         if (array_key_exists($data['result']['corpus_id'][0],$documentResult)){
             for($d = 0; $d < count($documentResult[$data['result']['corpus_id'][0]]); $d++) {
                 $doc = $documentResult[$data['result']['corpus_id'][0]][$d];
-                array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+                //array_push($document_dates, Carbon::createFromFormat ('Y' , $doc['_source']['document_publication_publishing_date'][0])->format ('Y'));
+                /*
+                 * @todo: fix date problems
+                 */
+                if(isset($doc['_source']['document_publication_publishing_date'][0])){
+                    array_push($document_dates, $doc['_source']['document_publication_publishing_date'][0]);
+                }
             }
 
             sort($document_dates);
