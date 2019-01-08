@@ -26,6 +26,11 @@
                 </span>
                 <div class="row mt-2">
                     <div class="col d-flex flex-wrap justify-content-start">
+                        <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
+                            <i class="fa fa-fw fa-th-list  mr-1"></i>
+                            <span v-if="documenthighlights.hasOwnProperty(documentresult._id) && documenthighlights[documentresult._id][0].hasOwnProperty('document_genre')" v-html="documenthighlights[documentresult._id][0].document_genre"></span>
+                            <span v-else>{{documentresult._source.document_genre[0]}}</span>
+                        </div>
                         <div class="mr-7">
                             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                                 <i class="fa fa-fw fa-clock-o mr-1"></i>

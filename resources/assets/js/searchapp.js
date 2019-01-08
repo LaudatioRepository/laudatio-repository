@@ -147,6 +147,7 @@ const app = new Vue({
                         "document_list_of_annotations_id",
                         "document_size_type",
                         "document_size_extent",
+                        "document_genre",
                         "preparation_title",
                         "preparation_annotation_id",
                         "preparation_encoding_annotation_group",

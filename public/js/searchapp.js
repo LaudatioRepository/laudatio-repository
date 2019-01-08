@@ -26630,7 +26630,7 @@ var app = new Vue({
                     //"corpus_languages_language",
                     "corpus_merged_languages", "corpus_languages_iso_code", "corpus_publication_publication_date", "corpus_size_type", "corpus_size_value", "corpus_document_genre", "document_genre", "document_title", "document_author_forename", "document_author_surname", "document_merged_authors", "document_editor_forename", "document_editor_surname",
                     //"document_languages_language",
-                    "document_merged_languages", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats", "in_documents"],
+                    "document_merged_languages", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "document_genre", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats", "in_documents"],
                     indices: this.publishedIndexes.allPublishedIndices.join(",")
                 }
             };
@@ -31654,6 +31654,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -32458,6 +32459,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -32645,6 +32651,40 @@ var render = function() {
                   "div",
                   { staticClass: "col d-flex flex-wrap justify-content-start" },
                   [
+                    _c(
+                      "div",
+                      {
+                        staticClass:
+                          "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                      },
+                      [
+                        _c("i", { staticClass: "fa fa-fw fa-th-list  mr-1" }),
+                        _vm._v(" "),
+                        _vm.documenthighlights.hasOwnProperty(
+                          _vm.documentresult._id
+                        ) &&
+                        _vm.documenthighlights[
+                          _vm.documentresult._id
+                        ][0].hasOwnProperty("document_genre")
+                          ? _c("span", {
+                              domProps: {
+                                innerHTML: _vm._s(
+                                  _vm.documenthighlights[
+                                    _vm.documentresult._id
+                                  ][0].document_genre
+                                )
+                              }
+                            })
+                          : _c("span", [
+                              _vm._v(
+                                _vm._s(
+                                  _vm.documentresult._source.document_genre[0]
+                                )
+                              )
+                            ])
+                      ]
+                    ),
+                    _vm._v(" "),
                     _c("div", { staticClass: "mr-7" }, [
                       _c(
                         "div",
