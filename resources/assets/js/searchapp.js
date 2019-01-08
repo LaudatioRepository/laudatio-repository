@@ -226,10 +226,46 @@ const app = new Vue({
                             this.corpusformats.push(formatsarray[key])
                         }
 
+                        var highlightobject = this.frontPageResultData.results[ri].highlight;
+                        if(!this.corpushighlights.hasOwnProperty(this.frontPageResultData.results[ri]._id)){
+                            this.corpushighlights[this.frontPageResultData.results[ri]._id] = [];
+                        }
+
+                        var tempobject = {}
+                        for (var fieldkey in highlightobject) {
+                            var tempstring = '';
+                            for (var d = 0; d < highlightobject[fieldkey].length;d++) {
+                                tempstring += highlightobject[fieldkey][d].concat(' ');
+                            }
+                            tempobject[fieldkey] = tempstring;
+                        }
+
+
+                        if(!this.hasObject(this.corpushighlights[this.frontPageResultData.results[ri]._id],tempobject)) {
+                            this.corpushighlights[this.frontPageResultData.results[ri]._id].push(tempobject);
+                        }
+
                     }
                     else if(this.frontPageResultData.results[ri]._index.indexOf("document_") == 0){
                         this.documentresults.push(this.frontPageResultData.results[ri]);
                         this.documentresultcounter ++;
+
+                        var highlightobject = this.frontPageResultData.results[ri].highlight;
+                        if(!this.documenthighlights.hasOwnProperty(this.frontPageResultData.results[ri]._id)){
+                            this.documenthighlights[this.frontPageResultData.results[ri]._id] = [];
+                        }
+
+                        var tempobject = {}
+                        for (var fieldkey in highlightobject) {
+                            var tempstring = '';
+                            for (var d = 0; d < highlightobject[fieldkey].length;d++) {
+                                tempstring += highlightobject[fieldkey][d].concat(' ');
+                            }
+                            tempobject[fieldkey] = tempstring;
+                        }
+                        if(!this.hasObject(this.documenthighlights[this.frontPageResultData.results[ri]._id],tempobject)) {
+                            this.documenthighlights[this.frontPageResultData.results[ri]._id].push(tempobject);
+                        }
                     }
                     else if(this.frontPageResultData.results[ri]._index.indexOf("annotation_") == 0){
                         this.annotationresults.push(this.frontPageResultData.results[ri]);
@@ -239,6 +275,25 @@ const app = new Vue({
                         for (var key in annotationformatsarray) {
                             this.annotationformats.push(annotationformatsarray[key])
                         }
+
+                        var highlightobject = this.frontPageResultData.results[ri].highlight;
+                        if(!this.annotationhighlights.hasOwnProperty(this.frontPageResultData.results[ri]._id)){
+                            this.annotationhighlights[this.frontPageResultData.results[ri]._id] = [];
+                        }
+
+
+                        var tempobject = {}
+                        for (var fieldkey in highlightobject) {
+                            var tempstring = '';
+                            for (var d = 0; d < highlightobject[fieldkey].length;d++) {
+                                tempstring += highlightobject[fieldkey][d].concat(' ');
+                            }
+                            tempobject[fieldkey] = tempstring;
+                        }
+                        if(!this.hasObject(this.annotationhighlights[this.frontPageResultData.results[ri]._id],tempobject)) {
+                            this.annotationhighlights[this.frontPageResultData.results[ri]._id].push(tempobject);
+                        }
+
                     }///end which index
                 }//end for results
                 this.dataloading = false;

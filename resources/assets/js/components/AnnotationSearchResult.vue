@@ -22,7 +22,7 @@
             <div class="col-2">
                 <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
                     <i class="fa fa-fw fa-globe mr-1"></i>
-                    <span v-if="annotationhighlights.hasOwnProperty(annotationresult._id) && annotationhighlights[corpusresult._id][0].hasOwnProperty('annotation_merged_formats')" v-html="annotationhighlights[annotationresult._id][0].annotation_merged_formats"></span>
+                    <span v-if="annotationhighlights.hasOwnProperty(annotationresult._id) && annotationhighlights[annotationresult._id][0].hasOwnProperty('annotation_merged_formats')" v-html="annotationhighlights[annotationresult._id][0].annotation_merged_formats"></span>
                     <span v-else-if="filteredannotationhighlightmap.hasOwnProperty(annotationresult._id) && filteredannotationhighlightmap[annotationresult._id].hasOwnProperty('annotation_merged_formats')" v-html="filteredannotationhighlightmap[annotationresult._id].annotation_merged_formats"></span>
                     <span v-else>{{annotationresult._source.annotation_merged_formats | truncatelist}}</span>
                 </div>

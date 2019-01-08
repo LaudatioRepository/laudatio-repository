@@ -26698,9 +26698,44 @@ var app = new Vue({
                         for (var key in formatsarray) {
                             this.corpusformats.push(formatsarray[key]);
                         }
+
+                        var highlightobject = this.frontPageResultData.results[ri].highlight;
+                        if (!this.corpushighlights.hasOwnProperty(this.frontPageResultData.results[ri]._id)) {
+                            this.corpushighlights[this.frontPageResultData.results[ri]._id] = [];
+                        }
+
+                        var tempobject = {};
+                        for (var fieldkey in highlightobject) {
+                            var tempstring = '';
+                            for (var d = 0; d < highlightobject[fieldkey].length; d++) {
+                                tempstring += highlightobject[fieldkey][d].concat(' ');
+                            }
+                            tempobject[fieldkey] = tempstring;
+                        }
+
+                        if (!this.hasObject(this.corpushighlights[this.frontPageResultData.results[ri]._id], tempobject)) {
+                            this.corpushighlights[this.frontPageResultData.results[ri]._id].push(tempobject);
+                        }
                     } else if (this.frontPageResultData.results[ri]._index.indexOf("document_") == 0) {
                         this.documentresults.push(this.frontPageResultData.results[ri]);
                         this.documentresultcounter++;
+
+                        var highlightobject = this.frontPageResultData.results[ri].highlight;
+                        if (!this.documenthighlights.hasOwnProperty(this.frontPageResultData.results[ri]._id)) {
+                            this.documenthighlights[this.frontPageResultData.results[ri]._id] = [];
+                        }
+
+                        var tempobject = {};
+                        for (var fieldkey in highlightobject) {
+                            var tempstring = '';
+                            for (var d = 0; d < highlightobject[fieldkey].length; d++) {
+                                tempstring += highlightobject[fieldkey][d].concat(' ');
+                            }
+                            tempobject[fieldkey] = tempstring;
+                        }
+                        if (!this.hasObject(this.documenthighlights[this.frontPageResultData.results[ri]._id], tempobject)) {
+                            this.documenthighlights[this.frontPageResultData.results[ri]._id].push(tempobject);
+                        }
                     } else if (this.frontPageResultData.results[ri]._index.indexOf("annotation_") == 0) {
                         this.annotationresults.push(this.frontPageResultData.results[ri]);
                         this.annotationresultcounter++;
@@ -26708,6 +26743,23 @@ var app = new Vue({
                         var annotationformatsarray = this.frontPageResultData.results[ri]._source.annotation_merged_formats.split(",");
                         for (var key in annotationformatsarray) {
                             this.annotationformats.push(annotationformatsarray[key]);
+                        }
+
+                        var highlightobject = this.frontPageResultData.results[ri].highlight;
+                        if (!this.annotationhighlights.hasOwnProperty(this.frontPageResultData.results[ri]._id)) {
+                            this.annotationhighlights[this.frontPageResultData.results[ri]._id] = [];
+                        }
+
+                        var tempobject = {};
+                        for (var fieldkey in highlightobject) {
+                            var tempstring = '';
+                            for (var d = 0; d < highlightobject[fieldkey].length; d++) {
+                                tempstring += highlightobject[fieldkey][d].concat(' ');
+                            }
+                            tempobject[fieldkey] = tempstring;
+                        }
+                        if (!this.hasObject(this.annotationhighlights[this.frontPageResultData.results[ri]._id], tempobject)) {
+                            this.annotationhighlights[this.frontPageResultData.results[ri]._id].push(tempobject);
                         }
                     } ///end which index
                 } //end for results
@@ -31602,8 +31654,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -31813,12 +31863,6 @@ var render = function() {
                         "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
                     },
                     [
-                      _c("i", { staticClass: "fa fa-file-signature mr-1" }),
-                      _vm._v(" "),
-                      _c("i", {
-                        staticClass: "fa fa-fw fa-file-signature mr-1"
-                      }),
-                      _vm._v(" "),
                       _c("i", { staticClass: "fas fa-file-signature mr-1" }),
                       _vm._v(" "),
                       _vm.corpushighlights.hasOwnProperty(
@@ -33085,7 +33129,7 @@ var render = function() {
                     _vm.annotationresult._id
                   ) &&
                   _vm.annotationhighlights[
-                    _vm.corpusresult._id
+                    _vm.annotationresult._id
                   ][0].hasOwnProperty("annotation_merged_formats")
                     ? _c("span", {
                         domProps: {
