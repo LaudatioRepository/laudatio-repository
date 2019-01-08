@@ -31999,7 +31999,7 @@ var render = function() {
                               : _c("span", [
                                   _vm._v(
                                     _vm._s(
-                                      _vm._f("truncate")(
+                                      _vm._f("truncatelist")(
                                         _vm.corpusresult._source
                                           .corpus_merged_languages
                                       )
