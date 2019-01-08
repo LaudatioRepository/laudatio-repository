@@ -66,10 +66,17 @@ Vue.filter('truncate', function(string){
 Vue.filter('truncatelist', function(string){
     // Make sure an element and number of items to truncate is provided
     if (!string) return;
-    var limit = 5;
+    var limit = 3;
     var after = "...";
-    var contentArray = string.split(",").splice(0,limit);
-    content = contentArray[0] + (after ? after : '');
+    var contentArray = string.split(",");
+    var content = "";
+    for(var i = 0; i < limit; i++) {
+        if(typeof contentArray[i] != 'undefined'){
+            content += contentArray[i]+" ";
+        }
+
+    }
+    content +=  (after ? after : '');
 
     return content;
 })
