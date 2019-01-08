@@ -24,7 +24,7 @@
                     <i class="fa fa-fw fa-globe mr-1"></i>
                     <span v-if="annotationhighlights.hasOwnProperty(annotationresult._id) && annotationhighlights[corpusresult._id][0].hasOwnProperty('annotation_merged_formats')" v-html="annotationhighlights[annotationresult._id][0].annotation_merged_formats"></span>
                     <span v-else-if="filteredannotationhighlightmap.hasOwnProperty(annotationresult._id) && filteredannotationhighlightmap[annotationresult._id].hasOwnProperty('annotation_merged_formats')" v-html="filteredannotationhighlightmap[annotationresult._id].annotation_merged_formats"></span>
-                    <span v-else>{{annotationresult._source.annotation_merged_formats | truncate}}</span>
+                    <span v-else>{{annotationresult._source.annotation_merged_formats | truncatelist}}</span>
                 </div>
             </div>
             <div class="col-4 d-flex justify-content-between align-items-start" v-if="typeof annotationresult._source.in_documents !== 'undefined' && Object.keys(annotationresult._source.in_documents).length > 0">

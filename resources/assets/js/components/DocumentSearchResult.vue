@@ -40,7 +40,7 @@
                             <i class="fa fa-fw fa-globe mr-1"></i>
                             <span v-if="documenthighlights.hasOwnProperty(documentresult._id) && documenthighlights[documentresult._id][0].hasOwnProperty('document_merged_languages')" v-html="documenthighlights[documentresult._id][0].document_merged_languages"></span>
                             <span v-else-if="filtereddocumenthighlightmap.hasOwnProperty(documentresult._id) && filtereddocumenthighlightmap[documentresult._id].hasOwnProperty('document_merged_languages')" v-html="filtereddocumenthighlightmap[documentresult._id].document_merged_languages"></span>
-                            <span v-else>{{documentresult._source.document_merged_languages}}</span>
+                            <span v-else>{{documentresult._source.document_merged_languages | truncatelist}}</span>
                         </div>
                         <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap" v-if="documentresult._source.document_publication_place != 'undefined'">
                             <i class="fa fa-fw fa-map-marker mr-1"></i>

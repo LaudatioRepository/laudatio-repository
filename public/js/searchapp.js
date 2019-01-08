@@ -32689,8 +32689,10 @@ var render = function() {
                                 : _c("span", [
                                     _vm._v(
                                       _vm._s(
-                                        _vm.documentresult._source
-                                          .document_merged_languages
+                                        _vm._f("truncatelist")(
+                                          _vm.documentresult._source
+                                            .document_merged_languages
+                                        )
                                       )
                                     )
                                   ])
@@ -33103,7 +33105,7 @@ var render = function() {
                       : _c("span", [
                           _vm._v(
                             _vm._s(
-                              _vm._f("truncate")(
+                              _vm._f("truncatelist")(
                                 _vm.annotationresult._source
                                   .annotation_merged_formats
                               )
