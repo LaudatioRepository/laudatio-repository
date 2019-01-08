@@ -23220,7 +23220,7 @@ Vue.filter('truncatelist', function (string) {
     if (!string) return;
     var limit = 5;
     var after = "...";
-    var contentArray = string.split(",");
+    var contentArray = string.split(",").splice(0, limit);
     content = contentArray[0] + (after ? after : '');
 
     return content;
