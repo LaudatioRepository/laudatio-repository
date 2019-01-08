@@ -244,8 +244,9 @@
             }
             else if(!this.datasearched && !this.dataloading && this.searches.length == 0 && this.frontpageresultdata){
                 console.log("FEPP")
+                console.log(this.frontpageresultdata)
                 this.$emit('frontpage-search');
-                this.$set(this.frontPageResultData, undefined)
+                this.$set(this.frontpageresultdata, undefined)
             }
 
         }

@@ -28563,8 +28563,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$emit('initial-search');
         } else if (!this.datasearched && !this.dataloading && this.searches.length == 0 && this.frontpageresultdata) {
             console.log("FEPP");
+            console.log(this.frontpageresultdata);
             this.$emit('frontpage-search');
-            this.$set(this.frontPageResultData, undefined);
+            this.$set(this.frontpageresultdata, undefined);
         }
     }
 });
@@ -31601,6 +31602,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -31810,7 +31813,13 @@ var render = function() {
                         "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
                     },
                     [
-                      _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
+                      _c("i", { staticClass: "fa fa-file-signature mr-1" }),
+                      _vm._v(" "),
+                      _c("i", {
+                        staticClass: "fa fa-fw fa-file-signature mr-1"
+                      }),
+                      _vm._v(" "),
+                      _c("i", { staticClass: "fas fa-file-signature mr-1" }),
                       _vm._v(" "),
                       _vm.corpushighlights.hasOwnProperty(
                         _vm.corpusresult._id

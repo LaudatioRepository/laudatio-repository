@@ -31,7 +31,9 @@
                         </div>
                         <div class="col col-auto mr-1">
                             <div class="corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap">
-                                <i class="fa fa-fw fa-globe mr-1"></i>
+                                <i class="fa fa-file-signature mr-1"></i>
+                                <i class="fa fa-fw fa-file-signature mr-1"></i>
+                                <i class="fas fa-file-signature mr-1"></i>
                                 <span v-if="corpushighlights.hasOwnProperty(corpusresult._id) && corpushighlights[corpusresult._id][0].hasOwnProperty('corpus_merged_formats')" v-html="corpushighlights[corpusresult._id][0].corpus_merged_formats"></span>
                                 <span v-else-if="filteredcorpushighlightmap.hasOwnProperty(corpusresult._id) && filteredcorpushighlightmap[corpusresult._id].hasOwnProperty('corpus_merged_formats')" v-html="filteredcorpushighlightmap[corpusresult._id].corpus_merged_formats"></span>
                                 <span v-else>
