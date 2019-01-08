@@ -1621,4 +1621,15 @@ class LaudatioUtilService implements LaudatioUtilsInterface
 
         return $user_role_filtered;
     }
+
+
+    public function removeMergedDuplicates($dataString){
+        $stringArray = explode(",",$dataString);
+        return join(",",array_unique($stringArray));
+    }
+
+    public function removeMergedNA($dataString){
+        $stringArray = explode(",",$dataString);
+        return join(",",array_diff($stringArray, array("NA")));
+    }
 }

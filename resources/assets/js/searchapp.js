@@ -125,7 +125,8 @@ const app = new Vue({
                         "corpus_annotator_forename",
                         "corpus_annotator_surname",
                         "corpus_publication_license",
-                        "corpus_languages_language",
+                        //"corpus_languages_language",
+                        "corpus_merged_languages",
                         "corpus_languages_iso_code",
                         "corpus_publication_publication_date",
                         "corpus_size_type",
@@ -138,7 +139,8 @@ const app = new Vue({
                         "document_merged_authors",
                         "document_editor_forename",
                         "document_editor_surname",
-                        "document_languages_language",
+                        //"document_languages_language",
+                        "document_merged_languages",
                         "document_languages_iso_code",
                         "document_publication_place",
                         "document_publication_publishing_date",
@@ -279,7 +281,8 @@ const app = new Vue({
                             "corpus_annotator_forename",
                             "corpus_annotator_surname",
                             "corpus_publication_license",
-                            "corpus_languages_language",
+                            //"corpus_languages_language",
+                            "corpus_merged_languages",
                             "corpus_languages_iso_code",
                             "corpus_document_genre",
                             //"corpus_publication_publication_date",
@@ -291,7 +294,8 @@ const app = new Vue({
                             "document_author_surname",
                             "document_editor_forename",
                             "document_editor_surname",
-                            "document_languages_language",
+                            //"document_languages_language",
+                            "document_merged_languages",
                             "document_languages_iso_code",
                             "document_publication_place",
                             "document_merged_authors",
@@ -317,7 +321,8 @@ const app = new Vue({
                             "corpus_annotator_forename",
                             "corpus_annotator_surname",
                             "corpus_publication_license",
-                            "corpus_languages_language",
+                            //"corpus_languages_language",
+                            "corpus_merged_languages",
                             "corpus_languages_iso_code",
                             "corpus_publication_publication_date",
                             "corpus_size_type",
@@ -329,7 +334,8 @@ const app = new Vue({
                             "document_merged_authors",
                             "document_editor_forename",
                             "document_editor_surname",
-                            "document_languages_language",
+                            //"document_languages_language",
+                            "document_merged_languages",
                             "document_languages_iso_code",
                             "document_publication_place",
                             "document_publication_publishing_date",
@@ -513,11 +519,13 @@ const app = new Vue({
                     }
                 }
             }
+
             this.filterCorpusResults(corpusFilterObject);
         },
         filterCorpusResults: function (corpusFilterObject){
             this.resetCorpusResults();
             var matches = [];
+
             var activeFilterCount = this.getActiveFilterCount("corpus");
             for(var i = 0; i < this.activefilters.length; i++) {
                 var filterkey = this.activefiltersmap[this.activefilters[i]];
@@ -542,7 +550,11 @@ const app = new Vue({
                                     if(!matches.includes(this.corpusresults[j]._id)){
                                         matches.push(this.corpusresults[j]._id);
                                     }
-                                    this.activefilterhits["C_"+filtervalue]++;
+
+                                    if(this.activefilters.includes("C_"+filtervalue)){
+                                        this.activefilterhits["C_"+filtervalue]++;
+                                    }
+
                                     var tempObject = {}
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -558,7 +570,9 @@ const app = new Vue({
                                         if(!matches.includes(this.corpusresults[j]._id)){
                                             matches.push(this.corpusresults[j]._id);
                                         }
-                                        this.activefilterhits["C_"+filtervalue]++;
+                                        if(this.activefilters.includes("C_"+filtervalue)){
+                                            this.activefilterhits["C_"+filtervalue]++;
+                                        }
                                         var tempObject = {}
                                         tempObject[filterkey] = filtervalue;
                                         this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -572,7 +586,9 @@ const app = new Vue({
                                     if(!matches.includes(this.corpusresults[j]._id)){
                                         matches.push(this.corpusresults[j]._id);
                                     }
-                                    this.activefilterhits["C_"+filtervalue]++;
+                                    if(this.activefilters.includes("C_"+filtervalue)){
+                                        this.activefilterhits["C_"+filtervalue]++;
+                                    }
                                     var tempObject = {}
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -588,7 +604,9 @@ const app = new Vue({
                                     if(!matches.includes(this.corpusresults[j]._id)){
                                         matches.push(this.corpusresults[j]._id);
                                     }
-                                    this.activefilterhits["C_"+filtervalue]++;
+                                    if(this.activefilters.includes("C_"+filtervalue)){
+                                        this.activefilterhits["C_"+filtervalue]++;
+                                    }
                                     var tempObject = {}
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -601,7 +619,9 @@ const app = new Vue({
                                     if(!matches.includes(this.corpusresults[j]._id)){
                                         matches.push(this.corpusresults[j]._id);
                                     }
-                                    this.activefilterhits["C_"+filtervalue]++;
+                                    if(this.activefilters.includes("C_"+filtervalue)){
+                                        this.activefilterhits["C_"+filtervalue]++;
+                                    }
                                     var tempObject = {}
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -636,7 +656,14 @@ const app = new Vue({
                         for(var l = 0; l < this.filteredcorpushighlights[corpusId].length; l++) {
                             for(var filterfield in this.filteredcorpushighlights[corpusId][l]) {
                                 if (this.corpusresults[corpusresultkey]._source.hasOwnProperty(filterfield)) {
-                                    this.filteredcorpushighlightmap[corpusId][filterfield] = this.filterHighlightReplace(this.filteredcorpushighlights[corpusId][l][filterfield], this.corpusresults[corpusresultkey]._source[filterfield][0]);
+                                    var filterInput = ""
+                                    if(filterfield == "corpus_merged_formats" || filterfield == "corpus_merged_languages") {
+                                        filterInput = this.corpusresults[corpusresultkey]._source[filterfield];
+                                    }
+                                    else{
+                                        filterInput = this.corpusresults[corpusresultkey]._source[filterfield][0];
+                                    }
+                                    this.filteredcorpushighlightmap[corpusId][filterfield] = this.filterHighlightReplace(this.filteredcorpushighlights[corpusId][l][filterfield], filterInput);
                                 }
                             }
                         }
@@ -776,9 +803,15 @@ const app = new Vue({
 
                         for(var l = 0; l < this.filtereddocumenthighlights[documentId].length; l++) {
                             for(var filterfield in this.filtereddocumenthighlights[documentId][l]) {
-                                console.log("SETTING: "+filterfield+" : "+this.filtereddocumenthighlights[documentId][l][filterfield]+" => "+this.documentresults[documentresultkey]._source[filterfield])
                                 if (this.documentresults[documentresultkey]._source.hasOwnProperty(filterfield)) {
-                                    this.filtereddocumenthighlightmap[documentId][filterfield] = this.filterHighlightReplace(this.filtereddocumenthighlights[documentId][l][filterfield], this.documentresults[documentresultkey]._source[filterfield][0]);
+                                    var filterInput = "";
+                                    if(filterfield == "document_merged_languages" || filterfield == "document_merged_authors") {
+                                        filterInput = this.documentresults[documentresultkey]._source[filterfield];
+                                    }
+                                    else{
+                                        filterInput = this.documentresults[documentresultkey]._source[filterfield][0];
+                                    }
+                                    this.filtereddocumenthighlightmap[documentId][filterfield] = this.filterHighlightReplace(this.filtereddocumenthighlights[documentId][l][filterfield], filterInput);
                                 }
                             }
                         }
@@ -886,7 +919,14 @@ const app = new Vue({
                         for(var l = 0; l < this.filteredannotationhighlights[annotationId].length; l++) {
                             for(var filterfield in this.filteredannotationhighlights[annotationId][l]) {
                                 if (this.annotationresults[annotationresultkey]._source.hasOwnProperty(filterfield)) {
-                                    this.filteredannotationhighlightmap[annotationId][filterfield] = this.filterHighlightReplace(this.filteredannotationhighlights[annotationId][l][filterfield], this.annotationresults[annotationresultkey]._source[filterfield]);
+                                    var filterInput = "";
+                                    if(filterfield == "annotation_merged_formats") {
+                                        filterInput = this.annotationresults[annotationresultkey]._source[filterfield];
+                                    }
+                                    else{
+                                        filterInput = this.annotationresults[annotationresultkey]._source[filterfield][0];
+                                    }
+                                    this.filteredannotationhighlightmap[annotationId][filterfield] = this.filterHighlightReplace(this.filteredannotationhighlights[annotationId][l][filterfield], filterInput);
                                 }
                             }
                         }
@@ -938,9 +978,12 @@ const app = new Vue({
         },
         resetActiveFilter: function(filter) {
             var key = this.activefiltersmap[filter];
+
             if(typeof filter != 'undefined' && this.activefiltersmap.hasOwnProperty(filter)){
                 this.activefilters.splice(this.activefilters.indexOf(filter),1);
                 delete this.activefiltersmap[filter];
+                delete this.activefilterhits[filter];
+
                 if(key == "corpus_size_value"){
                     this.$refs.filterwrapper.$refs.corpusFilter.resetNoUiSlider();
                 }
@@ -954,7 +997,7 @@ const app = new Vue({
                     this.$refs.filterwrapper.$refs.annotationFilter.resetFormatField(filter.replace("A_",""));
                 }
             }
-            
+
 
             if(typeof key != 'undefined') {
                 if(key.indexOf('corpus') > -1) {
@@ -967,12 +1010,12 @@ const app = new Vue({
                         }
                     }
 
+
                     var corpusFilterData = {}
                     var j = 0;
                     if(this.activefilters.length > 0) {
                         for(j = j; j < this.activefilters.length; j++) {
                             var active_key = this.activefiltersmap[this.activefilters[j]];
-
                             if(active_key == 'corpus_merged_formats') {
                                 corpusFilterData[active_key] = [this.activefilters[j]];
                             }
@@ -992,7 +1035,6 @@ const app = new Vue({
 
                         }
                     }
-
 
                     if(j > 0) {
                         this.submitCorpusFilter(corpusFilterData);
@@ -1180,9 +1222,9 @@ const app = new Vue({
         },
         filterHighlightReplace: function(filterstring, contentstring) {
             var newContentString = '';
-           // console.log("POOP: "+filterstring.toLowerCase()+" : "+contentstring.toLowerCase()+" => "+contentstring.toLowerCase().indexOf(filterstring.toLowerCase()))
+            console.log("POOP: "+filterstring.toLowerCase()+" : "+contentstring.toLowerCase()+" => "+contentstring.toLowerCase().indexOf(filterstring.toLowerCase()))
             var matched = contentstring.split(' ').map(function(val){
-               // console.log(val.toLowerCase()+" => "+filterstring.toLowerCase()+" : "+val.toLowerCase().indexOf(filterstring.toLowerCase()))
+                console.log(val.toLowerCase()+" => "+filterstring.toLowerCase()+" : "+val.toLowerCase().indexOf(filterstring.toLowerCase()))
                 if (val.toLowerCase().indexOf(filterstring.toLowerCase()) > -1) {
                     newContentString += '<span class=\"laudatiofilterhighlight\">'+val+'</span> ';
                 }

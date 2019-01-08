@@ -31,7 +31,7 @@
 
                         <div class="form-group mb-3">
                             <label class="mb-0 text-14 " for="formDocumentsLanguage">Language</label>
-                            <input type="text" class="form-control" id="formDocumentsLanguage" aria-describedby="inputLanguage" placeholder='"German"'  v-model="documentFilterData.document_languages_language" @keyup.enter="emitApplyFilters">
+                            <input type="text" class="form-control" id="formDocumentsLanguage" aria-describedby="inputLanguage" placeholder='"German"'  v-model="documentFilterData.document_merged_languages" @keyup.enter="emitApplyFilters">
                         </div>
 
                         <div class="form-group mb-3">
@@ -107,7 +107,6 @@
                     document_publication_publishing_date_to: '',
                     document_size_extent: '',
                     document_size_extent_to: '',
-                    document_languages_language: '',
                     document_merged_languages: ''
                 },
                 scope: 'document'
@@ -152,7 +151,6 @@
                     document_publication_publishing_date_to: '',
                     document_size_extent: '',
                     document_size_extent_to: '',
-                    document_languages_language: '',
                     document_merged_languages: ''
                 }
             },

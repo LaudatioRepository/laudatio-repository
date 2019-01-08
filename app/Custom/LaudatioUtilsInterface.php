@@ -70,6 +70,8 @@ interface LaudatioUtilsInterface
     public function setCorpusLogoSymLink($flysystem,$path);
 
     public function checkForDuplicateCorpusName($corpus_name, $corpus_name_path, $corpus_project);
+    public function removeMergedDuplicates($data);
+    public function removeMergedNA($data);
 
     public function determineAdminRole($admin_roles);
     public function determineUserAdminRole($user_roles);

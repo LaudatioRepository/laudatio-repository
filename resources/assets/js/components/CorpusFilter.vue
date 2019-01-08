@@ -15,7 +15,7 @@
 
                     <div class="form-group mb-3">
                         <label class="mb-0 text-14 " for="formCorpusLanguage">Language</label>
-                        <input type="text" class="form-control" id="formCorpusLanguage" aria-describedby="inputLanguage" placeholder='"German"' v-model="corpusFilterData.corpus_languages_language" @keyup.enter="emitApplyFilters">
+                        <input type="text" class="form-control" id="formCorpusLanguage" aria-describedby="inputLanguage" placeholder='"German"' v-model="corpusFilterData.corpus_merged_languages" @keyup.enter="emitApplyFilters">
                     </div>
 
                     <div class="d-flex flex-column">
@@ -111,7 +111,7 @@
                     corpusYearTo: '',
                     corpus_size_value: '',
                     corpusSizeTo: '',
-                    corpus_languages_language: '',
+                    corpus_merged_languages: '',
                     corpus_merged_formats: [],
                     corpus_publication_license: ''
                 },

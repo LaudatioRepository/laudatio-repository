@@ -26620,7 +26620,11 @@ var app = new Vue({
             this.annotationresultcounter = 0;
             var postData = {
                 searchData: {
-                    source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_merged_formats", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "corpus_size_type", "corpus_size_value", "corpus_document_genre", "document_genre", "document_title", "document_author_forename", "document_author_surname", "document_merged_authors", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats", "in_documents"],
+                    source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_merged_formats", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license",
+                    //"corpus_languages_language",
+                    "corpus_merged_languages", "corpus_languages_iso_code", "corpus_publication_publication_date", "corpus_size_type", "corpus_size_value", "corpus_document_genre", "document_genre", "document_title", "document_author_forename", "document_author_surname", "document_merged_authors", "document_editor_forename", "document_editor_surname",
+                    //"document_languages_language",
+                    "document_merged_languages", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats", "in_documents"],
                     indices: this.publishedIndexes.allPublishedIndices.join(",")
                 }
             };
@@ -26729,12 +26733,20 @@ var app = new Vue({
                 this.searches = [];
                 var postData = {
                     searchData: {
-                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_merged_formats", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_document_genre",
+                        fields: ["corpus_title", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_merged_formats", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license",
+                        //"corpus_languages_language",
+                        "corpus_merged_languages", "corpus_languages_iso_code", "corpus_document_genre",
                         //"corpus_publication_publication_date",
-                        "document_title", "document_genre", "document_author_forename", "document_size_type", "document_size_extent", "document_author_surname", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_merged_authors", "document_genre",
+                        "document_title", "document_genre", "document_author_forename", "document_size_type", "document_size_extent", "document_author_surname", "document_editor_forename", "document_editor_surname",
+                        //"document_languages_language",
+                        "document_merged_languages", "document_languages_iso_code", "document_publication_place", "document_merged_authors", "document_genre",
                         //"document_publication_publishing_date",
                         "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats"],
-                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_merged_formats", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license", "corpus_languages_language", "corpus_languages_iso_code", "corpus_publication_publication_date", "corpus_size_type", "corpus_size_value", "corpus_document_genre", "document_title", "document_author_forename", "document_author_surname", "document_merged_authors", "document_editor_forename", "document_editor_surname", "document_languages_language", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_genre", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats", "in_documents"],
+                        source: ["corpus_title", "corpus_id", "corpus_editor_forename", "corpus_editor_surname", "corpus_publication_publisher", "corpus_documents", "corpus_merged_formats", "corpus_encoding_tool", "corpus_encoding_project_description", "corpus_annotator_forename", "corpus_annotator_surname", "corpus_publication_license",
+                        //"corpus_languages_language",
+                        "corpus_merged_languages", "corpus_languages_iso_code", "corpus_publication_publication_date", "corpus_size_type", "corpus_size_value", "corpus_document_genre", "document_title", "document_author_forename", "document_author_surname", "document_merged_authors", "document_editor_forename", "document_editor_surname",
+                        //"document_languages_language",
+                        "document_merged_languages", "document_languages_iso_code", "document_publication_place", "document_publication_publishing_date", "document_list_of_annotations_id", "document_genre", "document_size_type", "document_size_extent", "preparation_title", "preparation_annotation_id", "preparation_encoding_annotation_group", "preparation_encoding_annotation_sub_group", "preparation_encoding_full_name", "annotation_merged_formats", "in_documents"],
                         query: "" + search.generalSearchTerm + "",
                         indices: this.publishedIndexes.allPublishedIndices.join(",")
                     }
@@ -26878,11 +26890,13 @@ var app = new Vue({
                     }
                 }
             }
+
             this.filterCorpusResults(corpusFilterObject);
         },
         filterCorpusResults: function filterCorpusResults(corpusFilterObject) {
             this.resetCorpusResults();
             var matches = [];
+
             var activeFilterCount = this.getActiveFilterCount("corpus");
             for (var i = 0; i < this.activefilters.length; i++) {
                 var filterkey = this.activefiltersmap[this.activefilters[i]];
@@ -26906,7 +26920,11 @@ var app = new Vue({
                                     if (!matches.includes(this.corpusresults[j]._id)) {
                                         matches.push(this.corpusresults[j]._id);
                                     }
-                                    this.activefilterhits["C_" + filtervalue]++;
+
+                                    if (this.activefilters.includes("C_" + filtervalue)) {
+                                        this.activefilterhits["C_" + filtervalue]++;
+                                    }
+
                                     var tempObject = {};
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -26921,7 +26939,9 @@ var app = new Vue({
                                         if (!matches.includes(this.corpusresults[j]._id)) {
                                             matches.push(this.corpusresults[j]._id);
                                         }
-                                        this.activefilterhits["C_" + filtervalue]++;
+                                        if (this.activefilters.includes("C_" + filtervalue)) {
+                                            this.activefilterhits["C_" + filtervalue]++;
+                                        }
                                         var tempObject = {};
                                         tempObject[filterkey] = filtervalue;
                                         this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -26935,7 +26955,9 @@ var app = new Vue({
                                     if (!matches.includes(this.corpusresults[j]._id)) {
                                         matches.push(this.corpusresults[j]._id);
                                     }
-                                    this.activefilterhits["C_" + filtervalue]++;
+                                    if (this.activefilters.includes("C_" + filtervalue)) {
+                                        this.activefilterhits["C_" + filtervalue]++;
+                                    }
                                     var tempObject = {};
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -26951,7 +26973,9 @@ var app = new Vue({
                                     if (!matches.includes(this.corpusresults[j]._id)) {
                                         matches.push(this.corpusresults[j]._id);
                                     }
-                                    this.activefilterhits["C_" + filtervalue]++;
+                                    if (this.activefilters.includes("C_" + filtervalue)) {
+                                        this.activefilterhits["C_" + filtervalue]++;
+                                    }
                                     var tempObject = {};
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -26963,7 +26987,9 @@ var app = new Vue({
                                     if (!matches.includes(this.corpusresults[j]._id)) {
                                         matches.push(this.corpusresults[j]._id);
                                     }
-                                    this.activefilterhits["C_" + filtervalue]++;
+                                    if (this.activefilters.includes("C_" + filtervalue)) {
+                                        this.activefilterhits["C_" + filtervalue]++;
+                                    }
                                     var tempObject = {};
                                     tempObject[filterkey] = filtervalue;
                                     this.filteredcorpushighlights[this.corpusresults[j]._id].push(tempObject);
@@ -26996,7 +27022,13 @@ var app = new Vue({
                         for (var l = 0; l < this.filteredcorpushighlights[corpusId].length; l++) {
                             for (var filterfield in this.filteredcorpushighlights[corpusId][l]) {
                                 if (this.corpusresults[corpusresultkey]._source.hasOwnProperty(filterfield)) {
-                                    this.filteredcorpushighlightmap[corpusId][filterfield] = this.filterHighlightReplace(this.filteredcorpushighlights[corpusId][l][filterfield], this.corpusresults[corpusresultkey]._source[filterfield][0]);
+                                    var filterInput = "";
+                                    if (filterfield == "corpus_merged_formats" || filterfield == "corpus_merged_languages") {
+                                        filterInput = this.corpusresults[corpusresultkey]._source[filterfield];
+                                    } else {
+                                        filterInput = this.corpusresults[corpusresultkey]._source[filterfield][0];
+                                    }
+                                    this.filteredcorpushighlightmap[corpusId][filterfield] = this.filterHighlightReplace(this.filteredcorpushighlights[corpusId][l][filterfield], filterInput);
                                 }
                             }
                         }
@@ -27124,9 +27156,14 @@ var app = new Vue({
 
                         for (var l = 0; l < this.filtereddocumenthighlights[documentId].length; l++) {
                             for (var filterfield in this.filtereddocumenthighlights[documentId][l]) {
-                                console.log("SETTING: " + filterfield + " : " + this.filtereddocumenthighlights[documentId][l][filterfield] + " => " + this.documentresults[documentresultkey]._source[filterfield]);
                                 if (this.documentresults[documentresultkey]._source.hasOwnProperty(filterfield)) {
-                                    this.filtereddocumenthighlightmap[documentId][filterfield] = this.filterHighlightReplace(this.filtereddocumenthighlights[documentId][l][filterfield], this.documentresults[documentresultkey]._source[filterfield][0]);
+                                    var filterInput = "";
+                                    if (filterfield == "document_merged_languages" || filterfield == "document_merged_authors") {
+                                        filterInput = this.documentresults[documentresultkey]._source[filterfield];
+                                    } else {
+                                        filterInput = this.documentresults[documentresultkey]._source[filterfield][0];
+                                    }
+                                    this.filtereddocumenthighlightmap[documentId][filterfield] = this.filterHighlightReplace(this.filtereddocumenthighlights[documentId][l][filterfield], filterInput);
                                 }
                             }
                         }
@@ -27227,7 +27264,13 @@ var app = new Vue({
                         for (var l = 0; l < this.filteredannotationhighlights[annotationId].length; l++) {
                             for (var filterfield in this.filteredannotationhighlights[annotationId][l]) {
                                 if (this.annotationresults[annotationresultkey]._source.hasOwnProperty(filterfield)) {
-                                    this.filteredannotationhighlightmap[annotationId][filterfield] = this.filterHighlightReplace(this.filteredannotationhighlights[annotationId][l][filterfield], this.annotationresults[annotationresultkey]._source[filterfield]);
+                                    var filterInput = "";
+                                    if (filterfield == "annotation_merged_formats") {
+                                        filterInput = this.annotationresults[annotationresultkey]._source[filterfield];
+                                    } else {
+                                        filterInput = this.annotationresults[annotationresultkey]._source[filterfield][0];
+                                    }
+                                    this.filteredannotationhighlightmap[annotationId][filterfield] = this.filterHighlightReplace(this.filteredannotationhighlights[annotationId][l][filterfield], filterInput);
                                 }
                             }
                         }
@@ -27274,9 +27317,12 @@ var app = new Vue({
         },
         resetActiveFilter: function resetActiveFilter(filter) {
             var key = this.activefiltersmap[filter];
+
             if (typeof filter != 'undefined' && this.activefiltersmap.hasOwnProperty(filter)) {
                 this.activefilters.splice(this.activefilters.indexOf(filter), 1);
                 delete this.activefiltersmap[filter];
+                delete this.activefilterhits[filter];
+
                 if (key == "corpus_size_value") {
                     this.$refs.filterwrapper.$refs.corpusFilter.resetNoUiSlider();
                 } else if (key == "document_size_extent") {
@@ -27304,7 +27350,6 @@ var app = new Vue({
                     if (this.activefilters.length > 0) {
                         for (j = j; j < this.activefilters.length; j++) {
                             var active_key = this.activefiltersmap[this.activefilters[j]];
-
                             if (active_key == 'corpus_merged_formats') {
                                 corpusFilterData[active_key] = [this.activefilters[j]];
                             } else if (active_key == 'corpus_size_value') {
@@ -27497,9 +27542,9 @@ var app = new Vue({
         },
         filterHighlightReplace: function filterHighlightReplace(filterstring, contentstring) {
             var newContentString = '';
-            // console.log("POOP: "+filterstring.toLowerCase()+" : "+contentstring.toLowerCase()+" => "+contentstring.toLowerCase().indexOf(filterstring.toLowerCase()))
+            console.log("POOP: " + filterstring.toLowerCase() + " : " + contentstring.toLowerCase() + " => " + contentstring.toLowerCase().indexOf(filterstring.toLowerCase()));
             var matched = contentstring.split(' ').map(function (val) {
-                // console.log(val.toLowerCase()+" => "+filterstring.toLowerCase()+" : "+val.toLowerCase().indexOf(filterstring.toLowerCase()))
+                console.log(val.toLowerCase() + " => " + filterstring.toLowerCase() + " : " + val.toLowerCase().indexOf(filterstring.toLowerCase()));
                 if (val.toLowerCase().indexOf(filterstring.toLowerCase()) > -1) {
                     newContentString += '<span class=\"laudatiofilterhighlight\">' + val + '</span> ';
                 } else if (filterstring.toLowerCase().indexOf(val.toLowerCase()) > -1) {
@@ -28937,8 +28982,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return filter;
         },
         resolveHit: function resolveHit(filter) {
+            console.log("FILTER_ " + filter);
+            console.log(JSON.stringify(this.activefilterhits));
             var hasHit = false;
-            if (this.activefilterhits.hasOwnProperty(filter)) {
+            if (this.activefilterhits[filter] > 0) {
                 hasHit = true;
             }
             return hasHit;
@@ -29285,7 +29332,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 corpusYearTo: '',
                 corpus_size_value: '',
                 corpusSizeTo: '',
-                corpus_languages_language: '',
+                corpus_merged_languages: '',
                 corpus_merged_formats: [],
                 corpus_publication_license: ''
             },
@@ -29532,8 +29579,8 @@ var render = function() {
               {
                 name: "model",
                 rawName: "v-model",
-                value: _vm.corpusFilterData.corpus_languages_language,
-                expression: "corpusFilterData.corpus_languages_language"
+                value: _vm.corpusFilterData.corpus_merged_languages,
+                expression: "corpusFilterData.corpus_merged_languages"
               }
             ],
             staticClass: "form-control",
@@ -29543,7 +29590,7 @@ var render = function() {
               "aria-describedby": "inputLanguage",
               placeholder: '"German"'
             },
-            domProps: { value: _vm.corpusFilterData.corpus_languages_language },
+            domProps: { value: _vm.corpusFilterData.corpus_merged_languages },
             on: {
               keyup: function($event) {
                 if (
@@ -29560,7 +29607,7 @@ var render = function() {
                 }
                 _vm.$set(
                   _vm.corpusFilterData,
-                  "corpus_languages_language",
+                  "corpus_merged_languages",
                   $event.target.value
                 )
               }
@@ -30131,7 +30178,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 document_publication_publishing_date_to: '',
                 document_size_extent: '',
                 document_size_extent_to: '',
-                document_languages_language: '',
                 document_merged_languages: ''
             },
             scope: 'document'
@@ -30172,7 +30218,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 document_publication_publishing_date_to: '',
                 document_size_extent: '',
                 document_size_extent_to: '',
-                document_languages_language: '',
                 document_merged_languages: ''
             };
         },
@@ -30406,8 +30451,8 @@ var render = function() {
                   {
                     name: "model",
                     rawName: "v-model",
-                    value: _vm.documentFilterData.document_languages_language,
-                    expression: "documentFilterData.document_languages_language"
+                    value: _vm.documentFilterData.document_merged_languages,
+                    expression: "documentFilterData.document_merged_languages"
                   }
                 ],
                 staticClass: "form-control",
@@ -30418,7 +30463,7 @@ var render = function() {
                   placeholder: '"German"'
                 },
                 domProps: {
-                  value: _vm.documentFilterData.document_languages_language
+                  value: _vm.documentFilterData.document_merged_languages
                 },
                 on: {
                   keyup: function($event) {
@@ -30436,7 +30481,7 @@ var render = function() {
                     }
                     _vm.$set(
                       _vm.documentFilterData,
-                      "document_languages_language",
+                      "document_merged_languages",
                       $event.target.value
                     )
                   }
@@ -31910,7 +31955,7 @@ var render = function() {
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "col col-auto mr-1" }, [
-                  _vm.corpusresult._source.corpus_languages_language !=
+                  _vm.corpusresult._source.corpus_merged_languages !=
                   "undefined"
                     ? _c(
                         "div",
@@ -31926,13 +31971,13 @@ var render = function() {
                           ) &&
                           _vm.corpushighlights[
                             _vm.corpusresult._id
-                          ][0].hasOwnProperty("corpus_languages_language")
+                          ][0].hasOwnProperty("corpus_merged_languages")
                             ? _c("span", {
                                 domProps: {
                                   innerHTML: _vm._s(
                                     _vm.corpushighlights[
                                       _vm.corpusresult._id
-                                    ][0].corpus_languages_language
+                                    ][0].corpus_merged_languages
                                   )
                                 }
                               })
@@ -31941,22 +31986,22 @@ var render = function() {
                               ) &&
                               _vm.filteredcorpushighlightmap[
                                 _vm.corpusresult._id
-                              ].hasOwnProperty("corpus_languages_language")
+                              ].hasOwnProperty("corpus_merged_languages")
                               ? _c("span", {
                                   domProps: {
                                     innerHTML: _vm._s(
                                       _vm.filteredcorpushighlightmap[
                                         _vm.corpusresult._id
-                                      ].corpus_languages_language
+                                      ].corpus_merged_languages
                                     )
                                   }
                                 })
                               : _c("span", [
                                   _vm._v(
                                     _vm._s(
-                                      _vm._f("truncatelist")(
+                                      _vm._f("truncate")(
                                         _vm.corpusresult._source
-                                          .corpus_languages_language[0]
+                                          .corpus_merged_languages
                                       )
                                     )
                                   )
@@ -32594,7 +32639,7 @@ var render = function() {
                       ]
                     ),
                     _vm._v(" "),
-                    _vm.documentresult._source.document_languages_language !=
+                    _vm.documentresult._source.document_merged_languages !=
                     "undefined"
                       ? _c(
                           "div",
@@ -32610,13 +32655,13 @@ var render = function() {
                             ) &&
                             _vm.documenthighlights[
                               _vm.documentresult._id
-                            ][0].hasOwnProperty("document_languages_language")
+                            ][0].hasOwnProperty("document_merged_languages")
                               ? _c("span", {
                                   domProps: {
                                     innerHTML: _vm._s(
                                       _vm.documenthighlights[
                                         _vm.documentresult._id
-                                      ][0].document_languages_language
+                                      ][0].document_merged_languages
                                     )
                                   }
                                 })
@@ -32625,13 +32670,13 @@ var render = function() {
                                 ) &&
                                 _vm.filtereddocumenthighlightmap[
                                   _vm.documentresult._id
-                                ].hasOwnProperty("document_languages_language")
+                                ].hasOwnProperty("document_merged_languages")
                                 ? _c("span", {
                                     domProps: {
                                       innerHTML: _vm._s(
                                         _vm.filtereddocumenthighlightmap[
                                           _vm.documentresult._id
-                                        ].document_languages_language
+                                        ].document_merged_languages
                                       )
                                     }
                                   })
@@ -32639,7 +32684,7 @@ var render = function() {
                                     _vm._v(
                                       _vm._s(
                                         _vm.documentresult._source
-                                          .document_languages_language[0]
+                                          .document_merged_languages
                                       )
                                     )
                                   ])
@@ -32846,6 +32891,15 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['annotationresult', 'annotationhighlights', 'filteredannotationhighlightmap'],
@@ -32948,58 +33002,111 @@ var render = function() {
               "div",
               { staticClass: "col-2" },
               [
-                _vm._l(
-                  _vm.unique(
-                    _vm.annotationresult._source
-                      .preparation_encoding_annotation_group
-                  ),
-                  function(group, groupindex) {
-                    return _vm.annotationhighlights.hasOwnProperty(
+                _vm.annotationhighlights.hasOwnProperty(
+                  _vm.annotationresult._id
+                ) &&
+                _vm.annotationhighlights[
+                  _vm.annotationresult._id
+                ][0].hasOwnProperty("preparation_encoding_annotation_group")
+                  ? _c("div", {
+                      staticClass: "text-grey text-14",
+                      domProps: {
+                        innerHTML: _vm._s(
+                          _vm.annotationhighlights[_vm.annotationresult._id][0]
+                            .preparation_encoding_annotation_group
+                        )
+                      }
+                    })
+                  : _vm.filteredannotationhighlightmap.hasOwnProperty(
                       _vm.annotationresult._id
                     ) &&
-                      _vm.annotationhighlights[
-                        _vm.annotationresult._id
-                      ][0].hasOwnProperty(
-                        "preparation_encoding_annotation_group"
-                      ) &&
-                      _vm.annotationhighlights[_vm.annotationresult._id][0]
-                        .preparation_encoding_annotation_group == group
-                      ? _c("div", {
-                          key: groupindex,
-                          staticClass: "text-grey text-14",
-                          attrs: { group: group },
-                          domProps: {
-                            innerHTML: _vm._s(
-                              _vm.annotationhighlights[
-                                _vm.annotationresult._id
-                              ][0].preparation_encoding_annotation_group
-                            )
-                          }
-                        })
-                      : _vm._e()
-                  }
-                ),
-                _vm._v(" "),
-                _vm._l(
-                  _vm.unique(
-                    _vm.annotationresult._source
-                      .preparation_encoding_annotation_group
-                  ),
-                  function(group, groupindex) {
-                    return _c(
-                      "div",
-                      {
-                        key: groupindex,
+                    _vm.filteredannotationhighlightmap[
+                      _vm.annotationresult._id
+                    ].hasOwnProperty("preparation_encoding_annotation_group")
+                    ? _c("div", {
                         staticClass: "text-grey text-14",
-                        attrs: { group: group }
-                      },
-                      [_vm._v(_vm._s(group))]
-                    )
-                  }
-                )
+                        domProps: {
+                          innerHTML: _vm._s(
+                            _vm.filteredannotationhighlightmap[
+                              _vm.annotationresult._id
+                            ].preparation_encoding_annotation_group
+                          )
+                        }
+                      })
+                    : _vm._l(
+                        _vm.unique(
+                          _vm.annotationresult._source
+                            .preparation_encoding_annotation_group
+                        ),
+                        function(group, groupindex) {
+                          return _c(
+                            "div",
+                            {
+                              key: groupindex,
+                              staticClass: "text-grey text-14",
+                              attrs: { group: group }
+                            },
+                            [_vm._v(_vm._s(group))]
+                          )
+                        }
+                      )
               ],
               2
             ),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-2" }, [
+              _c(
+                "div",
+                {
+                  staticClass:
+                    "corpusProp text-14 d-flex align-items-center align-self-start pr-1 my-1 flex-nowrap"
+                },
+                [
+                  _c("i", { staticClass: "fa fa-fw fa-globe mr-1" }),
+                  _vm._v(" "),
+                  _vm.annotationhighlights.hasOwnProperty(
+                    _vm.annotationresult._id
+                  ) &&
+                  _vm.annotationhighlights[
+                    _vm.corpusresult._id
+                  ][0].hasOwnProperty("annotation_merged_formats")
+                    ? _c("span", {
+                        domProps: {
+                          innerHTML: _vm._s(
+                            _vm.annotationhighlights[
+                              _vm.annotationresult._id
+                            ][0].annotation_merged_formats
+                          )
+                        }
+                      })
+                    : _vm.filteredannotationhighlightmap.hasOwnProperty(
+                        _vm.annotationresult._id
+                      ) &&
+                      _vm.filteredannotationhighlightmap[
+                        _vm.annotationresult._id
+                      ].hasOwnProperty("annotation_merged_formats")
+                      ? _c("span", {
+                          domProps: {
+                            innerHTML: _vm._s(
+                              _vm.filteredannotationhighlightmap[
+                                _vm.annotationresult._id
+                              ].annotation_merged_formats
+                            )
+                          }
+                        })
+                      : _c("span", [
+                          _vm._v(
+                            _vm._s(
+                              _vm._f("truncate")(
+                                _vm.annotationresult._source
+                                  .annotation_merged_formats
+                              )
+                            )
+                          )
+                        ])
+                ]
+              )
+            ]),
             _vm._v(" "),
             typeof _vm.annotationresult._source.in_documents !== "undefined" &&
             Object.keys(_vm.annotationresult._source.in_documents).length > 0

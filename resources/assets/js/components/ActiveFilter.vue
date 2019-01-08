@@ -67,8 +67,10 @@
               return filter;
             },
             resolveHit(filter) {
+                console.log("FILTER_ "+filter)
+                console.log(JSON.stringify(this.activefilterhits))
                 var hasHit = false;
-                if(this.activefilterhits.hasOwnProperty(filter)){
+                if(this.activefilterhits[filter] > 0){
                     hasHit = true;
                 }
                 return hasHit;

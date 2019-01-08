@@ -188,6 +188,15 @@ class ElasticController extends Controller
                 $projectPath = $this->LaudatioUtils->getCorpusProjectPathByCorpusId($result['hits']['hits'][$i]['_id'],$index);
                 $corpusPath = $this->LaudatioUtils->getCorpusPathByCorpusId($index,$index);
                 $corpusLogo = $this->LaudatioUtils->getCorpusLogoByCorpusId($index,$index);
+                $mergedLanguages = "";
+                if(isset($result['hits']['hits'][$i]['_source']['corpus_merged_languages'])) {
+                    $mergedLanguages = $result['hits']['hits'][$i]['_source']['corpus_merged_languages'];
+                    $result['hits']['hits'][$i]['_source']['corpus_merged_languages'] = $this->LaudatioUtils->removeMergedDuplicates($this->LaudatioUtils->removeMergedNA($mergedLanguages));
+                }
+                if(isset($result['hits']['hits'][$i]['_source']['corpus_merged_formats'])) {
+                    $mergedFormats = $result['hits']['hits'][$i]['_source']['corpus_merged_formats'];
+                    $result['hits']['hits'][$i]['_source']['corpus_merged_formats'] = $this->LaudatioUtils->removeMergedDuplicates($this->LaudatioUtils->removeMergedNA($mergedFormats));
+                }
                 $result['hits']['hits'][$i]['_source']['projectpath'] = $projectPath;
                 $result['hits']['hits'][$i]['_source']['corpuspath'] = $corpusPath;
                 $result['hits']['hits'][$i]['_source']['corpuslogo'] = $corpusLogo;
@@ -210,10 +219,18 @@ class ElasticController extends Controller
             else if(strpos($index,"document") !== false) {
                 $corpusName = $this->LaudatioUtils->getCorpusNameByObjectElasticsearchId('document',$result['hits']['hits'][$i]['_id']);
                 $result['hits']['hits'][$i]['_source']['corpus_name'] = $corpusName;
+                if(isset($result['hits']['hits'][$i]['_source']['document_merged_languages'])) {
+                    $mergedLanguages = $result['hits']['hits'][$i]['_source']['document_merged_languages'];
+                    $result['hits']['hits'][$i]['_source']['document_merged_languages'] = $this->LaudatioUtils->removeMergedDuplicates($this->LaudatioUtils->removeMergedNA($mergedLanguages));
+                }
             }
             else if(strpos($index,"annotation") !== false) {
                 $corpusName = $this->LaudatioUtils->getCorpusNameByObjectElasticsearchId('annotation',$result['hits']['hits'][$i]['_id']);
                 $result['hits']['hits'][$i]['_source']['corpus_name'] = $corpusName;
+                if(isset($result['hits']['hits'][$i]['_source']['annotation_merged_formats'])) {
+                    $mergedFormats = $result['hits']['hits'][$i]['_source']['annotation_merged_formats'];
+                    $result['hits']['hits'][$i]['_source']['annotation_merged_formats'] = $this->LaudatioUtils->removeMergedDuplicates($this->LaudatioUtils->removeMergedNA($mergedFormats));
+                }
             }
 
             $result['hits']['hits'][$i]['_source']['visibility'] = 1;
