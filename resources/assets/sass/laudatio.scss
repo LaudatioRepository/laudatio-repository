@@ -1,37 +1,6 @@
 @charset "UTF-8";
-@font-face {
-  font-family: NotoSansDisplay;
-  src: url(/fonts/NotoSansDisplay-Regular.ttf?9b2414350a0c3e66b5379385aa152727) format("truetype"), url(/fonts/NotoSansDisplay-Regular.eot?03718ed792d8a84acad70a940e736a0e) format("eot"), url(/fonts/NotoSansDisplay-Regular.svg?b34e3833c5f1aadb1835423ec194ae7b) format("svg"), url(/fonts/NotoSansDisplay-Regular.woff?98b78ea917206b5f3c8ce8a9048e5c9d) format("woff"), url(/fonts/NotoSansDisplay-Regular.woff2?b02651c43d746f92c90b3da1c142284b) format("woff2");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: NotoSansDisplay;
-  src: url(/fonts/NotoSansDisplay-Italic.ttf?b77c5ddb237af809b9ede0404bb4fd96) format("truetype"), url(/fonts/NotoSansDisplay-Italic.eot?301164931252c36ded9a0b487bec549c) format("eot"), url(/fonts/NotoSansDisplay-Italic.svg?f1c3b7b2db1dc0c704f03c62e4c90c55) format("svg"), url(/fonts/NotoSansDisplay-Italic.woff?a15f5a844bea9102157759323dac25b1) format("woff"), url(/fonts/NotoSansDisplay-Italic.woff2?2736f2e90fea74b15a27c34945336d11) format("woff2");
-  font-weight: 400;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: NotoSansDisplay;
-  src: url(/fonts/NotoSansDisplay-Medium.ttf?677e56cfabbd93e2fb3c46ea812fcd2d) format("truetype"), url(/fonts/NotoSansDisplay-Medium.eot?c0a8c01cdd9fdbd1dca191e4435b2c9f) format("eot"), url(/fonts/NotoSansDisplay-Medium.svg?3f4378e0a3d33bf93f23b25e46ff449c) format("svg"), url(/fonts/NotoSansDisplay-Medium.woff?28d277c7ab910b6538a2eb58e9f17cd6) format("woff"), url(/fonts/NotoSansDisplay-Medium.woff2?d9deeaa83e7f8bb1376cfb434cc04543) format("woff2");
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: NotoSansDisplay;
-  src: url(/fonts/NotoSansDisplay-SemiBold.ttf?6514933cbe79c9a2886f9e58a4e678e4) format("truetype"), url(/fonts/NotoSansDisplay-SemiBold.eot?af22bc00bcf14070ac0210ef06633bb1) format("eot"), url(/fonts/NotoSansDisplay-SemiBold.svg?9110395e29909df68cbd37ec15200a7e) format("svg"), url(/fonts/NotoSansDisplay-SemiBold.woff?e9b8ba8ca380c88d7d7876159cef9b40) format("woff"), url(/fonts/NotoSansDisplay-SemiBold.woff2?815940b997561de1cfbdab21a35c19b8) format("woff2");
-  font-weight: 700;
-  font-style: normal;
-}
-
 body {
-  font-family: NotoSansDisplay,Helvetica Neue,sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #333;
+  font-family: 'Noto Sans', sans-serif !important;
 }
 
 #corpusUploader, #documentUploader, #annotationUploader, #formatUploader, #logoUploader{
