@@ -11,6 +11,7 @@
     <title>{{ config('app.name', 'Laudatio') }}</title>
     <!-- Styles -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
     <link href="{{ asset('css/ux_style.min.css') }}" rel="stylesheet">
     <link href="{{ asset('css/unslider.css') }}" rel="stylesheet">
     <link href="{{ asset('css/laudatio.css') }}" rel="stylesheet">

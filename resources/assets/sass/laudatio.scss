@@ -1,3 +1,8 @@
+@charset "UTF-8";
+body {
+  font-family: 'Noto Sans', sans-serif !important;
+}
+
 #corpusUploader, #documentUploader, #annotationUploader, #formatUploader, #logoUploader{
   display: none;
 }
